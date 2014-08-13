@@ -35,7 +35,10 @@ function myGame() {
     var houseLayer = Paca.createLayer();
     var backLayer = Paca.createLayer();
 
+    var npc = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 320, y: 130});
+
     navigationLayer.addObject(player);
+    navigationLayer.addObject(npc)
     houseLayer.addObject(Paca.createDrawable(Paca.createSprite("houselayer.png", 1), {x: 0, y: 0}));
 
     houseLayer.addObject(Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 100, y: 110},  {x: 100, y: 98}, function() {
@@ -43,6 +46,9 @@ function myGame() {
             //Nothing here yet
         }));
         player.setLocation({x:400,y:210});
+        npc.walkTo({x:400,y:210}, function() {
+            npc.walkTo({x:100,y:210});
+        });
         Paca.changeScene(yardScene);
     }));
 
@@ -92,9 +98,16 @@ window.onload = function () {
     );
     Paca.DEBUG = true;
     // Scroll to hide iPhone/iPad browser addressbar:
-    if (screenfull.enabled) {
-       screenfull.request();
-    }
+    var goFull = function (){
+        if (screenfull.enabled) {
+            screenfull.request();
+        }
+    };
+
+    //TODO: Make start screen with enable full screen option?
+    //TODO: The function below only works properly in Chrome when called from a user action (lick clikc/touch)
+    goFull();
+
 };
 
 window.onerror = function (message, fileURL, lineNumber) {

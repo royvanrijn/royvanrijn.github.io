@@ -227,6 +227,16 @@ Paca.Layer = function() {
                 objects[x].step();
             }
         }
+
+        //Keep items sorted to draw correctly
+        objects.sort((function(a, b) {
+            if(a.getLocation().y < b.getLocation().y) {
+                return -1;
+            } else if(a.getLocation().y > b.getLocation().y) {
+                return 1;
+            }
+            return 0;
+        }));
     };
 
     this.draw = function () {
@@ -249,6 +259,11 @@ Paca.createDrawable = function(sprite, drawPoint) {
 }
 
 Paca.Drawable = function(sprite, drawPoint) {
+
+    this.getLocation = function() {
+        return drawPoint;
+    };
+
     this.step = function () {
         sprite.step();
     };
@@ -270,6 +285,10 @@ Paca.createCollectable = function(sprite, drawPoint, walkPoint, callback) {
 }
 
 Paca.Collectable = function(sprite, drawPoint, walkPoint, callback) {
+
+    this.getLocation = function() {
+        return drawPoint;
+    };
 
     function onCollectable(point) {
         var toDraw = sprite.currentImage();
@@ -327,22 +346,26 @@ Paca.Actor = function(sprites, startLocation) {
 
     var path = [];
     var callback;
-    var location = startLocation;
+    var actorLocation = startLocation;
 
     var speed = 5;
 
     var currentSprite = sprites[4];
 
     this.setLocation = function(locationIn) {
-        location = locationIn;
+        actorLocation = locationIn;
         path = [];
         callback = null;
     }
 
+    this.getLocation = function() {
+        return actorLocation;
+    };
+
     this.walkTo = function (target, callbackIn) {
         //Generate path now, next go from point to point
         //The direction of the line determines the images displayed
-        path = shortestPath(location, target, Paca.currentScene.mesh);
+        path = shortestPath(actorLocation, target, Paca.currentScene.mesh);
         callback = callbackIn;
     };
 
@@ -352,7 +375,7 @@ Paca.Actor = function(sprites, startLocation) {
             var currentGoal = path[0];
 
             //Remove point if we are 'on' it!
-            while (path.length > 0 && lineDistance(currentGoal, location) < speed) {
+            while (path.length > 0 && lineDistance(currentGoal, actorLocation) < speed) {
                 path.shift();
                 currentGoal = path[0];
             }
@@ -360,11 +383,11 @@ Paca.Actor = function(sprites, startLocation) {
             if(path.length > 0) {
                 currentGoal = path[0];
 
-                var direction = getDirection(location, currentGoal);
+                var direction = getDirection(actorLocation, currentGoal);
                 currentSprite = sprites[direction];
 
-                direction = norm(subtract(currentGoal, location));
-                location = add(location, multiply(direction, speed));
+                direction = norm(subtract(currentGoal, actorLocation));
+                actorLocation = add(actorLocation, multiply(direction, speed));
             } else {
                 targetReached();
             }
@@ -384,13 +407,13 @@ Paca.Actor = function(sprites, startLocation) {
 
     this.draw = function () {
         var toDraw = currentSprite.currentImage();
-        Paca.drawContext.drawImage(toDraw, (location.x-(toDraw.width/2))|0, (location.y-toDraw.height)|0);
+        Paca.drawContext.drawImage(toDraw, (actorLocation.x-(toDraw.width/2))|0, (actorLocation.y-toDraw.height)|0);
 
         if(Paca.DEBUG && path.length > 0) {
             Paca.drawContext.fillStyle = '#FF00FF';
             Paca.drawContext.globalAlpha = 0.2;
             Paca.drawContext.beginPath();
-            Paca.drawContext.moveTo(location.x, location.y);
+            Paca.drawContext.moveTo(actorLocation.x, actorLocation.y);
             for (var y = 0; y < path.length; y++) {
                 Paca.drawContext.lineTo(path[y].x, path[y].y);
             }
