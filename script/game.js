@@ -60,10 +60,6 @@ function myGame() {
  * -------------------------------------------------------------------------------------------------
  */
 window.onload = function () {
-    // Scroll to hide iPhone/iPad browser addressbar:
-    setTimeout(function () {
-        window.scrollTo(0, 1);
-    }, 0);
 
     var gameCanvas = document.getElementById('gameCanvas');
     var gameArea = document.getElementById('gameArea');
@@ -94,6 +90,9 @@ window.onload = function () {
 
         myGame()
     );
+    Paca.DEBUG = true;
+    // Scroll to hide iPhone/iPad browser addressbar:
+    toggleFullScreen();
 };
 
 window.onerror = function (message, fileURL, lineNumber) {
