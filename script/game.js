@@ -92,7 +92,9 @@ window.onload = function () {
     );
     Paca.DEBUG = true;
     // Scroll to hide iPhone/iPad browser addressbar:
-    toggleFullScreen();
+    if (screenfull.enabled) {
+       screenfull.request();
+    }
 };
 
 window.onerror = function (message, fileURL, lineNumber) {
