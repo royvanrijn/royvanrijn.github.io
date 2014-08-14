@@ -26,7 +26,7 @@ function myGame() {
     var playerSpriteDown = Paca.createSprite("images/main/walk_down.png", 10);
     var playerSpriteLeft = Paca.createSprite("images/main/walk_left.png", 10);
     var playerSpriteIdle = Paca.createSprite("images/main/idle.png", 1);
-    var player = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 180, y: 130});
+    var player = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 220, y: 130});
 
     var houseScene = Paca.newScene(mesh, player);
     var yardScene = Paca.newScene(mesh, player);
