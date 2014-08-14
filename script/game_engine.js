@@ -23,9 +23,9 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
     this.gameCanvas = gameCanvas;
     this.gameArea = gameArea;
 
-    gameArea.addEventListener("touchstart", Paca.mouseClick);
-    gameArea.addEventListener("click", Paca.mouseClick);
-    gameArea.addEventListener("mousemove", Paca.mouseMove);
+    gameCanvas.addEventListener("touchstart", Paca.mouseClick);
+    gameCanvas.addEventListener("click", Paca.mouseClick);
+    gameCanvas.addEventListener("mousemove", Paca.mouseMove);
 
 
     this.drawCanvas = document.createElement('canvas');
