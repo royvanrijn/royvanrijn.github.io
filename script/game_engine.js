@@ -23,7 +23,7 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
     this.gameCanvas = gameCanvas;
     this.gameArea = gameArea;
 
-    gameArea.addEventListener("touchstart", Paca.touchStart);
+    gameArea.addEventListener("touchend", Paca.touchEnd);
     gameArea.addEventListener("click", Paca.mouseClick);
     gameArea.addEventListener("mousemove", Paca.mouseMove);
 
@@ -577,7 +577,7 @@ Paca.mouseMove = function(e) {
     }
 }
 
-Paca.touchStart = function(e) {
+Paca.touchEnd = function(e) {
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
     e.stopPropagation();
