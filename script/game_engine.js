@@ -578,9 +578,9 @@ Paca.mouseMove = function(e) {
 }
 
 Paca.touchStart = function(e) {
+    e.preventDefault();
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
-    e.preventDefault();
 }
 
 Paca.mouseClick = function(e) {
