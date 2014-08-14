@@ -23,9 +23,9 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
     this.gameCanvas = gameCanvas;
     this.gameArea = gameArea;
 
-    gameArea.addEventListener("touchstart", Paca.mouseClick, false);
-    gameArea.addEventListener("click", Paca.mouseClick, false);
-    gameArea.addEventListener("mousemove", Paca.mouseMove, false);
+    gameArea.addEventListener("touchstart", Paca.touchStart);
+    gameArea.addEventListener("click", Paca.mouseClick);
+    gameArea.addEventListener("mousemove", Paca.mouseMove);
 
 
     this.drawCanvas = document.createElement('canvas');
@@ -577,10 +577,16 @@ Paca.mouseMove = function(e) {
     }
 }
 
+Paca.touchStart = function(e) {
+    point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
+    Paca.currentScene.click(point);
+    e.stopPropagation();
+    e.preventDefault();
+}
+
 Paca.mouseClick = function(e) {
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
-    e.preventDefault();
 }
 
 Paca.translatePointToGameWorld = function(point) {
