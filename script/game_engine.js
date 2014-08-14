@@ -580,7 +580,6 @@ Paca.mouseMove = function(e) {
 Paca.touchStart = function(e) {
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
-    e.stopPropagation();
     e.preventDefault();
 }
 
