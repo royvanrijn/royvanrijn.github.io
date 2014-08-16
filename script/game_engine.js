@@ -12,7 +12,7 @@ var Paca = function() {}
  * -------------------------------------------------------------------------------------------------
  */
 
-Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, startingScene) {
+Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, soundResources, startingScene) {
 
     this.DEBUG = false;
     this.GAME_WIDTH = gameDimensions.width;
@@ -20,8 +20,17 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
 
     this.screenDirty = true;
     this.images = new Object();
+    this.soundBuffers = new Object();
     this.gameCanvas = gameCanvas;
     this.gameArea = gameArea;
+
+    this.audio = (function() {
+        var audioFactory = window.audioContext || window.webkitAudioContext || window.mozAudioContext;
+        if(audioFactory) {
+            return new audioFactory();
+        }
+        return null;
+    })();
 
     document.addEventListener("touchstart", Paca.touchStart);
     document.addEventListener("mousedown", Paca.mouseClick);
@@ -40,7 +49,8 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
     //Start loading all the resources (images):
     //NICETOHAVE: Later on, also load sounds here!
     Prefetch.prefetchResources(
-        resourceList,
+        imageResources,
+        soundResources,
         //Callback after loading:
         function () {
             Paca.changeScene(startingScene);
@@ -55,6 +65,11 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, resourceList, start
 Paca.addImage = function(uri, image) {
     this.images[uri] = image;
 }
+
+Paca.addSound = function(uri, buffer) {
+    this.soundBuffers[uri] = buffer;
+}
+
 
 Paca.setCursor = function(name) {
     this.gameArea.style.cursor = name;
@@ -465,6 +480,34 @@ Paca.Sprite = function(imageIn, segments) {
         }
         return images[ptr];
     };
+}
+
+/**
+ * -------------------------------------------------------------------------------------------------
+ * -- Sound functions:
+ * -------------------------------------------------------------------------------------------------
+ */
+
+
+Paca.playSound = function(source, volume) {
+    var soundBuffer = this.soundBuffers[source];
+    if(!soundBuffer) return;
+    console.log(this.audio)
+    var source = this.audio.createBufferSource();
+    source.buffer = soundBuffer;
+    if(volume) {
+        var gainNode = this.audio.createGain() || this.audio.createGainNode;
+        source.connect(gainNode);
+        gainNode.connect(this.audio.destination);
+        gainNode.gain.value = volume;
+    } else {
+        source.connect(this.audio.destination);
+    }
+    if(source.noteOn) {
+        source.noteOn(0);
+    } else if(source.start) {
+        source.start(0);
+    }
 }
 
 /**

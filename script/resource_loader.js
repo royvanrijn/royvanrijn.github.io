@@ -5,27 +5,51 @@
  */
 Prefetch = new Object();
 
-Prefetch.prefetchResources = function(sources, callback, game) {
+Prefetch.prefetchResources = function(imageSources, soundSources, callback, game) {
 
     game.setCursor("progress");
 
-    var loadedImages = 0;
-    var numImages = sources.length;
-    for (var i = 0; i < numImages; i++) {
-        var source = sources[i];
-        var image = new Image();
-        image.onload = function () {
+    var loadData = { loadedResources:0, numResources:imageSources.length + soundSources.length};
 
-            if (++loadedImages >= numImages) {
+    for (var i = 0; i < imageSources.length; i++) {
+        Prefetch.loadImage(imageSources[i], loadData, callback, game);
+    }
+    for (var i = 0; i < soundSources.length; i++) {
+        Prefetch.loadSound(soundSources[i], loadData, callback, game);
+    }
+};
+
+Prefetch.loadImage = function(source, loadData, callback, game) {
+        var image = new Image();
+        image.onload = function() {
+           if (++loadData.loadedResources >= loadData.numResources) {
                 Prefetch.prefetchResourcesDone(callback, game);
             } else {
-                Prefetch.prefetchResourcesUpdated((loadedImages / numImages) * 100, game);
+                Prefetch.prefetchResourcesUpdated((loadData.loadedResources / loadData.numResources) * 100, game);
             }
         };
         image.src = source; //bind onload before setting src bug in some chrome versions
         game.addImage(source, image);
-    }
-};
+}
+
+Prefetch.loadSound = function(source, loadData, callback, game) {
+    var doc = new XMLHttpRequest();
+    doc.open("GET",source,true);
+    doc.responseType = "arraybuffer";
+    doc.overrideMimeType('text/plain; charset=x-user-defined');
+    doc.onreadystatechange = function() {
+    if (doc.readyState==4 && (!doc.status || doc.status==200))
+        Paca.audio.decodeAudioData(doc.response, function(buffer) {
+            game.addSound(source, buffer);
+            if (++loadData.loadedResources >= loadData.numResources) {
+                Prefetch.prefetchResourcesDone(callback, game);
+            } else {
+                Prefetch.prefetchResourcesUpdated((loadData.loadedResources / loadData.numResources) * 100, game);
+            }
+        });
+    };
+    doc.send();
+}
 
 
 /**
