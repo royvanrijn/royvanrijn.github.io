@@ -25,11 +25,7 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, sou
     this.gameArea = gameArea;
 
     this.audio = (function() {
-        var audioFactory = window.audioContext || window.webkitAudioContext || window.mozAudioContext;
-        if(audioFactory) {
-            return new audioFactory();
-        }
-        return null;
+        return new (window.AudioContext || window.webkitAudioContext)();
     })();
 
     document.addEventListener("touchstart", Paca.touchStart);
@@ -53,6 +49,8 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, sou
         soundResources,
         //Callback after loading:
         function () {
+
+
             Paca.changeScene(startingScene);
             //Start the loops, render game and logic:
             Paca.startRendering();
@@ -495,18 +493,14 @@ Paca.playSound = function(source, volume) {
     var source = this.audio.createBufferSource();
     source.buffer = soundBuffer;
     if(volume) {
-        var gainNode = this.audio.createGain() || this.audio.createGainNode();
+        var gainNode = this.audio.createGain();
         source.connect(gainNode);
         gainNode.connect(this.audio.destination);
         gainNode.gain.value = volume;
     } else {
         source.connect(this.audio.destination);
     }
-    if(source.start) {
-        source.start(0);
-    } else if(source.noteOn) {
-        source.noteOn(0);
-    }
+    source[source.start ? 'start' : 'noteOn'](0);
 }
 
 /**
@@ -618,9 +612,15 @@ Paca.mouseMove = function(e) {
     }
 }
 
+Paca.init = false;
 Paca.touchStart = function(e) {
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
+    //On first touch, unmute the audio:
+    if(!this.init) {
+        this.init = true;
+        Paca.playSound("sounds/void.wav", 0);
+    }
 }
 
 Paca.mouseClick = function(e) {

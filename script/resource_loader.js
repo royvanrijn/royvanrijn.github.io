@@ -33,13 +33,11 @@ Prefetch.loadImage = function(source, loadData, callback, game) {
 }
 
 Prefetch.loadSound = function(source, loadData, callback, game) {
-    var doc = new XMLHttpRequest();
-    doc.open("GET",source,true);
-    doc.responseType = "arraybuffer";
-    doc.overrideMimeType('text/plain; charset=x-user-defined');
-    doc.onreadystatechange = function() {
-    if (doc.readyState==4 && (!doc.status || doc.status==200))
-        Paca.audio.decodeAudioData(doc.response, function(buffer) {
+    var request = new XMLHttpRequest();
+    request.open("GET", source, true);
+    request.responseType = "arraybuffer";
+    request.onload = function() {
+        game.audio.decodeAudioData(request.response, function(buffer) {
             game.addSound(source, buffer);
             if (++loadData.loadedResources >= loadData.numResources) {
                 Prefetch.prefetchResourcesDone(callback, game);
@@ -48,7 +46,7 @@ Prefetch.loadSound = function(source, loadData, callback, game) {
             }
         });
     };
-    doc.send();
+    request.send();
 }
 
 

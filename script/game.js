@@ -49,8 +49,8 @@ function myGame() {
         npc.walkTo({x:400,y:210}, function() {
             npc.walkTo({x:100,y:210});
         });
+        Paca.playSound("sounds/slap.mp3", 1);
         Paca.changeScene(yardScene);
-        Paca.playSound("sounds/slap.mp3");
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
@@ -95,11 +95,14 @@ window.onload = function () {
             "images/main/idle.png"
         ],
         [
+            "sounds/void.wav",
             "sounds/slap.mp3"
         ],
         myGame()
     );
     Paca.DEBUG = true;
+
+
     // Scroll to hide iPhone/iPad browser addressbar:
     var goFull = function (){
         if (screenfull.enabled) {
