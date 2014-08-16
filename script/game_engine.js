@@ -496,7 +496,7 @@ Paca.playSound = function(source, volume) {
     var source = this.audio.createBufferSource();
     source.buffer = soundBuffer;
     if(volume) {
-        var gainNode = this.audio.createGain() || this.audio.createGainNode;
+        var gainNode = this.audio.createGain() || this.audio.createGainNode();
         source.connect(gainNode);
         gainNode.connect(this.audio.destination);
         gainNode.gain.value = volume;
