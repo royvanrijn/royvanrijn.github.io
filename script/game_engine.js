@@ -502,7 +502,6 @@ Paca.playSound = function(source, volume) {
     } else {
         source.connect(this.audio.destination);
     }
-    console.log(source)
     if(source.start) {
         source.start(0);
     } else if(source.noteOn) {

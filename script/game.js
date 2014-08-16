@@ -50,7 +50,7 @@ function myGame() {
             npc.walkTo({x:100,y:210});
         });
         Paca.changeScene(yardScene);
-        Paca.playSound("sounds/slap.mp3", 1.0);
+        Paca.playSound("sounds/slap.mp3");
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
