@@ -492,7 +492,6 @@ Paca.Sprite = function(imageIn, segments) {
 Paca.playSound = function(source, volume) {
     var soundBuffer = this.soundBuffers[source];
     if(!soundBuffer) return;
-    console.log(this.audio)
     var source = this.audio.createBufferSource();
     source.buffer = soundBuffer;
     if(volume) {
@@ -503,10 +502,11 @@ Paca.playSound = function(source, volume) {
     } else {
         source.connect(this.audio.destination);
     }
-    if(source.noteOn) {
-        source.noteOn(0);
-    } else if(source.start) {
+    console.log(source)
+    if(source.start) {
         source.start(0);
+    } else if(source.noteOn) {
+        source.noteOn(0);
     }
 }
 
