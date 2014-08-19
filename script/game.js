@@ -111,14 +111,13 @@ window.onload = function () {
         myGame()
     );
     Paca.DEBUG = false;
+};
 
-
-    // Scroll to hide iPhone/iPad browser addressbar:
-    var goFull = function (){
-        if (screenfull.enabled) {
-            screenfull.request();
-        }
-    };
+// Scroll to hide iPhone/iPad browser addressbar:
+var goFull = function (){
+    if (screenfull.enabled) {
+        screenfull.request();
+    }
 };
 
 window.onerror = function (message, fileURL, lineNumber) {
