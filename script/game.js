@@ -39,6 +39,8 @@ function myGame() {
     var welcomeLayer = Paca.createLayer();
     var splashScreen = Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 210});
     splashScreen.click = function() {
+        //Should go on first click:
+        goFull();
         Paca.changeScene(houseScene);
         Paca.addText({name:"Roy", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
     }
@@ -88,7 +90,7 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create({width:480,  height:320}, gameCanvas, gameArea);
+    Paca.create({width:1280,  height:720}, gameCanvas, gameArea);
 
     Paca.initialize(
         [
@@ -117,10 +119,6 @@ window.onload = function () {
             screenfull.request();
         }
     };
-
-    //TODO: Make start screen with enable full screen option?
-    //TODO: The function below only works properly in Chrome when called from a user action (lick clikc/touch)
-    goFull();
 };
 
 window.onerror = function (message, fileURL, lineNumber) {

@@ -117,12 +117,12 @@ Paca.draw = function() {
         //Draw the current scene and everything in it:
         Paca.currentScene.draw();
 
+        Paca.dialog.draw();
+
         //Instant drawing (no partial updates)
         var gCtx = Paca.gameCanvas.getContext("2d");
         gCtx.clearRect(0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
         gCtx.drawImage(Paca.drawCanvas, 0, 0, Paca.GAME_WIDTH, Paca.GAME_HEIGHT, 0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
-
-        Paca.dialog.draw(gCtx);
 
     }
 }
@@ -681,7 +681,7 @@ Paca.Dialog = function() {
         this.dialogQueue.push(dialogLine);
     }
 
-    this.draw = function(ctx) {
+    this.draw = function() {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
             this.dialogQueue.shift();
             this.dialogTimeout = null;
@@ -698,23 +698,23 @@ Paca.Dialog = function() {
         if(dialogLine) {
 
             //Background box:
-            ctx.lineWidth = 2;
-            ctx.fillStyle = "rgba(100,0,0,0.3)";
-            ctx.strokeStyle = "rgb(255,255,255)";
-            ctx.font="20px Lucida Console, Monaco, monospace";
+            Paca.drawContext.lineWidth = 2;
+            Paca.drawContext.fillStyle = "rgba(100,0,0,0.3)";
+            Paca.drawContext.strokeStyle = "rgb(255,255,255)";
+            Paca.drawContext.font="20px Lucida Console, Monaco, monospace";
 
             if(dialogLine.name) {
-                roundRect(ctx, 20, gameCanvas.height - 148, 120, 45, 10, true, false)
+                roundRect(Paca.drawContext, 20, Paca.GAME_HEIGHT - 148, 120, 45, 10, true, false)
             }
-            roundRect(ctx, 20, gameCanvas.height - 90, gameCanvas.width - 40, 65, 10, true, false)
+            roundRect(Paca.drawContext, 20, Paca.GAME_HEIGHT - 90, Paca.GAME_WIDTH - 40, 65, 10, true, false)
 
             if(dialogLine.color) {
-                ctx.fillStyle = dialogLine.color;
+                Paca.drawContext.fillStyle = dialogLine.color;
             }
             if(dialogLine.name) {
-                ctx.fillText(dialogLine.name + ':', 40, gameCanvas.height - 120);
+                Paca.drawContext.fillText(dialogLine.name + ':', 40, Paca.GAME_HEIGHT - 120);
             }
-            ctx.fillText(dialogLine.text, 50, gameCanvas.height - 50);
+            Paca.drawContext.fillText(dialogLine.text, 50, Paca.GAME_HEIGHT - 50);
         }
     }
 }
