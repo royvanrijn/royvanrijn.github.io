@@ -42,7 +42,7 @@ function myGame() {
         //Should go on first click:
         //goFull();
         Paca.changeScene(houseScene);
-        Paca.addText({name:"Roy", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Some other dude", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
     }
     welcomeLayer.addObject(splashScreen);
 
@@ -62,7 +62,7 @@ function myGame() {
         });
         Paca.playSound("sounds/slap.mp3", 1);
         Paca.changeScene(yardScene);
-        Paca.addText({name:"Roy", text:"Thanks for finding my shirt!", color:"rgb(255,100,100)"}, true);
+        Paca.addText({name:"Roy", text:"Thanks for finding my shirt!", color:"rgb(255,200,200)"}, true);
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));

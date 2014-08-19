@@ -701,20 +701,20 @@ Paca.Dialog = function() {
             Paca.drawContext.lineWidth = 1;
             Paca.drawContext.fillStyle = "rgba(100,0,0,0.3)";
             Paca.drawContext.strokeStyle = "rgb(255,255,255)";
-            Paca.drawContext.font="10px Lucida Console, Monaco, monospace";
+            Paca.drawContext.font="12px Lucida Console, Monaco, monospace";
 
             if(dialogLine.name) {
-                roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 53, 60, 20, 8, true, true)
+                roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 56, Paca.drawContext.measureText(dialogLine.name).width + 20, 20, 8, true, true)
             }
-            roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 30, Paca.GAME_WIDTH - 40, 25, 8, true, true)
+            roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 30, Paca.GAME_WIDTH - 20, 25, 8, true, true)
 
             if(dialogLine.color) {
                 Paca.drawContext.fillStyle = dialogLine.color;
             }
             if(dialogLine.name) {
-                Paca.drawContext.fillText(dialogLine.name + ':', 20, Paca.GAME_HEIGHT - 40);
+                Paca.drawContext.fillText(dialogLine.name, 20, Paca.GAME_HEIGHT - 42);
             }
-            Paca.drawContext.fillText(dialogLine.text, 25, Paca.GAME_HEIGHT - 14);
+            Paca.drawContext.fillText(dialogLine.text, 20, Paca.GAME_HEIGHT - 14);
         }
     }
 }
