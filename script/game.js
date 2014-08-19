@@ -40,7 +40,7 @@ function myGame() {
     var splashScreen = Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 210});
     splashScreen.click = function() {
         Paca.changeScene(houseScene);
-        Paca.addText({text:"Roy: I seem to have lost my shirt...", color:"rgb(205,200,200)"});
+        Paca.addText({name:"Roy", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
     }
     welcomeLayer.addObject(splashScreen);
 
@@ -60,7 +60,7 @@ function myGame() {
         });
         Paca.playSound("sounds/slap.mp3", 1);
         Paca.changeScene(yardScene);
-        Paca.addText({text:"Roy: Thanks for finding my shirt!", color:"rgb(205,100,100)"}, true);
+        Paca.addText({name:"Roy", text:"Thanks for finding my shirt!", color:"rgb(255,100,100)"}, true);
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
@@ -88,7 +88,7 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create({width:1136,  height:640}, gameCanvas, gameArea);
+    Paca.create({width:480,  height:320}, gameCanvas, gameArea);
 
     Paca.initialize(
         [
@@ -108,7 +108,7 @@ window.onload = function () {
         ],
         myGame()
     );
-    Paca.DEBUG = true;
+    Paca.DEBUG = false;
 
 
     // Scroll to hide iPhone/iPad browser addressbar:
@@ -121,9 +121,6 @@ window.onload = function () {
     //TODO: Make start screen with enable full screen option?
     //TODO: The function below only works properly in Chrome when called from a user action (lick clikc/touch)
     goFull();
-
-
-
 };
 
 window.onerror = function (message, fileURL, lineNumber) {

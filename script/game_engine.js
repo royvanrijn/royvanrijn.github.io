@@ -114,16 +114,16 @@ Paca.draw = function() {
 
         Paca.drawContext.clearRect(0, 0, Paca.GAME_WIDTH, Paca.GAME_HEIGHT);
 
-
         //Draw the current scene and everything in it:
         Paca.currentScene.draw();
-
-        Paca.dialog.draw();
 
         //Instant drawing (no partial updates)
         var gCtx = Paca.gameCanvas.getContext("2d");
         gCtx.clearRect(0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
         gCtx.drawImage(Paca.drawCanvas, 0, 0, Paca.GAME_WIDTH, Paca.GAME_HEIGHT, 0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
+
+        Paca.dialog.draw(gCtx);
+
     }
 }
 
@@ -603,6 +603,7 @@ Paca.NavMesh = function() {
                     Paca.drawContext.strokeStyle = '#00FFF0';
                     Paca.drawContext.stroke();
                 }
+                Paca.drawContext.lineWidth = 1;
                 Paca.drawContext.globalAlpha = 1.0;
            }
     };
@@ -680,7 +681,7 @@ Paca.Dialog = function() {
         this.dialogQueue.push(dialogLine);
     }
 
-    this.draw = function() {
+    this.draw = function(ctx) {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
             this.dialogQueue.shift();
             this.dialogTimeout = null;
@@ -696,13 +697,68 @@ Paca.Dialog = function() {
         var dialogLine = this.dialogQueue[0];
         if(dialogLine) {
 
-            if(dialogLine.color) {
-                Paca.drawContext.fillStyle = dialogLine.color;
+            //Background box:
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "rgba(100,0,0,0.3)";
+            ctx.strokeStyle = "rgb(255,255,255)";
+            ctx.font="20px Lucida Console, Monaco, monospace";
+
+            if(dialogLine.name) {
+                roundRect(ctx, 20, gameCanvas.height - 148, 120, 45, 10, true, false)
             }
-            Paca.drawContext.font="25px Lucida Console, Monaco, monospace";
-            Paca.drawContext.fillText(dialogLine.text, 30, Paca.GAME_HEIGHT - 35);
+            roundRect(ctx, 20, gameCanvas.height - 90, gameCanvas.width - 40, 65, 10, true, false)
+
+            if(dialogLine.color) {
+                ctx.fillStyle = dialogLine.color;
+            }
+            if(dialogLine.name) {
+                ctx.fillText(dialogLine.name + ':', 40, gameCanvas.height - 120);
+            }
+            ctx.fillText(dialogLine.text, 50, gameCanvas.height - 50);
         }
     }
+}
+
+/**
+ * Draws a rounded rectangle using the current state of the canvas. 
+ * If you omit the last three params, it will draw a rectangle 
+ * outline with a 5 pixel border radius 
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Number} x The top left x coordinate
+ * @param {Number} y The top left y coordinate 
+ * @param {Number} width The width of the rectangle 
+ * @param {Number} height The height of the rectangle
+ * @param {Number} radius The corner radius. Defaults to 5;
+ * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
+ * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
+ */
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+    if (typeof fill == "undefined" ) {
+        fill = true;
+    }
+    if (typeof stroke == "undefined" ) {
+        stroke = true;
+    }
+    if (typeof radius === "undefined") {
+        radius = 5;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    if (stroke) {
+        ctx.stroke();
+    }
+    if (fill) {
+        ctx.fill();
+    }        
 }
 
 
