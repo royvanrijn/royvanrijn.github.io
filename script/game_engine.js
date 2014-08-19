@@ -701,7 +701,7 @@ Paca.Dialog = function() {
             Paca.drawContext.lineWidth = 2;
             Paca.drawContext.fillStyle = "rgba(100,0,0,0.3)";
             Paca.drawContext.strokeStyle = "rgb(255,255,255)";
-            Paca.drawContext.font="20px Lucida Console, Monaco, monospace";
+            Paca.drawContext.font="10px Lucida Console, Monaco, monospace";
 
             if(dialogLine.name) {
                 roundRect(Paca.drawContext, 20, Paca.GAME_HEIGHT - 148, 120, 45, 10, true, false)

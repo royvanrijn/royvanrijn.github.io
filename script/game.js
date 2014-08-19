@@ -90,7 +90,7 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create({width:1280,  height:720}, gameCanvas, gameArea);
+    Paca.create({width:800,  height:600}, gameCanvas, gameArea);
 
     Paca.initialize(
         [
