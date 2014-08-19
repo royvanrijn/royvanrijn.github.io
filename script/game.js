@@ -40,7 +40,7 @@ function myGame() {
     var splashScreen = Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 210});
     splashScreen.click = function() {
         //Should go on first click:
-        goFull();
+        //goFull();
         Paca.changeScene(houseScene);
         Paca.addText({name:"Roy", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
     }
@@ -90,7 +90,7 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create({width:800,  height:600}, gameCanvas, gameArea);
+    Paca.create({width:480,  height:320}, gameCanvas, gameArea);
 
     Paca.initialize(
         [
