@@ -42,7 +42,11 @@ function myGame() {
         //Should go on first click:
         //goFull();
         Paca.changeScene(houseScene);
-        Paca.addText({name:"Some other dude", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Shirtless guy", text:"I seem to have lost my shirt...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Shirtless guy", text:"Can you find it for me?", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Shirtless guy", text:"Please!??", color:"rgb(255,255,255)"});
+
+        Paca.playBackground("sounds/slap.mp3", 0.2);
     }
     welcomeLayer.addObject(splashScreen);
 
@@ -58,11 +62,16 @@ function myGame() {
         }));
         player.setLocation({x:400,y:210});
         npc.walkTo({x:400,y:210}, function() {
-            npc.walkTo({x:100,y:210});
+            npc.walkTo({x:100,y:210}, function() {
+                console.log('got here!');
+                Paca.addText({name:"NPC #1", text:"Come here!", color:"rgb(255,200,200)"}, true);
+            });
         });
         Paca.playSound("sounds/slap.mp3", 1);
         Paca.changeScene(yardScene);
         Paca.addText({name:"Roy", text:"Thanks for finding my shirt!", color:"rgb(255,200,200)"}, true);
+                Paca.playBackground("sounds/background.mp3", 0.5);
+
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
@@ -106,7 +115,8 @@ window.onload = function () {
         [
             "sounds/void.wav",
             "sounds/typewriter.mp3",
-            "sounds/slap.mp3"
+            "sounds/slap.mp3",
+            "sounds/background.mp3"
         ],
         myGame()
     );

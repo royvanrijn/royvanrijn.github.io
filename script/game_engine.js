@@ -28,9 +28,9 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea) {
         return new (window.AudioContext || window.webkitAudioContext)();
     })();
 
-    document.addEventListener("touchstart", Paca.touchStart);
-    document.addEventListener("mousedown", Paca.mouseClick);
-    document.addEventListener("mousemove", Paca.mouseMove);
+    gameCanvas.addEventListener("touchstart", Paca.touchStart);
+    gameCanvas.addEventListener("mousedown", Paca.mouseClick);
+    gameCanvas.addEventListener("mousemove", Paca.mouseMove);
 
     this.drawCanvas = document.createElement('canvas');
 
@@ -493,6 +493,30 @@ Paca.Sprite = function(imageIn, segments) {
  * -------------------------------------------------------------------------------------------------
  */
 
+Paca.playingBackgroundSound = null;
+
+Paca.playBackground = function(source, volume) {
+    if(Paca.playingBackgroundSound) {
+        Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
+    }
+    var soundBuffer = this.soundBuffers[source];
+    if(!soundBuffer) return;
+    var source = this.audio.createBufferSource();
+    source.buffer = soundBuffer;
+    if(volume) {
+        var gainNode = this.audio.createGain();
+        source.connect(gainNode);
+        gainNode.connect(this.audio.destination);
+        gainNode.gain.value = volume;
+    } else {
+        source.connect(this.audio.destination);
+    }
+    source.loop = true;
+    source[source.start ? 'start' : 'noteOn'](0);
+
+    Paca.playingBackgroundSound = source;
+}
+
 
 Paca.playSound = function(source, volume) {
     var soundBuffer = this.soundBuffers[source];
@@ -699,7 +723,7 @@ Paca.Dialog = function() {
 
             //Background box:
             Paca.drawContext.lineWidth = 1;
-            Paca.drawContext.fillStyle = "rgba(100,0,0,0.3)";
+            Paca.drawContext.fillStyle = "rgba(30,0,100,0.3)";
             Paca.drawContext.strokeStyle = "rgb(255,255,255)";
             Paca.drawContext.font="12px Lucida Console, Monaco, monospace";
 
