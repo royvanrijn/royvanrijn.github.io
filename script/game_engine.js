@@ -12,8 +12,7 @@ var Paca = function() {}
  * -------------------------------------------------------------------------------------------------
  */
 
-Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, soundResources, startingScene) {
-
+Paca.create = function(gameDimensions, gameCanvas, gameArea) {
     this.DEBUG = false;
     this.GAME_WIDTH = gameDimensions.width;
     this.GAME_HEIGHT = gameDimensions.height;
@@ -23,6 +22,7 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, sou
     this.soundBuffers = new Object();
     this.gameCanvas = gameCanvas;
     this.gameArea = gameArea;
+    this.dialog = new Paca.Dialog();
 
     this.audio = (function() {
         return new (window.AudioContext || window.webkitAudioContext)();
@@ -38,9 +38,12 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea, imageResources, sou
     this.drawCanvas.height = Paca.GAME_HEIGHT;
 
     this.drawContext = this.drawCanvas.getContext("2d");
-    
+
     //Do an initial resize:
     resizeGameArea();
+}
+
+Paca.initialize = function(imageResources, soundResources, startingScene) {
 
     //Start loading all the resources (images):
     //NICETOHAVE: Later on, also load sounds here!
@@ -114,6 +117,8 @@ Paca.draw = function() {
 
         //Draw the current scene and everything in it:
         Paca.currentScene.draw();
+
+        Paca.dialog.draw();
 
         //Instant drawing (no partial updates)
         var gCtx = Paca.gameCanvas.getContext("2d");
@@ -338,7 +343,9 @@ Paca.Collectable = function(sprite, drawPoint, walkPoint, callback) {
                 Paca.drawContext.beginPath();
                 Paca.drawContext.lineWidth = 5;
                 Paca.drawContext.strokeStyle = '#FF0000';
-                Paca.drawContext.arc(walkPoint.x, walkPoint.y, 2, 0, 2 * Math.PI);
+                if(walkPoint) {
+                    Paca.drawContext.arc(walkPoint.x, walkPoint.y, 2, 0, 2 * Math.PI);
+                }
                 Paca.drawContext.stroke();
         }
     };
@@ -577,6 +584,9 @@ Paca.NavMesh = function() {
                 Paca.drawContext.fill();
                 Paca.drawContext.globalAlpha = 1.0;
             }
+            if(!navLinks) {
+                return;
+            }
             for(x = 0; x < navLinks.length; x++) {
                 var navlink = navLinks[x];
                 Paca.drawContext.beginPath();
@@ -647,15 +657,60 @@ Paca.extractPoint = function(e) {
 
 /**
  * -------------------------------------------------------------------------------------------------
- * -- Geometry and path finding functions
+ * -- Dialog system
  * -------------------------------------------------------------------------------------------------
  */
 
-var DIRECTION_UP = 0;
-var DIRECTION_RIGHT = 1;
-var DIRECTION_DOWN = 2;
-var DIRECTION_LEFT = 3;
-var DIRECTION_IDLE = 4;
+Paca.addText = function(dialogLine, clear) {
+    if(clear) {
+        Paca.dialog.dialogTimeout = null;
+        while (Paca.dialog.dialogQueue.length > 0) {
+            Paca.dialog.dialogQueue.pop();
+        }
+    }
+    Paca.dialog.addText(dialogLine);
+}
+
+Paca.Dialog = function() {
+
+    this.dialogQueue = [];
+    this.dialogTimeout = null;
+
+    this.addText = function(dialogLine) {
+        this.dialogQueue.push(dialogLine);
+    }
+
+    this.draw = function() {
+        if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
+            this.dialogQueue.shift();
+            this.dialogTimeout = null;
+        }
+        if(this.dialogQueue.length == 0) {
+            return;
+        }
+
+        if(!this.dialogTimeout) {
+            Paca.playSound("sounds/typewriter.mp3");
+            this.dialogTimeout = (new Date().getTime() + 6000);
+        }
+        var dialogLine = this.dialogQueue[0];
+        if(dialogLine) {
+
+            if(dialogLine.color) {
+                Paca.drawContext.fillStyle = dialogLine.color;
+            }
+            Paca.drawContext.font="25px Lucida Console, Monaco, monospace";
+            Paca.drawContext.fillText(dialogLine.text, 30, Paca.GAME_HEIGHT - 35);
+        }
+    }
+}
+
+
+/**
+ * -------------------------------------------------------------------------------------------------
+ * -- Geometry and path finding functions
+ * -------------------------------------------------------------------------------------------------
+ */
 
 function isPointInPolyon(poly, pt) {
     for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
@@ -685,6 +740,12 @@ function norm(a) {
     var length = Math.sqrt(a.x * a.x + a.y * a.y);
     return {x: a.x/length, y: a.y/length};
 }
+
+var DIRECTION_UP = 0;
+var DIRECTION_RIGHT = 1;
+var DIRECTION_DOWN = 2;
+var DIRECTION_LEFT = 3;
+var DIRECTION_IDLE = 4;
 
 var vectorDirectionLeft = norm({x:-1,y:0});
 var vectorDirectionRight = norm({x:1,y:0});

@@ -26,14 +26,23 @@ function myGame() {
     var playerSpriteDown = Paca.createSprite("images/main/walk_down.png", 10);
     var playerSpriteLeft = Paca.createSprite("images/main/walk_left.png", 10);
     var playerSpriteIdle = Paca.createSprite("images/main/idle.png", 1);
-    var player = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 220, y: 130});
 
+    var player = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 220, y: 130});
+    var startScene = Paca.newScene(Paca.createNavigationMesh(), player);
     var houseScene = Paca.newScene(mesh, player);
     var yardScene = Paca.newScene(mesh, player);
 
     var navigationLayer = Paca.createLayer();
     var houseLayer = Paca.createLayer();
     var backLayer = Paca.createLayer();
+
+    var welcomeLayer = Paca.createLayer();
+    var splashScreen = Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 210});
+    splashScreen.click = function() {
+        Paca.changeScene(houseScene);
+        Paca.addText({text:"Roy: I seem to have lost my shirt...", color:"rgb(205,200,200)"});
+    }
+    welcomeLayer.addObject(splashScreen);
 
     var npc = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 320, y: 130});
 
@@ -51,14 +60,16 @@ function myGame() {
         });
         Paca.playSound("sounds/slap.mp3", 1);
         Paca.changeScene(yardScene);
+        Paca.addText({text:"Roy: Thanks for finding my shirt!", color:"rgb(205,100,100)"}, true);
     }));
 
     backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
 
+    startScene.setLayers([welcomeLayer]);
     houseScene.setLayers([navigationLayer, houseLayer, backLayer]);
     yardScene.setLayers([navigationLayer, backLayer]);
 
-    return houseScene;
+    return startScene;
 }
 
 /**
@@ -77,13 +88,9 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create(
-        {
-            width:480, 
-            height:320
-        }, 
-        gameCanvas, 
-        gameArea,
+    Paca.create({width:1136,  height:640}, gameCanvas, gameArea);
+
+    Paca.initialize(
         [
             "houselayer.png",
             "backlayer.png",
@@ -96,6 +103,7 @@ window.onload = function () {
         ],
         [
             "sounds/void.wav",
+            "sounds/typewriter.mp3",
             "sounds/slap.mp3"
         ],
         myGame()
@@ -113,6 +121,8 @@ window.onload = function () {
     //TODO: Make start screen with enable full screen option?
     //TODO: The function below only works properly in Chrome when called from a user action (lick clikc/touch)
     goFull();
+
+
 
 };
 
