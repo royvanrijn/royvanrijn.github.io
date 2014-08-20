@@ -25,7 +25,10 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea) {
     this.dialog = new Paca.Dialog();
 
     this.audio = (function() {
-        return new (window.AudioContext || window.webkitAudioContext)();
+        var ctx = (window.AudioContext || window.webkitAudioContext);
+        if(ctx) {
+            return new ctx;
+        }
     })();
 
     gameCanvas.addEventListener("touchstart", Paca.touchStart);

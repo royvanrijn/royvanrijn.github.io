@@ -9,6 +9,10 @@ Prefetch.prefetchResources = function(imageSources, soundSources, callback, game
 
     game.setCursor("progress");
 
+    if(!game.audio) {
+        soundSources = [];
+    }
+
     var loadData = { loadedResources:0, numResources:imageSources.length + soundSources.length};
 
     for (var i = 0; i < imageSources.length; i++) {
@@ -37,6 +41,7 @@ Prefetch.loadSound = function(source, loadData, callback, game) {
     request.open("GET", source, true);
     request.responseType = "arraybuffer";
     request.onload = function() {
+
         game.audio.decodeAudioData(request.response, function(buffer) {
             game.addSound(source, buffer);
             if (++loadData.loadedResources >= loadData.numResources) {
