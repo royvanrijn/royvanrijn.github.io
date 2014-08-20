@@ -117,13 +117,12 @@ Paca.draw = function() {
         //Draw the current scene and everything in it:
         Paca.currentScene.draw();
 
-        Paca.dialog.draw();
-
         //Instant drawing (no partial updates)
         var gCtx = Paca.gameCanvas.getContext("2d");
         gCtx.clearRect(0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
         gCtx.drawImage(Paca.drawCanvas, 0, 0, Paca.GAME_WIDTH, Paca.GAME_HEIGHT, 0, 0, Paca.gameCanvas.width, Paca.gameCanvas.height);
 
+        Paca.dialog.draw(gCtx);
     }
 }
 
@@ -705,7 +704,7 @@ Paca.Dialog = function() {
         this.dialogQueue.push(dialogLine);
     }
 
-    this.draw = function() {
+    this.draw = function(ctx) {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
             this.dialogQueue.shift();
             this.dialogTimeout = null;
@@ -721,27 +720,56 @@ Paca.Dialog = function() {
         var dialogLine = this.dialogQueue[0];
         if(dialogLine) {
 
+            var backgroundColor = "rgba(11,11,11,0.4)";
+
             //Background box:
-            Paca.drawContext.lineWidth = 1;
-            Paca.drawContext.fillStyle = "rgba(30,0,100,0.3)";
-            Paca.drawContext.strokeStyle = "rgb(255,255,255)";
-            Paca.drawContext.font="12px Lucida Console, Monaco, monospace";
+            ctx.lineWidth = 1;
 
+            ctx.fillStyle = backgroundColor;
+            var fontHeight = Paca.gameCanvas.height/30;
+            ctx.font= fontHeight + "px NameFont, Helvetica, sans serif";
             if(dialogLine.name) {
-                roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 56, Paca.drawContext.measureText(dialogLine.name).width + 20, 20, 8, true, true)
+                var name = dialogLine.name;
+                roundRect(ctx, 2*fontHeight, Paca.gameCanvas.height - (6.8*fontHeight), ctx.measureText(name).width + (2*fontHeight), (2 * fontHeight), 8, true)
+                if(dialogLine.color) {
+                    ctx.fillStyle = dialogLine.color;
+                }
+                ctx.fillText(name, 3*fontHeight, Paca.gameCanvas.height - (5.5*fontHeight));
+                ctx.fillStyle = backgroundColor;
             }
-            roundRect(Paca.drawContext, 10, Paca.GAME_HEIGHT - 30, Paca.GAME_WIDTH - 20, 25, 8, true, true)
 
+            var textFontHeight = Paca.gameCanvas.height/35;
+
+            ctx.font=textFontHeight + "px TextFont, Helvetica, sans serif";
+
+            roundRect(ctx, 2*fontHeight, Paca.gameCanvas.height - (4.5*fontHeight), Paca.gameCanvas.width - (4*fontHeight), (4 * fontHeight), 8, true)
             if(dialogLine.color) {
-                Paca.drawContext.fillStyle = dialogLine.color;
+                ctx.fillStyle = dialogLine.color;
             }
-            if(dialogLine.name) {
-                Paca.drawContext.fillText(dialogLine.name, 20, Paca.GAME_HEIGHT - 42);
-            }
-            Paca.drawContext.fillText(dialogLine.text, 20, Paca.GAME_HEIGHT - 14);
+            wrapText(ctx, dialogLine.text, 3*fontHeight, Paca.gameCanvas.height - (3*fontHeight), Paca.gameCanvas.width - (4*fontHeight), fontHeight*1.2);
         }
     }
 }
+
+      function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        var words = text.split(' ');
+        var line = '';
+
+        for(var n = 0; n < words.length; n++) {
+          var testLine = line + words[n] + ' ';
+          var metrics = context.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            context.fillText(line, x, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          }
+          else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, y);
+      }
 
 /**
  * Draws a rounded rectangle using the current state of the canvas. 
@@ -761,7 +789,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
         fill = true;
     }
     if (typeof stroke == "undefined" ) {
-        stroke = true;
+        stroke = false;
     }
     if (typeof radius === "undefined") {
         radius = 5;
