@@ -9,7 +9,18 @@ Prefetch.prefetchResources = function(imageSources, soundSources, callback, game
 
     game.setCursor("progress");
 
-    if(!game.audio) {
+    var soundPostfix;
+    if(game.audio) {
+        var canPlayOgg = !!game.audio.canPlayType && "" != game.audio.canPlayType('audio/ogg; codecs="vorbis"');
+        var canPlayMp3 = !!game.audio.canPlayType && "" != game.audio.canPlayType('audio/mpeg');
+        if(canPlayOgg) {
+            soundPostfix += '.ogg';
+        } else if(canPlayMp3) {
+            soundPostfix += '.mp3';
+        } else {
+            soundSources = [];
+        }
+    } else {
         soundSources = [];
     }
 
@@ -19,7 +30,7 @@ Prefetch.prefetchResources = function(imageSources, soundSources, callback, game
         Prefetch.loadImage(imageSources[i], loadData, callback, game);
     }
     for (var i = 0; i < soundSources.length; i++) {
-        Prefetch.loadSound(soundSources[i], loadData, callback, game);
+        Prefetch.loadSound(soundSources[i] + soundPostfix, loadData, callback, game);
     }
 };
 
@@ -37,9 +48,12 @@ Prefetch.loadImage = function(source, loadData, callback, game) {
 }
 
 Prefetch.loadSound = function(source, loadData, callback, game) {
+
     var request = new XMLHttpRequest();
     request.open("GET", source, true);
+    request.overrideMimeType('text/plain; charset=x-user-defined');
     request.responseType = "arraybuffer";
+
     request.onload = function() {
 
         game.audio.decodeAudioData(request.response, function(buffer) {

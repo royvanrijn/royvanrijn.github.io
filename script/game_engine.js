@@ -510,6 +510,7 @@ Paca.muted = false;
 
 Paca.toggleMute = function() {
     Paca.muted = !Paca.muted;
+    console.log('toggleMute'+Paca.muted);
     if(Paca.playingBackgroundSound && Paca.playingBackgroundSoundData) {
         if(Paca.muted) {
             Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
@@ -676,16 +677,25 @@ Paca.mouseMove = function(e) {
 
 Paca.init = false;
 Paca.touchStart = function(e) {
+    console.log('touched');
+    if(!Paca.currentScene) {
+        return;
+    }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
     //On first touch, unmute the audio:
     if(!this.init) {
         this.init = true;
-        Paca.playSound("sounds/void.wav", 0);
+        Paca.playSound("sounds/void", 0);
     }
+    e.preventDefault();
 }
 
 Paca.mouseClick = function(e) {
+    console.log('clicked');
+    if(!Paca.currentScene) {
+        return;
+    }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
     Paca.currentScene.click(point);
     e.preventDefault();
@@ -747,7 +757,7 @@ Paca.Dialog = function() {
         }
 
         if(!this.dialogTimeout) {
-            Paca.playSound("sounds/typewriter.mp3", 0.5);
+            Paca.playSound("sounds/typewriter", 0.5);
             this.dialogTimeout = (new Date().getTime() + 6000);
         }
         var dialogLine = this.dialogQueue[0];

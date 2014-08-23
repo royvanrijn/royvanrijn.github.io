@@ -6,7 +6,7 @@ function createStartScene() {
         //Should go on first click:
         //goFull();
         Paca.changeScene("houseScene");
-        Paca.playBackground("music/song1.ogg", 0.5);
+        Paca.playBackground("music/song1", 0.5);
         Paca.addText({name:"Scientist", text:"Sigh...", color:"rgb(255,255,255)"});
         Paca.addText({name:"Scientist", text:"My love... what is your name?", color:"rgb(255,255,255)"});
         Paca.addText({name:"Scientist", text:"How can I reach you?", color:"rgb(255,255,255)"});
@@ -159,12 +159,10 @@ window.onload = function () {
             "images/scene_telescope.png",
         ],
         [
-            "sounds/void.wav",
-            "sounds/typewriter.mp3",
-            "music/song1.ogg",
-            "music/song2.ogg",
-            "sounds/slap.mp3",
-            "sounds/background.mp3"
+            "sounds/void",
+            "sounds/typewriter",
+            "music/song1",
+            "music/song2",
         ],
         createGame()
     );
