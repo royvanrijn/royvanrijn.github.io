@@ -46,7 +46,9 @@ Paca.create = function(gameDimensions, gameCanvas, gameArea) {
     resizeGameArea();
 }
 
-Paca.initialize = function(imageResources, soundResources, startingScene) {
+Paca.initialize = function(imageResources, soundResources, scenes) {
+
+    Paca.scenes = scenes;
 
     //Start loading all the resources (images):
     //NICETOHAVE: Later on, also load sounds here!
@@ -57,7 +59,7 @@ Paca.initialize = function(imageResources, soundResources, startingScene) {
         function () {
 
 
-            Paca.changeScene(startingScene);
+            Paca.changeScene("startScene");
             //Start the loops, render game and logic:
             Paca.startRendering();
             Paca.startLogic();
@@ -129,17 +131,10 @@ Paca.draw = function() {
     }
 }
 
-/**
-
- Objects (extends Drawable) are things that are drawn and clicked
-
- NICETOHAVE: Add cursor support for Objects/Actors
- NICETOHAVE: Add sound (eventually)
-
- */
-
-Paca.changeScene = function(scene) {
-    Paca.currentScene = scene;
+Paca.changeScene = function(sceneName) {
+    Paca.dialog.clear();
+    Paca.currentScene = Paca.scenes[sceneName];
+    Paca.currentScene.activate();
 }
 
 /**
@@ -148,7 +143,7 @@ Paca.changeScene = function(scene) {
  * -------------------------------------------------------------------------------------------------
  */
 
- Paca.newScene = function(mesh, player) {
+ Paca.createScene = function(mesh, player) {
     return new Paca.Scene(mesh, player);
 }
 
@@ -158,6 +153,10 @@ Paca.changeScene = function(scene) {
     this.mesh = meshIn;
 
     var layers = [];
+
+    this.activate = function() {
+        //Override
+    };
 
     this.setLayers = function (newLayers) {
         layers = newLayers;
@@ -169,7 +168,7 @@ Paca.changeScene = function(scene) {
                 return true;
             }
         }
-        if (this.mesh.hover(point)) {
+        if (this.mesh && this.mesh.hover(point)) {
             return true;
         }
     };
@@ -180,7 +179,7 @@ Paca.changeScene = function(scene) {
                 return true;
             }
         }
-        if (this.mesh.click(point)) {
+        if (this.mesh && this.mesh.click(point)) {
             return true;
         }
     };
@@ -195,7 +194,7 @@ Paca.changeScene = function(scene) {
         for (var x = layers.length; x-- > 0;) {
             layers[x].draw();
         }
-        if(Paca.DEBUG) {
+        if(Paca.DEBUG && this.mesh) {
             this.mesh.draw();
         }
     };
@@ -299,17 +298,23 @@ Paca.Drawable = function(sprite, drawPoint) {
  * -------------------------------------------------------------------------------------------------
  */
 
-Paca.createCollectable = function(sprite, drawPoint, walkPoint, callback) {
-    return new Paca.Collectable(sprite, drawPoint, walkPoint, callback);
+ Paca.createClickable = function(sprite, drawPoint, callback) {
+    return new Paca.Clickable(sprite, drawPoint, callback);
 }
 
-Paca.Collectable = function(sprite, drawPoint, walkPoint, callback) {
+Paca.Clickable = function(spriteIn, drawPoint, callback) {
+
+    var sprite = spriteIn;
+
+    this.changeSprite =  function(spriteIn) {
+        sprite = spriteIn;
+    }
 
     this.getLocation = function() {
         return drawPoint;
     };
 
-    function onCollectable(point) {
+    function onClickable(point) {
         var toDraw = sprite.currentImage();
         var clickPolygon = [
             {x: (drawPoint.x-(toDraw.width/2))|0, y: (drawPoint.y-(toDraw.height/2))|0},
@@ -324,12 +329,12 @@ Paca.Collectable = function(sprite, drawPoint, walkPoint, callback) {
     }
 
     this.hover = function (point) {
-        return onCollectable(point);
+        return onClickable(point);
     };
 
     this.click = function (point) {
-        if (onCollectable(point)) {
-            Paca.currentScene.player.walkTo(walkPoint, callback);
+        if(onClickable(point)) {
+            callback(point);
             return true;
         }
     };
@@ -341,16 +346,20 @@ Paca.Collectable = function(sprite, drawPoint, walkPoint, callback) {
     this.draw = function () {
         var toDraw = sprite.currentImage();
         Paca.drawContext.drawImage(toDraw, (drawPoint.x-(toDraw.width/2))|0, (drawPoint.y-(toDraw.height/2))|0);
-        if(Paca.DEBUG) {
-                Paca.drawContext.beginPath();
-                Paca.drawContext.lineWidth = 5;
-                Paca.drawContext.strokeStyle = '#FF0000';
-                if(walkPoint) {
-                    Paca.drawContext.arc(walkPoint.x, walkPoint.y, 2, 0, 2 * Math.PI);
-                }
-                Paca.drawContext.stroke();
-        }
     };
+}
+
+/**
+ * -------------------------------------------------------------------------------------------------
+ * -- A Collectable has a position (x, y) and one or more images which are automatically used/stepped through (sprites)
+ * -- But the Collectable has text/goal/target, can be clicked
+ * -------------------------------------------------------------------------------------------------
+ */
+
+Paca.createCollectable = function(sprite, drawPoint, walkPoint, callback) {
+    return new Paca.Clickable(sprite, drawPoint, function(point) {
+        Paca.currentScene.player.walkTo(walkPoint, callback);
+    });
 }
 
 /**
@@ -369,7 +378,7 @@ Paca.Actor = function(sprites, startLocation) {
     var callback;
     var actorLocation = startLocation;
 
-    var speed = 5;
+    var speed = 7;
 
     var currentSprite = sprites[4];
 
@@ -495,13 +504,28 @@ Paca.Sprite = function(imageIn, segments) {
  * -------------------------------------------------------------------------------------------------
  */
 
+Paca.playingBackgroundSoundData = null;
 Paca.playingBackgroundSound = null;
+Paca.muted = false;
 
-Paca.playBackground = function(source, volume) {
+Paca.toggleMute = function() {
+    Paca.muted = !Paca.muted;
+    if(Paca.playingBackgroundSound && Paca.playingBackgroundSoundData) {
+        if(Paca.muted) {
+            Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
+        } else {
+            Paca.playBackground(Paca.playingBackgroundSoundData.songName, Paca.playingBackgroundSoundData.volume);
+        }
+    }
+}
+
+Paca.playBackground = function(songName, volume) {
+    Paca.playingBackgroundSoundData = {songName:songName, volume:volume};
+    if(Paca.muted) return;
     if(Paca.playingBackgroundSound) {
         Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
     }
-    var soundBuffer = this.soundBuffers[source];
+    var soundBuffer = this.soundBuffers[songName];
     if(!soundBuffer) return;
     var source = this.audio.createBufferSource();
     source.buffer = soundBuffer;
@@ -521,6 +545,7 @@ Paca.playBackground = function(source, volume) {
 
 
 Paca.playSound = function(source, volume) {
+    if(Paca.muted) return;
     var soundBuffer = this.soundBuffers[source];
     if(!soundBuffer) return;
     var source = this.audio.createBufferSource();
@@ -688,12 +713,10 @@ Paca.extractPoint = function(e) {
  * -------------------------------------------------------------------------------------------------
  */
 
+
 Paca.addText = function(dialogLine, clear) {
     if(clear) {
-        Paca.dialog.dialogTimeout = null;
-        while (Paca.dialog.dialogQueue.length > 0) {
-            Paca.dialog.dialogQueue.pop();
-        }
+        Paca.dialog.clear();
     }
     Paca.dialog.addText(dialogLine);
 }
@@ -707,6 +730,13 @@ Paca.Dialog = function() {
         this.dialogQueue.push(dialogLine);
     }
 
+    this.clear = function() {
+        this.dialogTimeout = null;
+        while (this.dialogQueue.length > 0) {
+            this.dialogQueue.pop();
+        }
+    }
+
     this.draw = function(ctx) {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
             this.dialogQueue.shift();
@@ -717,105 +747,43 @@ Paca.Dialog = function() {
         }
 
         if(!this.dialogTimeout) {
-            Paca.playSound("sounds/typewriter.mp3");
+            Paca.playSound("sounds/typewriter.mp3", 0.5);
             this.dialogTimeout = (new Date().getTime() + 6000);
         }
         var dialogLine = this.dialogQueue[0];
         if(dialogLine) {
 
-            var backgroundColor = "rgba(11,11,11,0.4)";
-
-            //Background box:
             ctx.lineWidth = 1;
-
-            ctx.fillStyle = backgroundColor;
-            var fontHeight = Paca.gameCanvas.height/30;
-            ctx.font= fontHeight + "px NameFont, Helvetica, sans serif";
-            if(dialogLine.name) {
-                var name = dialogLine.name;
-                roundRect(ctx, 2*fontHeight, Paca.gameCanvas.height - (6.8*fontHeight), ctx.measureText(name).width + (2*fontHeight), (2 * fontHeight), 8, true)
-                if(dialogLine.color) {
-                    ctx.fillStyle = dialogLine.color;
-                }
-                ctx.fillText(name, 3*fontHeight, Paca.gameCanvas.height - (5.5*fontHeight));
-                ctx.fillStyle = backgroundColor;
-            }
-
-            var textFontHeight = Paca.gameCanvas.height/35;
-
-            ctx.font=textFontHeight + "px TextFont, Helvetica, sans serif";
-
-            roundRect(ctx, 2*fontHeight, Paca.gameCanvas.height - (4.5*fontHeight), Paca.gameCanvas.width - (4*fontHeight), (4 * fontHeight), 8, true)
+            ctx.shadowColor = "rgb(0,0,0)";
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.shadowBlur = 5;
             if(dialogLine.color) {
                 ctx.fillStyle = dialogLine.color;
             }
-            wrapText(ctx, dialogLine.text, 3*fontHeight, Paca.gameCanvas.height - (3*fontHeight), Paca.gameCanvas.width - (4*fontHeight), fontHeight*1.2);
+
+            var fontHeight = Paca.gameCanvas.height/30;
+            ctx.font= fontHeight + "px NameFont, Helvetica, sans serif";
+            if(dialogLine.name) {
+                var name = dialogLine.name+":";
+                ctx.fillText(name, 3*fontHeight, Paca.gameCanvas.height - (5.5*fontHeight));
+            }
+
+            var textFontHeight = Paca.gameCanvas.height/31;
+            ctx.font=textFontHeight + "px TextFont, Helvetica, sans serif";
+            wrapText(ctx, dialogLine.text, 3*fontHeight, Paca.gameCanvas.height - (3.7*fontHeight), fontHeight*1.5);
         }
     }
 }
 
-      function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        var words = text.split(' ');
-        var line = '';
+function wrapText(context, text, x, y, lineHeight) {
+    var lines = text.split('\n');
 
-        for(var n = 0; n < words.length; n++) {
-          var testLine = line + words[n] + ' ';
-          var metrics = context.measureText(testLine);
-          var testWidth = metrics.width;
-          if (testWidth > maxWidth && n > 0) {
-            context.fillText(line, x, y);
-            line = words[n] + ' ';
-            y += lineHeight;
-          }
-          else {
-            line = testLine;
-          }
-        }
-        context.fillText(line, x, y);
-      }
-
-/**
- * Draws a rounded rectangle using the current state of the canvas. 
- * If you omit the last three params, it will draw a rectangle 
- * outline with a 5 pixel border radius 
- * @param {CanvasRenderingContext2D} ctx
- * @param {Number} x The top left x coordinate
- * @param {Number} y The top left y coordinate 
- * @param {Number} width The width of the rectangle 
- * @param {Number} height The height of the rectangle
- * @param {Number} radius The corner radius. Defaults to 5;
- * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
- * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
- */
-function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-    if (typeof fill == "undefined" ) {
-        fill = true;
+    for(var n = 0; n < lines.length; n++) {
+        context.fillText(lines[n], x, y);
+        y += lineHeight;
     }
-    if (typeof stroke == "undefined" ) {
-        stroke = false;
-    }
-    if (typeof radius === "undefined") {
-        radius = 5;
-    }
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    if (stroke) {
-        ctx.stroke();
-    }
-    if (fill) {
-        ctx.fill();
-    }        
 }
-
 
 /**
  * -------------------------------------------------------------------------------------------------

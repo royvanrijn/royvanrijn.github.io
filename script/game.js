@@ -1,7 +1,82 @@
+function createStartScene() {
+    /** Start screen **/
+    var startScene = Paca.createScene();
+    var welcomeLayer = Paca.createLayer();
+    var splashScreen = Paca.createClickable(Paca.createSprite("images/splash_screen.png", 1), {x: 320, y: 240}, function() {
+        //Should go on first click:
+        //goFull();
+        Paca.changeScene("houseScene");
+        Paca.playBackground("music/song1.ogg", 0.5);
+        Paca.addText({name:"Scientist", text:"Sigh...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Scientist", text:"My love... what is your name?", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Scientist", text:"How can I reach you?", color:"rgb(255,255,255)"});
+    });
+    welcomeLayer.addObject(splashScreen);
+    startScene.setLayers([welcomeLayer]);
+    return startScene;
+}
 
-function myGame() {
+function createMenuLayer() {
+    var menuLayer = Paca.createLayer();
+    var soundEnabled = Paca.createSprite("images/sound_enabled.png", 1);
+    var soundDisabled = Paca.createSprite("images/sound_disabled.png", 1);
+    var muteButton = Paca.createClickable(soundEnabled, {x: 20, y: 20}, 
+        function(point) {
+            Paca.toggleMute();
+            if(Paca.muted) {
+                muteButton.changeSprite(soundDisabled);
+            } else {
+                muteButton.changeSprite(soundEnabled);
+            }
+        }
+    );
+    menuLayer.addObject(muteButton);
+    return menuLayer;
+}
 
-    var mesh = Paca.createNavigationMesh()
+function createTelescopeScene(menuLayer) {
+    var telescopeScene = Paca.createScene();
+    var layer = Paca.createLayer();
+    layer.addObject(Paca.createClickable(Paca.createSprite("images/scene_telescope.png", 1), {x: 320, y: 240}, function() {
+        Paca.changeScene("houseScene");
+    }));
+    telescopeScene.setLayers([menuLayer, layer]);
+    telescopeScene.activate = function() {
+        Paca.addText({name:"Scientist", text:"There she is, on another planet...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Scientist", text:"Just a thousand miles apart, but no way to reach her", color:"rgb(255,255,255)"});
+    };
+    return telescopeScene;
+} 
+
+function createHouseScene(menuLayer, player) {
+
+    var houseMesh = Paca.createNavigationMesh()
+                .addPolygon({
+                    mesh:  [{x: 1, y: 335}, {x: 313, y: 244}, {x: 632, y: 477}, {x: 8, y: 477}],
+                    links: []
+                }).setNavLinks([]);
+
+    var houseScene = Paca.createScene(houseMesh, player);
+
+    var navigationLayer = Paca.createLayer();
+    navigationLayer.addObject(player);
+
+    var houseLayer = Paca.createLayer();
+    houseLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
+    houseLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
+        Paca.changeScene("telescopeScene");
+    }));
+
+    var spaceLayer = Paca.createLayer();
+    spaceLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_space.png", 1), {x: 0, y: 0}));
+
+    houseScene.setLayers([menuLayer, navigationLayer, houseLayer, spaceLayer]);
+    return houseScene;
+} 
+
+    /** House scene 1 **/
+    /*
+    var houseMesh = Paca.createNavigationMesh()
                 .addPolygon({
                     mesh:  [{x: 10, y: 110}, {x: 10, y: 35}, {x: 310, y: 35}, {x: 310, y: 80}],
                     links: [0, 3]
@@ -19,68 +94,35 @@ function myGame() {
                     {x: 25, y: 215, n:  [0, 2] },
                     {x: 225, y: 195, n: [1, 3] },
                     {x: 220, y: 75, n:  [0, 2] }
-                ]);
+                ]);*/
 
-    var playerSpriteUp = Paca.createSprite("images/main/walk_up.png", 10);
-    var playerSpriteRight = Paca.createSprite("images/main/walk_right.png", 10);
-    var playerSpriteDown = Paca.createSprite("images/main/walk_down.png", 10);
-    var playerSpriteLeft = Paca.createSprite("images/main/walk_left.png", 10);
-    var playerSpriteIdle = Paca.createSprite("images/main/idle.png", 1);
+function createGame() {
 
-    var player = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 220, y: 130});
-    var startScene = Paca.newScene(Paca.createNavigationMesh(), player);
-    var houseScene = Paca.newScene(mesh, player);
-    var yardScene = Paca.newScene(mesh, player);
+    var playerSpriteUp = Paca.createSprite("images/nerd/walk_up.png", 10);
+    var playerSpriteRight = Paca.createSprite("images/nerd/walk_right.png", 10);
+    var playerSpriteDown = Paca.createSprite("images/nerd/walk_down.png", 10);
+    var playerSpriteLeft = Paca.createSprite("images/nerd/walk_left.png", 10);
+    var playerSpriteIdle = Paca.createSprite("images/nerd/walk_down.png", 10);
+    var playerSpriteIdle = Paca.createSprite("images/nerd/idle.png", 9);
 
-    var navigationLayer = Paca.createLayer();
-    var houseLayer = Paca.createLayer();
-    var backLayer = Paca.createLayer();
+    var player = Paca.createActor([
+            playerSpriteUp, 
+            playerSpriteRight, 
+            playerSpriteDown, 
+            playerSpriteLeft, 
+            playerSpriteIdle
+        ],
+        {x: 270, y: 330}
+    );
 
-    var welcomeLayer = Paca.createLayer();
-    var splashScreen = Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 210});
-    splashScreen.click = function() {
-        //Should go on first click:
-        //goFull();
-        Paca.changeScene(houseScene);
-        Paca.addText({name:"Shirtless guy", text:"I seem to have lost my shirt... Where could it possibly be? I have no idea, please help me!", color:"rgb(255,255,255)"});
-        Paca.addText({name:"Shirtless guy", text:"Can you find it for me?", color:"rgb(255,255,255)"});
-        Paca.addText({name:"Shirtless guy", text:"Please!??", color:"rgb(255,255,255)"});
+    var menuLayer = createMenuLayer();
 
-        Paca.playBackground("sounds/slap.mp3", 0.2);
-    }
-    welcomeLayer.addObject(splashScreen);
+    var gameScenes = new Object();
+    gameScenes['startScene'] = createStartScene();
+    gameScenes['houseScene'] = createHouseScene(menuLayer, player);
+    gameScenes['telescopeScene'] = createTelescopeScene(menuLayer);
 
-    var npc = Paca.createActor([playerSpriteUp, playerSpriteRight, playerSpriteDown, playerSpriteLeft, playerSpriteIdle],{x: 320, y: 130});
-
-    navigationLayer.addObject(player);
-    navigationLayer.addObject(npc)
-    houseLayer.addObject(Paca.createDrawable(Paca.createSprite("houselayer.png", 1), {x: 0, y: 0}));
-
-    houseLayer.addObject(Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 100, y: 110},  {x: 100, y: 98}, function() {
-        backLayer.addObject(Paca.createCollectable(Paca.createSprite("images/shirt.png", 1), {x: 210, y: 110},  {x: 210, y: 128}, function() {
-            //Nothing here yet
-        }));
-        player.setLocation({x:400,y:210});
-        npc.walkTo({x:400,y:210}, function() {
-            npc.walkTo({x:100,y:210}, function() {
-                console.log('got here!');
-                Paca.addText({name:"NPC #1", text:"Come here!", color:"rgb(255,255,255)"}, true);
-            });
-        });
-        Paca.playSound("sounds/slap.mp3", 1);
-        Paca.changeScene(yardScene);
-        Paca.addText({name:"Roy", text:"Thanks for finding my shirt!", color:"rgb(255,0,0)"}, true);
-                Paca.playBackground("sounds/background.mp3", 0.5);
-
-    }));
-
-    backLayer.addObject(Paca.createDrawable(Paca.createSprite("backlayer.png", 1), {x: 0, y: 0}));
-
-    startScene.setLayers([welcomeLayer]);
-    houseScene.setLayers([navigationLayer, houseLayer, backLayer]);
-    yardScene.setLayers([navigationLayer, backLayer]);
-
-    return startScene;
+    return gameScenes;
 }
 
 /**
@@ -99,26 +141,32 @@ window.onload = function () {
         e.preventDefault()
     };
 
-    Paca.create({width:480,  height:320}, gameCanvas, gameArea);
+    Paca.create({width:640,  height:480}, gameCanvas, gameArea);
 
     Paca.initialize(
         [
-            "houselayer.png",
-            "backlayer.png",
-            "images/shirt.png",
-            "images/main/walk_down.png",
-            "images/main/walk_up.png",
-            "images/main/walk_left.png",
-            "images/main/walk_right.png",
-            "images/main/idle.png"
+            "images/splash_screen.png",
+            "images/sound_enabled.png",
+            "images/sound_disabled.png",
+            "images/nerd/walk_down.png",
+            "images/nerd/walk_up.png",
+            "images/nerd/walk_left.png",
+            "images/nerd/walk_right.png",
+            "images/nerd/idle.png",
+            "images/scene_house.png",
+            "images/scene_space.png",
+            "images/item_telescope.png",
+            "images/scene_telescope.png",
         ],
         [
             "sounds/void.wav",
             "sounds/typewriter.mp3",
+            "music/song1.ogg",
+            "music/song2.ogg",
             "sounds/slap.mp3",
             "sounds/background.mp3"
         ],
-        myGame()
+        createGame()
     );
     Paca.DEBUG = false;
 };
