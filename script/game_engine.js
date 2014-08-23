@@ -72,8 +72,8 @@ Paca.addImage = function(uri, image) {
     this.images[uri] = image;
 }
 
-Paca.addSound = function(uri, buffer) {
-    this.soundBuffers[uri] = buffer;
+Paca.addSound = function(name, buffer) {
+    this.soundBuffers[name] = buffer;
 }
 
 
@@ -510,7 +510,6 @@ Paca.muted = false;
 
 Paca.toggleMute = function() {
     Paca.muted = !Paca.muted;
-    console.log('toggleMute'+Paca.muted);
     if(Paca.playingBackgroundSound && Paca.playingBackgroundSoundData) {
         if(Paca.muted) {
             Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
@@ -677,22 +676,20 @@ Paca.mouseMove = function(e) {
 
 Paca.init = false;
 Paca.touchStart = function(e) {
-    console.log('touched');
-    if(!Paca.currentScene) {
-        return;
-    }
-    point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
-    Paca.currentScene.click(point);
     //On first touch, unmute the audio:
     if(!this.init) {
         this.init = true;
         Paca.playSound("sounds/void", 0);
     }
+    if(!Paca.currentScene) {
+        return;
+    }
+    point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
+    Paca.currentScene.click(point);
     e.preventDefault();
 }
 
 Paca.mouseClick = function(e) {
-    console.log('clicked');
     if(!Paca.currentScene) {
         return;
     }
