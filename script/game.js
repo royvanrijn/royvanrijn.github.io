@@ -20,7 +20,7 @@ function createMenuLayer() {
     var menuLayer = Paca.createLayer();
     var soundEnabled = Paca.createSprite("images/sound_enabled.png", 1);
     var soundDisabled = Paca.createSprite("images/sound_disabled.png", 1);
-    var muteButton = Paca.createClickable(soundEnabled, {x: 20, y: 20}, 
+    var muteButton = Paca.createClickable(soundEnabled, {x: 610, y: 420}, 
         function(point) {
             Paca.toggleMute();
             if(Paca.muted) {
@@ -48,6 +48,21 @@ function createTelescopeScene(menuLayer) {
     return telescopeScene;
 } 
 
+function createOutsideScene(menuLayer) {
+    var scene = Paca.createScene();
+
+    var backgroundLayer = Paca.createLayer();
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_outside.png", 1), {x: 0, y: 0}));
+
+    scene.setLayers([menuLayer, backgroundLayer]);
+    scene.activate = function() {
+        Paca.addText({name:"Scientist", text:"It's chilly outside, I need a coat before I leave", color:"rgb(255,255,255)"});
+        Paca.playBackground("music/song2");
+    };
+   
+    return scene;
+} 
+
 function createHouseScene(menuLayer, player) {
 
     var houseMesh = Paca.createNavigationMesh()
@@ -61,16 +76,20 @@ function createHouseScene(menuLayer, player) {
     var navigationLayer = Paca.createLayer();
     navigationLayer.addObject(player);
 
-    var houseLayer = Paca.createLayer();
-    houseLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
-    houseLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
+    var backgroundLayer = Paca.createLayer();
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
         Paca.changeScene("telescopeScene");
+        backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow.png", 1), {x: 537, y: 430}, {x:537, y:430}, function() {
+            Paca.changeScene("outsideScene");
+        }));
+
     }));
 
     var spaceLayer = Paca.createLayer();
     spaceLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_space.png", 1), {x: 0, y: 0}));
 
-    houseScene.setLayers([menuLayer, navigationLayer, houseLayer, spaceLayer]);
+    houseScene.setLayers([menuLayer, navigationLayer, backgroundLayer, spaceLayer]);
     return houseScene;
 } 
 
@@ -121,7 +140,7 @@ function createGame() {
     gameScenes['startScene'] = createStartScene();
     gameScenes['houseScene'] = createHouseScene(menuLayer, player);
     gameScenes['telescopeScene'] = createTelescopeScene(menuLayer);
-
+    gameScenes['outsideScene'] = createOutsideScene(menuLayer);
     return gameScenes;
 }
 
@@ -157,6 +176,8 @@ window.onload = function () {
             "images/scene_space.png",
             "images/item_telescope.png",
             "images/scene_telescope.png",
+            "images/scene_outside.png",
+            "images/item_arrow.png",
         ],
         [
             "sounds/void",
