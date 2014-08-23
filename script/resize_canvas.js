@@ -3,7 +3,7 @@
  */
 function resizeGameArea() {
     var gameArea = document.getElementById('gameArea');
-    var widthToHeight = 3 / 2;
+    var widthToHeight = 4 / 3;
     var newWidth = window.innerWidth;
     var newHeight = window.innerHeight;
     var newWidthToHeight = newWidth / newHeight;

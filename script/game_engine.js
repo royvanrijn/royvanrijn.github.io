@@ -746,6 +746,11 @@ Paca.Dialog = function() {
 
     this.draw = function(ctx) {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
+            //Call the optional callback:
+            var lastShown = this.dialogQueue[0];
+            if(lastShown.callback) {
+                lastShown.callback();
+            }
             this.dialogQueue.shift();
             this.dialogTimeout = null;
         }

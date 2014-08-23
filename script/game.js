@@ -48,49 +48,133 @@ function createTelescopeScene(menuLayer) {
     return telescopeScene;
 } 
 
-function createOutsideScene(menuLayer) {
-    var scene = Paca.createScene();
+function createOutsideScene(menuLayer, player) {
 
-    var backgroundLayer = Paca.createLayer();
-    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_outside.png", 1), {x: 0, y: 0}));
-
-    scene.setLayers([menuLayer, backgroundLayer]);
-    scene.activate = function() {
-        Paca.addText({name:"Scientist", text:"It's chilly outside, I need a coat before I leave", color:"rgb(255,255,255)"});
-        Paca.playBackground("music/song2");
-    };
-   
-    return scene;
-} 
-
-function createHouseScene(menuLayer, player) {
-
-    var houseMesh = Paca.createNavigationMesh()
+    var mesh = Paca.createNavigationMesh()
                 .addPolygon({
-                    mesh:  [{x: 1, y: 335}, {x: 313, y: 244}, {x: 632, y: 477}, {x: 8, y: 477}],
+                    mesh:  [{x: 130, y: 330}, {x: 11, y: 470}, {x: 386, y: 477}, {x: 296, y: 330}],
                     links: []
                 }).setNavLinks([]);
 
-    var houseScene = Paca.createScene(houseMesh, player);
+    var scene = Paca.createScene(mesh, player);
 
     var navigationLayer = Paca.createLayer();
     navigationLayer.addObject(player);
 
     var backgroundLayer = Paca.createLayer();
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_outside.png", 1), {x: 0, y: 0}));
+
+    scene.setLayers([menuLayer, navigationLayer, backgroundLayer]);
+    scene.activate = function() {
+        player.setLocation({x: 205, y: 330});
+        Paca.addText({name:"Scientist", text:"I should just build that d*mn rocket!", color:"rgb(255,255,255)"});
+        Paca.playBackground("music/song2");
+    };
+   
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_townsign.png", 1), {x: 80, y: 340}, {x:129, y:475}, function() {
+        Paca.changeScene("townScene");
+    }));
+
+    return scene;
+} 
+
+function createButcherScene(menuLayer, player) {
+
+    var mesh = Paca.createNavigationMesh()
+                .addPolygon({
+                    mesh:  [{x: 197, y: 191}, {x: 130, y: 297}, {x: 501, y: 474}, {x: 633, y: 189}],
+                    links: [0]
+                })
+                .setNavLinks([]);
+
+    var scene = Paca.createScene(mesh, player);
+
+    var navigationLayer = Paca.createLayer();
+    navigationLayer.addObject(player);
+
+    var backgroundLayer = Paca.createLayer();
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_butcher.png", 1), {x: 0, y: 0}));
+
+    scene.setLayers([menuLayer, navigationLayer, backgroundLayer]);
+    scene.activate = function() {
+        player.setLocation({x: 407, y: 222});
+    };
+    return scene;
+} 
+
+function createTownScene(menuLayer, player) {
+
+    var mesh = Paca.createNavigationMesh()
+                .addPolygon({
+                    mesh:  [{x: 220, y: 342}, {x: 600, y: 325}, {x: 575, y: 370}, {x: 186, y: 380}],
+                    links: [0]
+                })
+                .addPolygon({
+                    mesh:  [{x: 180, y: 376}, {x: 37, y: 475}, {x: 266, y: 477}, {x: 312, y: 375}],
+                    links: [0,1]
+                })
+                .addPolygon({
+                    mesh:  [{x: 255, y: 445}, {x: 254, y: 475}, {x: 593, y: 477}, {x: 593, y: 445}],
+                    links: [1]
+                })
+                .setNavLinks([
+                    {x: 271, y: 373, n:  [1] },
+                    {x: 256, y: 457, n:  [0] }
+                ]);
+
+    var scene = Paca.createScene(mesh, player);
+
+    var navigationLayer = Paca.createLayer();
+    navigationLayer.addObject(player);
+
+    var backgroundLayer = Paca.createLayer();
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_town.png", 1), {x: 0, y: 0}));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 183, y: 316}, {x:213, y:354}, function() {
+        Paca.changeScene("butcherScene");
+    }));
+
+    scene.setLayers([menuLayer, navigationLayer, backgroundLayer]);
+    scene.activate = function() {
+        player.setLocation({x: 550, y: 350});
+    };
+    return scene;
+} 
+
+function createHouseScene(menuLayer, player) {
+
+    var mesh = Paca.createNavigationMesh()
+                .addPolygon({
+                    mesh:  [{x: 1, y: 335}, {x: 313, y: 244}, {x: 632, y: 477}, {x: 8, y: 477}],
+                    links: []
+                }).setNavLinks([]);
+
+    var scene = Paca.createScene(mesh, player);
+
+    var navigationLayer = Paca.createLayer();
+    navigationLayer.addObject(player);
+
+    var canGoOutside = false;
+
+    var backgroundLayer = Paca.createLayer();
     backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
         Paca.changeScene("telescopeScene");
-        backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow.png", 1), {x: 537, y: 430}, {x:537, y:430}, function() {
-            Paca.changeScene("outsideScene");
-        }));
-
+        if(!canGoOutside) {
+            canGoOutside = true;
+            backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow.png", 1), {x: 537, y: 430}, {x:537, y:430}, function() {
+                Paca.changeScene("outsideScene");
+            }));
+        }
     }));
-
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_globe.png", 6), {x: 160, y: 181}, {x:203, y:281}, function() {
+        Paca.addText({name:'Scientist', text:'My plans... I need to get on that rocket!', color:'rgb(255,255,255)'}, true);
+    }));
     var spaceLayer = Paca.createLayer();
     spaceLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_space.png", 1), {x: 0, y: 0}));
 
-    houseScene.setLayers([menuLayer, navigationLayer, backgroundLayer, spaceLayer]);
-    return houseScene;
+    scene.setLayers([menuLayer, navigationLayer, backgroundLayer, spaceLayer]);
+    return scene;
 } 
 
     /** House scene 1 **/
@@ -140,7 +224,14 @@ function createGame() {
     gameScenes['startScene'] = createStartScene();
     gameScenes['houseScene'] = createHouseScene(menuLayer, player);
     gameScenes['telescopeScene'] = createTelescopeScene(menuLayer);
-    gameScenes['outsideScene'] = createOutsideScene(menuLayer);
+    gameScenes['outsideScene'] = createOutsideScene(menuLayer, player);
+    gameScenes['townScene'] = createTownScene(menuLayer, player);
+    gameScenes['butcherScene'] = createButcherScene(menuLayer, player);
+
+    //Override for debug:
+    //Paca.DEBUG = true;//false;
+    //gameScenes['startScene'] = gameScenes['butcherScene'];
+
     return gameScenes;
 }
 
@@ -178,6 +269,11 @@ window.onload = function () {
             "images/scene_telescope.png",
             "images/scene_outside.png",
             "images/item_arrow.png",
+            "images/item_globe.png",
+            "images/item_townsign.png",
+            "images/scene_town.png",
+            "images/scene_butcher.png",
+            "images/item_door.png",
         ],
         [
             "sounds/void",
@@ -187,7 +283,6 @@ window.onload = function () {
         ],
         createGame()
     );
-    Paca.DEBUG = false;
 };
 
 // Scroll to hide iPhone/iPad browser addressbar:
