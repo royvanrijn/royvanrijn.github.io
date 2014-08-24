@@ -450,7 +450,7 @@ function createButcherScene(planLayer, menuLayer, player) {
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_blooddrip.png", 5), {x:173, y:150}, {x:200, y:200}, function() {
         if(!hasBlood) {
             hasBlood = true;
-            Paca.addText({name:"Scientist", text:"Yuk, blood dripped on my shoes", color:"rgb(255,255,255)"}, true);
+            Paca.addText({name:"Scientist", text:"GROSS! Blood has dripped on my shoes", color:"rgb(255,255,255)"}, true);
         } else {
             Paca.addText({name:"Scientist", text:"Gross, I'm not coming near that thing", color:"rgb(255,255,255)"}, true);
         }
