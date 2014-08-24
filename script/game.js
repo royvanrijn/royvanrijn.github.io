@@ -81,7 +81,7 @@ function createStartScene() {
     var welcomeLayer = Paca.createLayer();
     var splashScreen = Paca.createClickable(Paca.createSprite("images/splash_screen.png", 1), {x: 320, y: 240}, function() {
         //Should go on first click:
-        //goFull();
+        goFull();
         Paca.changeScene("houseScene");
         Paca.playBackground("music/song1", 0.5);
     });

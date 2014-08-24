@@ -19,8 +19,6 @@
 * {
    -webkit-tap-highlight-color: rgba(0,0,0,0);
    -webkit-tap-highlight-color: transparent; /* For some Androids */
-
-
 }
 @font-face {
   font-family: "NameFont";
@@ -30,16 +28,31 @@
   font-family: "TextFont";
   src: url("fonts/Minecraftia2.ttf") format("truetype");
 }
+* { margin:0; padding:0; } /* to remove the top and left whitespace */
+html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+canvas { display:block; } /* To remove the scrollbars */
+
    </style>
 </head>
 
-<body style="overflow: hidden">
+<body style="overflow: hidden" bgcolor="#000000">
 
-<div id="gameArea">
-    <canvas id="gameCanvas">
+<div id="gameArea" bgcolor="#000000">
+    <canvas id="gameCanvas" bgcolor="#000000">
         You really badly need to use a different browser.
     </canvas>
 </div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
 
 </body>
 </html>
