@@ -723,9 +723,9 @@ Paca.mouseClick = function(e) {
         return;
     }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
-        if(Paca.DEBUG) {
-            console.log(point);
-        }
+    if(Paca.DEBUG) {
+        console.log(point);
+    }
     Paca.currentScene.click(point);
     e.preventDefault();
     e.stopPropagation();

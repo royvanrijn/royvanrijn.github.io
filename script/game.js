@@ -8,8 +8,11 @@ var hasBlood = false;
 var lionRoared = false;
 var hasHat = false;
 var hasFins = false;
+var hasSalami = false;
 var talkedAboutLions = false;
 var leftAfterLion = false;
+
+var showingPlans = false;
 
 function createEndingScene(player) {
 
@@ -24,7 +27,7 @@ function createEndingScene(player) {
     var backgroundLayer = Paca.createLayer();
     var rocketLayer = Paca.createLayer();
 
-    var rocketSprite = Paca.createSprite("images/rocket.png", 1);
+    var rocketSprite = Paca.createSprite("images/rocket.png", 4);
 
     var rocket = Paca.createActor([
             rocketSprite, 
@@ -60,7 +63,7 @@ function createEndingScene(player) {
             planLayer2.clear();
             Paca.playSound("sounds/explode");
             rocket.walkTo({x:405, y:69}, function() {
-                Paca.addText({name:"Scientist", text:"Oh crap...", color:"rgb(255,255,255)", callback: function () {
+                Paca.addText({name:"Scientist", text:"Oh crap... EPIC!", color:"rgb(255,255,255)", callback: function () {
                     rocketLayer.addObject(Paca.createDrawable(Paca.createSprite("images/theend.png", 1), {x:0, y:0}));
                     Paca.playBackground("music/song1");
                 }});
@@ -81,7 +84,6 @@ function createStartScene() {
         //goFull();
         Paca.changeScene("houseScene");
         Paca.playBackground("music/song1", 0.5);
-        Paca.addText({name:"Scientist", text:"Sigh...", color:"rgb(255,255,255)"});
     });
     welcomeLayer.addObject(splashScreen);
     startScene.setLayers([welcomeLayer]);
@@ -176,9 +178,29 @@ function createMenuLayer(planLayer) {
         }
     );
 
-    var showing = false;
     menuLayer.addObject(Paca.createClickable(Paca.createSprite("images/item_plan.png", 1), {x: 610, y: 380}, function() {
-        if(!showing) {
+        showPlans(menuLayer, planLayer);
+    }));
+    menuLayer.addObject(muteButton);
+    return menuLayer;
+}
+
+function createTelescopeScene(menuLayer) {
+    var telescopeScene = Paca.createScene();
+    var layer = Paca.createLayer();
+    layer.addObject(Paca.createClickable(Paca.createSprite("images/scene_telescope.png", 1), {x: 320, y: 240}, function() {
+        Paca.changeScene("houseScene");
+    }));
+    telescopeScene.setLayers([menuLayer, layer]);
+    telescopeScene.activate = function() {
+        Paca.addText({name:"Scientist", text:"There she is, on another planet...", color:"rgb(255,255,255)"});
+        Paca.addText({name:"Scientist", text:"Just a thousand miles apart, but no way to reach her", color:"rgb(255,255,255)"});
+    };
+    return telescopeScene;
+} 
+
+function showPlans(menuLayer, planLayer) {
+        if(!showingPlans) {
 
             if(hasRocket) {
                 planLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design_silo.png",1), {x:73, y:72}));
@@ -198,29 +220,11 @@ function createMenuLayer(planLayer) {
                 //And remove popup again
                 planLayer.clear();
                 menuLayer.popObject();
-                showing = false;
+                showingPlans = false;
             }));
-            showing = true;
+            showingPlans = true;
         }   
-    }));
-
-    menuLayer.addObject(muteButton);
-    return menuLayer;
-}
-
-function createTelescopeScene(menuLayer) {
-    var telescopeScene = Paca.createScene();
-    var layer = Paca.createLayer();
-    layer.addObject(Paca.createClickable(Paca.createSprite("images/scene_telescope.png", 1), {x: 320, y: 240}, function() {
-        Paca.changeScene("houseScene");
-    }));
-    telescopeScene.setLayers([menuLayer, layer]);
-    telescopeScene.activate = function() {
-        Paca.addText({name:"Scientist", text:"There she is, on another planet...", color:"rgb(255,255,255)"});
-        Paca.addText({name:"Scientist", text:"Just a thousand miles apart, but no way to reach her", color:"rgb(255,255,255)"});
-    };
-    return telescopeScene;
-} 
+    }
 
 function createOutsideScene(planLayer, menuLayer, player) {
 
@@ -246,6 +250,10 @@ function createOutsideScene(planLayer, menuLayer, player) {
             rocketIdea = true;
         }
     };
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_hearts.png", 3), {x: 480, y: 142}, {x:273, y:344}, function() {
+        Paca.addText({name:"Scientist", text:"My love...", color:"rgb(255,255,255)"});
+    }));
 
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 300, y: 180}, {x:207, y:332}, function() {
         player.setLocation({x: 450, y: 390});
@@ -291,6 +299,7 @@ function createRocketScene(planLayer, menuLayer, player) {
             Paca.addText({name:"Scientist", text:"This is the perfect body for my rocket!", color:"rgb(255,255,255)", callback: function() {
                 Paca.playSound("sounds/itemfound");
                 hasRocket = true;
+                showPlans(menuLayer, planLayer);
             }});
         }
     };
@@ -335,8 +344,9 @@ function createCircusScene(planLayer, menuLayer, player) {
             roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_lion_roar.png", 1), {x:380  ,y:190}));
             roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_roar.png", 2), {x:0,y:0}));
             Paca.playSound("sounds/roar");
+            Paca.playSound("sounds/aahh");
             Paca.addText({name:"Wizard", text:"AAAAHHHHHH!!", color:"rgb(255,255,255)", callback: function() {
-               Paca.currentScene.unfreeze();
+                Paca.currentScene.unfreeze();
                 roarLayer.clear();
                 wizardLayer.clear();
                 wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/wizard_scared.png", 1), {x: 545, y: 400}, {x:440, y:400}, function() {
@@ -348,6 +358,7 @@ function createCircusScene(planLayer, menuLayer, player) {
                         hasHat = true;
                         Paca.playSound("sounds/itemfound");
                         Paca.currentScene.unfreeze();
+                        showPlans(menuLayer, planLayer);
                     }}, true);
                 }));
             }});
@@ -391,6 +402,14 @@ function createElectronicsStoreScene(planLayer, menuLayer, player) {
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow_s.png", 1), {x: 240, y: 430}, {x:240, y:450}, function() {
         player.setLocation({x: 417, y: 340});
         Paca.changeScene("townScene");
+    }));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_static_tv.png", 3), {x: 387, y: 116}, {x:387, y:225}, function() {
+        Paca.addText({name:"Scientist", text:"No signal on this TV", color:"rgb(255,255,255)"}, true);
+    }));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_neonbooksign.png", 8), {x: 578, y: 130}, {x:399, y:252}, function() {
+        Paca.addText({name:"Scientist", text:"A broken neon book sign", color:"rgb(255,255,255)"}, true);
     }));
 
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 453, y: 260}, {x:399, y:309}, function() {
@@ -464,6 +483,7 @@ function createButcherScene(planLayer, menuLayer, player) {
             Paca.addText({name:"Butcher", text:"What do you meat?", color:"rgb(255,255,255)"}, true);
             Paca.addText({name:"Scientist", text:"I'd like some salami please!", color:"rgb(255,255,255)", callback: function() {
                 Paca.playSound("sounds/itemfound");
+                hasSalami = true;
                 Paca.changeScene("endingScene");
             }});
         }
@@ -553,6 +573,7 @@ function createTownScene(planLayer, menuLayer, player) {
                     cadillacLayer.clear();
                     cadillacLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_cadillac_finless.png", 1), {x:260, y:365 }));
                     Paca.currentScene.unfreeze();
+                    showPlans(menuLayer, planLayer);
                 });
             }});
         }
@@ -605,7 +626,7 @@ function createHouseScene(planLayer, menuLayer, player) {
 
     var backgroundLayer = Paca.createLayer();
     backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
-    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 5), {x: 300, y: 215}, {x:313, y:250}, function() {
         Paca.changeScene("telescopeScene");
         if(!canGoOutside) {
             canGoOutside = true;
@@ -637,7 +658,8 @@ function createHouseScene(planLayer, menuLayer, player) {
             if(canGoOutside) {
                 Paca.addText({name:'Scientist', text:'The Mythbusters would know how to make a rocket...', color:'rgb(255,255,255)'}, true);
             } else {
-                Paca.addText({name:'Scientist', text:'My plan to build a rocket...', color:'rgb(255,255,255)'}, true);
+                Paca.addText({name:'Scientist', text:'This is my plan to build a rocket...', color:'rgb(255,255,255)'}, true);
+                showPlans(menuLayer, planLayer);
             }
 
         }
@@ -651,14 +673,10 @@ function createHouseScene(planLayer, menuLayer, player) {
     scene.activate = function() {
         if(firstTime) {
             firstTime = false;
-            hintLayer.addObject(Paca.createDrawable(Paca.createSprite("images/getting_started.png", 1), {x: 300, y: 320}));
-
-            Paca.currentScene.freeze();
-            Paca.addText({name:'Scientist', text:'Welcome!', color:'rgb(255,255,255)', callback: function() {
+            hintLayer.addObject(Paca.createClickable(Paca.createSprite("images/getting_started.png", 1), {x: 440, y: 380}, function() {
+                Paca.addText({name:'Scientist', text:'If you get stuck, look at my desk', color:'rgb(255,255,255)'}, true);
                 hintLayer.clear();
-                Paca.currentScene.unfreeze();
-            }}, true);
-            Paca.addText({name:'Scientist', text:'If you get stuck, look at my desk', color:'rgb(255,255,255)'});
+            }));
         }
     }
     return scene;
@@ -701,14 +719,6 @@ function createGame() {
     gameScenes['circusScene'] = createCircusScene(planLayer, menuLayer, player);
     gameScenes['rocketScene'] = createRocketScene(planLayer, menuLayer, player);
     gameScenes['endingScene'] = createEndingScene(player);
-
-    //Override for debug:
-    //Paca.DEBUG = true;
-    /*hasRocket = true;
-    hasFins = true;
-    hasHat = true;
-    knowsSalami = true;*/
-    //gameScenes['startScene'] = gameScenes['electronicsStoreScene'];
 
     return gameScenes;
 }
@@ -787,8 +797,12 @@ window.onload = function () {
             "images/rocket.png",
             "images/theend.png",
             "images/getting_started.png",
+            "images/item_neonbooksign.png",
+            "images/item_static_tv.png",
+            "images/item_hearts.png",
         ],
         [
+            "sounds/aahh",
             "sounds/void",
             "sounds/typewriter",
             "sounds/explode",
