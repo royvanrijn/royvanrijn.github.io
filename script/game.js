@@ -8,6 +8,69 @@ var hasBlood = false;
 var lionRoared = false;
 var hasHat = false;
 var hasFins = false;
+var talkedAboutLions = false;
+var leftAfterLion = false;
+
+function createEndingScene(player) {
+
+    var mesh = Paca.createNavigationMesh()
+                .addPolygon({
+                    mesh:  [{x: 0, y: 480}, {x: 640, y: 480}, {x: 640, y: 0}, {x: 0, y: 0}],
+                    links: []
+                }).setNavLinks([]);
+
+    var scene = Paca.createScene(mesh, player);
+
+    var backgroundLayer = Paca.createLayer();
+    var rocketLayer = Paca.createLayer();
+
+    var rocketSprite = Paca.createSprite("images/rocket.png", 1);
+
+    var rocket = Paca.createActor([
+            rocketSprite, 
+            rocketSprite, 
+            rocketSprite, 
+            rocketSprite, 
+            rocketSprite
+        ],
+        {x: 62, y: 450}
+    );
+    rocketLayer.addObject(rocket);
+
+    var planLayer1 = Paca.createLayer();
+    planLayer1.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design.png",1), {x:0, y:0}));
+
+    var planLayer2 = Paca.createLayer();
+    planLayer2.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design_silo.png",1), {x:73, y:72}));
+    planLayer2.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design_hat.png",1), {x:73, y:72}));
+    planLayer2.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design_fins.png",1), {x:73, y:72}));
+    planLayer2.addObject(Paca.createDrawable(Paca.createSprite("images/item_rocket_design_salami.png",1), {x:73, y:72}));
+
+    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_ending.png", 1), {x: 0, y: 0}));
+
+    scene.setLayers([planLayer2, planLayer1, rocketLayer, backgroundLayer]);
+
+    scene.activate = function() {
+
+        Paca.stopBackground();
+        Paca.addText({name:"Scientist", text:"I've got everything I need!", color:"rgb(255,255,255)"}, true);
+
+        Paca.addText({name:"Scientist", text:"5... 4... 3... 2... 1...", color:"rgb(255,255,255)", callback: function() {
+            planLayer1.clear();
+            planLayer2.clear();
+            Paca.playSound("sounds/explode");
+            rocket.walkTo({x:405, y:69}, function() {
+                Paca.addText({name:"Scientist", text:"Oh crap...", color:"rgb(255,255,255)", callback: function () {
+                    rocketLayer.addObject(Paca.createDrawable(Paca.createSprite("images/theend.png", 1), {x:0, y:0}));
+                    Paca.playBackground("music/song1");
+                }});
+                rocket.walkTo({x:708, y:-110});
+            });
+        }});
+    };
+
+    return scene;
+}
 
 function createStartScene() {
     /** Start screen **/
@@ -19,8 +82,6 @@ function createStartScene() {
         Paca.changeScene("houseScene");
         Paca.playBackground("music/song1", 0.5);
         Paca.addText({name:"Scientist", text:"Sigh...", color:"rgb(255,255,255)"});
-        Paca.addText({name:"Scientist", text:"My love... what is your name?", color:"rgb(255,255,255)"});
-        Paca.addText({name:"Scientist", text:"How can I reach you?", color:"rgb(255,255,255)"});
     });
     welcomeLayer.addObject(splashScreen);
     startScene.setLayers([welcomeLayer]);
@@ -34,11 +95,14 @@ function createMythbustersScene3(menuLayer) {
 
     var bustersLayer = Paca.createLayer();
     bustersLayer.addObject(Paca.createDrawable(Paca.createSprite("images/adam_jamie.png", 1), {x:60, y:40}));
+    bustersLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_salami.png", 1), {x:270, y:190}));
 
     scene.activate = function() {
-        Paca.addText({name:"Mythbusters", text:"...next up, the salami rocket myth...", color:"rgb(255,255,255)", callback: function() {
+        Paca.playSound("sounds/explode");
+        Paca.addText({name:"Mythbusters", text:"Next up, the SALAMI ROCKET myth...", color:"rgb(255,255,255)", callback: function() {
             Paca.changeScene("electronicsStoreScene");
             Paca.addText({name:"Scientist", text:"OF COURSE! Salami is the perfect rocket fuel!", color:"rgb(255,255,255)"});
+            Paca.addText({name:"Scientist", text:"I must get salami!", color:"rgb(255,255,255)"});
             knowsSalami = true;
         }}, true);
     };
@@ -139,6 +203,7 @@ function createMenuLayer(planLayer) {
             showing = true;
         }   
     }));
+
     menuLayer.addObject(muteButton);
     return menuLayer;
 }
@@ -177,10 +242,15 @@ function createOutsideScene(planLayer, menuLayer, player) {
     var rocketIdea = false;
     scene.activate = function() {
         if(!rocketIdea) {
-            Paca.addText({name:"Scientist", text:"I should just build that d*mn rocket!", color:"rgb(255,255,255)"});
+            Paca.addText({name:"Scientist", text:"Please help me build a rocket...", color:"rgb(255,255,255)"});
             rocketIdea = true;
         }
     };
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 300, y: 180}, {x:207, y:332}, function() {
+        player.setLocation({x: 450, y: 390});
+        Paca.changeScene("houseScene");
+    }));
    
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_townsign_west.png", 1), {x: 80, y: 340}, {x:129, y:475}, function() {
         player.setLocation({x: 550, y: 350});
@@ -258,9 +328,8 @@ function createCircusScene(planLayer, menuLayer, player) {
    
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_lion_calm.png", 1), {x: 496, y: 241}, {x:400, y:375}, function() {
         if(!hasBlood) {
-            Paca.addText({name:"Lion tamer", text:"Oh please be carefull, don't bring food here", color:"rgb(255,255,255)"}, true);
-            Paca.addText({name:"Lion tamer", text:"The lion goes crazy when he's hungry", color:"rgb(255,255,255)"});
-            Paca.addText({name:"Lion tamer", text:"He smells fair and blood...", color:"rgb(255,255,255)"});
+            Paca.addText({name:"Lion tamer", text:"Oh please be carefull!", color:"rgb(255,255,255)"}, true);
+            Paca.addText({name:"Lion tamer", text:"This is a bloodthirsty lion\nIf he smells blood he goes crazy!", color:"rgb(255,255,255)"});
         } else if(!lionRoared) {
             Paca.currentScene.freeze();
             roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_lion_roar.png", 1), {x:380  ,y:190}));
@@ -271,12 +340,14 @@ function createCircusScene(planLayer, menuLayer, player) {
                 roarLayer.clear();
                 wizardLayer.clear();
                 wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/wizard_scared.png", 1), {x: 545, y: 400}, {x:440, y:400}, function() {
+                    Paca.currentScene.freeze();
                     Paca.addText({name:"Wizard", text:"I'm afraid!", color:"rgb(255,255,255)", callback:function() {
                         wizardLayer.clear();
                         wizardLayer.addObject(Paca.createDrawable(Paca.createSprite("images/wizard_scared_hatless.png", 1), {x: 465, y: 351}));
                         Paca.addText({name:"Scientist", text:"This hat makes a perfect nose cone!", color:"rgb(255,255,255)"});
                         hasHat = true;
                         Paca.playSound("sounds/itemfound");
+                        Paca.currentScene.unfreeze();
                     }}, true);
                 }));
             }});
@@ -284,6 +355,10 @@ function createCircusScene(planLayer, menuLayer, player) {
         } else {
             Paca.addText({name:"Lion tamer", text:"STAY AWAY!", color:"rgb(255,255,255)"}, true);
         }
+    }));
+
+    wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 127, y: 260}, {x:137, y:374}, function() {
+        Paca.addText({name:"Scientist", text:"I don't want to go to the circus...", color:"rgb(255,255,255)"}, true);
     }));
    
     wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/wizard_standing.png", 1), {x: 520, y: 370}, {x:470, y:460}, function() {
@@ -316,6 +391,14 @@ function createElectronicsStoreScene(planLayer, menuLayer, player) {
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow_s.png", 1), {x: 240, y: 430}, {x:240, y:450}, function() {
         player.setLocation({x: 417, y: 340});
         Paca.changeScene("townScene");
+    }));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 453, y: 260}, {x:399, y:309}, function() {
+        Paca.addText({name:"Scientist", text:"Nobody is here...", color:"rgb(255,255,255)"}, true);
+    }));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 50, y: 209}, {x:133, y:343}, function() {
+        Paca.addText({name:"Scientist", text:"50% off? Great deal!", color:"rgb(255,255,255)"}, true);
     }));
 
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x: 333, y: 180}, {x:333, y:210}, function() {
@@ -356,26 +439,32 @@ function createButcherScene(planLayer, menuLayer, player) {
     var backgroundLayer = Paca.createLayer();
     backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_butcher.png", 1), {x: 0, y: 0}));
 
-    backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_fly.png", 14), {x:113, y:400}));
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_door.png", 1), {x:50, y:180}, {x:164, y:255}, function() {
+            Paca.addText({name:"Butcher", text:"That fly is driving me crazy...", color:"rgb(255,255,255)"}, true);
+    }));
+
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_fly.png", 14), {x:113, y:400}, {x:227, y:333}, function() {
+            Paca.addText({name:"Scientist", text:"A fly... this place is disgusting", color:"rgb(255,255,255)"}, true);
+    }));
 
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_blooddrip.png", 5), {x:173, y:150}, {x:200, y:200}, function() {
         if(!hasBlood) {
             hasBlood = true;
             Paca.addText({name:"Scientist", text:"Yuk, blood dripped on my shoes", color:"rgb(255,255,255)"}, true);
         } else {
-            Paca.addText({name:"Scientist", text:"Grose, I'm not coming near that thing", color:"rgb(255,255,255)"}, true);
+            Paca.addText({name:"Scientist", text:"Gross, I'm not coming near that thing", color:"rgb(255,255,255)"}, true);
         }
     }));
 
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/butcher.png", 1), {x:430, y:120}, {x:430, y:230}, function() {
-        if(!askedForFuel) {
+        if(!knowsSalami) {
             Paca.addText({name:"Butcher", text:"Nice to meat you! Do you want meat?", color:"rgb(255,255,255)"}, true);
             Paca.addText({name:"Scientist", text:"No sorry, I'm building a rocket", color:"rgb(255,255,255)"});
         } else {
             Paca.addText({name:"Butcher", text:"What do you meat?", color:"rgb(255,255,255)"}, true);
             Paca.addText({name:"Scientist", text:"I'd like some salami please!", color:"rgb(255,255,255)", callback: function() {
                 Paca.playSound("sounds/itemfound");
-                console.log("play ending scene?");
+                Paca.changeScene("endingScene");
             }});
         }
     }));
@@ -437,8 +526,6 @@ function createTownScene(planLayer, menuLayer, player) {
         Paca.changeScene("outsideScene");
     }));
 
-    var talkedAboutLions = false;
-    var leftAfterLion = false;
     dudeLayer.addObject(Paca.createCollectable(Paca.createSprite("images/cadillac_dude.png", 1), {x:530, y:411}, {x:456, y:471}, function() {
         if(!lionRoared) {
             Paca.addText({name:'Owner', text:"I've got nothing for ya", color:'rgb(255,255,255)'}, true);
@@ -514,6 +601,8 @@ function createHouseScene(planLayer, menuLayer, player) {
 
     var canGoOutside = false;
 
+    var hintLayer = Paca.createLayer();
+
     var backgroundLayer = Paca.createLayer();
     backgroundLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_house.png", 1), {x: 0, y: 0}));
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_telescope.png", 1), {x: 300, y: 215}, {x:313, y:250}, function() {
@@ -527,12 +616,51 @@ function createHouseScene(planLayer, menuLayer, player) {
         }
     }));
     backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_globe.png", 6), {x: 160, y: 181}, {x:203, y:281}, function() {
-        Paca.addText({name:'Scientist', text:'My plans to build a rocket...', color:'rgb(255,255,255)'}, true);
+        if(hasRocket) {
+            if(!hasHat) {
+                if(hasBlood) {
+                    Paca.addText({name:'Scientist', text:'Maybe the lion knows what to do?', color:'rgb(255,255,255)'}, true);
+                } else {
+                    Paca.addText({name:'Scientist', text:'The butcher might have a clue?', color:'rgb(255,255,255)'}, true);
+                }
+            } else if(!hasFins) {
+                if(!talkedAboutLions) {
+                    Paca.addText({name:'Scientist', text:'The rocket needs fins, where are those?', color:'rgb(255,255,255)'}, true);
+                } else {
+                    Paca.addText({name:'Scientist', text:'I should lie to the cadillac driver', color:'rgb(255,255,255)'}, true);
+                }
+            } else if(!askedForFuel) {
+                Paca.addText({name:'Scientist', text:'The mythbusters always know what to do...', color:'rgb(255,255,255)'}, true);
+            }
+
+        } else {
+            if(canGoOutside) {
+                Paca.addText({name:'Scientist', text:'The Mythbusters would know how to make a rocket...', color:'rgb(255,255,255)'}, true);
+            } else {
+                Paca.addText({name:'Scientist', text:'My plan to build a rocket...', color:'rgb(255,255,255)'}, true);
+            }
+
+        }
     }));
     var spaceLayer = Paca.createLayer();
     spaceLayer.addObject(Paca.createDrawable(Paca.createSprite("images/scene_space.png", 1), {x: 0, y: 0}));
 
-    scene.setLayers([planLayer, menuLayer, navigationLayer, backgroundLayer, spaceLayer]);
+    scene.setLayers([planLayer, menuLayer, hintLayer, navigationLayer, backgroundLayer, spaceLayer]);
+
+    var firstTime = true;
+    scene.activate = function() {
+        if(firstTime) {
+            firstTime = false;
+            hintLayer.addObject(Paca.createDrawable(Paca.createSprite("images/getting_started.png", 1), {x: 300, y: 320}));
+
+            Paca.currentScene.freeze();
+            Paca.addText({name:'Scientist', text:'Welcome!', color:'rgb(255,255,255)', callback: function() {
+                hintLayer.clear();
+                Paca.currentScene.unfreeze();
+            }}, true);
+            Paca.addText({name:'Scientist', text:'If you get stuck, look at my desk', color:'rgb(255,255,255)'});
+        }
+    }
     return scene;
 } 
 
@@ -572,15 +700,15 @@ function createGame() {
     gameScenes['mythbustersScene3'] = createMythbustersScene3(menuLayer);
     gameScenes['circusScene'] = createCircusScene(planLayer, menuLayer, player);
     gameScenes['rocketScene'] = createRocketScene(planLayer, menuLayer, player);
+    gameScenes['endingScene'] = createEndingScene(player);
 
     //Override for debug:
-    /*Paca.DEBUG = true;
-    siloBlownUp = true;
-    hasRocket = true;
-    hasHat = true;
+    //Paca.DEBUG = true;
+    /*hasRocket = true;
     hasFins = true;
-
-    gameScenes['startScene'] = gameScenes['townScene'];*/
+    hasHat = true;
+    knowsSalami = true;*/
+    //gameScenes['startScene'] = gameScenes['electronicsStoreScene'];
 
     return gameScenes;
 }
@@ -654,6 +782,11 @@ window.onload = function () {
             "images/item_rocket_design_hat.png",
             "images/cadillac_dude.png",
             "images/item_cadillac_finless.png",
+            "images/item_salami.png",
+            "images/scene_ending.png",
+            "images/rocket.png",
+            "images/theend.png",
+            "images/getting_started.png",
         ],
         [
             "sounds/void",

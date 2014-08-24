@@ -540,11 +540,19 @@ Paca.toggleMute = function() {
     }
 }
 
+Paca.stopBackground = function() {
+    if(Paca.playingBackgroundSound) {
+        Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
+        Paca.playingBackgroundSound = null;
+    }
+}
+
 Paca.playBackground = function(songName, volume) {
     Paca.playingBackgroundSoundData = {songName:songName, volume:volume};
     if(Paca.muted) return;
     if(Paca.playingBackgroundSound) {
         Paca.playingBackgroundSound[Paca.playingBackgroundSound.stop ? 'stop' : 'noteOff'](0);
+        Paca.playingBackgroundSound = null;
     }
     var soundBuffer = this.soundBuffers[songName];
     if(!soundBuffer) return;
@@ -715,6 +723,9 @@ Paca.mouseClick = function(e) {
         return;
     }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
+        if(Paca.DEBUG) {
+            console.log(point);
+        }
     Paca.currentScene.click(point);
     e.preventDefault();
     e.stopPropagation();
