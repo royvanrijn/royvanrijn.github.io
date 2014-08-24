@@ -704,6 +704,7 @@ Paca.mouseMove = function(e) {
 }
 
 Paca.init = false;
+var lastPoint;
 Paca.touchStart = function(e) {
     //On first touch, unmute the audio:
     if(!this.init) {
@@ -714,8 +715,8 @@ Paca.touchStart = function(e) {
         return;
     }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
+    lastPoint = point;
     Paca.currentScene.click(point);
-    e.preventDefault();
 }
 
 Paca.mouseClick = function(e) {
@@ -723,6 +724,10 @@ Paca.mouseClick = function(e) {
         return;
     }
     point = Paca.translatePointToGameWorld(Paca.extractPoint(e));
+    if(lastPoint && (lastPoint.x == point.x && lastPoint.y == point.y)) {
+        //Ignore
+        return;
+    }
     if(Paca.DEBUG) {
         console.log(point);
     }
