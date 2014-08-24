@@ -10,7 +10,7 @@ var hasHat = false;
 var hasFins = false;
 var hasSalami = false;
 var talkedAboutLions = false;
-var leftAfterLion = false;
+var ownerLeft = false;
 
 var showingPlans = false;
 
@@ -341,28 +341,30 @@ function createCircusScene(planLayer, menuLayer, player) {
             Paca.addText({name:"Lion tamer", text:"This is a bloodthirsty lion\nIf he smells blood he goes crazy!", color:"rgb(255,255,255)"});
         } else if(!lionRoared) {
             Paca.currentScene.freeze();
-            roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_lion_roar.png", 1), {x:380  ,y:190}));
-            roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_roar.png", 2), {x:0,y:0}));
-            Paca.playSound("sounds/roar");
-            Paca.playSound("sounds/aahh");
-            Paca.addText({name:"Wizard", text:"AAAAHHHHHH!!", color:"rgb(255,255,255)", callback: function() {
-                Paca.currentScene.unfreeze();
-                roarLayer.clear();
-                wizardLayer.clear();
-                wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/wizard_scared.png", 1), {x: 545, y: 400}, {x:440, y:400}, function() {
-                    Paca.currentScene.freeze();
-                    Paca.addText({name:"Wizard", text:"I'm afraid!", color:"rgb(255,255,255)", callback:function() {
-                        wizardLayer.clear();
-                        wizardLayer.addObject(Paca.createDrawable(Paca.createSprite("images/wizard_scared_hatless.png", 1), {x: 465, y: 351}));
-                        Paca.addText({name:"Scientist", text:"This hat makes a perfect nose cone!", color:"rgb(255,255,255)"});
-                        hasHat = true;
-                        Paca.playSound("sounds/itemfound");
-                        Paca.currentScene.unfreeze();
-                        showPlans(menuLayer, planLayer);
-                    }}, true);
-                }));
-            }});
-            lionRoared = true;
+            Paca.addText({name:"Lion tamer", text:"Oh no, the lion smells blood!", color:"rgb(255,255,255)", callback: function() {
+                roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_lion_roar.png", 1), {x:380  ,y:190}));
+                roarLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_roar.png", 2), {x:0,y:0}));
+                Paca.playSound("sounds/roar");
+                Paca.playSound("sounds/aahh");
+                Paca.addText({name:"Wizard", text:"AAAAHHHHHH!!", color:"rgb(255,255,255)", callback: function() {
+                    Paca.currentScene.unfreeze();
+                    roarLayer.clear();
+                    wizardLayer.clear();
+                    wizardLayer.addObject(Paca.createCollectable(Paca.createSprite("images/wizard_scared.png", 1), {x: 545, y: 400}, {x:440, y:400}, function() {
+                        Paca.currentScene.freeze();
+                        Paca.addText({name:"Wizard", text:"I'm afraid!", color:"rgb(255,255,255)", callback:function() {
+                            wizardLayer.clear();
+                            wizardLayer.addObject(Paca.createDrawable(Paca.createSprite("images/wizard_scared_hatless.png", 1), {x: 465, y: 351}));
+                            Paca.addText({name:"Scientist", text:"This hat makes a perfect nose cone!", color:"rgb(255,255,255)"});
+                            hasHat = true;
+                            Paca.playSound("sounds/itemfound");
+                            Paca.currentScene.unfreeze();
+                            showPlans(menuLayer, planLayer);
+                        }}, true);
+                    }));
+                }});
+                lionRoared = true;
+            }}, true);
         } else {
             Paca.addText({name:"Lion tamer", text:"STAY AWAY!", color:"rgb(255,255,255)"}, true);
         }
@@ -470,6 +472,7 @@ function createButcherScene(planLayer, menuLayer, player) {
         if(!hasBlood) {
             hasBlood = true;
             Paca.addText({name:"Scientist", text:"GROSS! Blood has dripped on my shoes", color:"rgb(255,255,255)"}, true);
+            Paca.playSound("sounds/itemfound");
         } else {
             Paca.addText({name:"Scientist", text:"Gross, I'm not coming near that thing", color:"rgb(255,255,255)"}, true);
         }
@@ -489,7 +492,7 @@ function createButcherScene(planLayer, menuLayer, player) {
         }
     }));
 
-    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow_ne.png", 1), {x: 590, y: 222}, {x:620, y:195}, function() {
+    backgroundLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_arrow_ne.png", 1), {x: 590, y: 222}, {x:613, y:210}, function() {
         player.setLocation({x: 219, y: 350});
         Paca.changeScene("townScene");
     }));
@@ -552,39 +555,39 @@ function createTownScene(planLayer, menuLayer, player) {
         } else if(!talkedAboutLions) {
             Paca.currentScene.freeze();
             Paca.addText({name:'Owner', text:"Man, I heard a fierce lion roar, did he escape?", color:'rgb(255,255,255)'}, true);
-            Paca.addText({name:'Scientist', text:"No, you're safe!", color:'rgb(255,255,255)', callback: function() {
+            Paca.addText({name:'Scientist', text:"No, you're safe!", color:'rgb(255,255,255)'});
+            Paca.addText({name:'Owner', text:"Phew, now get away from my car!", color:'rgb(255,255,255)', callback: function() {
                 player.walkTo({x:310, y:471}, function() {
                     Paca.currentScene.unfreeze();
-                    Paca.addText({name:'Scientist', text:"Crap, maybe I can scare him away?", color:'rgb(255,255,255)'});
+                    Paca.addText({name:'Scientist', text:"What an idiot... next time I'll...!", color:'rgb(255,255,255)'});
                     talkedAboutLions = true;
                 });
             }});
-        } else if(!leftAfterLion) {
-            Paca.addText({name:'Owner', text:"I'm so glad the lion didn't escape...", color:'rgb(255,255,255)'}, true);
         } else if(!hasFins) {
             Paca.currentScene.freeze();
-            Paca.addText({name:'Scientist', text:"Did you hear that? The lion escaped!", color:'rgb(255,255,255)'}, true);
-            Paca.addText({name:'Owner', text:"NOOOO!!!", color:'rgb(255,255,255)', callback: function() {
+            Paca.playSound("sounds/aahh");
+            Paca.addText({name:'Lying Scientist', text:"Did you hear that? The lion escaped!", color:'rgb(255,255,255)', callback: function() {
                 dudeLayer.clear();
-                player.walkTo({x:310, y:471}, function() {
-                    Paca.addText({name:'Scientist', text:"Time to get those fins!", color:'rgb(255,255,255)'});
-                    hasFins = true;
-                    Paca.playSound("sounds/itemfound");
-                    cadillacLayer.clear();
-                    cadillacLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_cadillac_finless.png", 1), {x:260, y:365 }));
-                    Paca.currentScene.unfreeze();
-                    showPlans(menuLayer, planLayer);
-                });
-            }});
+                ownerLeft = true;
+                Paca.currentScene.unfreeze();
+            }}, true);
         }
     }));
 
-    cadillacLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_cadillac.png", 1), {x:410, y:410}, {x:386, y:471}, function() {
-        if(hasRocket) {
-            Paca.addText({name:'Scientist', text:'Hmm, those fins would look great on my rocket!', color:'rgb(255,255,255)'}, true);
+    cadillacLayer.addObject(Paca.createCollectable(Paca.createSprite("images/item_cadillac.png", 1), {x:430, y:410}, {x:336, y:471}, function() {
+        if(ownerLeft) {
+            hasFins = true;
+            Paca.playSound("sounds/itemfound");
+            cadillacLayer.clear();
+            cadillacLayer.addObject(Paca.createDrawable(Paca.createSprite("images/item_cadillac_finless.png", 1), {x:280, y:365 }));
+            showPlans(menuLayer, planLayer);
         } else {
-            Paca.addText({name:'Scientist', text:'Nice car...', color:'rgb(255,255,255)'}, true);
-            Paca.addText({name:'Owner', text:'Get lost punk...', color:'rgb(255,255,255)'});
+            if(hasRocket) {
+                Paca.addText({name:'Scientist', text:'Hmm, those fins would look great on my rocket!', color:'rgb(255,255,255)'}, true);
+            } else {
+                Paca.addText({name:'Scientist', text:'Nice car...', color:'rgb(255,255,255)'}, true);
+                Paca.addText({name:'Owner', text:'Get lost punk...', color:'rgb(255,255,255)'});
+            }
         }
     }))
 
@@ -597,9 +600,6 @@ function createTownScene(planLayer, menuLayer, player) {
                 player.setLocation({x: 560, y: 400});
                 Paca.changeScene("rocketScene");
             }));
-        }
-        if(talkedAboutLions && !leftAfterLion) {
-            leftAfterLion = true;
         }
     };
 
