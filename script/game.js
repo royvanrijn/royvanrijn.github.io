@@ -672,8 +672,10 @@ function createHouseScene(planLayer, menuLayer, player) {
     var firstTime = true;
     scene.activate = function() {
         if(firstTime) {
+            Paca.addText({text:' ', color:'rgb(255,255,255)'}, true);
             firstTime = false;
-            hintLayer.addObject(Paca.createClickable(Paca.createSprite("images/getting_started.png", 1), {x: 440, y: 380}, function() {
+            hintLayer.addObject(Paca.createClickable(Paca.createSprite("images/getting_started.png", 1), {x: 320, y: 240}, function() {
+                Paca.sou
                 Paca.addText({name:'Scientist', text:'If you get stuck, look at my desk', color:'rgb(255,255,255)'}, true);
                 hintLayer.clear();
             }));
