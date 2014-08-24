@@ -163,7 +163,8 @@ Paca.changeScene = function(sceneName) {
     };
 
     this.hover = function (point) {
-        for (var x = layers.length; x-- > 0;) {
+        if(frozen) return false;
+        for (var x = 0; x < layers.length; x++) {
             if (layers[x].hover(point)) {
                 return true;
             }
@@ -173,8 +174,20 @@ Paca.changeScene = function(sceneName) {
         }
     };
 
+    var frozen = false;
+
+    this.freeze = function() {
+        frozen = true;
+    }
+
+    this.unfreeze = function() {
+        frozen = false;
+    }
+
     this.click = function (point) {
-        for (var x = layers.length; x-- > 0;) {
+        if(frozen) return false;
+        
+        for (var x = 0; x < layers.length; x++) {
             if (layers[x].click(point)) {
                 return true;
             }
@@ -216,6 +229,14 @@ Paca.createLayer = function() {
 Paca.Layer = function() {
 
     var objects = [];
+
+    this.popObject = function() {
+        objects.shift();
+    }
+
+    this.clear = function() {
+        objects = [];
+    }
 
     this.addObject = function (newObject) {
         objects[objects.length] = newObject;
@@ -740,7 +761,10 @@ Paca.Dialog = function() {
     this.clear = function() {
         this.dialogTimeout = null;
         while (this.dialogQueue.length > 0) {
-            this.dialogQueue.pop();
+            var lastShown = this.dialogQueue.pop();
+            if(lastShown.callback) {
+                lastShown.callback();
+            }
         }
     }
 
@@ -748,11 +772,13 @@ Paca.Dialog = function() {
         if(this.dialogTimeout && this.dialogTimeout < new Date().getTime()) {
             //Call the optional callback:
             var lastShown = this.dialogQueue[0];
+            this.dialogQueue.shift();
+            this.dialogTimeout = null;
+
+            //Finally do callback
             if(lastShown.callback) {
                 lastShown.callback();
             }
-            this.dialogQueue.shift();
-            this.dialogTimeout = null;
         }
         if(this.dialogQueue.length == 0) {
             return;
@@ -760,7 +786,7 @@ Paca.Dialog = function() {
 
         if(!this.dialogTimeout) {
             Paca.playSound("sounds/typewriter", 0.5);
-            this.dialogTimeout = (new Date().getTime() + 6000);
+            this.dialogTimeout = (new Date().getTime() + 4000);
         }
         var dialogLine = this.dialogQueue[0];
         if(dialogLine) {
