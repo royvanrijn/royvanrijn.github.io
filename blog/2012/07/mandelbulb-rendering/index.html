@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Mandelbulb rendering</title>
+  <meta name="description" content="Last friday a friend of mine was talking about ray marching, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do th...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/07/mandelbulb-rendering/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/06/rotoscoping-in-prince-of-persia/" title="Previous Post: Rotoscoping in Prince of Persia">&laquo; Rotoscoping in Prince of Persia</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/07/introducing-mandelbulb-js/" title="next Post: Introducing: mandelbulb.js">Introducing: mandelbulb.js &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Mandelbulb rendering</h1>
+    <p class="post-meta">
+    	Jul 12, 2012 16:16:08
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same... So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I'm pretty pleased with the first results!</p>
+<h1>My first 3d engine (tm)</h1>
+<p>On sunday I had the first things ready, lighting (Blinn-Phong), soft shadows, but still I had no perspective build on (all rays travelled in the same direction) and I had no way to change the view point/camera position:</p>
+<p><img src="/images/raymarching.png" alt="Simple ray marching example, wrong perspective, two balls and a cube" /></p>
+<p>Next step was to render something other than spheres and cubes, and get the camera position under control, that breakthrough came monday evening:</p>
+<p><a href="http://www.royvanrijn.com/img/mandelbulb1.png"><img src="/images/mandelbulb1.png" alt="First Mandelbulb render, full of programming bugs" width="380" height="285" /></a></p>
+<p>My first mandelbulb! The perspective is still flat and it misses detail, we've also rendered through the camera/near field.<br />
+So I made some more improvements and managed to render a nice wallpaper for myself:</p>
+<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" width="480" height="270" /></a></p>
+<p>Yesterday I've been playing around with optimizing the code a little bit (less memory usage, already twice as fast as it was, but still slow). And I've added some glow and the ability to add 'distance fog'. Also I've recorded my first movie, just to show some moving fractals:</p>
+<p><iframe width="420" height="315" src="http://www.youtube.com/embed/r-sGABWMH2o" frameborder="0" allowfullscreen></iframe><br />
+<small>(yes, it has a glitch with the pink mandelbulb, can't be bothered to fix...)</small></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MD5 quine, fixed point</title>
+  <meta name="description" content="MD5 quinesSometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there b...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/" title="Previous Post: Splitting up Spring Web Flow & Facelets into JARs">&laquo; Splitting up Spring Web Flow & Facelets into JARs</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/01/does-my-car-hate-me/" title="next Post: Does my car hate me?">Does my car hate me? &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">MD5 quine, fixed point</h1>
+    <p class="post-meta">
+    	Jan 5, 2010 16:04:53
+    </p>
+  </header>
+
+  <article class="post-content">
+    <h5>MD5 quines</h5>
+<p>Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?</p>
+<p>Thus: MD5(x) = x</p>
+<p>This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.</p>
+<p><!--more--></p>
+<h5>Information I've found</h5>
+<p>So I started investigating, soon I discovered <a href="http://www.mscs.dal.ca/~selinger/md5collision/">this</a> website about collisions. Its well known that all hashing algorithms must have collisions, you can't always produce a unique hash for input larger then the output of course.</p>
+<p>The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn't really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn't a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.</p>
+<p>So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).</p>
+<p>Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.</p>
+<p>But, of course, there is no randomness involved here - there either is a fixed point or there isn't. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).</p>
+<h5>Looking for the fixed point</h5>
+<p>I've just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)</p>
+<p>The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:</p>
+<p>1. Go into a loop<br />
+2. Find a fixed point (which is a loop of size 1)</p>
+<p>The weird thing is, if it ends up in a loop of size 1... I've found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!</p>
+<h5>Graph</h5>
+<p>Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.</p>
+<h5>Open questions</h5>
+<ul>
+<li>Are there loops? (It is possible there aren't any loops at all...?)</li>
+<li>Are there loops of size 1, a.k.a. fixed points?</li>
+<li>Which/how many 128 bit combinations can't be created with the input values?</li>
+<li>Which/how many collisions will you get with all the input values?</li>
+</ul>
+<p>More thoughts, errors, solutions..?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

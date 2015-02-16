@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>The Java 9 'Kulla' REPL</title>
+  <meta name="description" content="Maybe it'll be part of JDK 9, maybe it won't... but people are working hard on creating a REPL tool/environment for the Java Development Kit (JDK). More info...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/11/kill-all-mutants/" title="Previous Post: Kill all mutants">&laquo; Kill all mutants</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/12/devoxx-be-2014-aftermovie/" title="next Post: Devoxx BE 2014: Aftermovie">Devoxx BE 2014: Aftermovie &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">The Java 9 'Kulla' REPL</h1>
+    <p class="post-meta">
+    	Nov 27, 2014 12:09:20
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Maybe it'll be part of JDK 9, maybe it won't... but people are working hard on creating a REPL tool/environment for the Java Development Kit (JDK). More information on the code and the project is available as part of OpenJDK: <a href="http://openjdk.java.net/projects/kulla/">project Kulla</a>.</p>
+<p>Some of you might not be familiar with the terminology 'REPL', it is short for <span style="text-decoration: underline;">R</span>ead <span style="text-decoration: underline;">E</span>valuate <span style="text-decoration: underline;">P</span>rint <span style="text-decoration: underline;">L</span>oop. It is hard to explain exactly what it does, but very easy to demonstrate:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="n">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Java</span> <span class="n">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="n">Version</span> <span class="mf">0.23</span>
+<span class="o">|</span>  <span class="n">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
+
+<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+<span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
+
+<span class="o">-&gt;</span></code></pre></div>
+
+<p>The idea is that you have a place you can enter Java and run it, without main method, class structure. You can build instances, and alter them while you type. For example you'll able to do Swing development while you type:</p>
+<pre class="brush:plain">-&gt; import javax.swing.*;
+-&gt; JFrame frame = new JFrame();
+-&gt; frame.setVisible(true);
+</pre>
+<p>Now we have a visible frame, you can drag it around, resize it etc.</p>
+<pre class="brush:plain">
+-&gt; JPanel panel = new JPanel();
+-&gt; frame.add(panel);
+-&gt; JButton button = new JButton();
+-&gt; panel.add(button);
+</pre>
+<p>Suddenly our frame has a panel, and the panel has an empty button! You can prototype, do live coding and you have instant feedback.</p>
+<pre class="brush:plain">-&gt; button.setText("Push me!");
+</pre>
+<p>Now the button has text, but pressing it still does nothing...</p>
+<p><a href="/images/Screen-Shot-2014-11-27-at-11.55.08.png"><img class="aligncenter  wp-image-1874" src="/images/Screen-Shot-2014-11-27-at-11.55.08-300x159.png" alt="Push me!" width="300" height="159" /></a></p>
+<pre class="brush:plain">
+-&gt; button.addActionListener(e -&gt; System.out.println("Hello World!"));
+-&gt; 
+Hello World!
+Hello World!
+Hello World!
+
+</pre>
+<p>And there we go, a final simple lambda creates a working "Hello World!"-button.</p>
+<p>It is also possible to load a repl script from file, allowing you to share, store and run scripts. This is done using the '/load' and '/save' commands. You can even '/dump' all the created classes in a directory.</p>
+<p>I'm very curious how people will be using the REPL in the future, some use cases:</p>
+<ul>
+<li>(GUI) Prototyping</li>
+<li>Live music (like <a href="http://overtone.github.io/">overtone</a>)</li>
+<li>Coding at conferences</li>
+<li>Scripting</li>
+<li><a href="http://codegolf.stackexchange.com/">Code golf!</a></li>
+</ul>
+<p>If you want to try out Kulla, it took me literally 20 minutes to get up and running on my MacBook. Just follow the instructions on <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK</a>, but instead use <a href="http://hg.openjdk.java.net/kulla/dev/">http://hg.openjdk.java.net/kulla/dev/</a> as codebase. After building the JDK, go to ./langtools/repl and look at the README.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

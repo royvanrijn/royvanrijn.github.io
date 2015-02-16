@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Reading iPhone GPS data from backup (with Java)</title>
+  <meta name="description" content="Today I noticed the following post on Slashdot: Apple Logging Locations of All iPhone UsersAnd the article they are referring to can be found hereFirst I was...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/04/static-state-evil-as-well/" title="Previous Post: Static state: Evil as well">&laquo; Static state: Evil as well</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/" title="next Post: iPhone locations on Google Maps with Javascript">iPhone locations on Google Maps with Javascript &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Reading iPhone GPS data from backup (with Java)</h1>
+    <p class="post-meta">
+    	Apr 21, 2011 01:06:24
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>
+Today I noticed the following post on Slashdot: <a href="http://apple.slashdot.org/story/11/04/20/1357248/Apple-Logging-Locations-of-All-iPhone-Users">Apple Logging Locations of All iPhone Users</a></p>
+<p>And the article they are referring to can be found <a href="http://petewarden.github.com/iPhoneTracker/">here</a></p>
+<p>First I was amazed, how can Apple do this? But on second thought, they aren't sending it yet to anybody, it is just something on the phone (and also on the phone's backup). My next reaction was: I want to see my own map! But to my disappointment it only works on Apple Mac's, not Windows/Linux.</p>
+<h3>(Re-)building it in Java</h3>
+<p>Because their code is open source and well explained on the website I decided to make my own version, in Java (cross platform!). Now, just a couple of hours since I read the article, I've got it working and it can be used as a base for extention. So I'd like to share the code!</p>
+<h3>Step 1: Getting the correct file</h3>
+<p>This step was the hardest part, technically. The backup Apple makes doesn't just have all the files as they are on your iPhone. Instead they all have names like: "b4d1c79c2f5fc1da044c18d1066b80b39b575590". They do however store the information in two files: Manifest.mbdb and Manifest.mbdx.</p>
+<p>The MBDB file only contains information about the original files, and the MBDX file contains pointers into the MBDB file with the Hex-filenames used in the backup. So we need to parse both files to be able to connect the original filename to the Hex-filename.</p>
+<p>Luckely somebody already did this in Python and posted it on <a href="http://stackoverflow.com/questions/3085153/how-to-parse-the-manifest-mbdb-file-in-an-ios-4-0-itunes-backup">stackoverflow</a>. I took their idea and translated it into Java code.</p>
+<p>When this was fully translated it could resolve all the filenames. This meant I could map the target file "Library/Caches/locationd/consolidated.db" to the hex-filename "4096c9ec676f2847dc283405900e284a7c815836".</p>
+<h3>Step 2: Reading the SQLLite file</h3>
+<p>The contents of "4096c9ec676f2847dc283405900e284a7c815836" is just a SQLLite file. For this I decided to use SQLJet, a framework that can read(/and write) SQLLite files. Using just a couple of lines of code I had all the data I need: timestamp, latitude, longitude (and more! speed, course, confidence, altitude etc).</p>
+<h3>Step 3: What to do with the geo data?</h3>
+<p>The implementation created by <a href="http://petewarden.github.com/iPhoneTracker/">Pete Warden</a> has a nice map and timeline. But at this time I wanted to have results as fast as possible. That is why chose to just output a <a href="http://nl.wikipedia.org/wiki/Keyhole_Markup_Language">KML</a> file. KML is a file format used by Google Earth and other applications.</p>
+<p>The results are far from nice (just plain ugly) but fun: <a href="https://sites.google.com/site/redcodenl/home/281096076.jpg">click here for a screenshot</a></p>
+<h3>Running the code</h3>
+<p>The above code is mainly created for developers, the resulting JAR can't be executed. But I'm aware people will want to just have the KML file, and not go through the code. That is why I've uploaded an executable JAR. You can get it here: <a href="https://sites.google.com/site/redcodenl/runnableiPhoneJTrack.zip">runnableiPhoneJTrack.zip</a> (813 KB)</p>
+<p>To run the program, extract the three JAR-files and type:</p>
+<pre class="brush:plain">
+Usage:
+java -jar iPhoneJTrack.jar "&lt;location of backup directory&gt;"
+
+For example:
+java -jar iPhoneTracker.jar "C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590"
+</pre>
+<p>This outputs a file named iPhoneData.kml, which can be loaded for example in Google Earth.</p>
+<h3>Playing with the code</h3>
+<p>I've pushed my code onto GitHub: <a href="https://github.com/royvanrijn/iPhoneJTrack">https://github.com/royvanrijn/iPhoneJTrack</a></p>
+<p>Feel free to add features and send me pull requests!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

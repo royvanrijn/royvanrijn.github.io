@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>(Annotated) Field injection vs Constructor injection</title>
+  <meta name="description" content="A couple of people replied to my last article about constructor vs setter injection that they prefer a third option, field injection. This is a slight varian...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/09/setter-vs-constructor-injection/" title="Previous Post: Setter vs Constructor injection">&laquo; Setter vs Constructor injection</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/09/bug-fix-day/" title="next Post: Bug Fix Day!">Bug Fix Day! &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">(Annotated) Field injection vs Constructor injection</h1>
+    <p class="post-meta">
+    	Sep 21, 2010 11:35:41
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>A couple of people replied to my last article about constructor vs setter injection that they prefer a third option, field injection. This is a slight variant of setter injection in which we magically let the setter dissapear.</p>
+<p>So, another blogpost here!</p>
+<p><!--more--><br />
+Let me first show what field injection looks like:</p>
+<pre class="brush:java">
+public class Apple {  
+    @Inject  
+    private Orange orange;  
+}
+</pre>
+<p>This is an example from the PicoContainer website, but Spring and Google Guice can do this too. So, you ask, what is wrong with this?</p>
+<h1>Testability</h1>
+<p>I want the classes I write to be testable. Every class needs a test, and every class needs to be tested without the help of any other dependency. For every dependency in my class I want to be able to use a stub/mock implementation.</p>
+<p>With constructor injection this is easy, just do new SomeClass(...). But this just can't be done with field injection..! How do you test these classes? You have no way to construct the objects without bytecode-magic. You cannot create an instance of the above Apple class with its dependencies without using the DI-framework. And the last thing I want is the DI-framework in my unit tests. It makes the test slow, and as we all know, tests need to run as fast as possible to be effective.</p>
+<h1>Final is still tricky</h1>
+<p>When using field injection your fields can be made private, but you can't make them final (!!). This is a common mistake, but look at the Google Guice wiki: <a href="http://code.google.com/p/google-guice/wiki/Injections">http://code.google.com/p/google-guice/wiki/Injections</a>. </p>
+<p>Note the <b>warning</b>: "Avoid using field injection with final fields, which has weak semantics."</p>
+<h1>Code smell is wanted</h1>
+<p>And the final thing I don't like about field injection... it looks good. This is a bad thing! I tried to explain this in the previous blogpost, but failed I guess. When using constructor injection you'll notice when it gets ugly, you'll see that long ugly constructor... and you'll refactor the class. When using field injection this warning is forgotten. </p>
+<p>Large constructor equals bad design. Don't fix this by changing to setter or field injection, fix the underlying problem and improve your class granularity. The fact that is looks bad with more then 2 or 3 arguments is actually a big <b>plus</b>!</p>
+<h1>Annotations</h1>
+<p>Yes, annotations bind you to the framework, and they are evil. But so is XML. I have to agree on one thing, annotations (javax.inject) are a good thing. But still use constructor injection with these annotations please!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

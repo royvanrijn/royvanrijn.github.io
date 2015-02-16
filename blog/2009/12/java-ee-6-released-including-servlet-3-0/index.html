@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Java EE 6 released, including Servlet 3.0</title>
+  <meta name="description" content="Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state v...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/steve-oakley-the-head-hunter/" title="Previous Post: Steve Oakley, the head hunter">&laquo; Steve Oakley, the head hunter</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/inversion_of_logic/" title="next Post: Cleaner code: Inversion of logic">Cleaner code: Inversion of logic &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Java EE 6 released, including Servlet 3.0</h1>
+    <p class="post-meta">
+    	Dec 10, 2009 22:43:13
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
+<p>About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I've worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn't what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!<br />
+<!--more--><br />
+So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply... My next move was just to write about it, first on my own blog, then on <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">DZone</a> (05/30/2008) and on <a href="http://www.theserverside.com/tt/articles/article.tss?l=PonderingAboutJSR135">The Server Side</a> a half year later, december 2008.</p>
+<p>The only 'reply' I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened <a href="http://swik.net/GlassFish/The+Aquarium/Servlet+3.0+...+Almost+at+PDR/cmaui">here</a>.</p>
+<p>Now that the release is final I'm actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:</p>
+<pre class="brush:java">
+@Servlet(urlMappings={"/foo", "/bar"})
+public class MyServlet {
+     @GET
+     public void handleGet(HttpServletRequest req, HttpServletResponse res) {
+          //Handle the GET
+     }
+}
+</pre>
+<p>And this was my suggestion on how to improve it (see second article/link):</p>
+<pre class="brush:java">
+@ServletMapping(name="myServlet", mapping={"/foo", "/bar"})
+public class MyServlet extends HttpServlet {
+
+     @Override //keep strong typing!
+     public void doGet(HttpServletRequest req, HttpServletResponse res) {
+          ...
+     }
+}
+</pre>
+<p>And this is from the final release:</p>
+<pre class="brush:java">
+@WebServlet(name="myServlet", urlPatterns={"/foo","/bar"})
+public class MyServlet extends HttpServlet {
+
+     @Override //keep strong typing!
+     public void doGet(HttpServletRequest req, HttpServletResponse res) {
+          ...
+     }
+}
+</pre>
+<p>That's very similair, maybe a little too similair..? But anyway, I'm pleased about the result. It'll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.</p>
+<p>I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

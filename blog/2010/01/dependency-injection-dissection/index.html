@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Learn to use Dependency Injection</title>
+  <meta name="description" content="Recently I placed a comment on this interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to u...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/01/movies-as-porn/" title="Previous Post: What if your favourite movie was remade as porno">&laquo; What if your favourite movie was remade as porno</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/01/guess-the-algorithm/" title="next Post: Guess the algorithm">Guess the algorithm &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Learn to use Dependency Injection</h1>
+    <p class="post-meta">
+    	Jan 18, 2010 17:43:08
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Recently I placed a comment on <a href="http://blog.objectmentor.com/articles/2010/01/17/dependency-injection-inversion">this</a> interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.</p>
+<p>Now, by popular demand (one person requested it over Twitter), I'll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.</p>
+<p><!--more--></p>
+<h2>Ordering Milk</h2>
+<p>Lets take a look at the application we have. We have a service:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public interface MilkRequestService {
+
+	/**
+	 * Process a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void processOrder(String customer, Integer amountOfBottles);
+
+}
+</pre>
+<p>And we have a DAO (data access object) which will take care of persisting our order:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public interface MilkDAO {
+
+	/**
+	 * Save a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void saveOrder(String customer, Integer amountOfBottles);
+}
+</pre>
+<p>The implementation of this DAO isn't really interesting, lets just pretent it goes to the database:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkDAODatabaseImpl implements MilkDAO {
+
+	public void saveOrder(String customer, Integer amountOfBottles) {
+		//Puts order in database
+	}
+	
+}
+</pre>
+<p>And finally we have our service implementation:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	private MilkDAO milkDAO;
+	
+	/**
+	 * Create a new service:
+	 */
+	public MilkRequestServiceImpl() {
+		milkDAO = new MilkDAODatabaseImpl(
+				//With SQLConnection or something
+				);
+	}
+	
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		//Save the order:
+		milkDAO.saveOrder(customer, amountOfBottles);
+	}
+}</pre>
+<p>Lets pretent that we are good obeying programmers, although we didn't write our unit test up front, we are going to do it right away.</p>
+<p>So... we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceTest {
+
+	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+	
+	@Test
+	/**
+	 * Test our milk request service.
+	 * Pre:
+	 * - We have a customer that wants to order 5 bottles of milk
+	 * Post:
+	 * - The milk DAO got a request to save 5 bottles of milk
+	 */
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		milkRequestService.processOrder(customer, amountOfBottles);
+		
+		//Eeehh.... how do we check the call to the DAO?
+		
+		//HELP!!
+	}
+}
+</pre>
+<p>We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check... </p>
+<p>NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain't one of them.</p>
+<p>We need to refactor our code...!</p>
+<h2>The Factory</h2>
+<p>One possible solution to this problem is using a factory method. A factory creates objects so you don't have to. Its best shown using an example:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MilkFactory { //no pun intended
+	
+	/**
+	 * Here we save the mapping:
+	 */
+	private static Map&lt;Class, Object&gt; mapping;
+	
+	/**
+	 * Create the mapping
+	 */
+	static {
+		mapping = new HashMap&lt;Class, Object&gt;();
+		mapping.put(MilkDAO.class, new MilkDAODatabaseImpl());
+		mapping.put(MilkRequestService.class, new MilkDAODatabaseImpl());
+	}
+	
+	/**
+	 * Set a mapping by hand.
+	 * Should only be used when unit testing.
+	 * 
+	 * @param &lt;T&gt;
+	 * @param clazz
+	 * @param impl
+	 */
+	public static&lt;T&gt; void replaceMapping(Class&lt;T&gt; clazz, T impl) {
+		mapping.put(clazz, impl);
+	}
+
+	/**
+	 * Not threadsafe ugly code-monkey code.
+	 * @param &lt;T&gt;
+	 * @param requestedClass
+	 * @return
+	 */
+	public static&lt;T&gt; T get(Class&lt;T&gt; requestedClass) {
+		if(mapping.containsKey(requestedClass)) {
+			return (T)mapping.get(requestedClass);
+		} else {
+			throw new IllegalArgumentException("Doesn't exist");
+		}
+	}
+}
+</pre>
+<p>So, lets dissect this.</p>
+<p>The method get(class, object) will return an implementation for a given Class. It uses a Map to get the mapping. The map is created during the static initialization (yuk!) and contains the default mapping, but we can also provide our own mapping using replaceMapping(class, object).</p>
+<p>Now how do we use it? Lets see our new MilkRequestServiceImpl:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		
+		//Save the order:
+		MilkFactory.get(MilkDAO.class).saveOrder(customer, amountOfBottles);
+	}
+}
+</pre>
+<p>As you can see we no longer need the constructor, we get the required DAO from the factory when we need it.</p>
+<p>Now we can test it using the replaceMapping method:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceTest {
+
+	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+	
+	//@Test
+	/**
+	 * Test our milk request service.
+	 * Pre:
+	 * - We have a customer that wants to order 5 bottles of milk
+	 * Post:
+	 * - The milk DAO got a request to save 5 bottles of milk
+	 */
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		//Better use a mock here, for example using Mockito or EasyMock.
+		MilkFactory.replaceMapping(MilkDAO.class, new MilkDAO() {
+			public void saveOrder(String customer, Integer amountOfBottles) {
+				//Check if the customer = testUser
+				//Check if the amountOfBottles = 5;
+			}
+		});
+		
+		MilkFactory.get(MilkRequestService.class)
+			.processOrder(customer, amountOfBottles);
+	}
+}</pre>
+<p>As the comment says, you are probably much better of here using a mocking framework like EasyMock or Mockito. But the point is, we can test our class now without going to the database! We got our control back.</p>
+<h2>Dependency Injection</h2>
+<p>Instead of writing a factory, there is a better way to do this. It is the Hollywood principle "Don't call us, we'll call you".</p>
+<p>All the dependencies of the objects are injected into them instead of created (initial example) or retrieved (factory example). So our service will look like this:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	private MilkDAO milkDao;
+	
+	/**
+	 * The milkDao is given to us by our creator.
+	 * 
+	 * @param milkDao
+	 */
+	public MilkRequestServiceImpl(MilkDAO milkDao) {
+		this.milkDao = milkDao;
+	}
+	
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		
+		//We just use the milkDao we got:
+		milkDao.saveOrder(customer, amountOfBottles);
+	}
+}
+</pre>
+<p>Now lets take a look at our test-code, it now looks like this:</p>
+<pre class="brush:java">
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		//Better use a mock here, for example using Mockito or EasyMock.
+		MilkDAO testMilkDao = new MilkDAO() {
+			public void saveOrder(String customer, Integer amountOfBottles) {
+				//Check if the customer = testUser
+				//Check if the amountOfBottles = 5;
+			}
+		};
+		
+		MilkRequestService milkRequestService = new MilkRequestServiceImpl(testMilkDao);
+		
+		milkRequestService.processOrder(customer, amountOfBottles);
+	}
+</pre>
+<p>We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That's all. Instead of the hidden creation in the service itself or in the factory we are in full control.</p>
+<p>But if you want to use this application you'll need "something else" to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkApplication {
+
+	public static void main(String[] args) {
+		MilkApplication app = new MilkApplication();
+		app.run();
+	}
+
+	public MilkApplication() {
+		//-----   Provide wiring:  -----
+		MilkDAO milkDao = new MilkDAODatabaseImpl();
+		milkRequestService = new MilkRequestServiceImpl(milkDao);
+		//------------------------------
+	}
+	
+	private MilkRequestService milkRequestService;
+	
+	/**
+	 * Do stuff:
+	 */
+	public void run() {
+		milkRequestService.processOrder("Roy van Rijn", 1);
+	}
+}
+</pre>
+<h2>Using Spring</h2>
+<p>The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you'll write something like this:</p>
+<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"&gt;
+
+	&lt;bean id="milkDao" class="nl.redcode.examples.milkman.MilkDAODatabaseImpl" /&gt;
+
+	&lt;bean id="milkRequestService" class="nl.redcode.examples.milkman.MilkRequestServiceImpl"&gt;
+		&lt;property name="milkDao" ref="milkDao" /&gt;
+	&lt;/bean&gt;
+&lt;/beans&gt;
+</pre>
+<p>Now you'll still need to retrieve these "beans" from Spring, this can be done using our old-friend the Factory!<br />
+It'll look something like this:</p>
+<pre class="brush:java">
+	ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
+		new String[] {"applicationContext.xml"});
+	MilkRequestService milkRequestService = appContext.getBean("milkRequestService");
+</pre>
+<p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
+<h2>Using Guice</h2>
+<p>Google Guice works exacly the same, only instead of using XML to define the mapping it only uses Java code and annotations.</p>
+<p>First we tell Guice which implementations are the default implementations, for example:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+@ImplementedBy(MilkDAODatabaseImpl.class)
+public interface MilkDAO {
+
+	/**
+	 * Save a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void saveOrder(String customer, Integer amountOfBottles);
+}
+</pre>
+<p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using 'Constructor Injection':</p>
+<pre class="brush:java">
+	/**
+	 * The milkDao is injected by Guice.
+	 * 
+	 * @param milkDao
+	 */
+	@Inject
+	public MilkRequestServiceImpl(MilkDAO milkDao) {
+		this.milkDao = milkDao;
+	}
+</pre>
+<p>Now if we want to use it, we retrieve it from Guice like so:</p>
+<pre class="brush:java">
+public class MilkApplication {
+
+	public static void main(String[] args) {
+		MilkApplication app = new MilkApplication();
+		app.run();
+	}
+	
+	/**
+	 * Do stuff:
+	 */
+	public void run() {
+		
+	    Injector injector = Guice.createInjector();
+	    MilkRequestService milkRequestService = 
+	        injector.getInstance(MilkRequestService.class);
+
+		milkRequestService.processOrder("Roy van Rijn", 1);
+	}
+}
+</pre>
+<p>Thats about it, you've seen:</p>
+<ul>
+<li>Why you should use these patterns</li>
+<li>How you would program them yourself (ugly monkey-code-style)</li>
+<li>How using Spring (with XML)</li>
+<li>How using Google Guice!</li>
+</ul>
+<p>Good luck and happy programming!</p>
+<p>ps. The code examples are just examples...!!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

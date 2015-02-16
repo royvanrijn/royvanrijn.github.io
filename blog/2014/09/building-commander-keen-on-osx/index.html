@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Building Commander Keen on OS/X</title>
+  <meta name="description" content="Below is a build-log on how to build Commander Keen: Keen Dreams (which was recently released on Github) on OS/X using DOSBox and a shareware version found o...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/09/building-commander-keen-on-osx/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/08/finding-an-image-in-a-mosaic/" title="Previous Post: Finding an image in a mosaic">&laquo; Finding an image in a mosaic</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/11/kill-all-mutants/" title="next Post: Kill all mutants">Kill all mutants &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Building Commander Keen on OS/X</h1>
+    <p class="post-meta">
+    	Sep 17, 2014 16:12:14
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Below is a build-log on how to build <a href="https://github.com/keendreams/keen">Commander Keen: Keen Dreams</a> (which was recently released on Github) on OS/X using DOSBox and a shareware version found online.</p>
+<p>Step 1:</p>
+<p>Download and install DOSBox</p>
+<p>Step 2:</p>
+<p>Download: <a href="http://monkey-hole.co.uk/esa/dos/">Borland C++ 3.0</a><br />
+Download: <a href="https://github.com/keendreams/keen">Commander Keen - Keen Dreams</a> source code<br />
+Download: <a href="http://www.phatcode.net/downloads.php?id=280">tasm5.zip</a></p>
+<p>Step 3:</p>
+<p>Create a new folder, this will be your DOSBox mount-point.</p>
+<p>Step 4:</p>
+<p>Install TASM:<br />
+Copy all the contents of the directories DISK1/DISK2/DISK3 from tasm5.zip to <mount_folder>\TEMP</p>
+<p>Step 5:</p>
+<p>Install Borland C++ 3:<br />
+Copy all the contents to <mount_folder>\BORLANDC.</p>
+<p>Step 6:</p>
+<p>Copy all the source files from Commander Keen to <mount_folder>\KEEN.</p>
+<p>Step 7: </p>
+<p>Fire up DOSBox, mount the mount folder to C.<br />
+Put the following paths to PATH:<br />
+SET PATH=C:\BORLANDC\BIN;C:\TASM\BIN;C:\;Z:\</p>
+<p>Go into C:\TEMP and run the installer to install TASM.</p>
+<p>Go into directory C:\KEEN\STATIC and run 'make.bat'<br />
+In the directory C:\KEEN and run 'BC' to start Borland C++.</p>
+<p>To change the Borland directories to the correct path go to: Options > Directories and change the paths to C:\BORLANDC\*.</p>
+<p>Step 8:</p>
+<p>Compile and run! It creates the binary for me KDREAMS.EXE.</p>
+<p>But sadly, when I run the executable it says "Can't open KDREAMS.MAP!" :-(<br />
+It turns out you'll need to own the game's actual content before you can run this source code.<br />
+Thankfully a shareware version can be downloaded here: <a href="ftp://ftp.3drealms.com/share/keendm.zip">keendm.zip</a>. This corresponds with the 1.01S version of the released source code, which is also released <a href="https://github.com/keendreams/keen/tree/44773ae2502192ca553ab6518b644ee75e42dd8b">here</a>.</p>
+<p>Copy the missing files (SHL, MAP, AUD, etc) from the shareware version and play your own compiled Commander Keen!</p>
+<p>Screenshot:</p>
+<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" width="300" height="198" class="aligncenter size-medium wp-image-1844" /></a><br />
+</mount_folder></mount_folder></mount_folder></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

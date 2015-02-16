@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hacking your RunKeeper data</title>
+  <meta name="description" content="This week I've started running/jogging, and I'm using RunKeeper on my iPhone to track my progress.RunKeeper stores all the GPS data from your runs. This data...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/01/stargazing-my-first-telescope/" title="Previous Post: Stargazing: My first telescope">&laquo; Stargazing: My first telescope</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/04/creating-a-chatterbot/" title="next Post: Creating a chatterbot (Part 1)">Creating a chatterbot (Part 1) &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Hacking your RunKeeper data</h1>
+    <p class="post-meta">
+    	Feb 14, 2014 23:38:17
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>This week I've started running/jogging, and I'm using <a href="http://www.runkeeper.com">RunKeeper</a> on my iPhone to track my progress.</p>
+<p>RunKeeper stores all the GPS data from your runs. This data is displayed per run, including a nice map of your route. Most important data can be reached throught the web interface, things like pace (min/km or min/mile) and distance. The most rewarding thing in running is breaking your own records, and RunKeeper has a couple of records:</p>
+<ul>
+<li>Longest run (distance)</li>
+<li>Longest run (time)</li>
+<li>Most calories burned in a run</li>
+<li>Fastest average pace</li>
+<li>etc</li>
+</ul>
+<p>As you can see, all those statistics are about single runs, what I'm missing are the following records:</p>
+<p>Fastest 1 KM, 3 KM, 5K, 10K etc.</p>
+<p>For example, when I've run a very fast 5.5 km run, I'd love to see this reflected as my 5K personal record, but right now it is lost because I've already done a slow 6 km run and a very fast 1 km sprint.</p>
+<h1>Export data</h1>
+<p>But luckily RunKeeper has a very useful option for us developers: <b>Settings > Export data</b>.<br />
+This results in a ZIP file with GPX files, raw GPS data with time and location!</p>
+<h2>JAXB</h2>
+<p>The first thing I did was download the XSD and generate the JAXB Java code:</p>
+<pre class="brush:plain">
+$ xjc -p com.royvanrijn.running.gpx gpx.xsd 
+parsing a schema...
+compiling a schema...
+com/royvanrijn/running/gpx/BoundsType.java
+com/royvanrijn/running/gpx/CopyrightType.java
+com/royvanrijn/running/gpx/EmailType.java
+com/royvanrijn/running/gpx/ExtensionsType.java
+com/royvanrijn/running/gpx/GpxType.java
+com/royvanrijn/running/gpx/LinkType.java
+com/royvanrijn/running/gpx/MetadataType.java
+com/royvanrijn/running/gpx/ObjectFactory.java
+com/royvanrijn/running/gpx/PersonType.java
+com/royvanrijn/running/gpx/PtType.java
+com/royvanrijn/running/gpx/PtsegType.java
+com/royvanrijn/running/gpx/RteType.java
+com/royvanrijn/running/gpx/TrkType.java
+com/royvanrijn/running/gpx/TrksegType.java
+com/royvanrijn/running/gpx/WptType.java
+com/royvanrijn/running/gpx/package-info.java
+</pre>
+<p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
+<pre class="brush:java">
+	JAXBContext jc = JAXBContext.newInstance("com.royvanrijn.running.gpx");
+	Unmarshaller unmarshaller = jc.createUnmarshaller();
+	JAXBElement&lt;GpxType&gt; root = (JAXBElement&lt;GpxType&gt;) unmarshaller.unmarshal(file);
+	List&lt;TrkType&gt; tracks = root.getValue().getTrk();
+</pre>
+<p>The next thing I did was translate the lat+long+time waypoints into 'legs' consisting of meters+seconds.<br />
+Those legs can be used to check for a record during longer runs, like this:</p>
+<pre class="brush:java">
+	@Override
+	public void analyze(List&lt;Leg&gt; legs) {
+		List&lt;Leg&gt; cache = new ArrayList&lt;Leg&gt;();
+		
+		double runningDistance = 0.0;
+		for(Leg leg:legs) {
+			//Add next leg to the tail:
+			cache.add(leg);
+			runningDistance += leg.getMeters();
+			
+			//If possible remove from head:
+			while((runningDistance-cache.get(0).getMeters()) &gt; targetDistance) {
+				runningDistance -= cache.remove(0).getMeters();
+			}
+			
+			if(runningDistance &gt; targetDistance) {
+				//Check if the current target distance time is a record:
+				checkTime(cache);
+			}
+		}
+	}
+</pre>
+<p>For example using a target of 5000 meters in a 5070 meter run, this analysis finds the following 5K times:</p>
+<pre class="brush:plain">
+5000.135743886022	00:29:57
+5001.356437683744	00:29:55
+5013.145427605677	00:30:01
+5009.98623847093	00:30:00
+5000.938905254762	00:30:01
+5001.8612669243685	00:30:03
+5000.555676905546	00:30:05
+5000.514815789608	00:30:07
+5000.514815789608	00:30:07
+</pre>
+<p>The information from RunKeeper website is:</p>
+<ul>
+<li>Distance: <b>5.07 km</b></li>
+<li>Time: <b>30:38</b></li>
+<li>Pace: <b>6:03</b></li>
+</ul>
+<p>But when analysing the data more accurately, it could have said:</p>
+<ul>
+<li>New personal record 3K: <b>00:16:46</b></li>
+<li>New personal record 5K: <b>00:29:55</b></li>
+</ul>
+<p>I couldn't believe this feature wasn't available in RunKeeper... but after a lot of Googling it turns out a lot of other people are looking for this 'most requested' feature! With a little bit of Java (100 lines of code) you can get a pretty good result:</p>
+<pre class="brush:plain">
+Done analyzing all runs:
+Fastest 100m run:	00:00:13
+Fastest 200m run:	00:00:48
+Fastest 400m run:	00:02:01
+Fastest 1500m run:	00:07:50
+Fastest 3000m run:	00:16:46
+Fastest 5000m run:	00:29:55
+Fastest 10000m run:	--:--:--
+</pre>
+<p>I'm now thinking of making a simple JavaScript application (no backend) that uses the RunKeeper export zip file as input and displays a lot of additional data. Are you interested in this? Please drop a comment and convince me to make this for you guys and girls!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

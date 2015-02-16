@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Handling null in Java</title>
+  <meta name="description" content="Its a problem I encouter in most JEE projects I've worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to re...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/01/placement-of-circle-over-points/" title="Previous Post: Placement of circle over points">&laquo; Placement of circle over points</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/02/compression-by-prediction/" title="next Post: Compression by prediction">Compression by prediction &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Handling null in Java</h1>
+    <p class="post-meta">
+    	Feb 1, 2010 11:46:13
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Its a problem I encouter in most JEE projects I've worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I'm trying to find out in this post.</p>
+<p><!--more--></p>
+<p>Lets start with a piece of business logic, in a world where we don't have null-values:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>This looks good and understandable! But this isn't what I see in most projects. Usually I see code like this:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+		if(person != null) {
+		    Set&lt;Account&gt; accounts = person.getAccounts();
+		    if(accounts != null) {
+		    	BigDecimal totalBalance = BigDecimal.ZERO;
+		    	for(Account account: accounts) {
+		    		if(account != null) {
+		    			totalBalance = totalBalance.add(account.getBalance());
+		    		}
+		    	}
+		    }
+		    return totalBalance;
+		} else {
+			return null;
+		}
+	}
+</pre>
+<p>Wow, that is not a pretty sight, not at all! What can we do about it and how did it happen?</p>
+<h2>Inversion of logic</h2>
+<p>The first strategy we can follow is based on <a href="/2009/12/inversion_of_logic/">inversion of logic</a> which I've blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+		if(person == null || person.getAccounts() == null) {
+			return null;
+		}
+		Set&lt;Account&gt; accounts = person.getAccounts();
+	   	BigDecimal totalBalance = BigDecimal.ZERO;
+	   	for(Account account: accounts) {
+	   		if(account != null) {
+	   			totalBalance = totalBalance.add(account.getBalance());
+	   		}
+	   	}
+		return totalBalance;
+	}
+</pre>
+<p>This is somewhat better, a bit shorter, but we still have all the '!= null' and '== null' checks we don't want.</p>
+<h2>Code by contract</h2>
+<p>The best way to get rid of null-checks is to get rid of nulls in your applicaties. Just don't return a null in all of the methods...! This sounds very easy and straight forward, but it is a bit harder then it sounds because it has become such a habbit.</p>
+<p>The good thing is that current IDE's are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
+<pre class="brush:java">
+	@Nullable
+	public Person getPerson(Long id) {
+		return something.retrievePerson(id);
+	}
+
+	
+	public void printPersonName(Long id) {
+		Person person = getPerson(id);
+		System.out.println(person.getName());
+		//Causes warning: getPerson is Nullable, thus this is a possible NPE! 
+	}
+</pre>
+<p>It also helps you to clearly state your assumed preconditions:</p>
+<pre class="brush:java">
+	public void printPersonName(@NotNull Person person) {
+		System.out.println(person.getName());
+		//Very good, we know we won't get a NPE here! 
+	}
+
+
+	public void executeThis() {
+		Person person = null;
+		printPersonName(person);
+		//Causes warning: person might be null, thus can cause a NPE!
+		//Code analysis tools and/or IDE will warn you about this.
+	}
+</pre>
+<p>It will also help you correct possible coding errors:</p>
+<pre class="brush:java">
+	@NotNull
+	public Person getPersonFromDatabase(@NotNull Long id) {
+		//Use JPQL
+		Query query = em.createQuery("SELECT p FROM Person p WHERE p.id = :value");
+		q.setParameter("value", id);
+		return q.getSingleResult();
+		//The IDE will complain about this. 
+		//The database might return null, we don't allow returning null in this method.
+	}
+</pre>
+<p>Using this method you have some more certainties. But it isn't a silver-bullet on its own. We have to stop and think, where do the null-values come from? </p>
+<p>Actually, when you stop returning null (which is entirely up to you and your team) there are still situations which are 'unchecked'. Namely external API's, frameworks, the ORM-mapper you are using. So everywhere where you execute methods that you haven't written, you still have to do manual checks. But make sure you do this right away. Then further on in the code, you don't have to check anything because of your @NotNull-contracts.<br />
+If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
+<pre class="brush:java">
+	@NotNull
+	public BigDecimal getBalance(@NotNull Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>In my experience this works very well, I've done this a couple of times, even before the @NotNull and @Nullable existed. Before this we would just add the information in our Javadoc. But with the IDE checking for it this has become a lot easier to use.</p>
+<h2>Null object pattern</h2>
+<p>A whole different approach then coding-by-contract is the use of a null-object. The idea behind this pattern is that you don't return null, but instead you return a real object. In our example we would do the following:</p>
+<pre class="brush:java">
+public interface Person {
+
+	String getName();
+	void setName(String name);
+
+	List&lt;Account&gt; getAccounts();
+	
+	//..etc..
+}
+
+public class NullPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+}
+</pre>
+<p>The huge advantage is that you can always safely call "person.getName()" and "person.getAccounts()" because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+            //NullPerson returns empty list, no more NPE!
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
+<pre class="brush:java">
+public class UnknownPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+
+}
+public class InvalidatedPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+}
+</pre>
+<p>Now you can return much more information then just a meaningless "null"!</p>
+<p>There is just one problem with this pattern. It also doesn't just solve your problems. Why do we want to calculate the total balance of a NullPerson? The moment you retrieve a person and it is an instance of NullPerson, catch it and handle the situation appropiatly, don't just continue.</p>
+<h2>Safe null operator</h2>
+<p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you've programmed in Groovy you might have seen it before:</p>
+<pre class="brush:java">
+		public String getFirstLetterOfName(Person person) {
+			return person?.getName()?.substring(0, 1);
+		}
+</pre>
+<p>The idea is that you use "?." instead of ".". The questionmark means: "If the variable we're calling is null, the result is null, else, call the next method".</p>
+<p>So in this case:</p>
+<ul>
+<li>If person is null: return null, else:</li>
+<li>If getName() is null: return null, else:</li>
+<li>Return result of substring(0, 1)</li>
+</ul>
+<p>If you would now write this code it would be:</p>
+<pre class="brush:java">
+		public String getFirstLetterOfName(Person person) {
+			if(person == null) {
+				return null;
+			}
+			if(person.getName() == null) {
+				return null;
+			}
+			return person.getName().substring(0, 1);
+		}
+</pre>
+<p>You could also give a default value:</p>
+<pre class="brush:java">
+		public void printName(Person person) {
+			System.out.println(person?.getName() ?: "Anonymous");
+		}
+</pre>
+<p>If person or getName() produce a null the "?:" operator will return the default String.</p>
+<p>Sounds pretty good eh? The only problem is that this new operator didn't make the final list of changes for Java 7.</p>
+<p>Fun fact: Do you know why the "?:"-operator is called the "Elvis"-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>We are now cached</title>
+  <meta name="description" content="Yesterday we (at JPoint) invited Stefan Tilkov over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us a...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/05/we-are-now-cached/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/" title="Previous Post: Ludum Dare #23: Itty-bitty botty">&laquo; Ludum Dare #23: Itty-bitty botty</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/06/getting-started-arduino-mega/" title="next Post: Getting started: Arduino Mega">Getting started: Arduino Mega &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">We are now cached</h1>
+    <p class="post-meta">
+    	May 9, 2012 16:16:22
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Yesterday we (at <a href="http://www.jpoint.nl/" alt="JPoint, the company I work for.">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/" alt="Stefan Tilkov's blog">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
+<p>One of the things he mentioned was: If you don't use caching, you are an idiot.</p>
+<h2>Where do websites cache?</h2>
+<p>There are multiple tiers where caching of websites is done, and is useful.</p>
+<h3>Browser cache</h3>
+<p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There is absolutely no reason to go online.</p>
+<h3>Proxy cache</h3>
+<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn't changed it can provide the page instantly.</p>
+<h3>Reversed proxy cache</h3>
+<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a "reverse" proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
+<h2>Making pages cacheable</h2>
+<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan's rant, I'm completely convinced about that. If you don't do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn't work, and shouldn't be used (!). So what could we do?</p>
+<h3>Expires header</h3>
+<p>When sending a page back to the user you are able to set some HTTP headers. And "expires" is one of them.<br />
+An example:</p>
+<pre class="brush:plain">
+Expires: Fri, 11 May 2012 18:19:42 GMT
+</pre>
+<p>This indicates that the current page is valid until the timestamp. Then it 'Expires'. Easy!</p>
+<p>The only problem is generating the timestamp, it can be a bit tricky. Also you'll have to be sure you've set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
+<h3>Cache-Control headers</h3>
+<p>With HTTP 1.1 there is a new class of headers called "Cache-Control". These headers are more powerful than the Expires header.<br />
+To enable caching using Cache Control headers you can set:</p>
+<pre class="brush:plain">
+Cache-Control: max-age=3600, must-revalidate
+</pre>
+<p>The "max-age" is time in ms that the current page is valid. And by adding "must-revalidate" we tell the cache it should obey our max-age. If you don't want an object to be cached you can use:</p>
+<pre class="brush:plain">
+Cache-Control: no-cache
+</pre>
+<h2>Refreshing cached data</h2>
+<p>The two methods described above will tell the cache <b>if</b> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
+<h3>Last-Modified</h3>
+<p>Websites should always set the response header called "Last-Modified". This is a timestamp of the moment a webpage last changed.</p>
+<pre class="brush:plain">
+Last-Modified: Fri, 11 May 2012 18:19:42 GMT
+</pre>
+<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header "If-Modified-Since" and include the timestamp.</p>
+<pre class="brush:plain">
+If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT
+</pre>
+<p>If the content on the server hasn't been changed it'll reply "304 Not Modified". The cache can now keep the cached version.</p>
+<h3>ETag</h3>
+<p>With HTTP 1.1 there is also an improved method of doing the "Last-Modified". Instead of using a timestamp (which is error prone), they've introduced the "ETag". This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
+<pre class="brush:plain">
+ETag: "686897696a7c876b7e"
+</pre>
+<p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
+<pre class="brush:plain">
+If-None-Match: "686897696a7c876b7e"
+</pre>
+<p>The term "If-None-Match" isn't very clear, but is means "if-etag-changed-since" and works the same way as "If-Modified-Since". When the ETag is the same the server will reply "304 Not Modified", it won't send the content back.</p>
+<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don't have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed...! But sometimes you'll know in advance if the content has been changed.</p>
+<h2>Improving royvanrijn.com</h2>
+<p>I'm using WordPress and I've found the excellent plugin "WP Total Cache".</p>
+<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you'll probably be reading this from the browser cache.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

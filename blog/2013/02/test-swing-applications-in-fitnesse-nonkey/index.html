@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Test Swing applications in Fitnesse (Nonkey)</title>
+  <meta name="description" content="FitnesseFitnesse is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into 'f...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/12/facebook-status-deceased/" title="Previous Post: Facebook status: Deceased">&laquo; Facebook status: Deceased</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2013/05/conference-videographer/" title="next Post: Conference videographer">Conference videographer &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Test Swing applications in Fitnesse (Nonkey)</h1>
+    <p class="post-meta">
+    	Feb 8, 2013 11:35:28
+    </p>
+  </header>
+
+  <article class="post-content">
+    <h2>Fitnesse</h2>
+<p><a href="http://fitnesse.org/">Fitnesse</a> is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into 'fixtures', code that is called that, in turn, can call your application. An example of a fixture we use:</p>
+<pre class="brush:plain">
+|when the user logs in with username|roy               |and password   |test123   |
+|and asks for the account details                                                 |
+|ensure                             |displayed fullname|Roy van Rijn              |
+|ensure                             |websites contains |http://www.royvanrijn.com/|
+|ensure                             |websites contains |http://www.redcode.nl/    |
+</pre>
+<p>The corresponding Java code could be something like:</p>
+<pre class="brush:java">
+
+private Credentials credentials;
+private AccountDetails accountDetails;
+
+public void whenTheUserLogsInWithUsernameAndPassword(String username, String password) {
+    credentials = new Credentials(username, password);
+}
+
+public void andAsksFotTheAccountDetails() {
+    accountDetails = mySystem.getAccountDetails(credentials);
+}
+
+public boolean displayedFullname(String fullname) {
+    return fullname.equals(accountDetails.getFullename());
+}
+
+public boolean websitesContains(String url) {
+    for(String website:accountDetails.getWebsites()) {
+        if(url.equals(website)) {
+            return true;
+        }
+    }
+    return false;
+}
+</pre>
+<p>This is a very simplified example on how you could use Fitnesse to test your application. But the idea is very powerful, there are implementations for Java (initially) and now .NET, Groovy etc. Also, most of the time the system you're testing doesn't have a Java API but instead you'd like to test the user interface. With most Java applications being web applications there are numerous plugins to connect Fitnesse with for example Selenium to ease web application testing. The fixtures fill webpages and analyze the resulting HTML response.</p>
+<p>At my current client (Port of Rotterdam) we're building a very rich, partially offline, Swing application. This application has a backend and numerous clients running the Swing application. We've used Fitnesse to test the backend code from the start, and the last year we've put in some effort to also use Fitnesse for the Swing application. We've called this "Nonkey", being an automated version of our Monkey integration testing we'd been doing up to that moment.</p>
+<h2>UISpec4J</h2>
+<p>The first ingredient we need to test Swing GUI's in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
+<pre class="brush:java">
+    private Window mainWindow;
+    private JFrame mainFrame;
+
+    //Called from the Suite Set Up page:
+    public void launchNonkey() {
+        mainWindow = WindowInterceptor.run(new Trigger() {
+            @Override
+            public void run() throws Exception {
+                new OurApplication().launch();
+                // Get the main JFrame from Spring, used directly in some cases instead of UISpec4J
+                mainFrame = BeanFactory.getBean("mainFrame", MainFrame.class);
+            }
+        });
+    }
+</pre>
+<p>The WindowInterceptor captures the Swing application and allows for manipulation in a later stage. For example:</p>
+<pre class="brush:java">
+    //In some fixture:
+    public void loginWithUsernameAndPassword(String username, String password) {
+        //UISpec4J uses JComponent.setName() for lookup:
+        Panel loginPanel = nonKey.mainWindow.getPanel("loginPanel"); 
+        final TextBox usernameTextbox = loginPanel.getTextBox("usernameTextbox");
+        usernameTextbox.setText(username);
+        final TextBox passwordTextbox = loginPanel.getTextBox("passwordTextbox");
+        passwordTextbox.setText(password);
+        
+        loginPanel.getButton("loginButton").click();
+    }
+</pre>
+<p>This fixture causes the Swing application to fill in the username, password and press the login button. It is easy to read and can be launched from Fitnesse with a single line:</p>
+<pre class="brush:plain">
+|login with username|roy   |and password   |test123   |
+</pre>
+<p>Nice! We are done, we can test Swing GUI's in Fitnesse now! Well no... not really, unfortunately there are a couple more problem we ran into, regaring the Event Dispatch Thread (EDT).</p>
+<h2>Event Dispatch Thread (EDT)</h2>
+<p>The EDT, sometimes called Swing Thread, is a special thread. Everything you do in Swing should always happen on this thread. Setting components to visible, pressing buttons etc, all need to be done in the EDT. If you don't do this correctly the application gets into a lot of race conditions and it can even cause the application to hang.</p>
+<p>When we combined Fitnesse with UISpec4J and started making a lot of tests we noticed that sometimes mysteriously a test would fail without changes. It turned out to be a problem with the EDT. UISpec4J doesn't worry too much about the EDT, and when we click a button or setText (like the examples above) it does this in the current thread. In Fitnesse this thread is the thread that called the fixture, obviously not the EDT.</p>
+<p>We brainstormed a lot about how we could fix this, maybe change UISpec4Js code? This turned out to be a hellish task. How about setting SwingUtilities.invokeAndWait() in every fixture? That could work but is also a massive undertaking. We decided to take a look at how Fitnesse calls the fixtures. This is always done from a 'StatementExecutor'. So we decided to build a custom StatementExecutor which causes the fixtures to all run in the EDT.</p>
+<p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn't work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
+<pre class="brush:java">
+public class SwingSlimService extends SocketService {
+
+    public static SwingSlimService instance = null;
+    public static boolean verbose;
+    public static int port;
+
+    public static void main(final String[] args) throws Exception {
+        if (parseCommandLine(args)) {
+            startWithFactory(args, new SwingJavaSlimFactory()); //<-- custom SwingJavaSlimFactory!
+        } else {
+            parseCommandLineFailed(args);
+        }
+    }
+
+    protected static void parseCommandLineFailed(final String[] args) {
+        System.err.println("Invalid command line arguments:" + Arrays.asList(args));
+    }
+
+    protected static void startWithFactory(final String[] args, 
+            final SlimFactory slimFactory) throws Exception {
+        new SwingSlimService(port, slimFactory.getSlimServer(verbose));
+    }
+
+    protected static boolean parseCommandLine(final String[] args) {
+        final CommandLine commandLine = new CommandLine("[-v] port");
+        if (commandLine.parse(args)) {
+            verbose = commandLine.hasOption("v");
+            final String portString = commandLine.getArgument("port");
+            port = Integer.parseInt(portString);
+            return true;
+        }
+        return false;
+    }
+
+    public SwingSlimService(final int port, final SlimServer slimServer) throws Exception {
+        super(port, slimServer);
+        instance = this;
+    }
+}
+</pre>
+<p>Next we needed a custom JavaSlimFactory:</p>
+<pre class="brush:java">
+public class SwingJavaSlimFactory extends JavaSlimFactory {
+
+    @Override
+    public StatementExecutorInterface getStatementExecutor() {
+        return new SwingStatementExecutor(); //<-- custom SwingStatementExecutor!
+    }
+}
+</pre>
+<p>And last but not least our custom StatementExecutor which forces all calls into the EDT thread:</p>
+<pre class="brush:java">
+package com.portofrotterdam.hamis;
+
+import fitnesse.slim.StatementExecutor;
+import fitnesse.slim.StatementExecutorInterface;
+
+/**
+ * HaMIS custom StatementExecutor, to call and create in the EDT thread
+ */
+public class SwingStatementExecutor implements StatementExecutorInterface {
+
+    private final StatementExecutor wrapped = new StatementExecutor();
+
+    private abstract class EDTRunnable implements Runnable {
+
+        private Object returnValue;
+
+        @Override
+        public abstract void run();
+
+        public void setReturnValue(final Object returnValue) {
+            this.returnValue = returnValue;
+        }
+
+        public Object getReturnValue() {
+            return returnValue;
+        }
+    }
+
+    @Override
+    public Object call(final String instanceName, final String methodName, final Object... args) {
+
+        final EDTRunnable caller = new EDTRunnable() {
+
+            @Override
+            public void run() {
+                setReturnValue(wrapped.call(instanceName, methodName, args));
+            }
+        };
+        EDTRunner.run(caller);
+        return caller.getReturnValue();
+    }
+
+    @Override
+    public Object callAndAssign(final String variable,
+            final String instanceName,
+            final String methodName,
+            final Object[] args) {
+
+        final EDTRunnable callAndAssigner = new EDTRunnable() {
+
+            @Override
+            public void run() {
+                setReturnValue(wrapped.callAndAssign(variable, instanceName, methodName, args));
+            }
+        };
+        EDTRunner.run(callAndAssigner);
+        return callAndAssigner.getReturnValue();
+    }
+
+    @Override
+    public Object create(final String instanceName, final String className, final Object[] args) {
+
+        final EDTRunnable creater = new EDTRunnable() {
+
+            @Override
+            public void run() {
+                setReturnValue(wrapped.create(instanceName, className, args));
+            }
+        };
+        EDTRunner.run(creater);
+        return creater.getReturnValue();
+    }
+
+    @Override
+    public Object addPath(final String path) {
+        return wrapped.addPath(path);
+    }
+
+    @Override
+    public Object getInstance(final String instanceName) {
+        return wrapped.getInstance(instanceName);
+    }
+
+    @Override
+    public void reset() {
+        wrapped.reset();
+    }
+
+    @Override
+    public void setVariable(final String name, final Object value) {
+        wrapped.setVariable(name, value);
+    }
+
+    @Override
+    public boolean stopHasBeenRequested() {
+        return wrapped.stopHasBeenRequested();
+    }
+}
+</pre>
+<p>This uses a small static class we've used in our code before to safely run a Runnable on the EDT and invokeAndWait (without waiting IN the EDT):</p>
+<pre class="brush:java">
+public class EDTRunner {
+
+    public static void run(final Runnable r) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            r.run();
+        } else {
+            try {
+                EventQueue.invokeAndWait(r);
+            } catch (final InterruptedException e1) {
+                throw new RuntimeException(e1);
+            } catch (final InvocationTargetException e1) {
+                throw new RuntimeException(e1);
+            }
+        }
+    }
+}
+</pre>
+<p>The only thing left to do is to instruct Fitnesse to use our SlimService instead of the default implementation. This is done using the following parameter in our main page:</p>
+<pre class="brush:java">
+!define TEST_SYSTEM {slim}
+!define TEST_RUNNER {com.portofrotterdam.hamis.SwingSlimService}
+</pre>
+<p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you're done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
+<p>Good luck testing with Fitnesse in the near future, if you have any problems/improvements/ideas please let me know (in the comments below).</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

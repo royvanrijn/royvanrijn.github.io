@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Some of my software development rules</title>
+  <meta name="description" content="Here are (in my opinion) five of the most important 'rules' in software development.Changes happenThe reason why waterfall doesn't work and agile works a lot...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/02/compression-by-prediction/" title="Previous Post: Compression by prediction">&laquo; Compression by prediction</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/04/playing-around-with-html-5/" title="next Post: Playing around with HTML 5">Playing around with HTML 5 &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Some of my software development rules</h1>
+    <p class="post-meta">
+    	Apr 12, 2010 07:54:31
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Here are (in my opinion) five of the most important 'rules' in software development.</p>
+<p><!--more--></p>
+<h2>Changes happen</h2>
+<p>The reason why waterfall doesn't work and agile works a lot better. Changes happen. People will always change their mind, over time technology changes and situations change. So during software development you will have to be flexible with the requirements.</p>
+<h2>Create software that the client wants, not what he says he wants.</h2>
+<p>What the clients tells you he wants might not (entirely) be what he/she actually wants or the organisation needs. It is vital to ask questions and release early. When you have something visible, let the client judge it.<br />
+Some people say there is one major drawback of showing designs and the application early on, the client probably gets new ideas and wants to change the design. But that actually is a good thing, you still have much time left to plan these changes! If you do a waterfall-method and release on delivery date.. the client still wants his/her changes (!).</p>
+<h2>Always write down decisions.</h2>
+<p>During a project, especially during the startup, there are a lot of choices to be made. Is it going to be a web application, or standalone? What frameworks are we going to use?<br />
+All these decisions are made with arguments, pro's and con's, write those down! A project-wiki would be a perfect place. If some members leave the team and new members join the team this information is vital. When the new members join the team their first reaction will be "Why are they doing it this way and not ...?". Reading the argumentation will help them understand the situation and get them up to speed. Also, during projects there are always moments when you reflect on choices made in the past: "Why did we do ... wouldn't we have done better if we did/used ...". You can now always review the past arguments to see if the current situation has changed so much that a reconsideration would be in order or not.</p>
+<h2>The team owns the code.</h2>
+<p>If you write a piece of code, it is not your code. The code belongs to the collective, the team. If somebody changes your code, embrace it, it was probably needed. If you see an ugly piece of code you didn't write, you are also responsible, refactor it.</p>
+<h2>Commit driven development.</h2>
+<p>Test driven development is a great idea. First write a unit-test, check to see if it fails, now write your code until the test succeeds. This way you know two important things, the final code is easy to test (it was written with testing in mind) and the code does what the test expects. But there is one major drawback, most people (not all) simply can't work this way. For some people it works great, but some developers want to write their tests afterwards. And that is ok, there is just one important rule: Never check your code in (the trunk) if it isn't tested and doesn't have proper documentation (e.g. JavaDoc). So: It is no problem if you write code and then tests, or tests then the code, as long as you write them before commiting to your SCM repository.</p>
+<p>There are situations when you need to write a lot of new code, in that case you still want to be able to check your code in, even if you aren't done yet. For these situations you create a feature-branch. On this branch you develop all the new funtionality and once it is done, documented and tested, merge it with the trunk.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

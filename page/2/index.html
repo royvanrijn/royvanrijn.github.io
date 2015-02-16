@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/2/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2014/08/finding-an-image-in-a-mosaic/">Finding an image in a mosaic</a></h1>
+    <p class="author">
+      <span class="date">Aug 27, 2014 15:33:42</span>
+    </p>
+    <p>Browsing the Ludum Dare (see <a href="/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
+<p><a href="/images/mosaic.jpg"><img class="aligncenter wp-image-1829" src="/images/mosaic.jpg" alt="mosaic" width="954" height="487" /></a></p>
+<p>Pretty interesting to see, I've already worked with him on improving the algorithm to generate these mosaics <a href="/2014/04/mosaic-algorithm/">in the past</a>. But next he set me a challenge: <em>Find your own game thumbnail, it is in there somewhere!</em></p>
+<p>This is the screenshot of my game, used as thumbnail:</p>
+<p><a href="/images/target.png"><img class="aligncenter wp-image-1833 size-medium" src="/images/target-300x187.png" alt="target" width="300" height="187" /></a></p>
+<p>So I went though the thumbnails, one time.. and a second time... then I decided to solve it like a real programmer:</p>
+<p><img class="aligncenter wp-image-1830 " src="/images/mosaic.gif" alt="mosaic" width="495" height="246" /></p>
+<p>&nbsp;</p>
+<p>How does it work? Well it is pretty simple:</p>
+<ol>
+<li>Input #1: mosaic.jpg</li>
+<li>Input #2: Amount of thumbnails width and height</li>
+<li>Input #3: screenshot.png</li>
+<li>The program resizes my game screenshot to the thumbnail size.</li>
+<li>Next it loops over all sub-images of the mosaic.</li>
+<li>For every sub-thumbnail: Calculate the error  (+=<em>Math.abs(mosaicPixelValue - screenshotPixelValue)</em> for each color, for each pixel)</li>
+<li>Store the location of the thumbnail with the smallest error!</li>
+</ol>
+<p><strong>That is it</strong>, solved it in 10 minutes of coding!<br />
+(and another 10 minutes to make the visual conformation and make the animated gif).</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/08/finding-an-image-in-a-mosaic/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">Ludum Dare #30: A (dis-)connected world...</a></h1>
+    <p class="author">
+      <span class="date">Aug 27, 2014 15:21:55</span>
+    </p>
+    <p>Last weekend the 30th Ludum Dare competition took place. For those us you unknown with Ludum Dare, this is a very short international game programming contest. You are allowed to use any tool or language but there are strict rules:</p>
+<ol>
+<li>The theme is revealed at the start (and the game must match this theme).</li>
+<li>You get 48 hours, nothing more or less.</li>
+<li>Every image, sprite, song and/or sound effect in the game should be made within these 48 hour.</li>
+<li>The result is open source (but you pick the license).</li>
+<li>You work alone.</li>
+</ol>
+<p>(There is also a 'Jam' version where you can work in teams, can do closed source, can use images/sounds and you have 72 hours)</p>
+<p><a href="http://royvanrijn.github.io/"><img class="alignright wp-image-1823" src="/images/splash_screen-300x225.png" alt="A (dis)connected world..." width="461" height="346" /></a></p>
+<h2>
+Connected Worlds</h2>
+<p>The theme this year was 'Connected Worlds'. This is a pretty broad term, so I started to think. How about a world where the main character is on one planet, and his love is on another planet. The planets are tantalisingly close (nearly touching) but out of reach. Our hero has to build a rocket to reach his love.</p>
+<h2>Game style</h2>
+<p>Last Ludum Dare (LD) I've worked on my Javascript skills and produced a little framework. This allows me to easily implement an old-school 'point and click'-type adventure game. The resulting game should look and feel like the old Monkey Island, Day of the Tentacle games.</p>
+<h2>Drawing drawing drawing...</h2>
+<p>The decision to make a point-n-click game has a huge impact on how I get to spend my time during the contest. This type of game needs a lot of images, sprites and of course fun puzzles. In the end I think I've been busy drawing 90% of the time (on paper and in GIMP) and maybe 10% actual programming. After 48 hours my hands were cramped up from all the drawing instead of typing heh (I need a digital draw-tablet).</p>
+<h2>The result</h2>
+<p>First off, I've learned a lot about game design and Javascript programming, also I've learned how to draw and edit images much faster. At the start the process from getting an image from paper to coloured digital sprite took a long time, at the end of the contest it was all automatic.</p>
+<p>Anyway, I'm pretty pleased with the result, please play it <a title="My Ludum Dare entry" href="http://royvanrijn.github.io/">here</a>.<br />
+Also, voting is still open, if you have a Ludum Dare account (or sign up) you can cast a vote <a title="Ludum Dare vote for my entry" href="http://www.ludumdare.com/compo/ludum-dare-30/?action=preview&amp;uid=12129">here</a>.</p>
+<p>&nbsp;</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">I won't enter a teleportation device, ever.</a></h1>
+    <p class="author">
+      <span class="date">Jul 16, 2014 15:59:04</span>
+    </p>
+    <p>In the future somebody will inevitably invent a teleport, no doubt about that.</p>
+<p>But how will it work?</p>
+<h2>Digital teleportation</h2>
+<p>The most likely way to teleport would be to digitalise yourself. Some yet undiscovered very high resolution MRI/CT scanner will scan every atom in your body and send this over to the receiver. This atom printer will build up your entire body again.</p>
+<p>However, during a work lunch discussion, I came up with some scary fundamental problems with teleportation.</p>
+<h2>Transactions<img class="alignleft wp-image-1817" src="/images/Teleporter-170x300.png" alt="Teleporter" width="148" height="281" /></h2>
+<p>What would happen if, during transmission, we get a failure? We don't want to end up with a failed teleport... which would mean the person getting teleported is dead.</p>
+<p>That is why we need to have some kind of two-phase commit. First we digitalise the person, we send this over the line, build the person up on the other side. Once this process has been completed, we 'delete' the original copy. Because we don't want to end up with thousands of clones.</p>
+<h2>Wait... what? Delete?</h2>
+<p>What would it feel like stepping into the teleporter? First a copy of you is made, this copy eventually walks out of the receiving end. But what happens to <em>you</em>? You'll step into a machine, which makes a copy, and disposes <em>you</em>! You'll be exterminated, killed, pushing up the daisies, your metabolic processes will be history, kicking the bucket, you'll be an ex-parrot.</p>
+<h2>You...</h2>
+<p>Lets not dwell too long on the loss of the old you. Of course YOU are also the one walking out of the teleporter, where nothing has happened but a successful teleport.</p>
+<p>But is that really... you?<br />
+What defines you?<br />
+Are you just a selection of atoms clumped together?</p>
+<p>If we make an exact copy, is that still you?</p>
+<p>Did you know that (according to some <a href="http://content.time.com/time/magazine/article/0,9171,936455,00.html">research</a>) every year almost 98% of the atoms currently in your body will be replaced? That would mean that a year from now, you will just be 2%... you!</p>
+<p><strong>Conclusion</strong>: I hope they won't invent a teleporter while I'm alive.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
+    <p class="author">
+      <span class="date">Jun 22, 2014 15:03:44</span>
+    </p>
+    <p>The other thing I did while I was in London was volunteer and film at the first UK-based Devoxx4Kids.</p>
+<p>Here is my video that sums it all up:</p>
+<p><iframe src="//player.vimeo.com/video/98852396" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p>It was awesome being there, watching the kids play and learn at the same time. The volunteers were absolutely amazing (a lot of them!) and the atmosphere was very relaxed.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/06/devoxx-uk-2014-the-video/">Devoxx UK 2014: the video</a></h1>
+    <p class="author">
+      <span class="date">Jun 18, 2014 10:13:30</span>
+    </p>
+    <p>I've been filming again at Devoxx UK, here is the final cut:</p>
+<p><iframe src="//player.vimeo.com/video/98478630" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p>Brings back so many great memories. </p>
+<p><i>Including the night in the pub when 'we' won against Spain, 5-1</i></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/06/devoxx-uk-2014-the-video/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/06/devoxx-uk-2014/">Review: Devoxx UK 2014</a></h1>
+    <p class="author">
+      <span class="date">Jun 15, 2014 00:22:32</span>
+    </p>
+    <p>A year ago Devoxx crossed an ocean for the first time. After all the events in Belgium (Antwerp) and France (Paris) a new satellite event was launched in the UK (London). And here I am again, in a London hotel room, after two days of Devoxx UK.</p>
+<h2>Day 1: Getting started</h2>
+<p>With a silly one hour jetlag (which shouldn't be a thing, but is...) I was awake and at the venue very early. Slowly but surely people started flooding in on the exhibition floor. It quickly became clear there were more visitors than last year. On the exhibition floor a lot of smaller local startups were present. But surprisingly I haven't had any sales pitch at all, this is something other conferences can learn from. Only genuinely interesting people talking about content.</p>
+<p>There was also a corner where Devoxx UK had invited cool upcoming hardware like the <a href="http://nfcring.com/">NFC ring</a> and <a href="http://www.bitcraze.se/">Crazyflie</a> tiny quadcopter. These projects quickly generated a crowd of people shouting: <i>"Shut up and take my money!"</i> The problem was, they didn't have anything for sale... just an "you can order online". This is a bit of a shame, I'm pretty sure they are now missing at least a dozen of impulse purchases. They should do something about this next year.</p>
+<h2>Day 1: The keynote</h2>
+<p>The awesome thing about Devoxx is... the lack of sponsored talks and keynotes. At least, that is how it seems to be. I really haven't seen any session that even had a hint of sponsor.</p>
+<p>This year the keynote speaker was Dan North and he talked about some of his personal experiences. He talked about moments where colleagues did or said things that really affected him and his career. Things you say and do at work might have a lot more influence than you can imagine. The best part of his story (in my opinion) was how a colleague tricked him into pair programming. If you keep asking "hey buddy, can you help me with this?" eventually your 'buddy' is just sitting next to you all the time.</p>
+<p>During the keynote two amazing artists from <a href="http://smartupvisuals.com/">Smartup Visuals</a> created a drawing of Dan, later they hand customised conference t-shirts for the visitors.</p>
+<h2>Day 1: The sessions</h2>
+<p>As 'Devoxx videographer' I can't always just pick a session and settle down. Most of the time I walk around and only settle down where there is a good opportunity. The first session I attended was by Venkat Subramaniam who talked about the new Lambda expressions in Java. He is a great clear speaker, to the point.</p>
+<p>After filming some more I settled in room 2 with Dick Wall for the second session. His talk is named: "What have the monads ever done for us?"... and as you can guess it is about lambdas as well. His talk was a bit more theoretical, naming all the different theoretical objects and patterns (like monoids, monads and functors). Good talk, great speaker, best lambda related talk I've seen yet.</p>
+<p>The third sessions I had the chance to see was by James McGivern. He's a programmer with a math background and he has very similar interests as I do. His talk was about ECC (Elliptic curve cryptography) versus RSA, explaining how these security algorithms and the math involved work. I absolutely loved his talk, everything was explained so clearly it reminded me of <a href="https://www.youtube.com/user/numberphile">Numberphile</a> and <a href="https://www.youtube.com/user/Computerphile">Computerphile</a> (two related YouTube channels I adore).</p>
+<p>Instead of following more tracks I got distracted filming the Crazyflie quadcopter and shooting them from the sky using an automatic NERF gun which can only be fired wearing the NFC ring. I also had a nice discussion about the future of affordable hardware and 3d printing with Dick Wall. The thing we did that evening was to attend the IBM Sensor hacking challenge.</p>
+<p>In this hands on session we had to form teams of 4-6 people, each team got an Arduino and a set of 30+ sensors which can be attached. The challenge was to build the coolest piece of hardware with this. There was only one rule though: We had to use WebSphere to communicate with the Arduino. This made absolutely no sense at all to me... we ended up having to write JSP pages that send signals to the Arduino to read/write from the sensors. Even worse was the deploy cycle (should not be needed, but was): stop websphere, kill hanging processes, reboot Eclipse (!), start websphere again, deploy new pages.</p>
+<p>The winning team was the Crazyflie crew. They took their quadcopter, fired up the Arduino IDE (boo!) and made the firmware in the Arduino language. In the end they could fly the quadcopter with a joystick attached to the Arduino. Clearly this wasn't according to the only rule we had, but it was just too cool and had to win.</p>
+<h2>Day 2: Sessions</h2>
+<p>The second day of Devoxx UK started with a session by two fellow Dutchies, Regina and Linda. They talked about a pattern they found to change things in projects. They all did this in a "Punch and Judy show"-style, which didn't quite work in my opinion, it was very rusty and read out. Although the underlying message itself is simple and sound, they started calling everything a pattern. It is a good thing to organise brown bag lunch sessions, sure, but please don't call this a "brown bag pattern".</p>
+<p>The second session of the day was "Is Your Code Parallel-Ready?" by Maurice Naftalin. His session was also about the new lambdas in Java 8. It had a nice buildup and sketched a good problem, the only thing missing was the code of the solution. The solution was described/hinted but I'd love to have seen the actual code there for clarity. The speed of this session was very slow and I didn't learn anything new, which is a bit of a waste of time.</p>
+<p>Next I went to a panel of: Martijn Verburg, Ben Snipe, Stephen Colebourne &amp; Ted Neward. They talked about the patent wars going on now between Google and Oracle. The final conclusion by Stephen was probably the best: Oracle and Google are dumb, dumber and dumbest; neither can stop now and they'll likely settle.</p>
+<p>The title "Modern Web Architecture, 2014 Edition", by Ted Neward, is a bit misleading. Because 80% of the talk is a big history lesson of the origin of 'the web'. The final 20% was more about common sense. Don't get vendor locked in, think about creating a platform with multiple possible entry points, not just a website. Not really what I expected to hear, interesting nonetheless.</p>
+<p>The final session was by Arun Gupta and Antonio Goncalves, they quickly went through 50 new features in Java EE 7. For some reason I'm not fond of the way Java EE is going. All the logic is being put in annotations. I predict a new term 'annotation hell' which is going to replace the 'xml hell' we had a couple of years ago. I've been <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">warning</a> about this since 2008, and it is getting worse and worse.</p>
+<h2>Final keynote</h2>
+<p>In the final keynote Martijn Verburg summarized the things he learned this Devoxx UK, some of the trends he noticed. There were a lot of lambda talks, maybe a bit too much. A couple of years ago there would have been a lot of alternative language talks (JRuby/Groovy/Scala/etc) but there weren't a lot of those talks anymore.</p>
+<p>Then Dick Wall hit the stage, and actually continued from what we'd been talking about on the first day: cheaper electronics. The Arduino is cool and kind of cheap, so is the Raspberry Pi... but for a real Internet of Things we need devices much smaller and much cheaper. It doesn't have to do graphics for example! It can probably be a fraction of the cost. Oh and did you know Dick Wall's dog has a <a href="http://www.fitbit.com/">Fitbit</a>? (true story).</p>
+<p>Finally Arun Gupta and Audrey Neveu talked about Devoxx4Kids, which is still gaining a lot of popularity all over the world. But we can always use more volunteers and new events!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/06/devoxx-uk-2014/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">Raspberry Pi emulation on OS X</a></h1>
+    <p class="author">
+      <span class="date">Jun 4, 2014 13:44:42</span>
+    </p>
+    <p>Today a colleague and I wanted to install <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGR">gnuradio</a> on a Raspberry Pi. This can than be combined with the amazing RTL-SDR dongle. This dongle this is a DVB-T USB stick, but can be turned into full software defined radio.</p>
+<p>More information on that can be found here: <a href="http://www.rtl-sdr.com/about-rtl-sdr/">http://www.rtl-sdr.com/about-rtl-sdr/</a>.</p>
+<h1>Compiling gnuradio</h1>
+<p>When trying to compile gnuradio on the RPi (Raspberry Pi) we followed <a href="http://k1gto.blogspot.nl/2012/09/compiling-gnuradio-on-raspberry-pi-raspi.html">this</a> description. But we quickly ran into a problem, compiling would take 20+ hours!</p>
+<p>After running 'make' and grabbing a cup of coffee we set ourself a new goal, is it possible to emulate the RPi on our fast Macbook instead?</p>
+<p><b>Spoiler:</b> Building in the emulator is just as slow. There is a slightly faster method involving <a href="http://sentryytech.blogspot.nl/2013/02/faster-compiling-on-emulated-raspberry.html">chroot</a>. But if you really want speed you'll have to set up a <a href="http://www.openframeworks.cc/setup/raspberrypi/Raspberry-Pi-Cross-compiling-guide.html">cross compiler environment</a>, which I haven't been able to get up and running yet.</p>
+<h1>Qemu</h1>
+<p>After following a couple of guides that didn't work we finally managed to get Qemu up and running, this is what we did:</p>
+<ul>
+<li>Install and upgrade Xcode to 4.3 or above</li>
+<li>Install the latest version of <a href="http://mxcl.github.com/homebrew/">Homebrew</a></li>
+</ul>
+<p>Now we need to modify the Homebrew formula (which downloads and install qemu) to the correct version:</p>
+<pre class="brush:plain">
+osx$ vi /usr/local/Library/Formula/qemu.rb
+</pre>
+<p>I'm using the osx$ prefix for commands that are executed on your OS X machine, pi$ for commands on the virtual Raspberry Pi.</p>
+<p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <b>qemu.rb</b></p>
+<pre class="brush:plain">
+require 'formula'
+
+class Qemu &lt; Formula
+  homepage 'http://www.qemu.org/'
+  url 'http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2'
+
+  depends_on 'jpeg'
+  depends_on 'gnutls'
+  depends_on 'glib'
+
+  fails_with :clang do
+    build 318
+  end
+
+  def install
+    system "./configure", "--prefix=#{prefix}",
+                          "--cc=#{ENV.cc}",
+                          "--host-cc=#{ENV.cc}",
+                          "--enable-cocoa",
+                          "--disable-bsd-user",
+                          "--disable-guest-agent"
+    system "make install"
+  end
+end
+</pre>
+<p>After setting qemu.rb to the correct version you can install qemu:</p>
+<pre class="brush:plain">
+osx$ brew install qemu --env=std --cc=gcc-4.2
+</pre>
+<p>Now check if qemu is installed correctly:</p>
+<pre class="brush:plain">
+osx$ qemu-system-arm -version
+QEMU emulator version 1.7.1, Copyright (c) 2003-2008 Fabrice Bellard
+</pre>
+<p>Now we need to download two thing:</p>
+<ol>
+<li>Linux kernel</li>
+<li>Raspbian image</li>
+</ol>
+<p>To download the linux kernel:</p>
+<pre class="brush:plain">
+osx$ curl http://xecdesign.com/downloads/linux-qemu/kernel-qemu > kernel-qemu
+</pre>
+<p>Now we've downloaded the latest version of the <a href="http://www.raspberrypi.org/downloads/">raspbian image</a>.<br />
+In our case: 2014-01-07-wheezy-raspbian.img</p>
+<h1>First boot</h1>
+<p>Now it is time to start the image in the emulator:</p>
+<pre class="brush:plain">
+osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img
+</pre>
+<p>This first boot is a bit special because we only initialize /bin/bash. This is because we need to make two changes to the system:</p>
+<p>We need to add a comment to this file:</p>
+<pre class="brush:plain">
+pi$ vi /etc/ld.so.preload
+</pre>
+<p>Comment this line by placing a # in front of the line:</p>
+<pre class="brush:plain">
+#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so
+</pre>
+<p>Now create the following file:</p>
+<pre class="brush:plain">
+pi$ vi /etc/udev/rules.d/90-qemu.rules
+</pre>
+<p>And put in the following content: <b>90-qemu.rules</b></p>
+<pre class="brush:plain">
+KERNEL=="sda", SYMLINK+="mmcblk0"
+KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
+KERNEL=="sda2", SYMLINK+="root"
+</pre>
+<p>Now we can stop the emulator and make one final change, the image file is a bit small and we need to increase the size before we continue:</p>
+<pre class="brush:plain">
+osx$ qemu-img resize 2014-01-07-wheezy-raspbian.img +8G
+</pre>
+<p>From now on we can do a normal boot (save this command) by removing the "init=/bin/bash" part:</p>
+<pre class="brush:plain">
+osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img
+</pre>
+<p>The last thing we need to do to get our virtual Raspberry Pi up and running is:</p>
+<pre class="brush:plain">
+pi$ sudo ln -snf mmcblk0p2 /dev/root
+pi$ sudo raspi-config
+</pre>
+<p>In this menu, you can "Expand filesystem" to make use of the increased image size (need to reboot afterwards).</p>
+<p>Now you are ready to explore the raspberry pi without actually needing one. </p>
+<p><b>(Broken) sources</b>:<br />
+<a href="https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X">https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X</a><br />
+<a href="http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/">http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/</a></p>
+<p>Some problems we've encountered:</p>
+<ul>
+<li>qemu raspberry pi boot getting stuck in 'scsi' loop (fixed by using version 1.7.1)</li>
+<li>Disk size problems, resize didn't work, expand filesystem didn't work (fixed expanding and using ln -snf)</li>
+</ul>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/05/alternative-for-constructors/">Alternative for Constructors</a></h1>
+    <p class="author">
+      <span class="date">May 12, 2014 20:49:14</span>
+    </p>
+    <p>If you want to create an object in Java there is only one way: use <b>a constructor</b>.</p>
+<h2>Constructors</h2>
+<p><a href="http://en.wikipedia.org/wiki/Constructor_(object-oriented_programming)">Constructors</a> in Java are different from all other methods. They don't have a return type and can't be invoked, only using the <i>new</i> keyword. Other tasks performed by constructors are:</p>
+<ol>
+<li>Initialisation of class variables</li>
+<li>Call the default contructor of the superclass if no constructor is present</li>
+<li>Initialisation of instance variables</li>
+<li>Execution of constructor body</li>
+</ol>
+
+
+    
+    <p>
+    	<a href="/blog/2014/05/alternative-for-constructors/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">Solving a 18-year-old Core War mystery</a></h1>
+    <p class="author">
+      <span class="date">May 3, 2014 22:57:56</span>
+    </p>
+    <p>As some readers might know, I sometimes play a programming game called <a href="/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old 'Core Warrior' newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called 'Thermite II' I came across this tiny unsolved mystery:</p>
+<blockquote>
+<pre brush="plain">
+John K.W. mailed me with a tiny, suicidal warrior which managed to beat
+Thermite once in two hundred times. All I can imagine is that, that one
+time, I somehow scanned his code within its few cycles of life, and that
+then I crashed as a result. But how?
+
+
+    
+    <p>
+    	<a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/04/mosaic-algorithm/">Mosaic algorithm</a></h1>
+    <p class="author">
+      <span class="date">Apr 30, 2014 14:50:41</span>
+    </p>
+    <p>Today I noticed a new blogpost by <a href="http://williamedwardscoder.tumblr.com/">William</a>, he wrote a small Python script to <a href="http://williamedwardscoder.tumblr.com/post/84317701363/i-knew-my-mosaic-script-was-doing-a-poor-job-of">create mosaics from thumbnails</a>.</p>
+<p>As input he is using thumbnails from the <a href="http://www.ludumdare.com/">Ludum Dare</a> game programming contest.</p>
+<p>To make such a program you basically need four things:</p>
+<ol>
+<li>A collection of thumbnails/photos/images to place</li>
+<li>Divide the target mosaic image into a grid of tiles</li>
+<li>Have a scoring/measuring method for each tile</li>
+<li>Have a placement algorithm</li>
+</ol>
+<h2>Greedy</h2>
+<p>Will is using all the thumbnails from the contest and a given target image. He then divides the target image into a grid. Next comes the important part, how do you measure how well a thumbnail matches a target tile? He is using a clever per-pixel RGB matching technique. The closer the color matches, the higher the score.</p>
+<p>The final (important) step is placement. For each tile he takes the highest scoring thumbnail and assigns it to the tile. If you keep doing this (<a href="http://en.wikipedia.org/wiki/Greedy_algorithm">greedy</a>) you'll get a good recognisable result:</p>
+<p><img src="/images/greedy.png" alt="mosaic generation with greedy placement" width="255" height="410" class="aligncenter size-full wp-image-1720" /></p>
+<h2>Random swapping</h2>
+<p>When he explained his algorithm (in gtalk) it reminded of the problem I encounter in almost all the <a href="http://azspcs.net/">Al Zimmermann programming competitions</a>. Eventually all these algorithms boil down to search algorithms. You are looking for the best combination of images with the highest overall matching score (correctness/likeness). Instead of using just the greedy algorithm I suggested he'd try randomly swapping a couple of images and checking the score for improvements. This turned out to be a difference of night and day, check it out:</p>
+<p><img src="/images/swaps.png" alt="mosaic placement improvement with random swaps" width="251" height="406" class="aligncenter size-full wp-image-1721" /></p>
+<p>Of course there are still problems with this method, for example: you'll quickly run into a local optima. Maybe you'll have a much better image if A -> B and B -> C and C -> A. This will never be reached by swapping two tiles if the individual steps don't have an improved score. This can be countered by swapping multiple pairs at once and hoping you'll hit this correct pair.</p>
+<p>There are a lot of other 'smarter' things you could do, for example always try to put a 'best match' on a particular tile and trying to fill the hole it created.... But for now adding this simple random swap is perfect!</p>
+<p>Be sure to check out Williams other tech related <a href="http://williamedwardscoder.tumblr.com">blogposts</a>, he's also involved in the development of the amazing <a href="http://millcomputing.com/">Mill CPU</a>.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/04/mosaic-algorithm/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/index.html" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 2 of 13</span>
+    
+      <a href="/page/3" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

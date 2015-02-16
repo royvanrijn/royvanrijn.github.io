@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Programming, testing, documentation</title>
+  <meta name="description" content="This week I've started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelle...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/12/programming-testing-documentation/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/12/devoxx-be-2014-aftermovie/" title="Previous Post: Devoxx BE 2014: Aftermovie">&laquo; Devoxx BE 2014: Aftermovie</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/" title="next Post: Stop the Rot, the Rules of Refactoring">Stop the Rot, the Rules of Refactoring &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Programming, testing, documentation</h1>
+    <p class="post-meta">
+    	Dec 2, 2014 16:10:04
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>This week I've started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelled in EA (Enterprise Architect), from use cases to the REST API fields. Next we need to perform the actual programming, and the testers write down their tests.</p>
+<h2>Realization</h2>
+<p>What is in the <strong>documentation</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+<p>What is in the <strong>code</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+<p>What is in the <strong>test</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+<p>Come to think of it... <strong>programming IS testing IS documenting</strong>, we are all doing exactly the same thing! This sounds a bit wasteful doesn't it?</p>
+<h2>Duplication</h2>
+<p>Is this (triple) duplication a bad thing? Well, not exactly, it is a good thing the tests and the code are written twice, this greatly reduces the amount of bugs and errors that always happen when writing something. Thinking and writing those things twice is actually a good thing!<br />
+<strong>BUT</strong>...</p>
+<h2>Divergence</h2>
+<p>There is a major problem with having duplication: divergence.</p>
+<p>What happens when a programmer decides to change the fields in the REST API? The moment he does that the documentation isn't correct. In the best case all three, documentation, tests and code, get (<em>manually</em>) updated. But this just <strong>never</strong> happens in real life... Tests start lacking behind, documentation ends up being wrong, code ends up doing things we don't expect. Mostly because we are human and don't like doing things manually, we are focused on one thing, the code, or the test, or EA.</p>
+<p>Another problem is that all three documents are 'alive'. During design sessions people will change the documentation in EA, but this isn't yet implemented in the code. Also the test isn't yet updated. So at every possible moment in time <em>none</em> of the documents hold the entire truth. If you read the documentation you can never rely that the code is actually implemented.</p>
+<h2>Verify and automate!</h2>
+<p>If all three things (documentation, tests, code) do the same thing (namely 'describing how the program should behave') why don't we automatically verify this?</p>
+<p>If you have a REST API description with all fields and types in Enterprise Architect, why not verify this with the actual code?<br />
+A use case describes all possible paths and the expected outcomes, this is 100% the same as your (automated) tests should be!</p>
+<p>We could <em>(and should!)</em> automate and verify this.</p>
+<p>This morning the architect showed us three random examples from pieces of documentation in EA (to teach us how to work with the tool). But <em>NONE</em> of the three examples were complete and/or correct. Not a single example was the same in the documentation as implemented in the code. If this is the case, why even bother writing the documentation? It will keep diverging and become more and more useless.</p>
+<h2>Tooling</h2>
+<p>In a previous project I did, we didn't have any real documentation. We 'only' had Fitnesse tests! But those tests were just as readable as documentation.<br />
+The big advantage was that we had a complete set of tests that:</p>
+<ul>
+<li>are readable as documentation (like use cases)</li>
+<li>are executable and verify our code does what we expect (and visa versa)</li>
+<li>ensure the documentation, tests and code are <strong>the same</strong></li>
+</ul>
+<p>This fixes all the problems regarding divergence and testing. When we wrote down the specification we instantly have our use cases. How do we know the code isn't ready yet? When this documentation is executed, it fails! Writing this initial test text should be done together with programmers, testers and the product owner.</p>
+<p>So is Fitnesse the best tool for the job? Probably not, it isn't as elaborate as Enterprise Architect (thankfully?) but maybe it could use some more structure. The big advantage of EA is the re-use of (partial) use cases when we create a new part of the application, you just drag and link parts together. In my experience people don't treat Fitnesse with the proper respect (it is 'just' test code). For some reason Fitnesse code always ends up as spaghetti code, isn't reusable and becomes a mess, while it should be considered the entire complete and only truth!</p>
+<p>Most tools seem to be very developer focussed, Fitnesse and Cucumber. What other tools can help us accomplish this goal of automating and verifying this trinity? Are there better alternatives?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

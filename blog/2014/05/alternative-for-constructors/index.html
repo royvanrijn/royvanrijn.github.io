@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Alternative for Constructors</title>
+  <meta name="description" content="If you want to create an object in Java there is only one way: use a constructor.ConstructorsConstructors in Java are different from all other methods. They ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/" title="Previous Post: Solving a 18-year-old Core War mystery">&laquo; Solving a 18-year-old Core War mystery</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/06/raspberry-pi-emulation-on-os-x/" title="next Post: Raspberry Pi emulation on OS X">Raspberry Pi emulation on OS X &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Alternative for Constructors</h1>
+    <p class="post-meta">
+    	May 12, 2014 20:49:14
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>If you want to create an object in Java there is only one way: use <b>a constructor</b>.</p>
+<h2>Constructors</h2>
+<p><a href="http://en.wikipedia.org/wiki/Constructor_(object-oriented_programming)">Constructors</a> in Java are different from all other methods. They don't have a return type and can't be invoked, only using the <i>new</i> keyword. Other tasks performed by constructors are:</p>
+<ol>
+<li>Initialisation of class variables</li>
+<li>Call the default contructor of the superclass if no constructor is present</li>
+<li>Initialisation of instance variables</li>
+<li>Execution of constructor body</li>
+</ol>
+
+
+<p>Here is a common example of a constructor in Java:</p>
+<pre class="brush:java">
+
+public class Person {
+
+	//Two mandatory immutable fields
+	private final String firstname;
+	private final String lastname;
+	
+	//Constructor to set the final fields:
+	public Person(String firstname, String lastname) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+	}
+
+	...
+
+</pre>
+<p>If you want to create an <b>immutable</b> object in Java you need to have a constructor to initialise the final fields. Lets look at another example:</p>
+<pre class="brush:java">
+		Person person = new Person("Roy", "van Rijn", 1983, 200, 95.0, 12.5);
+</pre>
+<p>Immediately a problem becomes clear... if you read the code you have absolutely no idea what all the arguments mean. What is 200? What is 95.0? We have to look at the API or open the code of Person to see what arguments we can supply or have been supplied. Thankfully there is a design pattern that solves this problem, the Builder pattern.</p>
+<h2>Builder pattern</h2>
+<p>The <a href="http://en.wikipedia.org/wiki/Builder_pattern">builder pattern</a> is an 'object creation software design pattern'. It can be used to create a immutable objects in a fluent, readable way.</p>
+<pre class="brush:java">
+
+		Person me = new Person
+				.PersonBuilder("Roy", "van Rijn")
+				.birthYear(1983)
+				.length(200)
+				.weight(95.0) // This is what all these numbers mean!
+				.shoeSize(12.5)
+				.build();
+</pre>
+<p>Reading this code is much clearer, we don't have to guess what the arguments mean, it is crystal clear. So we've got a good solution, right? Well, not really, I've got a big problem with the Builder pattern. For a simple immutable object as the Person above with just six fields we need the following code:</p>
+<pre class="brush:java">
+public class Person {
+
+	// The immutable fields
+	private final String firstname;
+	private final String lastname;
+	private final int birthYear;
+	private final int length;
+	private final double weight;
+	private final double shoeSize;
+	
+	// The private hidden constructor with all fields:
+	private Person(String firstname, String lastname, int birthYear, int length, double weight, double shoeSize) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.birthYear = birthYear;
+		this.length = length;
+		this.weight = weight;
+		this.shoeSize = shoeSize;
+	}
+	
+	// A second Builder class with all the fields listed again:
+	public static class PersonBuilder {
+		
+		private String firstname;
+		private String lastname;
+		private int birthYear;
+		private int length;
+		private double weight;
+		private double shoeSize;
+		
+		public PersonBuilder(String firstname, String lastname) {
+			this.firstname = firstname;
+			this.lastname = lastname;
+		}
+		
+		// All 'setters' with a fluent interface:
+		public PersonBuilder birthYear(int birthYear) {
+			this.birthYear = birthYear;
+			return this;
+		}
+		public PersonBuilder length(int length) {
+			this.length = length;
+			return this;
+		}
+		public PersonBuilder weight(double d) {
+			this.weight = d;
+			return this;
+		}
+		public PersonBuilder shoeSize(double shoeSize) {
+			this.shoeSize = shoeSize;
+			return this;
+		}
+	
+		// Finally a build method that calls the hidden constructor:
+		public Person build() {
+			return new Person(firstname, lastname, birthYear, length, weight, shoeSize);
+		}
+		
+	}
+
+</pre>
+<p>Woah... that is a stupendous amount of code just for a better readable immutable way of object construction. I don't have a good solution for this problem, the Java language doesn't have a good way to construct objects (especially immutable objects) in a readable manner. Constructors end up having a lot of confusing nameless arguments; or you'll have to write a huge Builder class with a nice fluent interface.</p>
+<p>The Java language is constantly evolving and there are now <a href="http://cr.openjdk.java.net/~jrose/values/values-0.html">proposals</a> to add 'value types' in Java. Reading through the proposal it seems the only way to construct the value type will be using the constructor, but I'm afraid this will quickly become a burden again. I'd love to have a better way to construct objects and (in the future) values, although I have no idea what it should look like. I'd love to have a fluent way of object creation without having to code a big Builder class, preferably in the language itself.</p>
+<p>Would it be possible to change to language in a backwards compatible way to allow this?</p>
+<p>One possibility would be to 'steal' from other languages, for example <a href="http://en.wikipedia.org/wiki/Moose_perl">Moose Perl</a>:</p>
+<pre class="brush:java">
+public class Person {
+
+	private final String firstname;
+	private final String lastname;
+	private int birthYear;
+	private int length;
+	private double weight;
+	private double shoeSize;
+	
+        // Full constructor
+	public Person(String firstname, String lastname, int birthYear, int length, double weight, double shoeSize) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.birthYear = birthYear;
+		this.length = length;
+		this.weight = weight;
+		this.shoeSize = shoeSize;
+	}
+
+...
+// Made up syntax, similar to Moose, providing syntactic sugar.
+// Leaves the other fields null, compile error if final fields aren't set.
+Person me = new Person(firstname => "Roy", lastname => "van Rijn", birthYear => 1983);
+
+</pre>
+<p>This has the readability advantage and has the flexibility of the Builder pattern (not needing dozens of overloaded constructors).</p>
+<p>Would something like this be a good addition to the Java language?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

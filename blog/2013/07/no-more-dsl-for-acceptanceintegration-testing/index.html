@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>No more DSL for acceptance/integration testing</title>
+  <meta name="description" content="Everybody seems to be using Fitnesse or Cucumber for integration testing these days. The main idea is that users (testers/business analists and programmers) ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2013/06/ethics-for-programmers/" title="Previous Post: Ethics for programmers">&laquo; Ethics for programmers</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2013/09/episode-1/" title="next Post: Episode #1">Episode #1 &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">No more DSL for acceptance/integration testing</h1>
+    <p class="post-meta">
+    	Jul 25, 2013 22:33:38
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Everybody seems to be using <a href="http://fitnesse.org/">Fitnesse</a> or <a href="http://cukes.info/">Cucumber</a> for integration testing these days. The main idea is that users (testers/business analists and programmers) can write what your program should do in plain text. The programmer then creates a small layer of code which gets interpreted and executes your actual program to see if the specified requirements are met.</p>
+<h2>Fitnesse example</h2>
+<p>For example a (hypothetical) piece of code in Fitnesse as it could have been used in the Port of Rotterdam:</p>
+<pre class="brush:plain">
+!3 Anchorage tests
+
+!|given a ship                                |
+|Id  |Name       |Category|CallSign|Shipnumber|
+|1001|Maersk Bali|TANKER  |D6DZ8   |7420211   |
+
+|script                                                              |
+|When a ship called|MAERSK BALI|reaches the port                     |
+|And it reports anchor down                                          |
+|ensure            |the ship is shown in the list of anchored vessels|
+|check             |the list of anchored vessels now has size|1      |
+</pre>
+<p>This is something the testers and product owners can read and understand. Behind this layer of text Fitnesse will try to execute pieces of code. This is left as an exercise for the programmers to complete. They'll need to write something like:</p>
+<pre class="brush:java">
+GivenAShip:
+void setId(String id);
+void setName(String name);
+void setCategory(String category);
+void setCallSign(String callSign);
+void setShipnumber(String shipnumber);
+void execute(); //Stores the ship in the database
+
+AnchorageScenarios:
+void whenAShipCalledReachedThePort(String shipName);
+void andItReportsAnchorDown();
+boolean theShipIsShownInTheListOfAnchoredVessels();
+int theListOfAnchoredVesselsNowHasSize();
+</pre>
+<p>This is where the problems start, there is a lot of room for typos. Which will send you all over the codebase constantly translating Fitnesse text like "<em>and it reports anchor down</em>" to "<em>andItReportsAnchorDown</em>" during your searches.</p>
+<p>Also people always say, because it is 'plain text' the testers, analists and product owners can instantly start writing tests. But this just isn't true... It <strong>isn't</strong> just writing down tests/requirements, it is programming with a DSL. Normal human text isn't good enough, it still needs some DSL structure. They'll have to learn to <strong>program</strong> in the Fitnesse DSL language. In almost all project I've worked on, it is the programmers writing and maintaining tests, people from the business stay far away from Fitnesse.</p>
+<p>If you want to refactor the scenarios/fixtures in Fitnesse you're in for a treat. Everything is bound by name only, and renaming code for example won't rename the DSL! Using Fitnesse 'sounds' very agile, but it doesn't really make the code agile at all. Most test code I've worked on is <strong>fragile</strong>, very <strong>ridged</strong> and <strong>not easy to refactor</strong>. Why not take advantage of that IDE and statically typed language if the programmers are writing and maintaining the tests?</p>
+<h2>Using code instead</h2>
+<p>Today we had a "ShipIt"-day (nautical-pun intended) at work, where we're free to work on any project for 24 hours straight and we present our findings afterwards. This boosts the creative ideas and in the long run efficiency and innovation.</p>
+<p>After using Fitnesse now for three years we've become used to it, and don't ever <strong>question its usage</strong>. Although we feel the <strong>pain</strong> of the rigid/fragile test code on a daily basis. I decided to start rethinking the way we do acceptance tests. </p>
+<p>My goals was to make our tests:</p>
+<ul>
+<li>Simpler to write</li>
+<li>Easier to refactor</li>
+<li>Maintain the readability</li>
+<li>Easier to reuse</li>
+<li>Faster! (no DSL parsing)</li>
+</ul>
+<p>This is what the initial design now looks like. The example used above would become the following:</p>
+<pre class="brush:java">
+@Jitness        // Annotation that indicates this is a test class
+@SuiteSetUp({   // This is called once for all the methods in the class below
+	@Execute(
+			type = ShipExecutor.class,
+			data = { "1001", "Maersk Bali", "TANKER", "D6DZ8", "7420211" })
+	})
+})
+@SetUp({
+	       // @Execute annotations here will be called before each of the methods below
+	       // The @SetUp annotation can also be placed on a single method in the test class
+})
+public class AnchorageTests {
+
+	public void givingCommandAnchorDownCausesShipToAppearInList() {
+
+		final AnchorageScenarios scenarios = new AnchorageScenarios();
+
+		scenarios.whenAShipReachedThePortCalled("Maersk Bali");
+		scenarios.andItReportsAnchorDown();
+		Assert.assertTrue(scenarios.theShipIsShownInTheListOfAnchoredVessels());
+		Assert.assertEquals(1, scenarios.theListOfAnchoredVesselsNowHasSize());
+	}
+
+	public void anotherTestHere() {
+		... etc ...
+	}
+}
+</pre>
+<p>Using Jitness (<em>working title</em>) the scenarios will be implemented in exactly the same way we've already been doing. This makes it easier to transition from Fitnesse to this code.<br />
+The only bit of 'magic' is the execute annotation. You can write executors like this:</p>
+<pre class="brush:java">
+public class ShipExecutor implements Executor {
+
+	private ShipRepository repository = new ShipRepository();
+
+	@Override
+	public void before(final String[] args) throws Exception {
+                repository.store(parse(args));
+	}
+	
+	@Override
+	public void after(final String[] args) throws Exception {
+                repository.delete(parse(args));
+	}
+
+        private Ship parse(String[] args) {
+		return new ShipBuilder()
+                         .id(Long.parse(args[0])
+                         .name(args[1])
+                         .category(args[2])
+                         .callSign(args[3])
+                         .shipNumber(args[4])
+                         .build();
+        }
+}
+</pre>
+<p>A (more elaborate) sample of the output it generates, with failure:</p>
+<pre class="brush:plain">
+Results: 
+OK	BunkeringTests.SuiteSetUp
+OK	BunkeringTests.addTypeOfFuelToBunker
+OK	BunkeringTests.changeTypeOfFuelToBunker
+OK	BunkeringTests.removeTypeOfFuelToBunker
+OK	BunkeringTests.bunkeringOnIncomingMovement
+OK	BunkeringTests.bunkeringOnOutgoingMovement
+OK	BunkeringTests.loadBunkeringForOpenVesselVisit
+NOK	BunkeringTests.retrieveListOfBunkerBarges
+expected:<1> but was:<2>
+OK	BunkeringTests.SuiteTearDown
+Took: 128 ms
+</pre>
+<p>The main advantages of using this are obviously leveraging the full potential of your IDE, including renaming/refactoring. Changing methods and classes in your production code will automatically show up as changes in Jitness. And everything is easy to refactor because it is just code! This will eventually lead to much more <strong>agile code</strong>, <strong>simpler</strong> and <strong>easier to refactor</strong>. Obviously there is one main drawback, it is harder for testers to read and write. But if they pair up with a programmer this should be no problem I think. I'd rather have the testers learn a bit of coding than the programmers learn a text DSL which leads to fragile tests.</p>
+<p>Another big advantage is execution time, using compiled code is always faster than parsing plain text or HTML at runtime. Also this code is compiled during the build, so there is no need for additional classpath (Maven) plugins. I'm really fond of the idea to use code to describe the tests, and I'm very curious how my colleagues are going to rate this tomorrow when we demo the "ShipIt" ideas. With a couple of more days work this can be fully tested and made robust enough to start using it and maybe even open source it.</p>
+<p>What are your thoughts? Any ideas about improving the API? Should we just keep using Fitnesse/Cucumber or any other alternative DSL instead?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

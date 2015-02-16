@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Corewars - An Introduction to Hostile Programming</title>
+  <meta name="description" content="Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle p...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/corewar-subleq-interpreter/" title="next Post: Corewars - SUBLEQ interpreter">Corewars - SUBLEQ interpreter &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Corewars - An Introduction to Hostile Programming</h1>
+    <p class="post-meta">
+    	Dec 1, 2009 11:02:17
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
+<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
+<p>Here's an example of a typical Corewar program:</p>
+<pre class="brush:text">
+     org   wipe
+
+     step  equ 5
+     first equ bomb-10
+
+bomb:mov.i #1,       -1
+
+ptr: sub   #step,    #first
+wipe:jmz.f ptr,      @ptr
+
+     mov   bomb,     >ptr
+     djn.f wipe,     {ptr-5
+
+     end
+</pre>
+<p>This simple example of scissors once held a 20 point lead over it's rivals. The first instruction is never executed, it's the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
+<p>Corewar is still going strong, and celebrates it's 25th anniversary in 2009. If you'd like to discover more about Corewar, here are the top resources:</p>
+<ul>
+<li><a href="http://vyznev.net/corewar/guide.html">The Beginner's Guide to Redcode</a> will teach you the language of Corewar</li>
+<li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
+<li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
+<li><a href=" http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
+<li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
+<li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
+<li><a href="irc://irc.freenode.net/#COREWARS">#corewars</a> is the official Corewar discussion channel, hosted by <a href="irc://irc.freenode.net/#COREWARS">irc.freenode.net</a></li>
+</ul>
+<p>What are your experiences with Corewar, have you ever had any success?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

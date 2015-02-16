@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Stacktraces should be inverted</title>
+  <meta name="description" content="Stacktraces in Java are wrong. This is a conclusion that I've drawn after years of working with novice programmers.What is the first thing novice programmers...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/09/stacktraces-should-be-inverted/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/" title="Previous Post: Hacking with the Mara-Naboisho Lion Project">&laquo; Hacking with the Mara-Naboisho Lion Project</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/11/devoxx4kids/" title="next Post: Devoxx4Kids">Devoxx4Kids &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Stacktraces should be inverted</h1>
+    <p class="post-meta">
+    	Sep 26, 2012 10:28:52
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Stacktraces in Java are wrong. This is a conclusion that I've drawn after years of working with novice programmers.</p>
+<p>What is the first thing novice programmers do when they encounter a stacktrace? They start reading it, and this is wrong! The first thing you <em>should</em> do is scroll down. That is because the most important piece of the stacktrace is most likely at the bottom.</p>
+<h3>Caused by...</h3>
+<p>Stacktraces in Java are usually wrapped numerous times, because all the frameworks and the application server wants to add their own little bit of information around the original exception. The problem is that Java uses the "Caused by" way of printing the stacktrace. With the "Caused by" you'll get a lot of information about what happened (<em>afterwards</em>) first, until you get to the actual reason. </p>
+<p>For example:</p>
+<pre style="overflow: auto; border:1px dashed black; padding:10px;">
+com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+<strong>Caused by: java.lang.NullPointerException</strong>
+	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(Unknown Source)
+	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
+	<strong>at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)</strong>
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+</pre>
+<p>The first two traces aren't at all important, it tells us something went wrong with a webservice call. But the bottom trace gives us the real reason, a NullPointerException!</p>
+<h3>Caused!</h3>
+<p>I'd rather see stacktraces being inverted, so instead of saying:</p>
+<p><strong>Webservice failed | which is caused by -&gt; Webservice failed during translation | which is caused by -&gt; A NullPointerException!</strong></p>
+<p>It should say:</p>
+<p><strong>A NullPointerException | which caused -&gt; Webservice failed during translation | which caused -&gt; Webservice failed...</strong></p>
+<p>So using the example above it would become:</p>
+<pre style="overflow: auto; border:1px dashed black; padding:10px;">
+<strong>java.lang.NullPointerException</strong>
+	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(Unknown Source)
+	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
+	<strong>at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)</strong>
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+</pre>
+<p>This is much easier to understand (IMHO). The first exception you see is now also the first thing that happened. Much clearer for the novice programmer.</p>
+<p>Some more tips when you encounter a stacktrace:</p>
+<ul>
+<li>Look for the first line that starts with YOUR package, this is where your control over the code starts, where you might be able to fix it</li>
+<li>If there are a lot of other packages mentioned before YOUR package, Google it! You are probably not alone</li>
+</ul>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

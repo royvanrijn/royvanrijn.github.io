@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Checked Exceptions: Evil</title>
+  <meta name="description" content="Today somebody posted a comment:'Could you write a post giving more details on why you thinkchecked exceptions are "the embodiment of evil"?'So here it is.As...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/" title="Previous Post: De Bruijn sequence in constant amortized time">&laquo; De Bruijn sequence in constant amortized time</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/04/static-state-evil-as-well/" title="next Post: Static state: Evil as well">Static state: Evil as well &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Checked Exceptions: Evil</h1>
+    <p class="post-meta">
+    	Apr 19, 2011 18:13:55
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Today somebody posted a comment:</p>
+<blockquote><p>
+'Could you write a post giving more details on why you think<br />
+checked exceptions are "the embodiment of evil"?'</p></blockquote>
+<p>So here it is.<br />
+<!--more--><br />
+As you can see I haven't written a post in a long time (sorry). This post is also not going to be very comprehensive. Of course I could explain everything, but I'd rather link to another site which sums it up very nicely:<br />
+<a href="http://c2.com/cgi/wiki?TheProblemWithCheckedExceptions">http://c2.com/cgi/wiki?TheProblemWithCheckedExceptions</a></p>
+<p>Basically, I don't want to be forced to handle exceptions. Also, having to catch checked exceptions makes code unreadable, complex and harder to change/refactor.</p>
+<p>Of course I'm also aware that with runtime exceptions you are likely to forget to catch some exceptions, which is also very bad. That is why our application(s) catch and log all runtime exceptions and mail them to the developers. Execptions are always something very bad and should not be functional, exceptions should be... exceptions. Once they happen, all hell should break out and it should be fixed.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

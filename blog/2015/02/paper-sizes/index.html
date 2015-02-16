@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Paper sizes</title>
+  <meta name="description" content="Two standardsYes, this blogpost is about paper. This has absolutely nothing to do with programming, but there is a beautiful piece of math involved.There are...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2015/02/paper-sizes/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2015/02/shaved-faq/" title="Previous Post: Shaved FAQ">&laquo; Shaved FAQ</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2015/02/the-science-behind-unknown-pleasures/" title="next Post: The science behind 'Unknown Pleasures'">The science behind 'Unknown Pleasures' &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Paper sizes</h1>
+    <p class="post-meta">
+    	Feb 11, 2015 14:00:25
+    </p>
+  </header>
+
+  <article class="post-content">
+    <h2>Two standards</h2>
+<p>Yes, this blogpost is about paper. This has absolutely nothing to do with programming, but there is a beautiful piece of math involved.</p>
+<p>There are two major standards of paper sizes in the world. The most widely used is <a href="http://en.wikipedia.org/wiki/ISO_216">ISO-216</a>, more commonly known as the A-series, as in 'A4' size. This system is used almost everywhere in the world, the main exceptions are United States and Canada. In the United States they use their own <a href="http://en.wikipedia.org/wiki/Letter_(paper_size)">US Letter</a> standard.</p>
+
+
+<h2>US Letter</h2>
+<p>The standard US Letter has a size of: 216 mm x 279 mm (8.5 by 11 inches) and a ratio of 1,291666666666667.<br />
+(I'll explain why this ratio is important in the math part below!).</p>
+<p>The origin of this size is very vague and lost in history. Most origins say (from Wikipedia):</p>
+<blockquote><p>The 11" length of the standard paper being about a quarter of "the average maximum stretch of an experienced vatman's arms."</p></blockquote>
+<p>Basically US Letter is a standard because it is a standard, don't ask questions, just deal with it.</p>
+<h2>ISO-216, the A-standard</h2>
+<p>The letter size of the ISO standard is A4. The size is 210 mm × 297 mm and has a ratio of √2 (math!).</p>
+<p>The ratio is what makes this standard superior. This of course isn't a coincidence. Smart people have thought about these sizes, it became a standard because it was superior. The 'magic' property A4 paper size has is that is consists of exactly two A5 papers side-by-side. In turn, two of these A4 papers make up the larger A3 paper. This makes it very easy for example to make a booklet in A5 format consisting of folded A4 papers. Also if you scale up a document in A5 it'll exactly fit A4. If you want to use a copier and print two A5 pages on A4 paper, go ahead! This is impossible to do with US Letter, you'll end up with white spaces or stretched documents!</p>
+<h3>Aspect ratio math</h3>
+<p>How does this work mathematically? The magic hides in the fact that 2 / √2 = √2. Imagine we have a piece of paper with long side A and short side B. If we fold the long side and create a new paper size with B and C, what is the aspect ratio?</p>
+<pre>
+
+Given:
+A/B = √2 (aspect ratio)
+C = A/2 (new short length is A folded in half)
+
+So what is the new aspect ratio of B/C?
+B/C = B/(A/2)
+
+B/(A/2) = 2/(A/B)
+
+2/(A/B) = 2/√2
+
+2/√2 = √2!
+</pre>
+<p>When you start with the aspect ratio of √2, the resulting folded aspect ratio is again √2. You can keep doing this. </p>
+<p>Lets take the largest standard paper size, A0: 841 × 1189. What happens when we fold it? Well: 841 becomes the long side, 1189/2=594.5 the short side. This is indeed the A1 paper size (594 mm x 841 mm). It will keep the magic √2 aspect ratio!</p>
+<h3>Size of A0 paper</h3>
+<p>Now that we can explain the aspect ratio, we still don't know how we ended up with the magic numbers 210 mm × 297 mm. This number originates simply because the A0 paper size is defined as having an aspect ratio of √2 and a surface area of 1 m2.</p>
+<p><strong>This is all you need to know, √2 and 1m2.</strong></p>
+<pre>
+Given:
+A*B = 1m2 = 1000&sup2; (our paper size)
+A/B = √2 (our ratio)
+</pre>
+<p>The first formula we need is:</p>
+<blockquote><p>area = (diagonal&sup2;) / (ratio + (1/ratio))</p></blockquote>
+<pre>
+When we plug in the given values:
+1000&sup2; = (diagonal&sup2;) / (√2 + (1/√2))
+
+diagonal&sup2; = (√2 + (1/√2)) &times; 1000&sup2; ≅ 2121320.34
+
+Remember our magic aspect ratio: 
+A / B = √2:
+B = A &times; √2
+
+With our old pal Pythagoras we now know:
+diagonal&sup2; = A&sup2; + B&sup2; (= 2121320.34)
+
+Let's get rid of B&sup2;:
+diagonal&sup2; = A&sup2; + (A * √2)&sup2;
+
+Now we can simplify:
+diagonal&sup2; = A&sup2; + (A &times; √2)&sup2;
+diagonal&sup2; = A&sup2; + 2 &times; A&sup2;
+diagonal&sup2; = 3 &times; A&sup2;
+
+And easily calculate the result:
+3 &times; A&sup2; = 2121320.34
+
+A = √(2121320.34 / 3) ≅ 840.89
+B = A &times; √2 ≅ 1189.20
+
+</pre>
+<p>We started with just two simple numbers, ratio: √2 and area: 1m2 and now we've ended up with the A0 paper, 841 mm and 1189 mm!<br />
+To calculate the rest of the A-series you just take:</p>
+<pre>
+
+A' = B / 2
+B' = A
+
+</pre>
+<p>Mathematically folding it in half results in: 594 mm x 841 mm = exactly the A1 paper size!</p>
+<p><img src="/images/reference_iso_paper_size-300x226.jpg" alt="reference_iso_paper_size" width="300" height="226" class="aligncenter size-medium wp-image-2007" /></p>
+<h2>Keep on folding</h2>
+<p>When we take an A4 paper and keep folding it, we get the following aspects (aspects fluctuate a little bit due to rounding):</p>
+<pre>
+A4	210 mm × 297 mm ratio: 1.414
+A5	148 mm × 210 mm ratio: 1.419
+A6	105 mm × 148 mm ratio: 1.409
+A7	74  mm × 105 mm ratio: 1.418
+A8	52  mm × 74  mm ratio: 1.423
+A9	37  mm × 52  mm ratio: 1.405
+A10	26  mm × 37  mm ratio: 1.423
+
+</pre>
+<p>But what do you end up with folding the US Letter? Let's see:</p>
+<pre>
+216 mm x 279 mm ratio: 1.291
+139 mm x 216 mm ratio: 1.554 <- What?
+108 mm x 139 mm ratio: 1.287 <- Ah..
+69  mm x 108 mm ratio: 1.565 <- HUH!?
+54  mm x 69  mm ratio: 1.278
+34  mm x 54  mm ratio: 1.588
+27  mm x 34  mm ratio: 1.259 <- Oh god...
+
+</pre>
+<p>This fluctuating ratio results in so much wasted space, ink, paper! And it is just ugly! If you decide to scale something up from A5 to A4 it instantly fits, if you scale something in US Letter... you'll either have to crop or stretch or leave unprinted paper.</p>
+<p>US Letter is bad for the environment!</p>
+<p>Ban the US Letter standard, <strong>hurray for math</strong>!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

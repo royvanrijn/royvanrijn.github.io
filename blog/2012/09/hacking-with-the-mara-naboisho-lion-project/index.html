@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hacking with the Mara-Naboisho Lion Project</title>
+  <meta name="description" content="Yesterday a friend of mine pointed me to the following thread:https://github.com/giving/giving.github.com/issues/11giving.github.comGiving.github is a projec...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/07/visitors-you-make-me-proud/" title="Previous Post: Visitors, you make me proud">&laquo; Visitors, you make me proud</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/09/stacktraces-should-be-inverted/" title="next Post: Stacktraces should be inverted">Stacktraces should be inverted &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Hacking with the Mara-Naboisho Lion Project</h1>
+    <p class="post-meta">
+    	Sep 11, 2012 20:05:40
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Yesterday a friend of mine pointed me to the following thread:<br />
+<a href="https://github.com/giving/giving.github.com/issues/11">https://github.com/giving/giving.github.com/issues/11</a></p>
+<p><img src="/images/lion-with-collar.jpg" alt="" title="lion-with-collar" width="340" height="234" class="alignright size-full wp-image-1267" /></p>
+<h3>giving.github.com</h3>
+<p>
+Giving.github is a project that tries to bring people together. There are a lot of programmers looking for fun projects in the world, and so are scientists/charities and other people with problems!</p>
+<p>Be sure to check it out, maybe you can help somebody as well.</p>
+<h3>Mara-Naboisho Lion Project</h3>
+<p>
+One of the problems posted to giving.github has something to do with Lion collars. The Mara-Naboisho Lion Project has a couple of collars and some files, but no idea what the data inside the files mean. Their initial description was:</p>
+<p>The Mara-Naboisho Lion Project has asked for our help decoding and plotting the positions of lions fitted with GPS collars.</p>
+<p>They receive SMSes from the collars:</p>
+<pre class="brush:plain">
+File: Collar07854_100806210058.SMS
+
+074952494449554d0000000000000000000000000000000000000000
+000000040f3330303033343031323239373839300000000000000000
+0000000000000000f10a0806100028008c13ef348a0039d0fe000de8
+71004cc92b5ca92d6213ef26640039d108000de86b004cc92d5ca92d
+5d13ef18620039d101000de865004cc92c5ca92d5813ef0a930039d0
+fc000de864004cc9311c682d5413eefc170039d045000de7d4004cc9
+5b7c692c5013eeee280039d0ff000de85f004cc92a7c692d6fffffff
+ffffffffffffffffffffffffffffffffffff
+    
+File: Collar07854_100807060011.SMS
+
+074952494449554d0000000000000000000000000000000000000000
+000000040f3330303033343031323239373839300000000000000000
+0000000000000000f10a0807020038008c13efb2eb0039d0ed000de8
+53004cc92e3cea2d8813efa5060039d0fb000de860004cc9291c6a2d
+8413ef96fd0039d0fc000de85e004cc92d5c6a2d7f13ef88e00039d0
+f6000de85a004cc92b5c6a2d7b13ef7ad80039d0fa000de85a004cc9
+327c6a2d77ffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffff
+</pre>
+<p>These are presumably SMS PDUs, although simple online decoders don't seem to make much sense of them.  There's the ASCII text "IRIDIUM" in them, presumably being the SMSC or sender or something string, as IRIDIUM is a satellite telephone system and presumably the bearer when the collars send up their positions.</p>
+<p>What format is it, and how do we decode it?</p>
+<h3>Not SMS PDU</h3>
+<p>This is where I started analyzing, and I quickly ruled out that the hex-code is pure PDU (which can easily be translated). It seems to be some dialect/own protocol.</p>
+<p>The first major breakthrough was realizing that there is one big header that both files have in common, and the real message starts with <strong>0A</strong>. And the two messages after that have a repeating pattern:</p>
+<pre class="brush:plain">
+
+Common header?
+
+074952494449554d000000000000000
+0000000000000000000000000000000
+040f333030303334303132323937383
+9300000000000000000000000000000
+0000f10a
+
+Sub header?
+SMS 1: 0806100028008c13
+SMS 2: 0807020038008c13
+
+
+Message #1:
+ef348a0039d0fe000de871004cc92b5ca92d6213
+ef26640039d108000de86b004cc92d5ca92d5d13
+ef18620039d101000de865004cc92c5ca92d5813
+ef0a930039d0fc000de864004cc9311c682d5413
+eefc170039d045000de7d4004cc95b7c692c5013
+eeee280039d0ff000de85f004cc92a7c692d6fff
+ffffffffffffffffffffffffffffffffffffffff
+
+Message #2:
+efb2eb0039d0ed000de853004cc92e3cea2d8813
+efa5060039d0fb000de860004cc9291c6a2d8413
+ef96fd0039d0fc000de85e004cc92d5c6a2d7f13
+ef88e00039d0f6000de85a004cc92b5c6a2d7b13
+ef7ad80039d0fa000de85a004cc9327c6a2d77ff
+ffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffff
+</pre>
+<p>This sure adds some structure to the files. I also guessed the first file has actually 6 entries and the second file has only 5 entries.</p>
+<h3>First field deciphered</h3>
+<p>The second breakthrough came through Twitter. I posted this problem in a tweet and after a couple of hours I got a reply that there was progress on the <a href="http://stackoverflow.com/questions/12347625/decode-sms-reporting-gps-positions-of-lions-in-kenya">stackoverflow</a> question.</p>
+<p>This was DStibbe's reply:</p>
+<p>---------------------------------------------------------------------------------<br />
+Perhaps the '13' is not part of the headers but the message instead?<br />
+The messages would then be:</p>
+<pre class="brush:plain">
+Message #1
+13ef 348a 0039 d0fe 000d e871 004c c92b 5ca9 2d62
+13ef 2664 0039 d108 000d e86b 004c c92d 5ca9 2d5d
+13ef 1862 0039 d101 000d e865 004c c92c 5ca9 2d58
+13ef 0a93 0039 d0fc 000d e864 004c c931 1c68 2d54
+13ee fc17 0039 d045 000d e7d4 004c c95b 7c69 2c50
+13ee ee28 0039 d0ff 000d e85f 004c c92a 7c69 2d6f
+ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
+ff
+
+Message #2
+13ef b2eb 0039 d0ed 000d e853 004c c92e 3cea 2d88
+13ef a506 0039 d0fb 000d e860 004c c929 1c6a 2d84
+13ef 96fd 0039 d0fc 000d e85e 004c c92d 5c6a 2d7f
+13ef 88e0 0039 d0f6 000d e85a 004c c92b 5c6a 2d7b
+13ef 7ad8 0039 d0fa 000d e85a 004c c932 7c6a 2d77
+ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
+ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
+ff
+</pre>
+<p>It does seem like a log , with the message for Aug 06 (guessing) has 6 entries and the second from Aug 07 having 7.<br />
+What would a collar record? I'm guessing longitude,latitude and timestamp?</p>
+<p>Chances are high that the first eight digits represent the timestamp. They are incremental from bottom to top.</p>
+<p>Eg. 13ef348a = 334443658.<br />
+334443658 seconds = 10 years, 8 months, 6 days, 23:00:58</p>
+<p>This matches the date in the title of the first sms: Collar07854_<strong>100806 210058</strong>.SMS<br />
+It even matches the timestamp minus 2 hrs in the title!<br />
+---------------------------------------------------------------------------------</p>
+<h3>More information</h3>
+<p>At this point the progress stopped a bit, we couldn't get the other bytes translated. There seemed to be certain integer values: 0039 d0ed for example. This probably isn't floating point (which we thought it would be, latitude/longitude/altitude) because floating point numbers have the exponent in the first 11 bits. When a number starts with 00's it doesn't have the exponent part filled.</p>
+<p>So we asked the project for some more information, for example about the recorded data (where/when) and the manufacturer of the collars.<br />
+They gave us <a href="https://gist.github.com/3698320">this KML file</a>, and this company name: Vectronic-Aerospace.</p>
+<h3>Lat/lon, I've got you!</h3>
+<p>The biggest part we wanted to decipher was the lan/lon location (that is what the researchers want to have). I came to this breakthrough after reading a <a href="http://www.vectronic-aerospace.com/files/Flyer-GPS_Plus-Data_Manager.pdf">PDF</a> file from Vectronic-Aerospace's website. It has some screenshots from their original software (why aren't they using that free software?!). In these screenshots I noticed integer coordinates very close to the integers I've managed to get from the hex-data! It was called ECEF data, this is X,Y,<strong>Z</strong> data! Until now my guess was that the SMS files had lat/lon coded in binary, but it has XYZ information.</p>
+<p>After a quick google I managed to find some code to translate from ECEF coordinates to lat/lon and it gave me the following location:<br />
+Lat: 52.43067054630929<br />
+Lon: 13.525755535406619<br />
+Height: 88.99500464554876</p>
+<p>When plotted in Google Maps it gave me a location in Germany, at first I thought it was another dead end, but then I looked <a href="http://www.vectronic-aerospace.com/index.php?p=contact">here</a>. It turns out it was the EXACT location of Vectronic Aerospace, the creators of the collar! Problem solved.</p>
+<h3>What's next?</h3>
+<p>There are still some mysteries, for example... what are the last bytes? Looking at the screenshots in the PDF I suspect it would be main battery voltage, backup voltage and temperature. The project also probably wants to integrate the collar files with the website. And there are of course a lot more <a href="http://giving.github.com/">giving.github.com</a> problems to solve!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

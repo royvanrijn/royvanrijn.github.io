@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>XOR doubly linked list</title>
+  <meta name="description" content="Since a couple of days I've been working hard on the new Al Zimmermann's Programming Contest: Cards (also called Topswops).The challengeThe idea is very easy...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/11/patent-infrigement-part-2/" title="Previous Post: Patent infringement (part 2)">&laquo; Patent infringement (part 2)</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/12/finding-performance-problems/" title="next Post: Finding performance problems">Finding performance problems &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">XOR doubly linked list</h1>
+    <p class="post-meta">
+    	Nov 24, 2010 10:50:02
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Since a couple of days I've been working hard on the new Al Zimmermann's Programming Contest: <a href="http://azspcs.net/Contest/Cards">Cards</a> (also called Topswops).</p>
+<h1>The challenge</h1>
+<p>The idea is very easy, you take a series of numbers, from 1 to N. You shuffle the numbers around, for example:</p>
+<ul>
+<li>5,3,1,2,4</li>
+</ul>
+<p><!--more--><br />
+Now we reverse the amount of numbers as stated by the first entry in the list. So in this case we reverse 5, and we get:</p>
+<ul>
+<li>4,2,1,3,5 </li>
+</ul>
+<p>We keep doing this, now reversing 4:</p>
+<ul>
+<li>3,1,2,4,5</li>
+<li>2,1,3,4,5</li>
+<li>1,2,3,4,5</li>
+</ul>
+<p>At this point, 1 is in front, we are done! No more reversals are possible.</p>
+<h1>The problems</h1>
+<p>When implementing this the first thing I did was to create an array and reverse parts of the array by swapping the items around. The problem is that the amount of swaps is pretty big! </p>
+<p>So I started thinking about other ways to save the numbers in this challenge.. how about a linked list? This won't work because when updating the linked list you'll have to reverse all the pointers in the part you are reversing.</p>
+<p>So how about using a doubly linked list? This won't work because we have to swap the next/previous pointers for all the nodes we reverse.</p>
+<h1>XOR doubly linked list</h1>
+<p>Then I learned about the XOR doubly linked list. Let me explain how it works. The idea is that you don't have next and previous pointers, but you just have one pointer. This pointer is both the next AND the previous pointer! How is this possible you might ask?</p>
+<p>Well, this is where the XOR comes into play. Lets do a tiny bit of math:<br />
+A ^ B = C<br />
+Now:<br />
+C ^ A = B<br />
+C ^ B = A</p>
+<p>A property of the XOR is, if we have one value, we can calculate what the other value is!</p>
+<p>When we create the list we XOR the next and previous together, and we save the pointer to the first element in a seperate pointer. Lets say A = previous, B = next, C = stored value:</p>
+<ul>
+<li>previous ^ next = stored value</li>
+<li>stored value ^ previous = next</li>
+<li>stored value ^ next = previous</li>
+</ul>
+<p>If we traverse our XOR doubly linked list we know the current element and the one before that (previous), so we can always calculate the pointer to the next element!</p>
+<h1>The advantages</h1>
+<p>So why would we do this? It involves a bit more processing power and will obviously save you half of the pointer-memory compared to a normal doubly linked list. We now keep one XOR-ed value instead of two pointers.</p>
+<p>But there is another great advantage which might be usefull in the competition I mentioned above, reversability! As stated above using a doubly linked list wasn't helpfull because when we reverse a part all the previous and next pointers have to be swapped. But we don't have these pointers anymore, they are XOR-ed into one value! That means that we don't have to change anything!</p>
+<p>Lets assume we have a list of 80 items, and we want to reverse the first 40, what do we need to do now?</p>
+<ol>
+<li>Traverse to the 40th element</li>
+<li>Adjust the value of the 40th pointer, now the first element:<br />
+TERMINATOR ^ (PTR TO 39)</li>
+<li>Adjust the value of the 1st pointer, it must have<br />
+(PTR TO 2) ^ (PTR TO 41)</li>
+<li>Adjust the value of the 41th pointer, it must have<br />
+(PTR TO 1) ^ (PTR TO 42)</li>
+<li>Pointer to the first element is now 40 (this has become our first element)</li>
+</ol>
+<p>Done! We have adjusted three pointers and nothing in the middle. B.t.w. TERMINATOR is a value which indicates the boundaries of the first and last elements, I've used -1 for this. When traversing we use this to check if we are done.</p>
+<p>Lets traverse the above reversed list, first we go to the first element (40) and perform the following XOR:</p>
+<ul>
+<li>stored_value (40) ^ TERMINATOR = next (39)</li>
+</ul>
+<p>This will result in 39, now we continue:</p>
+<ul>
+<li>stored_value (39) ^ previous (40) = next (38)</li>
+<li>stored_value (38) ^ previous (39) = next (37)</li>
+<li>...</li>
+<li>stored_value (2) ^ previous (3) = next (1)</li>
+<li>stored_value (1) ^ previous (2) = next (41) !!</li>
+<li>stored_value (41) ^ previous (1) = next (42) !!</li>
+<li>stored_value (42) ^ previous (41) = next (43) etc etc</li>
+</ul>
+<p>It works!</p>
+<h1>A bit of dissapointment</h1>
+<p>After implementing this it doesn't seem to be faster then using swaps to reverse everything in the whole array. This is probably due to a couple of things:</p>
+<ul>
+<li>The locality of a normal array is faster in memory</li>
+<li>You'll have to traverse N-nodes to reach the target to reverse</li>
+<li>The competition has max 97 elements, this might be too small to see the advantage</li>
+</ul>
+<p>My algorithm until now only used a single pointer to keep track of the first element, but it might be usefull to also keep a pointer to the last element. For example if we need to reverse everything up to N-1, I need to traverse from 1 to N-1. But if you have a last-element pointer, using the doubly in the XOR doubly linked list, we can just go backwards from N.</p>
+<p>Ah well, it might not have been usefull (yet?) but it is a beautiful algorithm!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

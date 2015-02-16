@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Bytebeat: Algorithmic Symphonies</title>
+  <meta name="description" content="A couple of days ago I first encountered "bytebeat". This is a new hype revolving algorithmic music and sounds. The basic idea is this:main(t) {  for(t=0;;t+...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/12/bytebeat-algorithmic-symphonies/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/12/math-doodling-vi-hart/" title="Previous Post: Math doodling: Vi Hart">&laquo; Math doodling: Vi Hart</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/12/the-project-manager-and-his-pregnant-wife/" title="next Post: The project manager and his pregnant wife">The project manager and his pregnant wife &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Bytebeat: Algorithmic Symphonies</h1>
+    <p class="post-meta">
+    	Dec 7, 2011 16:42:08
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>A couple of days ago I first encountered <em>"bytebeat"</em>. This is a new hype revolving algorithmic music and sounds. The basic idea is this:</p>
+<pre class="brush:java">
+main(t) {
+  for(t=0;;t++)
+    putchar( t * (((t>>12) | (t>>8) ) & ( 63 & (t>>4))));
+}
+</pre>
+<p>This simple loop has one variable, t (time). And every iteration we use t to calculate some output. Next, we take the output and pipe it into 8-bit 8-kHz PCM channel (for example /dev/audio!).</p>
+<p>A couple of examples in a YouTube video:<br />
+<iframe width="420" height="315" src="http://www.youtube.com/embed/tCRPUv8V22o" frameborder="0" allowfullscreen></iframe></p>
+<p>In Java you could do the following:</p>
+<pre class="brush:java">
+import javax.sound.sampled.*;
+
+public class AudioPump {
+
+	public static void main(String[] args) throws Exception {
+
+		AudioFormat format = new AudioFormat(8000f, 8, 1, false, false);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+		SourceDataLine soundLine = (SourceDataLine)AudioSystem.getLine(info);
+		soundLine.open(format, 32000);
+		soundLine.start();
+
+		byte[] buffer = new byte[8];
+		int t = 0;
+
+		while(true) {
+			for(int n = 0; n < buffer.length; n++) {
+				buffer[n] = (byte)f(t++);
+			}
+			soundLine.write(buffer, 0, buffer.length);
+		}
+	}
+
+	private static int f(int t) {
+		return (t>>7|t|t>>6)*10+4*(t&t>>13|t>>6);
+	}
+	//return (t*(t>>5|t>>8))>>(t>>16);
+	//return t*(((t>>12)|(t>>8))&(63&(t>>4)));
+}
+
+</pre>
+<p>These simple one-liners are able to produce amazing sounds and music!</p>
+<p>It becomes even easier to play around with bytebeat if you use one of the many Javascript implementations.<br />
+Here is one (including the best song I've created): <a href="http://t.co/9oognysS">http://t.co/9oognysS</a></p>
+<p>The computer/synthetic sounds are also good for <a href="http://wurstcaptures.untergrund.net/music/?oneliner=t%7C((t%2F80)%7C(t%2F40))%26(t%2F5)%7C(t%2F160)%7C(t%2F240)%2F8%3C%3C(sin(t%2F3.43)*2)&rate=11025">dubstep</a>.</p>
+<p>For more information on this subject:<br />
+- <a href="http://canonical.org/~kragen/bytebeat/">http://canonical.org/~kragen/bytebeat/</a><br />
+- <a href="http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html">http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html</a></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

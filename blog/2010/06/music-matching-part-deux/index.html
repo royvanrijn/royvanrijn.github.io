@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Music Matching (part deux)</title>
+  <meta name="description" content="After a comment on my previous blog entry (about creating a shazam clone) I started tinkering again.Somebody asked: Could this be used to detect duplicate so...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/06/creating-shazam-in-java/" title="Previous Post: Creating Shazam in Java">&laquo; Creating Shazam in Java</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/07/patent-infringement/" title="next Post: Patent infringement">Patent infringement &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Music Matching (part deux)</h1>
+    <p class="post-meta">
+    	Jun 6, 2010 19:37:15
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>After a comment on my previous blog entry (about creating a shazam clone) I started tinkering again.</p>
+<p>Somebody asked: Could this be used to detect duplicate songs in my mp3 collection!?</p>
+<p>That is exacly what I just tried!<br />
+<!--more--></p>
+<h3>The results</h3>
+<p>Here are some examples:<br />
+<b><br />
+Duplicate found: 01 - everything in its right place.mp3.song matches with D:\data\v2\01-radiohead-everything_in_it's_wrong_place-h8me.mp3.song and score: 134<br />
+</b>(note: This is a remix of the original, with some rap mixed in)</p>
+<p><b><br />
+Duplicate found: 01 - Joy Division - Exercise One.mp3.song matches with D:\data\v2\114 - Joy Division - Exercise One (From Still).mp3.song and score: 255<br />
+</b>(note: Yes, duplicate!)</p>
+<p><b><br />
+Duplicate found: 01 The District Sleeps Alone Tonight.mp3.song matches with D:\data\v2\The Postal Service - The District Sleeps Alone Tonight.mp3.song and score: 636<br />
+</b>(note: Yes, duplicate!)</p>
+<p><b><br />
+Duplicate found: 01-AudioTrack 01.mp3.song matches with D:\data\v2\06.Richard cheese -Id like a virgin- Butterfly.mp3.song and score: 144<br />
+</b>(note: Yes, duplicate, the second was a radio snippet with jingle in the song)</p>
+<p><b><br />
+Duplicate found: 01-editors-papillon_edit.mp3.song matches with D:\data\v2\02-editors-papillon_instrumental_edit.mp3.song and score: 382<br />
+</b>(note: Almost a duplicate, the second is an instrumental version of the first)</p>
+<p><b><br />
+Duplicate found: 01-the_strokes-you_only_live_once-ser.mp3.song matches with D:\data\v2\01-the_strokes-you_only_live_once.mp3.song and score: 450<br />
+</b>(note: Yes, duplicate!)</p>
+<p><b><br />
+Duplicate found: 01-the_wombats-backfire_at_the_disco.mp3.song matches with D:\data\v2\Backfire @ The Disco [Promo Version].mp3.song and score: 493<br />
+</b>(note: Yes, almost duplicate, the second is a radio-promo announcement with jingle in it)</p>
+<h3>Conclusion</h3>
+<p>With a bit of tinkering this algorithm could be used to make a tool to detect duplicate songs, even if the mp3's aren't similair. Even live versions and instrumental versions are detected if you lower the threshold.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

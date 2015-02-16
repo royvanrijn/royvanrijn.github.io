@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>De Bruijn sequence in constant amortized time</title>
+  <meta name="description" content="Follow up on the previous blogpost.Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:K. Cattell,...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/" title="Previous Post: Generating de Bruijn sequences and Lyndon words">&laquo; Generating de Bruijn sequences and Lyndon words</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/04/checked-exceptions-evil/" title="next Post: Checked Exceptions: Evil">Checked Exceptions: Evil &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">De Bruijn sequence in constant amortized time</h1>
+    <p class="post-meta">
+    	Feb 24, 2011 22:29:29
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Follow up on the previous blogpost.</p>
+<p>Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:</p>
+<p><i>K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)</i></p>
+<p>It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that is isn't really constant time, but approaches it very much. Calculating the worst-case scenario isn't worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true.... until the array underneath needs to be resized. During this resize it'll take some more time. So the algorithm isn't really constant time, but constant amortized time.</p>
+<p>This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).</p>
+<pre class="brush:java">
+	public String generateDeBruijnSequence(int k, int n) {
+		StringBuilder sequence = new StringBuilder();
+		generateLyndonWords(1, 1, k, new int[n+1], sequence);
+		return sequence.toString();
+	}
+	
+	private void generateLyndonWords(int t, int p, int k, int[] a, StringBuilder sequence) {
+		if (t &gt; a.length-1) {
+			if((a.length-1)%p==0) {
+				for(int i = 1; i &lt; p+1;i++) {
+					sequence.append(a[i]);
+				}
+			}
+		} else {
+			a[t] = a[t-p]; 
+			generateLyndonWords(t+1,p, k, a, sequence);
+			for(int j=a[t-p]+1; j&lt;=k-1; j++) {
+				a[t] = j; 
+				generateLyndonWords(t+1,t, k, a, sequence);
+			}
+		}
+	}
+</pre>
+<p><strong>Update June 7th 2012:</strong><br />
+I just stumbled across this interesting read: <a href="http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php">http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php</a></p>
+<p>The keypad example from that link can be easily calculated with the code above:<br />
+generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

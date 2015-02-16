@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Exception mailing</title>
+  <meta name="description" content="A couple of weeks ago our Scrum team was thinking about exception handling. We don't use checked exceptions, since they are the embodiment of evil. So everyt...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/01/exception-mailing/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/01/rainbow-tables/" title="Previous Post: Rainbow tables, reverse hash lookup">&laquo; Rainbow tables, reverse hash lookup</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/02/unit-testing-a-chess-engine/" title="next Post: Testing a chess engine">Testing a chess engine &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Exception mailing</h1>
+    <p class="post-meta">
+    	Jan 6, 2011 00:36:51
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>
+A couple of weeks ago our Scrum team was thinking about exception handling. We don't use checked exceptions, since they are the embodiment of evil. So everything is translated into runtime exceptions whenever possible. But this is where the problems start: What do you do with the uncatched runtime exceptions?</p>
+<h1>Taking it one step further</h1>
+<p>Most projects will decide to just write the exceptions to the console, maybe to a log file. In some cases there is specialized software which will analyze log files, detect stacktraces and act on them. We decided to create a fast specialized solution. We want to have a mailbox where all the runtime exceptions end up, including stacktrace, system properties, program properties and even a screenshot.</p>
+<p><!--more--></p>
+<h2>Catching the uncaught exception</h2>
+<p>In Java you can set a exception handlers on Threads. You can set a handler on a Thread, but it is also possible to set a default exception handler. It is very easy:</p>
+<pre class="brush:java">
+public class CustomUncaughtExceptionHandler implements UncaughtExceptionHandler {
+
+    public CustomUncaughtExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    @Override
+    public void uncaughtException(final Thread t, final Throwable throwable) {
+        //do something here!    
+    }
+}
+</pre>
+<p>If an exception occurs, the uncaughtException method will be called. Then you can do anything you want with the throwable. As said before, we decided it is best for us that the application phones home and sends us an email with as much information as we can get.</p>
+<h1>What to send?</h1>
+<p>Our application is launched by JNLP and will run on several clients. We don't have complete contol over these clients, so we want to include as much information as possible to solve possible bugs in the application. The more information we have about the runtime, the easier it might be to find the problem. We grab all (relevant) system properties and program properties we can get. Including usernames, machine details.</p>
+<h2>Creating a screenshot</h2>
+<p>In Java there are actually two methods of creating a screenshot. The first method is the easiest, using the Java Robot:</p>
+<pre class="brush:java">
+Robot robot = new Robot();
+ 
+BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+</pre>
+<p>Very easy, but this can contain a LOT of information about the moment the exception occurs. It may provide valuable information. But we encountered a major security problem with the above method. Java will create an actual screenshot, the size of your application. But it doesn't know if your application is currently the active window..! When we did tests we saw screenshots with Skype messages in screen and browsers being active... We can't invade the lives of our users and send this information over the mail!</p>
+<p>So I decided to search for something less invasive. The main frame of our application has a paint method, and most of the time this method can still be called if we have an exception. It is possible to create our own Graphics object and let the main frame paint itself into memory. So eventually I settled on the code below:</p>
+<pre class="brush:java">
+    private BufferedImage createScreenshot() {
+        try {
+            // Try to repaint the main frame of our application:
+            int w = this.screenshotComponent.getWidth();
+            int h = this.screenshotComponent.getHeight();
+            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            this.screenshotComponent.paintAll(image.getGraphics());
+            // We can't use Robot, it might capture a bit too much information
+            return image;
+        } catch (Exception e) {
+            // Screen can't be captured, don't throw exception, else we'll end up in a loop :-)
+            return null;
+        }
+    }
+</pre>
+<h2>Mailing the exception</h2>
+<p>The next step in our solution is sending an email with all the information. This is done using Java Mail, an API to send emails. More about sending emails from Java <a href="http://www.javaworld.com/jw-06-1999/jw-06-javamail.html?page=4">here</a>. In our case we create a pretty HTML email with all relevant information and three attachements:</p>
+<ul>
+<li>Text file with all system properties</li>
+<li>Text file with the complete exception</li>
+<li>The image/screenshot</li>
+</ul>
+<p>To create the email it is easy to create MimeBodyParts which contain the text, the only part a bit more complicated it to add the screenshot inside the email, this can be done using:</p>
+<pre class="brush:java">
+	public MimeBodyPart createImagePart(final BufferedImage screenshot)
+			throws MessagingException {
+
+		if (screenshot == null) {
+			return null;
+		}
+
+		MimeBodyPart imagePart = new MimeBodyPart();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(screenshot, "jpg", outputStream);
+		} catch (IOException ioException) {
+			// Impossible to get the screenshot, return null and continue without it
+			return null;
+		}
+
+		DataSource source = new ByteArrayDataSource(outputStream.toByteArray(), "image/jpeg");
+		imagePart.setDataHandler(new DataHandler(source));
+		imagePart.setFileName("screenshot.jpg");
+		imagePart.setContentID("<screenshot>");
+		return imagePart;
+	}
+</screenshot></pre>
+<p>The only non-obvious line in the code above is setting the ContentID, this can be used to refer to the image-data in case of an HTML email. In the main email content I added the following line:</p>
+<pre class="brush:html">
+        Screenshot: <img src="/images/cid:screenshot" alt="Screenshot of the moment the exception occured." />
+</pre>
+<p>The <i>src="cid:screenshot"</i> will cause the email to show the screenshot embedded inside the email. This makes the exception-email look very pretty.</p>
+<h1>Even more in the future...?</h1>
+<p>With our current implementation we'll be able to detect exceptions instantly (on every new email). Also we'll have more information then just a stacktrace, we have a screenshot and some parameters/system properties which can help us re-create the situation.</p>
+<p>To improve this even more I'm planning on adding a simple bounded FIFO queue. This queue will contain a list of actions performed by the user. These user-actions can be added automatically by using aspect oriented programming. For example annotating all the service methods. Everytime a service method is called we can add it to the bounded queue, which has a maximum of N elements, for example 20. If an exception occurs we print our the current queue, we can read the last N actions leading up to the exception. This too can be very helpful in re-creating the situation.</p>
+<p>What more information could be useful in an debug email like this? How do you guys solve exception handling?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Kill all mutants</title>
+  <meta name="description" content="The post below is the content from my 2014 J-Fall and Devoxx Ignite presentations. You can check you the slides here:http://www.slideshare.net/royvanrijn/kil...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/11/kill-all-mutants/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/09/building-commander-keen-on-osx/" title="Previous Post: Building Commander Keen on OS/X">&laquo; Building Commander Keen on OS/X</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/11/the-java-9-kulla-repl/" title="next Post: The Java 9 'Kulla' REPL">The Java 9 'Kulla' REPL &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Kill all mutants</h1>
+    <p class="post-meta">
+    	Nov 18, 2014 11:52:35
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>The post below is the content from my 2014 <a href="http://www.nljug.org/jfall/schedule/2014/">J-Fall</a> and <a href="http://www.devoxx.be/ignite-2014/">Devoxx Ignite</a> presentations. You can check you the slides here:<br />
+<a href="http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests">http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests</a></p>
+<h2>We all do testing</h2>
+<p>In this day and age you aren't considered a real Java developer if you are not writing proper unit tests.<br />
+We all know why this is important:</p>
+<ul>
+<li>Instant verification our code works.</li>
+<li>Automatic future regressions tests.</li>
+</ul>
+<p>But how do we know we are writing proper tests? Well most people use code coverage to measure this. If the percentage of coverage is high enough you are doing a good job.</p>
+<h2>What is a test?</h2>
+<p>First let's look at what a test actually is:</p>
+<ol>
+<li>Instantiate classes, setup mocks.</li>
+<li>Invoke something.</li>
+<li>Assert and verify the outcome.</li>
+</ol>
+<p>Which steps are measured with code coverage? Only steps 1 and 2. And what is the most important thing for a test? It is the third and final step, the assertion, the place where you actually check if the code is working. This is completely ignored by code coverage!</p>
+<p>I've seen companies where management looks at code coverage reports, they demand the programmers to write 80+ or 90+% coverage because this proves the quality is good enough. What else is a common thing in these organisations? Tests without any real assertion. Tests written purely to boost coverage and please management.</p>
+<p>So code coverage says absolutely <span style="text-decoration: underline;">nothing</span> about the quality of our tests? Well, it does tell you one thing. If you have 0% coverage, you have no tests at all, if you have 100% coverage you might have some very bad tests.</p>
+<h2>Mutation testing</h2>
+<p>Luckily there is help around the corner, in the form of mutation testing. In mutation testing you create thousands of 'mutants' of your codebase. So what is this mutant you might ask? A mutation is a tiny singular change in your codebase.</p>
+<p>For example:</p>
+<pre class="brush:java">// Before:
+if(amount &gt; THRESHOLD) {
+    // .. do something ..
+}
+
+// After:
+if(amount &gt;= THRESHOLD) {
+    // .. do something ..
+}
+</pre>
+<p>For each mutant the unit tests are run and there are a couple of possible outcomes:<img class="alignright wp-image-1862" src="/images/mutant_killed-300x225.png" alt="mutant_killed" width="229" height="172" /></p>
+<h2>Killed</h2>
+<p>&nbsp;</p>
+<p>If you are lucky a test will fail. This means we have 'killed' our mutant. This is a positive thing, we've actually checked that the mutated line of code is correctly <span style="text-decoration: underline;">asserted</span> by a test. Now we immediately see the advantage of using mutation testing, we actually verify the assertions in our tests.</p>
+<h2>Survived<img class="alignright wp-image-1864 " src="/images/mutant_lived-225x300.png" alt="mutant_lived" width="203" height="270" /></h2>
+<p>Another possible outcome is that our mutant has survived, meaning no test fails. This is scary, it means the logic we've changed isn't verified by a test. If someone would (accidentally) make this change in your codebase, the automatic build won't break.</p>
+<p>&nbsp;</p>
+<h2>Tooling</h2>
+<p>In Java (and other languages as well) there are frameworks for doing mutation testing. One of the most complete and modern frameworks for doing mutation testing in Java is called <a href="http://pitest.org/">PIT</a>. The generation of mutants and the process running the tests is fully automated and easy to use, just as easy as code coverage. There are Maven, Ant, Gradle, Sonarqube, Eclipse and IntelliJ plugins available!</p>
+<h2>What about performance?</h2>
+<p>Using mutation testing isn't a silver bullet and it doesn't come without any drawbacks. The major disadvantage is performance. This is the reason it never took off in the 1980s. At that time it would take an entire evening to run all your unit tests, so people could only dream of creating thousands of mutants and running the tests again. Luckily CPU's have become a <em>lot</em> faster, and PIT has other tricks to speed up the process.</p>
+<p>One thing PIT does is that it uses code coverage! Not as a measurement of the quality of your tests but as a tool. Before creating the mutants PIT calculates the code coverage of all unit tests. Now when PIT creates a mutant of a particular line of code it looks at the tests covering that line. If a line is only covered by three unit tests, it only runs those three tests. This greatly decreases the amount of tests needed to run for each mutation.</p>
+<p>There are other tricks as well, for example PIT can track the changes in your codebase. It doesn't need to create mutants if the code isn't edited.</p>
+<h2>Summary</h2>
+<p>Code coverage is a horrible way of measuring the quality of your tests. It only says something about the invocations but nothing about the actual assertions. Mutation testing is much better, it gives an accurate report on the quality and you can't 'game' the statistics. The only way to fake mutation coverage is to write real tests with good assertions.</p>
+<p>Check it out now: <a href="http://pitest.org/">http://pitest.org</a></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

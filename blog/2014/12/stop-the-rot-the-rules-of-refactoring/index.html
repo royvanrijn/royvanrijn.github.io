@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Stop the Rot, the Rules of Refactoring</title>
+  <meta name="description" content="A lot of times you hear experienced programmers talking about 'smelly' code. These 'code smells' are things that just look or feel wrong. Often programmers d...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/12/programming-testing-documentation/" title="Previous Post: Programming, testing, documentation">&laquo; Programming, testing, documentation</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/12/kids-amplify-your-life/" title="next Post: Kids amplify your life">Kids amplify your life &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Stop the Rot, the Rules of Refactoring</h1>
+    <p class="post-meta">
+    	Dec 9, 2014 13:31:22
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>A lot of times you hear experienced programmers talking about 'smelly' code. These 'code smells' are things that just look or feel wrong. Often programmers don't immediately have a clear idea on how to fix it, but it 'smells'! These smells often happen when the code 'rots'.</p>
+<p>Let's do a quick check:</p>
+<ul>
+<li>Are there pieces of code you'd rather not change?</li>
+<li>Are (parts of) the application sometimes scrapped and rebuild from scratch (over and over)?</li>
+<li>Do pieces of code exist that turned out much more complex than you had initially imagined?</li>
+<li>Do you have pieces of code that feel out of place?</li>
+<li>Is it hard to break up some large classes and/or methods?</li>
+<li>Do you have a hard time coming up with names for certain classes?</li>
+</ul>
+<p>If you've answered yes to one or more questions, you are probably suffering from code smells and maybe even advanced code rot.</p>
+<h2>What is a code smell?</h2>
+<p>Most of the time a piece of code has a smell when the design underneath is wrong. Often this is not visible at first, but slowly appears when the component gets larger. Classes get too large, methods are hard to break up, some classes or methods feel out of place. Even simple things as struggling with naming a new class is a sign there is something wrong. All of this are code smells and experienced programmers have developed a nose for this. Most of the time this is a sign there is a larger problem. It isn't something a bit of code can fix, there is probably something wrong in the design. Is this component doing the right thing? Does it have the right responsibilities? Take a step back and look at the complete picture. What problem are these classes/methods trying to solve?</p>
+<h2>What is code rot?</h2>
+<p>When code smells, more often than not, people will continue working on it, adding functionality. Maybe they don't notice the smell or they don't take the much needed step back to investigate the problem. This leads to faster code rot. So what exactly is code rot you might ask? Every piece of code starts to 'rot' the moment it is written. Eventually the code needs to be replaced and becomes too difficult to maintain. Hopefully this happens in the far future, 20-30 years from now. Unfortunately this is often not the case, there are parts being rebuild and scrapped while the application is being developed.</p>
+<p>Each time new code is written, added or changed, the new code starts out as rotten as the code that it depends on. This can cause, with a tiny bit of rotten/smelly code, for an entire application to be trashed! It is highly infectious.</p>
+<h2>And the answer is... refactoring!</h2>
+<p>Refactoring is the magic word here, but... it sounds easier than it actually is. At first people will deny there is a problem, sometimes they don't see it, they don't share your disgust. Eventually it'll continue to rot and more people will notice the smell. And once this smell has become unbearable drastic measures seem to be needed. This brings us to rule #1 about code smell:</p>
+<p><b>1. Refactor early, refactor often.</b></p>
+<p>The sooner you refactor and remove some rotten code, the less likely it is to spread and the easier it is to remove. Don't seek for approval, do something about it. But remember, take a step back first. Sometimes you are rewriting a piece of code, and the result is just as bad as before. The reason is that a design flaw is lurking in the shadows. If the responsibilities between two components is wrong you can scrap a piece of code and rebuild it, but the same problems will keep surfacing. So lets make this rule #2:</p>
+<p><b>2. Before refactoring, take a step back, eliminate possible design flaws.</b></p>
+<p>You've taken a step back, looked at the complete picture, fixed the responsibilities, time to do the refactoring! No!! There is a third *very* important rule. Refactoring means changing a piece of code without changing its behavior. How do we do this? We write tests! Only if you have proper testing in place you can start thinking about refactoring. How else will you be certain that a piece of code still has the same behavior as before?</p>
+<p><b>3. Only refactor when you have proper tests.</b></p>
+<p>If you follow these three simple rules, nothing can go wrong. You're detecting and fixing code smells early and often, you'll stop the rot as soon as possible to make sure it doesn't spread, keeping the application healthy. There isn't a possible design flaw hiding in the shadows, we've taken a step back and eliminated that. And finally: We have tests in place that ensure we don't change any behavior that was painstakingly added to the rotting code.</p>
+<p>If you follow these rules you'll end up with code that is readable, easier to maintain, easy to change (agile code!).</p>
+<p>In short: <b>Healthy code!</b></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

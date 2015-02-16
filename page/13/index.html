@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/13/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2009/12/son-of-darts/">Son Of Darts</a></h1>
+    <p class="author">
+      <span class="date">Dec 4, 2009 16:17:16</span>
+    </p>
+    <p>Another thing I've been very busy with lately is AZsPCs (Al Zimmermanns Programming Competition). The current contest is called <a href="http://www.azspcs.net/Contest/SonOfDarts">Son of Darts</a>.</p>
+<p>The idea behind these contests are that they are easy to grasp, but very hard to master.</p>
+<p>Lets take three darts. You have to throw them to a dartboard which is divided into 4 regions. For example, the values on these regions are: 1,2,4,6.<br />
+The first question is: What is the lowest value you can't throw with these three darts?</p>
+<p>This is easy to calculate:<br />
+Can we throw one? Yes: 1 dart in the 1<br />
+Can we throw two? Yes: 1 dart in the 2, or 2 darts in the 1<br />
+etc etc<br />
+Can we throw nine? Yes: 6,2,1<br />
+Can we throw ten? Yes: 6,4<br />
+Can we throw eleven? Yes: 6,4,1<br />
+Can we throw twelve? Yes: 6,6<br />
+Can we throw thirteen? Yes: 6,6,1<br />
+Can we throw fourteen? Yes: 6,6,2<br />
+Can we throw fifteen? Err... no, sorry...</p>
+<p>So the score is: 15 points.</p>
+<p>The main question: Can you think of better values for the regions of the dartboard to get a higher topscore??</p>
+<p>This is what the competition is about. But not only for a dartboard consisting of 4 regions, but up to 40 regions. And not only for three darts, but also 4, 5 and even 6 darts.</p>
+<p>If you can create a good solver its pretty easy to bruteforce up to a certain point, but the problem is, you quickly get more and more options for which you have to check the scores... It is an <a href="http://en.wikipedia.org/wiki/Exponential_function">exponential function</a>...!</p>
+<p>Actually, this is not a new puzzle. Its been around of quite a long time. But its more commenly known as the <a href="http://en.wikipedia.org/wiki/Postage_stamp_problem">local postage stamp problem</a> (LPSP). Formulated just a little bit different, instead of a dartboard with regions you have a postcard with room for H stamps. What is the lowest value you can't create with stamps Nh? Also check out <a href="http://mathworld.wolfram.com/PostageStampProblem.html">Wolfram's</a> description of the problem.</p>
+<p>This problem has been proven to be NP-hard, so bruteforcing won't be an option, you'll need to use something different. Put on your thinking-caps and create some good innovative <a href="http://en.wikipedia.org/wiki/Heuristic">heuristics</a>.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/son-of-darts/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/quine-mccluskey/">Quine - McCluskey</a></h1>
+    <p class="author">
+      <span class="date">Dec 4, 2009 15:55:20</span>
+    </p>
+    <p>About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:</p>
+<ol>
+<li>personHasInsurence (A)</li>
+<li>personNeedsInsurence (B)</li>
+<li>personIsKnownAtThisAgency (C)</li>
+</ol>
+<p>We also had two particulair cases for an insurance page:</p>
+<p>Case 1:<br />
+Person has insurence and isn't yet known at this agency</p>
+<p>Case 2:<br />
+Person doesn't have insurence, needs insurence and is known at this agency</p>
+<p>Case 3:<br />
+Person doesn't have insurence, doesn't need insurence and is known at this agency</p>
+<p>So the view-logic was a bit complex:</p>
+<pre class="brush:java">
+if( (A && !C) || (!A && B && C) || (!A && !B && C ) ) {
+    showPage();
+}
+</pre>
+<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I've completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called "<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>"-algorithm, and I decided to implement it (just to learn how it works).</p>
+<h2>Quine - McCluskey algorithm</h2>
+<p>First of, lets go through a couple of terms.</p>
+<p><!--more--><br />
+Minterm: A small boolean function which has all the different input variables, <b>once</b>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A'BC (not A and B and C).</p>
+<p>The first thing you do using this algorithm is that you find so called "prime implicants". An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can't be combined with other implicants (for more details, read the wikipage with examples)!</p>
+<p>After combining all the minterm of your case(s), you'll end up with a "prime implicant chart". This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot "essential prime implicants".  That is, implicants which are unique in covering a field. You <u>have</u> to use these implicants in the final logic.</p>
+<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick's Method</a> to select the best/smallest option.</p>
+<p>Using the above example, if you minimize, you'll come down to:</p>
+<pre class="brush:java">
+if((!A && C) || (A && !C)) {
+    showPage();
+}
+</pre>
+<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I've seen lately!</p>
+<p>And if you need something even faster, try out <a href="http://en.wikipedia.org/wiki/Espresso_heuristic_logic_minimizer">Espresso</a>!</p>
+<p>ps. I love browsing this page: <a href="http://en.wikipedia.org/wiki/List_of_algorithms">List of algorithms</a><br />
+But OTOH, its kind of depressing I still have soo much to learn.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/quine-mccluskey/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/brainfck-in-redcode/">Corewars - Brainf*ck</a></h1>
+    <p class="author">
+      <span class="date">Dec 2, 2009 22:13:10</span>
+    </p>
+    <p>I've implemented a Brainfuck interpreter!</p>
+<p>Yes, you heard it right, Brainfuck (BF).<br />
+BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language" alt="Esoteric">esoteric</a> programming language. More information on BF can be found <a href="http://esolangs.org/wiki/Brainfuck" alt="More about Brainfuck">here</a>.</p>
+<p>The language itself is pretty simple, and most of it was implemented rather quickly in Redcode. The only big problem was navigating back to the correct closing brackets in a loop. This is now solved by counting the amount of open/close brackets in between.</p>
+<p>So here is the code:</p>
+<p><!--more--></p>
+<div class="highlight"><pre><code class="language-brainfuck" data-lang="brainfuck"><span class="c">;</span><span class="nb">----------------------------------------------</span><span class="c"></span>
+<span class="c">;redcode</span><span class="nb">-</span><span class="c">94nop </span>
+<span class="c">;name Brainfuck Interpreter (v0</span><span class="nt">.</span><span class="c">3) </span>
+<span class="c">;author Roy van Rijn </span>
+<span class="c">;strategy Brainfuck Interpreter with self</span><span class="nb">-</span><span class="c">reproduction program (a quine) </span>
+<span class="c">;strategy It takes 7244366 cycles (runs slow!)</span>
+<span class="c">;assert 1 </span>
+
+
+<span class="c">LT      equ     60 ;</span><span class="nv">&lt;</span><span class="c"></span>
+<span class="c">GT      equ     62 ;</span><span class="nv">&gt;</span><span class="c"> </span>
+<span class="c">INC     equ     43 ;</span><span class="nb">+</span><span class="c"> </span>
+<span class="c">DEC     equ     45 ;</span><span class="nb">-</span><span class="c"> </span>
+<span class="c">OUT     equ     46 ;</span><span class="nt">.</span><span class="c"> </span>
+<span class="c">IN      equ     44 ;</span><span class="nt">,</span><span class="c"> </span>
+<span class="c">OP      equ     91 ;</span><span class="k">[</span><span class="c"> </span>
+<span class="c">CL      equ     93 ;</span><span class="k">]</span><span class="c"> </span>
+
+
+<span class="c">lt      equ     dat LT  </span><span class="nt">,</span><span class="c"> cLT</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">gt      equ     dat GT  </span><span class="nt">,</span><span class="c"> cGT</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">inc     equ     dat INC </span><span class="nt">,</span><span class="c"> cINC</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">dec     equ     dat DEC </span><span class="nt">,</span><span class="c"> cDEC</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">out     equ     dat OUT </span><span class="nt">,</span><span class="c"> cOUT</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">in      equ     dat IN  </span><span class="nt">,</span><span class="c"> cIN</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">op      equ     dat OP  </span><span class="nt">,</span><span class="c"> cOP</span><span class="nb">-</span><span class="c">START </span>
+<span class="c">cl      equ     dat CL  </span><span class="nt">,</span><span class="c"> cCL</span><span class="nb">-</span><span class="c">START </span>
+
+
+<span class="c">;Use switch</span><span class="nb">-</span><span class="c">table </span>
+<span class="c">cINC    add     #2              </span><span class="nt">,</span><span class="c"> @PTR          ;add 2 min 1 </span>
+<span class="c">cDEC    sub     #1              </span><span class="nt">,</span><span class="c"> @PTR          ;min 1 </span>
+
+
+<span class="c">START   mov</span><span class="nt">.</span><span class="c">b   }PTR            </span><span class="nt">,</span><span class="c"> #0 </span>
+<span class="c">       jmp     @</span><span class="nb">-</span><span class="c">1 </span>
+
+
+<span class="c">cLT     jmp     START           </span><span class="nt">,</span><span class="c"> </span><span class="nv">&lt;</span><span class="c">PTR </span>
+<span class="c">cGT     jmp     START           </span><span class="nt">,</span><span class="c"> </span><span class="nv">&gt;</span><span class="c">PTR </span>
+
+
+<span class="c">cOUT    mov</span><span class="nt">.</span><span class="c">b   @PTR            </span><span class="nt">,</span><span class="c"> </span><span class="nv">&lt;</span><span class="c">6000         ;sts</span><span class="nt">.</span><span class="c">b  @PTR </span>
+<span class="c">       jmp     START </span>
+<span class="c">cIN     mov</span><span class="nt">.</span><span class="c">b   }INPUT          </span><span class="nt">,</span><span class="c"> @PTR          ;now using INPUT</span><span class="nb">-</span><span class="c">table instead or streams </span>
+<span class="c">       jmp     START </span>
+
+
+<span class="c">;Optimize by using a stack? remembering the layer</span><span class="nb">+</span><span class="c">position? </span>
+<span class="c">cOP     jmn     START           </span><span class="nt">,</span><span class="c"> @PTR </span>
+<span class="c">opCheck sne</span><span class="nt">.</span><span class="c">ab  *PTR            </span><span class="nt">,</span><span class="c"> #OP </span>
+<span class="c">       add     #1              </span><span class="nt">,</span><span class="c"> CNT1 ;Count nested brackets </span>
+<span class="c">       seq</span><span class="nt">.</span><span class="c">ab  }PTR            </span><span class="nt">,</span><span class="c"> #CL </span>
+<span class="c">       jmp     opCheck </span>
+<span class="c">CNT1    djn</span><span class="nt">.</span><span class="c">b   opCheck         </span><span class="nt">,</span><span class="c"> #1 </span>
+<span class="c">       jmp     START           </span><span class="nt">,</span><span class="c"> </span><span class="nv">&gt;</span><span class="c">CNT1 </span>
+
+
+<span class="c">cCL     jmz     START           </span><span class="nt">,</span><span class="c"> @PTR </span>
+<span class="c">       nop     {PTR            </span><span class="nt">,</span><span class="c"> </span><span class="nv">&gt;</span><span class="c">CNT2 </span>
+<span class="c">clCheck sne</span><span class="nt">.</span><span class="c">ab  {PTR            </span><span class="nt">,</span><span class="c"> #CL </span>
+<span class="c">       add     #1              </span><span class="nt">,</span><span class="c"> CNT2 ;Count nested brackets </span>
+<span class="c">       seq</span><span class="nt">.</span><span class="c">ab  *PTR            </span><span class="nt">,</span><span class="c"> #OP </span>
+<span class="c">       jmp     clCheck </span>
+<span class="c">CNT2    djn</span><span class="nt">.</span><span class="c">b   clCheck         </span><span class="nt">,</span><span class="c"> #0 </span>
+<span class="c">       jmp     START </span>
+
+
+<span class="c">;Used to mimic keypresses (when not using exmars_streams) </span>
+<span class="c">INPUT   dat     0               </span><span class="nt">,</span><span class="c"> </span><span class="nb">-</span><span class="c">1 </span>
+
+
+<span class="c">PROGRAM </span>
+
+
+<span class="c">;Brainfuck Quine</span><span class="nt">,</span><span class="c"> unsure who wrote the original</span><span class="nt">....</span><span class="c"> (not me anyway!) </span>
+
+
+<span class="c">dec </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc</span>
+<span class="c"> gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">op </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">gt </span>
+<span class="c">cl </span>
+<span class="c">inc</span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">lt </span>
+<span class="c">cl </span>
+<span class="c">lt </span>
+<span class="c">dec </span>
+<span class="c">cl </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">op </span>
+<span class="c">gt </span>
+<span class="c">cl </span>
+<span class="c">lt </span>
+<span class="c">inc </span>
+<span class="c">lt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc</span>
+<span class="c">op </span>
+<span class="c">lt </span>
+<span class="c">cl </span>
+<span class="c">lt </span>
+<span class="c">lt </span>
+<span class="c">inc </span>
+<span class="c">cl </span>
+<span class="c">gt </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">gt </span>
+<span class="c">cl </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">dec </span>
+<span class="c">lt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">cl </span>
+<span class="c">lt </span>
+<span class="c">out </span>
+<span class="c">lt </span>
+<span class="c">dec </span>
+<span class="c">lt </span>
+<span class="c">cl </span>
+
+
+<span class="c">EOF     dat     0               </span><span class="nt">,</span><span class="c"> </span><span class="nb">-</span><span class="c">10           ; Halt </span>
+<span class="c">PTR     dat     #PROGRAM        </span><span class="nt">,</span><span class="c"> #1            ; A: Execution pointer</span><span class="nt">,</span><span class="c"> B: Data pointer </span>
+
+
+<span class="c">end START </span>
+
+
+<span class="c">;Translated Brainfuck &quot;Hello World&quot; program </span>
+<span class="c">; </span>
+<span class="c">;The original is: </span>
+<span class="c">;</span><span class="nb">++++++++++</span><span class="k">[</span><span class="nv">&gt;</span><span class="nb">+++++++</span><span class="nv">&gt;</span><span class="nb">++++++++++</span><span class="nv">&gt;</span><span class="nb">+++</span><span class="nv">&gt;</span><span class="nb">+</span><span class="nv">&lt;&lt;&lt;&lt;</span><span class="nb">-</span><span class="k">]</span><span class="c"> </span>
+<span class="c">;</span><span class="nv">&gt;</span><span class="nb">++</span><span class="nt">.</span><span class="nv">&gt;</span><span class="nb">+</span><span class="nt">.</span><span class="nb">+++++++</span><span class="nt">..</span><span class="nb">+++</span><span class="nt">.</span><span class="nv">&gt;</span><span class="nb">++</span><span class="nt">.</span><span class="nv">&lt;&lt;</span><span class="nb">+++++++++++++++</span><span class="nt">.</span><span class="nv">&gt;</span><span class="c"> </span>
+<span class="c">;</span><span class="nt">.</span><span class="nb">+++</span><span class="nt">.</span><span class="nb">------</span><span class="nt">.</span><span class="nb">--------</span><span class="nt">.</span><span class="nv">&gt;</span><span class="nb">+</span><span class="nt">.</span><span class="nv">&gt;</span><span class="nt">.</span><span class="c"> </span>
+
+
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">op </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">lt </span>
+<span class="c">lt </span>
+<span class="c">lt </span>
+<span class="c">lt </span>
+<span class="c">dec </span>
+<span class="c">cl </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">out </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">lt </span>
+<span class="c">lt </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">gt </span>
+<span class="c">out </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">out </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">dec </span>
+<span class="c">out </span>
+<span class="c">gt </span>
+<span class="c">inc </span>
+<span class="c">out </span>
+<span class="c">gt </span>
+<span class="c">out </span>
+
+
+<span class="c">EOF     dat     0               </span><span class="nt">,</span><span class="c"> </span><span class="nb">-</span><span class="c">10           ; Halt </span>
+<span class="c">PTR     dat     #PROGRAM        </span><span class="nt">,</span><span class="c"> #1            ; A: Execution pointer</span><span class="nt">,</span><span class="c"> B: Data pointer </span>
+
+
+<span class="c">end START</span></code></pre></div>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/brainfck-in-redcode/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/corewar-subleq-interpreter/">Corewars - SUBLEQ interpreter</a></h1>
+    <p class="author">
+      <span class="date">Dec 2, 2009 10:00:26</span>
+    </p>
+    <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html" alt="link to blog post">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
+<p>And here is the result:</p>
+<p><!--more--></p>
+<div class="highlight"><pre><code class="language-brainfuck" data-lang="brainfuck"><span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
+<span class="c">;redcode</span><span class="nb">-</span><span class="c">94odd</span>
+<span class="c">;name SUBLEQ Hello World</span>
+<span class="c">;author Roy van Rijn</span>
+<span class="c">;assert 1</span>
+<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
+<span class="c">;Implementation of the OISC SUBLEQ interpreter</span><span class="nt">.</span><span class="c"></span>
+<span class="c">; All instructions take 3 lines:</span>
+<span class="c">; dat A</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">; dat B</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">; dat C</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">;</span>
+<span class="c">; The interpreter works as following:</span>
+<span class="c">;</span>
+<span class="c">; Substract A from B</span>
+<span class="c">; If B is less or equal to zero jump to C</span>
+<span class="c">; Else go to the next instruction (</span><span class="nb">+</span><span class="c">3)</span>
+<span class="c">;</span>
+<span class="c">; If the jump is to HALT (</span><span class="nb">-</span><span class="c">1) the program will halt</span>
+<span class="c">; If the substraction is OUT (</span><span class="nb">-</span><span class="c">2) the program will output the amount substracted</span>
+<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
+<span class="c">HALT   equ </span><span class="nb">-</span><span class="c">1</span>
+<span class="c">OUT    equ </span><span class="nb">-</span><span class="c">2</span>
+
+<span class="c">;Pointers used by program:</span>
+<span class="c">EQ     dat PROGRAM</span><span class="nb">-</span><span class="c">1      </span><span class="nt">,</span><span class="c"> PROGRAM</span>
+<span class="c">PTR    dat PROGRAM        </span><span class="nt">,</span><span class="c"> PROGRAM</span><span class="nb">+</span><span class="c">1</span>
+<span class="c">RESETV dat PROGRAM</span><span class="nb">-</span><span class="c">SUBSTR </span><span class="nt">,</span><span class="c"> PROGRAM</span><span class="nb">-</span><span class="c">SUBSTR ;reset values</span>
+<span class="c">NEXTV  dat #3             </span><span class="nt">,</span><span class="c"> #3</span>
+
+<span class="c">;Print to command line:</span>
+<span class="c">PRINT  mov</span><span class="nt">.</span><span class="c">ab *SUBSTR     </span><span class="nt">,</span><span class="c"> #0</span>
+<span class="c">       mov</span><span class="nt">.</span><span class="c">b  </span><span class="nb">-</span><span class="c">1          </span><span class="nt">,</span><span class="c"> </span><span class="nv">&lt;</span><span class="c">1000 ;sts</span><span class="nt">.</span><span class="c">b </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0 for output</span>
+
+<span class="c">;Reset to absolute values:</span>
+<span class="c">NEXT   add</span><span class="nt">.</span><span class="c">f NEXTV        </span><span class="nt">,</span><span class="c"> PTR</span>
+<span class="c">RESET  mov</span><span class="nt">.</span><span class="c">f RESETV       </span><span class="nt">,</span><span class="c"> SUBSTR</span>
+
+<span class="c">;Main logic:</span>
+<span class="c">START  add</span><span class="nt">.</span><span class="c">a  *PTR        </span><span class="nt">,</span><span class="c"> SUBSTR</span>
+<span class="c">       add</span><span class="nt">.</span><span class="c">ab </span><span class="nv">&gt;</span><span class="c">PTR        </span><span class="nt">,</span><span class="c"> SUBSTR</span>
+<span class="c">       mov</span><span class="nt">.</span><span class="c">a  @PTR        </span><span class="nt">,</span><span class="c"> NEWPTR</span>
+
+<span class="c">;Check if output is OUT</span><span class="nt">,</span><span class="c"> print and go to next instruction:</span>
+<span class="c">       mov</span><span class="nt">.</span><span class="c">a  </span><span class="nv">&lt;</span><span class="c">PTR        </span><span class="nt">,</span><span class="c"> 1</span>
+<span class="c">       sne</span><span class="nt">.</span><span class="c">ab #0          </span><span class="nt">,</span><span class="c"> #OUT</span>
+<span class="c">       jmp    PRINT</span>
+
+<span class="c">;Substract and determine if the value </span><span class="nv">&lt;</span><span class="c">= 0</span>
+<span class="c">SUBSTR sub</span><span class="nt">.</span><span class="c">a  PROGRAM     </span><span class="nt">,</span><span class="c"> PROGRAM</span>
+<span class="c">       slt</span><span class="nt">.</span><span class="c">a  #CORESIZE/2 </span><span class="nt">,</span><span class="c"> @</span><span class="nb">-</span><span class="c">1</span>
+<span class="c">       jmn</span><span class="nt">.</span><span class="c">ba NEXT        </span><span class="nt">,</span><span class="c"> @</span><span class="nb">-</span><span class="c">2</span>
+
+<span class="c">;Jump to new address:</span>
+<span class="c">NEWPTR mov</span><span class="nt">.</span><span class="c">ab #0          </span><span class="nt">,</span><span class="c"> #0</span>
+<span class="c">       mov</span><span class="nt">.</span><span class="c">f  NEWPTR      </span><span class="nt">,</span><span class="c"> PTR</span>
+<span class="c">       add</span><span class="nt">.</span><span class="c">f  EQ          </span><span class="nt">,</span><span class="c"> PTR</span>
+<span class="c">       seq</span><span class="nt">.</span><span class="c">ab NEWPTR      </span><span class="nt">,</span><span class="c"> #HALT</span>
+
+<span class="c">;Check for HALT (jump to DAT</span><span class="nb">-</span><span class="c">PROGRAM)</span>
+<span class="c">       jmp RESET</span>
+
+<span class="c">LABEL</span>
+<span class="c">PROGRAM</span>
+
+<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
+<span class="c">;Translated version of the Hello World program from:</span>
+<span class="c">;http://mozaika</span><span class="nt">.</span><span class="c">com</span><span class="nt">.</span><span class="c">au/oleg/subleq/</span>
+
+
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 3</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 6</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 9</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">A dat PROGRAM </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat OUT </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 15</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat m1</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 18</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 21</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat E</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 24</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 27</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 30</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 33</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 36</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 39</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 42</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat E</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 48</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 51</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
+
+<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 54</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
+
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 0</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">dat 0 </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat 0 </span><span class="nt">,</span><span class="c">0</span>
+<span class="c">dat </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">;data</span>
+<span class="c">p dat H</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">Z dat 0</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">m1 dat </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">b dat 0</span><span class="nt">,</span><span class="c">0</span>
+<span class="c">H dat 72</span><span class="nt">,</span><span class="c">0 ;:H</span>
+<span class="c">dat 101</span><span class="nt">,</span><span class="c">0 ; e</span>
+<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
+<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
+<span class="c">dat 111</span><span class="nt">,</span><span class="c">0 ; o</span>
+<span class="c">dat 32</span><span class="nt">,</span><span class="c">0 ; space</span>
+<span class="c">dat 87</span><span class="nt">,</span><span class="c">0 ; W</span>
+<span class="c">dat 111</span><span class="nt">,</span><span class="c">0 ; o</span>
+<span class="c">dat 114</span><span class="nt">,</span><span class="c">0 ; r</span>
+<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
+<span class="c">dat 100</span><span class="nt">,</span><span class="c">0 ; d</span>
+<span class="c">E dat E</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
+
+<span class="c">end START</span>
+<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span></code></pre></div>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/corewar-subleq-interpreter/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Corewars - An Introduction to Hostile Programming</a></h1>
+    <p class="author">
+      <span class="date">Dec 1, 2009 11:02:17</span>
+    </p>
+    <p>Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
+<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
+<p>Here's an example of a typical Corewar program:</p>
+<pre class="brush:text">
+     org   wipe
+
+     step  equ 5
+     first equ bomb-10
+
+bomb:mov.i #1,       -1
+
+ptr: sub   #step,    #first
+wipe:jmz.f ptr,      @ptr
+
+     mov   bomb,     >ptr
+     djn.f wipe,     {ptr-5
+
+     end
+</pre>
+<p>This simple example of scissors once held a 20 point lead over it's rivals. The first instruction is never executed, it's the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
+<p>Corewar is still going strong, and celebrates it's 25th anniversary in 2009. If you'd like to discover more about Corewar, here are the top resources:</p>
+<ul>
+<li><a href="http://vyznev.net/corewar/guide.html">The Beginner's Guide to Redcode</a> will teach you the language of Corewar</li>
+<li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
+<li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
+<li><a href=" http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
+<li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
+<li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
+<li><a href="irc://irc.freenode.net/#COREWARS">#corewars</a> is the official Corewar discussion channel, hosted by <a href="irc://irc.freenode.net/#COREWARS">irc.freenode.net</a></li>
+</ul>
+<p>What are your experiences with Corewar, have you ever had any success?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/12" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 13 of 13</span>
+    
+      <span class="next ">Next</span>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

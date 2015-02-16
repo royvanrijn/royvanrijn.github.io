@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Java 'default' methods, future problem?</title>
+  <meta name="description" content="In Java there is one golden rule, we don't break backwards compatibility. Not in the JVM interpreter/compiler and not in the JDK classes.Extending interfaces...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2013/10/openjdk-and-xkcd-random-number/" title="Previous Post: OpenJDK and XKCD: Random number">&laquo; OpenJDK and XKCD: Random number</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/" title="next Post: RuntimeExceptions within @Asynchronous methods">RuntimeExceptions within @Asynchronous methods &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Java 'default' methods, future problem?</h1>
+    <p class="post-meta">
+    	Oct 17, 2013 12:33:20
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>In Java there is one golden rule, we <b>don't break backwards compatibility</b>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
+<h2>Extending interfaces</h2>
+<p>With the introduction of Lambda's in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <i>List.forEach</i> all custom implementations of the List interface won't compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
+<h2>default</h2>
+<p>To counter this the '<i>default</i>' keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn't have to be). For example, see the following new 'default' method from the Iterable interface:</p>
+<pre class="brush:java">
+    default void forEach(Consumer&lt;? super T&gt; action) {
+    	Objects.requireNonNull(action);
+    	for (T t : this) {
+        	action.accept(t);
+    	}
+    }
+</pre>
+<p>There are some important rules; the added code will operate on static data, it can't and should never manipulate state!<br />
+Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
+<h2>Possible future problems...</h2>
+<p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
+<pre class="brush:java">
+default Spliterator&lt;E&gt; spliterator()
+</pre>
+<p>Now (crazy example) I've made something called <b>MyListSet</b> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <i>spilerator()</i> on the same level and will thus collide with the following exception:</p>
+<pre class="brush:plain">
+class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
+  where T is a type-variable:
+    T extends Object declared in class MyListSet
+</pre>
+<p>The more these 'default' methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I'm not yet convinced about the default methods.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

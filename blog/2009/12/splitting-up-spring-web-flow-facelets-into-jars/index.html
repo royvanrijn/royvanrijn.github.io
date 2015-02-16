@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Splitting up Spring Web Flow & Facelets into JARs</title>
+  <meta name="description" content="In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. But we also want the flows and pages to be inside seperate JAR files, ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/inversion_of_logic/" title="Previous Post: Cleaner code: Inversion of logic">&laquo; Cleaner code: Inversion of logic</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/01/md5-fixed-point/" title="next Post: MD5 quine, fixed point">MD5 quine, fixed point &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Splitting up Spring Web Flow & Facelets into JARs</h1>
+    <p class="post-meta">
+    	Dec 15, 2009 15:25:15
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
+<p>This sounds straightforward but it took quite a bit of code and time... </p>
+<p><!--more--></p>
+<p>First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.</p>
+<p>The first thing I did was changing our flowRegistry:</p>
+<pre class="brush:xml">
+      &lt;!-- The registry of executable flow definitions --&gt;
+      &lt;webflow:flow-registry id=&quot;flowRegistry&quot; 
+         flow-builder-services=&quot;facesFlowBuilderServices&quot; 
+         base-path=&quot;classpath*:flows&quot;&gt;
+            &lt;webflow:flow-location-pattern value=&quot;/**/*-flow.xml&quot; /&gt;
+      &lt;/webflow:flow-registry&gt;
+</pre>
+<p>The <em>classpath*:</em> allows SWF to search the whole classpath for flow-directories containing a flow definition.<br />
+In our case it would be: <em>/flows/module1/module1-flow.xml</em></p>
+<p>When you try to run this, and access a page we got the following exception:</p>
+<pre class="brush:text">
+Caused by: java.lang.IllegalStateException: A ContextResource is required to get relative view paths within this context; the resource was file [D:\projects\projectfromjar\module1\bin\flows\module1\page1.xhtml]
+	at org.springframework.faces.webflow.FlowViewHandler.resolveResourcePath(FlowViewHandler.java:110)
+	at org.springframework.faces.webflow.FlowViewHandler.restoreView(FlowViewHandler.java:74)
+	at com.sun.facelets.FaceletViewHandler.restoreView(FaceletViewHandler.java:316)
+	at org.springframework.faces.webflow.JsfViewFactory.getView(JsfViewFactory.java:93)
+	at org.springframework.webflow.engine.ViewState.resume(ViewState.java:193)
+	at org.springframework.webflow.engine.Flow.resume(Flow.java:545)
+	at org.springframework.webflow.engine.impl.FlowExecutionImpl.resume(FlowExecutionImpl.java:259)
+	... 38 more
+</pre>
+<p>For some reason Spring Web Flow doesn't want to load the facelet. After browsing around Spring's forums I came across some solutions. They didn't do the trick, only when combining several methods I got it working for Spring Web Flow 2.0.7.</p>
+<p>This is how I did it, we need to tell Facelets to use our custom ClassPathResourceResolver:</p>
+<pre class="brush:xml">
+      &lt;!-- To load flows and pages from JARs, use this resolver --&gt;
+      &lt;context-param&gt;
+            &lt;param-name&gt;facelets.RESOURCE_RESOLVER&lt;/param-name&gt;
+            &lt;param-value&gt;nl.redcode.ClassPathResourceResolver&lt;/param-value&gt;
+      &lt;/context-param&gt;
+</pre>
+<p>The resolver itself is basic but does the job:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import java.net.URL;
+
+import com.sun.facelets.impl.ResourceResolver;
+
+public class ClassPathResourceResolver implements ResourceResolver {
+
+	public URL resolveUrl(String path) {
+	    return getClass().getResource(path);
+	}
+}
+</pre>
+<p>This will help Facelets to translate a given path to a java.net.URL using the current classloader.<br />
+Spring Web Flow is currently giving us a FileSystemResource, and this doesn't work because we want to load the pages with our classloader. For this we have the following wrapper:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ContextResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
+
+class CustomClassPathContextResource extends ClassPathResource implements ContextResource {
+
+    public CustomClassPathContextResource(String path, ClassLoader classLoader) {
+        super(path, classLoader);
+    }
+
+    public String getPathWithinContext() {
+        return getPath();
+    }
+
+    public Resource createRelative(String relativePath) {
+        String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
+        return new CustomClassPathContextResource(pathToUse, getClassLoader());
+    }
+}
+</pre>
+<p>To force Spring to use this Resource instead of FileSystemResource we use a post processor:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
+
+public class FlowRegistryClassPathPostProcessor implements BeanPostProcessor {
+	
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+    
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if(bean instanceof FlowDefinitionRegistry) {
+            alterRegistry((FlowDefinitionRegistry) bean);
+        }
+        return bean;
+    }
+    
+    protected void alterRegistry(FlowDefinitionRegistry registry) {
+        for(String flowId : registry.getFlowDefinitionIds()) {
+            ApplicationContext ctx = registry.getFlowDefinition(flowId).getApplicationContext();
+            overrideResourceLoader((GenericApplicationContext) ctx);
+        }
+    }
+    
+    /**
+     * Override the ResourceLoader:
+     * We know our flow is always defined as "flows/module1".
+     * From the context we can derive the name of the flow (module1)
+     * So we build up the ClassPathResource base as:
+     * "flows/"+ ctx.getResource("")+ "/"
+     * 
+     * @param ctx
+     */
+    protected void overrideResourceLoader(GenericApplicationContext ctx) {
+    	final ClassPathResource cpr = new ClassPathResource("flows/"+ctx.getResource("").getFilename()+"/");
+
+    	ctx.setResourceLoader(new ResourceLoader() {
+        	
+        	public ClassLoader getClassLoader() {
+        		return cpr.getClassLoader();
+        	}
+
+        	public Resource getResource(String location) {
+        		return new CustomClassPathContextResource(cpr.getPath() + location, getClassLoader());
+        	}
+        });
+    }
+}
+</pre>
+<p>When the FlowDefinitionRegistry is created we provide it with a new ResourceLoader. When the resources are requested by Spring Web Flow we create our own CustomClassPathContextResource. This consists of our current location plus the defined location (viewId).</p>
+<p>To register this post processor add it to your project-servlet.xml:</p>
+<pre class="brush:xml">
+&lt;bean id=&quot;flowRegistryClassPathPostProcessor&quot; class=&quot;nl.redcode.FlowRegistryClassPathPostProcessor&quot; /&gt;
+</pre>
+<h5>How to use it</h5>
+<p>In our project we have the following flow(s) defined in a seperate JAR:<br />
+/flows/module1/module1-flow.xml</p>
+<p>And our pages are in the same directory:<br />
+/flows/module1/page1.xhtml<br />
+/flows/module1/page2.xhtml<br />
+etc...</p>
+<p>In the flow we can now use the following view-id's:</p>
+<pre class="brush:xml">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;flow 	xmlns=&quot;http://www.springframework.org/schema/webflow&quot;
+		xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+		xsi:schemaLocation=&quot;http://www.springframework.org/schema/webflow
+							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd&quot;&gt;
+
+    &lt;view-state id=&quot;start&quot; view=&quot;page1.xhtml&quot;/&gt;
+
+&lt;/flow&gt;
+</pre>
+<p>Its also possible to have pages in other places, you can define the views as relative paths. For example:<br />
+<em>"../../shared_pages/page2.xhtml"</em> turns into <em>"/shared_pages/page2.xhtml"</em><br />
+<em>"../pages/page3.xhtml"</em> turns into <em>"/flows/pages/page3.xhtml"</em></p>
+<p>The only problem we still have using this method is the deployment with RAD/Eclipse WTP and Facelets auto-refresh. For some reason after deploying our application locks the files in the bin-directory. Eclipse then can't delete this directory and fails to publish. Ending in one big #fail. But a simple clean, clean, republish, clean, rebuild, restart, shout, scream, cry, rebuild and republish will solve this.</p>
+<p>The big advantage is the fact that the flows and pages are now defined in their own JAR files, making releases and sharing classes (like shared services/shared menu's etc) much easier.</p>
+<p>Information on <a href="http://forum.springsource.org/showthread.php?t=64252">Spring forum</a></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

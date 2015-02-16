@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Java vs Javascript: Speed of Math</title>
+  <meta name="description" content="Last week I've created a ray marcher 3d engine which renders the Mandelbulb. And I've translated it into pure Javascript a couple of days later. After the tr...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/07/java-speed-of-math/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/07/introducing-mandelbulb-js/" title="Previous Post: Introducing: mandelbulb.js">&laquo; Introducing: mandelbulb.js</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/07/visitors-you-make-me-proud/" title="next Post: Visitors, you make me proud">Visitors, you make me proud &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Java vs Javascript: Speed of Math</h1>
+    <p class="post-meta">
+    	Jul 15, 2012 11:17:02
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Last week I've created a <a href="/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I've <a href="/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
+<p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn't have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
+<p><a href="/images/compare1.png"><img src="/images/compare1.png" alt="Comparing Javascript and Java" title="Comparing Javascript and Java" width="711" height="395" class="alignnone size-full wp-image-1238" /></a></p>
+<p>What has happened here? The output is the same, why is Java so much slower than Javascript? I would have suspected the opposite...</p>
+<p>I fired up the profiler to see what was causing the Java code to be so slow, and it turned out the method it spend most time in was Math.pow(). Other slow methods were Math.acos(), cos(), sin() etc. It turns out that the Math library isn't very fast, but there is an alternative, <a href="http://commons.apache.org/math/apidocs/org/apache/commons/math/util/FastMath.html">FastMath</a>. Apache Commons has implemented a faster Math library for commons-math. Lets see what changing Math.* to FastMath.* does to the performance:</p>
+<p><a href="/images/compare2.png"><img src="/images/compare2.png" alt="" title="compare2" width="703" height="406" class="alignnone size-full wp-image-1240" /></a></p>
+<p>This is already much better. But still the method causing most delay is FastMath.pow(). Why is Javascript so much faster? The method is made so you can calculate the power of two doubles, not only integer values. But I'm only doing Integer powers (7 and 8 to be precise). So I decided to implement my own method:</p>
+<pre class="brush:java">
+private double fasterPow(double d, int exp) {
+	double r = d;
+	for(int i = 1; i&lt;exp; i++) {
+		r *= d;
+	}
+	return r;
+}
+</pre>
+<p><strong>Warning: This isn't the same as Math.pow/FastMath.pow!</strong></p>
+<p><a href="/images/compare3.png"><img src="/images/compare3.png" alt="" title="compare3" width="704" height="401" class="alignnone size-full wp-image-1245" /></a></p>
+<p>The speed with this new method is much better and seems comparable with Javascript. Maybe this is an optimization the V8 engine does by default? Who knows.</p>
+<p>The slowest method in the program now is FastMath.acos. From highschool I know that acos(x) can also be calculated as atan(sqrt(1-x*x)/x). So I created a own version of acos. When benchmarked, the different methods: Math.acos(), FastMath.acos() and FastMath.atan(FastMath.sqrt(1-x*x)/x), the result is again surprising:</p>
+<p><a href="/images/compare4.png"><img src="/images/compare4.png" alt="" title="compare4" width="458" height="298" class="alignnone size-full wp-image-1247" /></a></p>
+<p>The custom acos() function is a bit faster than FastMath.acos() and a lot faster than Math.acos(). Using this function in the Mandelbulb renderer gives us the following metric:</p>
+<p><a href="/images/compare5.png"><img src="/images/compare5.png" alt="" title="compare5" width="694" height="594" class="alignnone size-full wp-image-1248" /></a></p>
+<p>So it turns out that with a bit of tweaking we can get the Java version faster than Javascript, but I would have never imagined Java would be slower in the first place. The Chrome V8 guys really did an amazing job improving the speed of their Javascript VM. Mozilla isn't far behind, they are getting +/- 2200 ms in the benchmark. Which is also faster than Java.Math and FastMath! It seems that V8's math implementation has some optimizations that Java could really use. The tricks used above don't make any difference with the Javascript version.</p>
+<p><strong>Edit 1:</strong> Is Javascript faster than Java?</p>
+<p>Well surprisingly in this case it is. With the code a 100% the same, using arrays as vector and Math.* the code actually runs faster in my browser!</p>
+<p><strong>Edit 2:</strong> People have been asking me: What could have been done to make it faster in Java? And, why is it slow?</p>
+<p>Well the answer is twofold:</p>
+<p>1) The Math libraries are made for 'double' in Java. Having a power() method work with doubles is much harder than working with just integer numbers. The only way to optimize this would be to overload the methods with int-variants. This would allow much greater speeds and optimizations. I think Java should add Math.pow(float, int), Math.pow(int, int) etc.</p>
+<p>2) All the Math libraries have to work in <em>all</em> situations, with negative numbers, small numbers, large numbers, zero, null etc. They tend to have a lot of checks to cope with all those scenario's. But most of the time you'll know more about the numbers you put in... For example, my fastPower method will only work with positive integers larger than zero. Maybe you know that the power will always have even numbers...? This all means that the implementation can be improved. The problem is, this <em>can't</em> be easily achieved in a generic (math) library.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

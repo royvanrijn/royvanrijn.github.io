@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Son Of Darts</title>
+  <meta name="description" content="Another thing I've been very busy with lately is AZsPCs (Al Zimmermanns Programming Competition). The current contest is called Son of Darts.The idea behind ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/son-of-darts/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/quine-mccluskey/" title="Previous Post: Quine - McCluskey">&laquo; Quine - McCluskey</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/java-generics-for-compare/" title="next Post: Java Generics for Compare">Java Generics for Compare &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Son Of Darts</h1>
+    <p class="post-meta">
+    	Dec 4, 2009 16:17:16
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Another thing I've been very busy with lately is AZsPCs (Al Zimmermanns Programming Competition). The current contest is called <a href="http://www.azspcs.net/Contest/SonOfDarts">Son of Darts</a>.</p>
+<p>The idea behind these contests are that they are easy to grasp, but very hard to master.</p>
+<p>Lets take three darts. You have to throw them to a dartboard which is divided into 4 regions. For example, the values on these regions are: 1,2,4,6.<br />
+The first question is: What is the lowest value you can't throw with these three darts?</p>
+<p>This is easy to calculate:<br />
+Can we throw one? Yes: 1 dart in the 1<br />
+Can we throw two? Yes: 1 dart in the 2, or 2 darts in the 1<br />
+etc etc<br />
+Can we throw nine? Yes: 6,2,1<br />
+Can we throw ten? Yes: 6,4<br />
+Can we throw eleven? Yes: 6,4,1<br />
+Can we throw twelve? Yes: 6,6<br />
+Can we throw thirteen? Yes: 6,6,1<br />
+Can we throw fourteen? Yes: 6,6,2<br />
+Can we throw fifteen? Err... no, sorry...</p>
+<p>So the score is: 15 points.</p>
+<p>The main question: Can you think of better values for the regions of the dartboard to get a higher topscore??</p>
+<p>This is what the competition is about. But not only for a dartboard consisting of 4 regions, but up to 40 regions. And not only for three darts, but also 4, 5 and even 6 darts.</p>
+<p>If you can create a good solver its pretty easy to bruteforce up to a certain point, but the problem is, you quickly get more and more options for which you have to check the scores... It is an <a href="http://en.wikipedia.org/wiki/Exponential_function">exponential function</a>...!</p>
+<p>Actually, this is not a new puzzle. Its been around of quite a long time. But its more commenly known as the <a href="http://en.wikipedia.org/wiki/Postage_stamp_problem">local postage stamp problem</a> (LPSP). Formulated just a little bit different, instead of a dartboard with regions you have a postcard with room for H stamps. What is the lowest value you can't create with stamps Nh? Also check out <a href="http://mathworld.wolfram.com/PostageStampProblem.html">Wolfram's</a> description of the problem.</p>
+<p>This problem has been proven to be NP-hard, so bruteforcing won't be an option, you'll need to use something different. Put on your thinking-caps and create some good innovative <a href="http://en.wikipedia.org/wiki/Heuristic">heuristics</a>.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

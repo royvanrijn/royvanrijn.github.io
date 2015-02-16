@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Creating a chatterbot (Part 1)</title>
+  <meta name="description" content="Ever since the first time I heard about the Turing Test I've wanted to make my own chatbot. It started probably twenty plus years ago, when the only language...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/02/hacking-runkeeper-data/" title="Previous Post: Hacking your RunKeeper data">&laquo; Hacking your RunKeeper data</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/04/mosaic-algorithm/" title="next Post: Mosaic algorithm">Mosaic algorithm &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Creating a chatterbot (Part 1)</h1>
+    <p class="post-meta">
+    	Apr 24, 2014 21:26:21
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Ever since the first time I heard about the <a href="http://en.wikipedia.org/wiki/Turing_test">Turing Test</a> I've wanted to make my own chatbot. It started probably twenty plus years ago, when the only language I could program in was QBASIC. At that time I never got further than:</p>
+<p>> Hi computer!<br />
+> Hello.</p>
+<p>.... and now? ....</p>
+<h2>Current state</h2>
+<p>Since that first try (aged 10 or something) I've never tried to build another chatbot. But a couple of days ago I read a news article about the Loebner Prize, an annual event that tests the best chatbots in the world against some human judges, and it sparked my interest again.</p>
+<p>I started researching the Loebner Prize winners and there seems to be three distinct groups/types of chatbots and algorithms:</p>
+<ol>
+<li>Template based bots</li>
+<li>Crowdsourced bots</li>
+<li>Markov Chain bots</li>
+</ol>
+<p>Let me quickly describe how they work.</p>
+<h3>Template based bots</h3>
+<p>A lot of populair bots (like <a href="http://en.wikipedia.org/wiki/Artificial_Linguistic_Internet_Computer_Entity">A.L.I.C.E.</a> winner of the 2000, 2001 and 2004 Loebner Prize) use pre-defined templates. Most of them use a certain XML template called <a href="http://en.wikipedia.org/wiki/AIML">AIML</a>. This is a short example:</p>
+<pre class="brush:plain">
+&lt;category&gt;
+  &lt;pattern&gt;* YOUR NAME?&lt;/pattern&gt;
+  &lt;template&gt;My name is Chatbot.&lt;/template&gt;
+&lt;/category&gt;
+</pre>
+<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:<br />
+> What is your name?<br />
+> My name is Chatbot.</p>
+<p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don't seem very 'smart' and AI to me; so I'm not going to make another AIML-like bot.</p>
+<h3>Crowdsourced bots</h3>
+<p>One of the best (most human-like) chatbots is <a href="http://www.cleverbot.com/">Cleverbot</a>. But in my opinion it is one of the most simple bots around. It uses a nice trick and huge database. When it encounters a question it doesn't know/understand, it just ignores it, and stores it. In another chat session, it'll mimic and repeat that question to another human. The result is stored in the huge database for future conversations. As a result all the answers it gives are very human-like (because, well, they are human answers).</p>
+<p>But there is obviously a huge drawback, for example at one moment the bot is pretending to be a 18 year old male, the next moment it claims to be a 40 year old female. Then it starts talking about how much it loves horses, the next moment it says it hates animals...</p>
+<h3>Markov Chain bots</h3>
+<p>To keep this (long) blog post within reasonable length I'm not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let's for example say we store chains of length three.</p>
+<pre class="brush:plain">
+"Let's store this sentence, let's store it in a markov chain."
+
+1> Let's store this
+2> store this sentence
+3> this sentence let's
+4> sentence let's store
+5> let's store it
+6> store it in
+7> it in a
+8> in a markov
+9> a markov chain
+
+</pre>
+<p>Now let's imagine we are building a valid reply to a question and we already have "let's store"... what can we do next? We go into the chain and walk the nodes until we find the two matching results (1) and (5). So the sentence can continue with "this" or "it".</p>
+<p>Famous bots like MegaHAL kind of work this way (see their <a href="http://megahal.alioth.debian.org/How.html">explanation</a>). Although this feels much more like real AI/knowledge to me, it also has drawbacks. For example you can't say these bots are reasoning, they don't understand the environment/context it is in.</p>
+<h2>A new attempt</h2>
+<p>I've made a list of what my ideal chatbot should be:</p>
+<ul>
+<li>Learn through conversation/reading text</li>
+<li>Not just repeat, but understand relations and concepts</li>
+<li>Have different scopes, global knowledge, conversational scope</li>
+</ul>
+<p>Two days ago these ideas started to take shape in my head and I started writing the first code. The first goal is to make the bot able to read text and extract 'knowledge' from it.</p>
+<p>The first thing I had to do was to break up the input text into pieces, for this I found a great open source framework called <a href="https://opennlp.apache.org/">Apache OpenNLP</a>. It recognises words and sentences, it detects verbs, nouns, pronouns, adjectives, adverbs etc.</p>
+<p>The next thing I wanted to do was to turn all the nouns and verbs into their 'base'. When storing relations in the bots memory I want to avoid duplicate entries, so for example "fish are animals" and "fish is an animal" is the same. For that purpose I'm using <a href="http://wordnet.princeton.edu/">WordNet®</a> in combination with the Java library JWNL.</p>
+<p>Currently this is what the bot sees when given some input:</p>
+<pre class="brush:plain">
+> The bot can parse sentences and understand their base form
+Transformed: (The DT : WordPart) (bot NN : NounPart) (can MD : WordPart) (parse VB : VerbPart) (sentence NNS : NounPart) (and CC : WordPart) (understand VB : VerbPart) (their PRP$ : WordPart) (base form NN : NounPart) 
+> It can also parse names like Roy van Rijn and numbers like five hundred million and 4 hundred
+Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (parse VB : VerbPart) (name NNS : NounPart) (like IN : WordPart) (Roy van Rijn) (and CC : WordPart) (number NNS : NounPart) (like IN : WordPart) (500000000) (and CC : WordPart) (400) 
+</pre>
+<p>Understanding what kind of words are used and being able to transform them into the base-form will make it easier to store 'knowledge' and make sense of the world in the future.</p>
+<h2>Graph database</h2>
+<p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I'm in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I've got the following unit test working:</p>
+<pre class="brush:java">
+  // Set up some fruity test data:
+  // [thing] [connection] [thing] [optional: inverse connection]
+  graph.connect("human", "eat", "food", "eaten by");
+  graph.connect("apple", "be", "fruit", "contains");
+  graph.connect("banana", "be", "fruit", "contains");
+  graph.connect("strawberry", "be", "fruit", "contains");
+  graph.connect("fruit", "be", "food", "contains");
+  graph.connect("fruit", "fall", "tree");
+
+  //True: Does human eat banana?
+  Assert.assertTrue(graph.validate("human", "eat", "banana"));
+  //True: Does human eat strawberry?
+  Assert.assertTrue(graph.validate("human", "eat", "strawberry"));
+  //True: Is banana eaten by human?
+  Assert.assertTrue(graph.validate("banana", "eaten by", "human"));
+  //True: Does the group fruit contain strawberry?
+  Assert.assertTrue(graph.validate("food", "contains", "strawberry"));
+  //True: Is apple a fruit?
+  Assert.assertTrue(graph.validate("apple", "be", "food"));
+  //True: Do apples fall from trees?
+  Assert.assertTrue(graph.validate("apple", "fall", "tree"));
+
+  //False: Is strawberry a human?
+  Assert.assertFalse(graph.validate("strawberry", "be", "human"));
+  //False: Is fruit a strawberry?
+  Assert.assertFalse(graph.validate("fruit", "be", "strawberry"));
+</pre>
+<p>There are already more facts possible to extract from this 'knowledge database' than just the plain information I put in.</p>
+<h2>Data extraction</h2>
+<p>The next step in making my bot is going to be data extraction. I'm probably going to make a small template language that (might!) look like this:</p>
+<pre>
+Pattern: [noun] {be} (adj) [noun]
+Store: %1 is %2
+</pre>
+<p>The template should match sentences like "fish are animals", "roses are red", "Roy is a handsome dude" and "Roy is an obvious liar".</p>
+<p>The bot should be able to store all these 'facts' and put them in my graph/relation database. With these data extraction templates it should be possible to build a large knowledge base with facts for the bot, for example just by parsing a Wikipedia dump.</p>
+<p>Now I'm going to dive back into the code and continue my chatbot adventure, keep an eye out for part 2!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

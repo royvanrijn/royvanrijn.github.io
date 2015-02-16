@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/8/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2011/08/meet-me-at-devoxx-2011/">Meet me at Devoxx 2011</a></h1>
+    <p class="author">
+      <span class="date">Aug 5, 2011 15:53:21</span>
+    </p>
+    <p>This year I'll be presenting at <a href="http://www.devoxx.com">Devoxx</a> in Antwerp, Belgium. In my opinion it currently is the best Java conference in the world. It'll be my first talk in English.</p>
+<p><img src="/images/LogoDevoxx150dpi.jpg" alt="" title="Devoxx" width="473" height="177" class="alignnone size-medium wp-image-859" /></p>
+<p>The titel of the talk is: <em>What Shazam doesn't want you to know</em>.</p>
+<p>During the talk I'll be explaining how Shazam works and how you can recreate this in Java yourself. But that's not all.. I'm also including the grand challenge of teaching everybody how the Fourier Transformation works, without going into math (I'm math-illiterate).</p>
+<p>Wish me luck, I'm really looking forward to it!</p>
+<p>Are you coming to Devoxx? Or do you have hints/tips for me, let me know!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/08/meet-me-at-devoxx-2011/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/bitcoin-mining/">Bitcoin mining</a></h1>
+    <p class="author">
+      <span class="date">May 30, 2011 20:07:09</span>
+    </p>
+    <p>A couple of months ago I've started using and mining bitcoins. If you don't know what bitcoin is yet, please watch the following video:<br />
+<iframe width="560" height="349" src="http://www.youtube.com/embed/Um63OQz3bjo" frameborder="0" allowfullscreen></iframe></p>
+<p>Mining for bitcoins has become harder and harder. But as a pro, the price of the bitcoin has also increased quite a lot. Since I've started mining I've mined about 40 bitcoins (in pools). This is now worth about 9 dollars per bitcoin: 360 dollars!</p>
+<p>Mostly I've used my GPU for mining, this gives me the greatest speed. I found the Diablo Miner works best in my case, I even <a href="https://github.com/Diablo-D3/DiabloMiner/archives/master">pushed</a> some improvements into the codebase to let it work through proxies. But since a couple of days I've had a bitcoin miner in Java applet form running on this website! This is currently giving me about the same amount of bitcoins. Still, it is only about 0.01 bitcoin per day. Which comes down to 10 dollar cents a day. But still this is more then I earn for ads!</p>
+<p>I've removed the bitcoin applet from my main page (it can scare visitors if the CPU runs to 100%). But you can still use it on this website:</p>
+<p><strong>SCRIPT DISABELED</strong></p>
+<p>So, don't hesitate to hang around here for a while, with this page open :-) Lets see how much bitcoins my visitors can generate!</p>
+<p>Oh, to see the current 'exchange rate' of the Bitcoin, you can always view it on <a href="https://mtgox.com/trade/megaChart">Mt Gox</a>.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/bitcoin-mining/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/android-application-1/">Android application #1</a></h1>
+    <p class="author">
+      <span class="date">May 29, 2011 18:22:14</span>
+    </p>
+    <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a><br />
+<br />
+The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
+<ul>
+<li>"I love it when"</li>
+<li>"I hate it when"</li>
+</ul>
+<p>
+The application now displays some user information (username/profile picture) and shows parts of the tweet. The words "love" and "hate" are removed and the user has to guess which of the two words was in the original tweet.<br /></p>
+<h3>Backend</h3>
+<p></p>
+<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I've used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.<br /></p>
+<h3>Frontend</h3>
+<p></p>
+<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don't have one... But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don't have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
+<p>The next discovery was: Android isn't at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.<br /></p>
+<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I've released my application in English (default), Dutch and French.<br /></p>
+<h3>Releasing to the Market</h3>
+<p></p>
+<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on "Export as signed Android application" and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.<br /></p>
+<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don't think I'll even see that return on investment, I've decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).<br /></p>
+<h3>Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="" title="ad_mob_logo_header" width="100" height="47" /></h3>
+<p>Now that I've invested 25 euro's, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.<br /></p>
+<h3>Results</h3>
+<p></p>
+<p>After one day I'm pretty surprised: Already 350 people have downloaded the application and I've already earned &gt; 50 cents from AdMob (2% ROI).<br /></p>
+<p>I've really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
+<p>(p.s. No, I'm not going to port my <a href="/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/2010/07/patent-infringement/">sued</a>)</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/android-application-1/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
+    <p class="author">
+      <span class="date">May 23, 2011 10:52:16</span>
+    </p>
+    <p>This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I've filmed something. I decided to edit everything together with some music. Here is the result:</p>
+<p><iframe src="http://player.vimeo.com/video/24091005?title=0&amp;byline=0&amp;portrait=0" width="600" height="450" frameborder="0"></iframe></p>
+<p>It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard...</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/wedding-video/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/gods-dice/">God's Dice</a></h1>
+    <p class="author">
+      <span class="date">May 9, 2011 09:07:36</span>
+    </p>
+    <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">"God's Dice"</a></p>
+<p><!--more--></p>
+<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="" title="godsdice" width="300" height="300" class="alignright size-full wp-image-809" /></a></p>
+<p>After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.</p>
+<p>The goal of the contest is this:</p>
+<ol>
+<li>Take a cube, with all sides length 1</li>
+<li>Place N (9 to 88) points anywhere on the surface of the cube</li>
+<li>Now calculate the surface area of all triangles between your points</li>
+<li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
+</ol>
+<p>So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.</p>
+<p>Up to now I've only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I'll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
+<p>And I've got some other idea's, which I won't share obviously for the contest sake!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/gods-dice/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/website-theme/">New website theme</a></h1>
+    <p class="author">
+      <span class="date">May 7, 2011 01:52:14</span>
+    </p>
+    <p>When browsing through the posts on <a href="http://www.dzone.com">DZone</a> I noticed a couple of new Wordpress plugins. When I tried them (on my live website of course) everything failed and produced errors. And of course I didn't do a proper backup before I started... sigh.</p>
+<p>Anyway, I was able to login with FTP, find the broken file and fix it (PHP, blegh)! But then I started experimenting with other parts of the website and tried some different WordPress themes. I've had the previous theme for a couple of years now. Time for something new! What do you guys think about this new one?</p>
+<h3>South Africa</h3>
+<p>The photo in the header, with the zebra's, was taking during my holiday in South Africa last year. </p>
+<p><strong>Edit:</strong> The zebra picture made it look like a website of the WNF, so I changed it!</p>
+<p>Some more:</p>
+<table style="width:auto;">
+<tr>
+<td><a href="https://picasaweb.google.com/lh/photo/P4ZCH4nc9ynPOshHpoZjXw?feat=embedwebsite"><img src="/images/IMG_2781.JPG" height="273" width="400" /></a></td>
+</tr>
+</table>
+<table style="width:auto;">
+<tr>
+<td><a href="https://picasaweb.google.com/lh/photo/L-MmLLMsr_fPMz7DSSuROg?feat=embedwebsite"><img src="/images/IMG_2830.JPG" height="347" width="400" /></a></td>
+</tr>
+</table>
+<table style="width:auto;">
+<tr>
+<td><a href="https://picasaweb.google.com/lh/photo/58OyZrL9E0I7RRizUfEA0g?feat=embedwebsite"><img src="/images/IMG_1702.JPG" height="267" width="400" /></a></td>
+</tr>
+</table>
+<table style="width:auto;">
+<tr>
+<td><a href="https://picasaweb.google.com/lh/photo/sv8mcFnsZbDS1zlnR6uHwA?feat=embedwebsite"><img src="/images/IMG_1934.JPG" height="267" width="400" /></a></td>
+</tr>
+</table>
+<table style="width:auto;">
+<tr>
+<td><a href="https://picasaweb.google.com/lh/photo/RXXK8n25F2S877QXLHzIXw?feat=embedwebsite"><img src="/images/IMG_2852.JPG" height="256" width="400" /></a></td>
+</tr>
+</table>
+<p>The complete (online) collection can be found here: <a href="https://picasaweb.google.com/roy.van.rijn/ZuidAfrika">https://picasaweb.google.com/roy.van.rijn/ZuidAfrika</a></p>
+<h3>Avatar</h3>
+<p>For years and years I've also been using this avatar:<br />
+<img src="/images/avatar.png" alt="this is me online" /><br />
+A lot of people have asked me why I'm using that avatar instead of a normal photo. I've been using this image since my teen years, when I had acne all over the place. I've just kept using it, and now people actually recognize it.</p>
+<p>I've drawn that cartoon image myself, no idea what it resambles, just something unidentified creature. It was actually drawn over a photo of our family pet dog Dana. Which my parents are probably going to have to put down pretty soon. She is now very old and sick, it is just a matter of days...</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/website-theme/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/05/crowdflow-needs-you/">Crowdflow needs you!</a></h1>
+    <p class="author">
+      <span class="date">May 1, 2011 18:03:55</span>
+    </p>
+    <p><a href="http://crowdflow.net/">Crowdflow</a> wants to have your iPhone data, to generate pretty heatmaps!</p>
+<p>Why am I telling you this? Because they are using my backup-data-extractor code! See their most recent <a href="http://crowdflow.net/blog/2011/05/01/about-the-java-applet/">blog</a> entry.</p>
+<p>The images they produce look very good, much better then the KML file in Google Earth!</p>
+<p>Be sure to help them soon, because Apple is working on deleting most location-data with the next iPhone update. After that, probably the next update, they'll encrypt the location data so it is much harder/impossible to read.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/05/crowdflow-needs-you/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">iPhone locations on Google Maps with Javascript</a></h1>
+    <p class="author">
+      <span class="date">Apr 26, 2011 14:34:27</span>
+    </p>
+    <p>Wow, great news!</p>
+<p>After my <a href="/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my 'iPhone location data to Google Earth' tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
+<p>When chatting to <a href="https://github.com/williame">Will</a> about this he suggested using Javascript instead. Soon he had the code working that could parse the iPhone backup files. He then contacted <a href="https://github.com/markolson">Mark Olson</a>, who helped him with the SQLLite format in Javascript. Together they finished it up so the resulting GPS data is shown in Google Maps.</p>
+<p>The result of their effort: <a href="http://markolson.github.com/js-sqlite-map-thing/">http://markolson.github.com/js-sqlite-map-thing/</a></p>
+<p>To use it, drag the backup files into the upper part of the website. It will parse the files, locate the data and display the track on Google Maps!<br />
+The source code can be found here: <a href="https://github.com/markolson/js-sqlite-map-thing">https://github.com/markolson/js-sqlite-map-thing</a></p>
+<p>Kudos to Will and Mark for this great application. Who knew Javascript could be this powerfull!?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">Reading iPhone GPS data from backup (with Java)</a></h1>
+    <p class="author">
+      <span class="date">Apr 21, 2011 01:06:24</span>
+    </p>
+    <p>
+Today I noticed the following post on Slashdot: <a href="http://apple.slashdot.org/story/11/04/20/1357248/Apple-Logging-Locations-of-All-iPhone-Users">Apple Logging Locations of All iPhone Users</a></p>
+<p>And the article they are referring to can be found <a href="http://petewarden.github.com/iPhoneTracker/">here</a></p>
+<p>First I was amazed, how can Apple do this? But on second thought, they aren't sending it yet to anybody, it is just something on the phone (and also on the phone's backup). My next reaction was: I want to see my own map! But to my disappointment it only works on Apple Mac's, not Windows/Linux.</p>
+<h3>(Re-)building it in Java</h3>
+<p>Because their code is open source and well explained on the website I decided to make my own version, in Java (cross platform!). Now, just a couple of hours since I read the article, I've got it working and it can be used as a base for extention. So I'd like to share the code!</p>
+<h3>Step 1: Getting the correct file</h3>
+<p>This step was the hardest part, technically. The backup Apple makes doesn't just have all the files as they are on your iPhone. Instead they all have names like: "b4d1c79c2f5fc1da044c18d1066b80b39b575590". They do however store the information in two files: Manifest.mbdb and Manifest.mbdx.</p>
+<p>The MBDB file only contains information about the original files, and the MBDX file contains pointers into the MBDB file with the Hex-filenames used in the backup. So we need to parse both files to be able to connect the original filename to the Hex-filename.</p>
+<p>Luckely somebody already did this in Python and posted it on <a href="http://stackoverflow.com/questions/3085153/how-to-parse-the-manifest-mbdb-file-in-an-ios-4-0-itunes-backup">stackoverflow</a>. I took their idea and translated it into Java code.</p>
+<p>When this was fully translated it could resolve all the filenames. This meant I could map the target file "Library/Caches/locationd/consolidated.db" to the hex-filename "4096c9ec676f2847dc283405900e284a7c815836".</p>
+<h3>Step 2: Reading the SQLLite file</h3>
+<p>The contents of "4096c9ec676f2847dc283405900e284a7c815836" is just a SQLLite file. For this I decided to use SQLJet, a framework that can read(/and write) SQLLite files. Using just a couple of lines of code I had all the data I need: timestamp, latitude, longitude (and more! speed, course, confidence, altitude etc).</p>
+<h3>Step 3: What to do with the geo data?</h3>
+<p>The implementation created by <a href="http://petewarden.github.com/iPhoneTracker/">Pete Warden</a> has a nice map and timeline. But at this time I wanted to have results as fast as possible. That is why chose to just output a <a href="http://nl.wikipedia.org/wiki/Keyhole_Markup_Language">KML</a> file. KML is a file format used by Google Earth and other applications.</p>
+<p>The results are far from nice (just plain ugly) but fun: <a href="https://sites.google.com/site/redcodenl/home/281096076.jpg">click here for a screenshot</a></p>
+<h3>Running the code</h3>
+<p>The above code is mainly created for developers, the resulting JAR can't be executed. But I'm aware people will want to just have the KML file, and not go through the code. That is why I've uploaded an executable JAR. You can get it here: <a href="https://sites.google.com/site/redcodenl/runnableiPhoneJTrack.zip">runnableiPhoneJTrack.zip</a> (813 KB)</p>
+<p>To run the program, extract the three JAR-files and type:</p>
+<pre class="brush:plain">
+Usage:
+java -jar iPhoneJTrack.jar "&lt;location of backup directory&gt;"
+
+For example:
+java -jar iPhoneTracker.jar "C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590"
+</pre>
+<p>This outputs a file named iPhoneData.kml, which can be loaded for example in Google Earth.</p>
+<h3>Playing with the code</h3>
+<p>I've pushed my code onto GitHub: <a href="https://github.com/royvanrijn/iPhoneJTrack">https://github.com/royvanrijn/iPhoneJTrack</a></p>
+<p>Feel free to add features and send me pull requests!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2011/04/static-state-evil-as-well/">Static state: Evil as well</a></h1>
+    <p class="author">
+      <span class="date">Apr 19, 2011 19:23:26</span>
+    </p>
+    <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
+<h3>The scare</h3>
+<p>Quickly I looked around and went into overdrive mode:<br />
+<em>I need to fix this bug before somebody sees it!<br />
+I'm always yelling at people who break the build, and now it has happend to me...!</em><br />
+<!--more--></p>
+<p>Looking at the SVN comment it only said: "cleaned up some code" (or something)<br />
+That isn't very helpfull of myself...</p>
+<h3>The second scare</h3>
+<p>Then I noticed I changed only one file. The change should be contained and easy to fix. But then I had a moment of relief and scare at the same time:</p>
+<ul>
+<li>Phew, it isn't my fault... removing empty lines should not break builds...</li>
+<li>But... why the heck does removing an empty line break the build!?</li>
+</ul>
+<h3>The culprit</h3>
+<p>After looking around in the code, and the failing tests a collegue and me found the culprit: statefull static.</p>
+<p>In our application we've introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState's into the GlobalContext.</p>
+<p>Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE's and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.</p>
+<h3>The fix</h3>
+<p>The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything...</p>
+<p>Even better, get rid of the GlobalContext at all. It contained a couple of instances that could easily be injected into the other objects. This makes it much clearer to see which objects depend on which other objects and makes the code a heck of a lot easier to test.</p>
+<h3>Lessons learned...</h3>
+<p>This got me thinking, in which cases should you use static? Obviously "public static final"-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I've been thinking about this for a day now, but I can't come up with any good usecase. Do you know any? Mail me, comment below!</p>
+<p>So for now, my new rule: Don't use static unless you have a very good reason, and never ever have static (mutable) state!</p>
+<p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2011/04/static-state-evil-as-well/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/7" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 8 of 13</span>
+    
+      <a href="/page/9" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

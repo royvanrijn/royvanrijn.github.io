@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Cleaner code: Inversion of logic</title>
+  <meta name="description" content="Design patternsAlmost all programmers have heard about and used design patterns. And there are a lot of them. Famous design patterns include the Singleton, O...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/" title="Previous Post: Java EE 6 released, including Servlet 3.0">&laquo; Java EE 6 released, including Servlet 3.0</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/" title="next Post: Splitting up Spring Web Flow & Facelets into JARs">Splitting up Spring Web Flow & Facelets into JARs &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Cleaner code: Inversion of logic</h1>
+    <p class="post-meta">
+    	Dec 11, 2009 10:14:10
+    </p>
+  </header>
+
+  <article class="post-content">
+    <h5>Design patterns</h5>
+<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_(computer_science)">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
+<p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p>
+<p>These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.</p>
+<p><!--more--></p>
+<h5>Inversion of logic</h5>
+<p>The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.</p>
+<p>Let me give an example, lets take the following code:</p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+			if(rentalRequest.isFormFilledCorrectly()) {
+				Tenant tenant = rentalRequest.getTenant();
+				if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
+					//Approve the request
+					//Process the request in database
+					//Send email to HQ
+					//Etc...
+				}				
+			}
+		}
+	}
+</pre>
+<p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+
+			if(validateRequest(rentalRequest)) {
+				//Approve the request
+				//Process the request in database
+				//Send email to HQ
+				//Etc...
+			}
+		}
+	}
+	
+	private boolean validateRequest(RentalRequest rentalRequest) {
+		if(rentalRequest.isFormFilledCorrectly()) {
+			Tenant tenant = rentalRequest.getTenant();
+			if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
+				return true;
+			}
+		}
+		return false;
+	}
+</pre>
+<p>Some programmers don't like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don't mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a 'requestIsValid' boolean and fill that instead.</p>
+<p>Anyway, the next step in refactoring this code is using what I call "Inversion of Logic". The idea is that you don't continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you'll lose a lot of nesting, making the code more readable. I'm going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method. </p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+
+			if(!validateRequest(rentalRequest)) {
+				continue;
+			}
+			
+			//Approve the request
+			//Process the request in database
+			//Send email to HQ
+			//Etc...
+		}
+	}
+	
+	private boolean validateRequest(RentalRequest rentalRequest) {
+		if(!rentalRequest.isFormFilledCorrectly()) {
+			return false;
+		}
+		Tenant tenant = rentalRequest.getTenant();
+		if(tenant.getAge() &lt; 25 || !tenant.checkLicenceStillValid(tenant)) {
+			return false;
+		}
+		return true;
+	}
+</pre>
+<p>As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:</p>
+<p><em>IF form is correct<br />
+AND tenant age correct<br />
+AND tenant licence is valid<br />
+THEN proceed</em> </p>
+<p>We now eliminate the bad cases first:</p>
+<p><em>IF form is incorrect: deny rental<br />
+IF tenant's age or licence is invalid: deny rental<br />
+ELSE proceed</em></p>
+<p>I'm trying to do this everywhere I can, it realy helps the readability.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

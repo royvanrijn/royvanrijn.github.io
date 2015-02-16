@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Solving a 18-year-old Core War mystery</title>
+  <meta name="description" content="As some readers might know, I sometimes play a programming game called Core War. This afternoon I was browsing through some old 'Core Warrior' newsletters wh...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/04/mosaic-algorithm/" title="Previous Post: Mosaic algorithm">&laquo; Mosaic algorithm</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/05/alternative-for-constructors/" title="next Post: Alternative for Constructors">Alternative for Constructors &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Solving a 18-year-old Core War mystery</h1>
+    <p class="post-meta">
+    	May 3, 2014 22:57:56
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>As some readers might know, I sometimes play a programming game called <a href="/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old 'Core Warrior' newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called 'Thermite II' I came across this tiny unsolved mystery:</p>
+<blockquote>
+<pre brush="plain">
+John K.W. mailed me with a tiny, suicidal warrior which managed to beat
+Thermite once in two hundred times. All I can imagine is that, that one
+time, I somehow scanned his code within its few cycles of life, and that
+then I crashed as a result. But how?
+
+>Program "Thermite II" (length 100) by "Robert Macrae"
+L>;strategy Same old strategy, but nastier...
+>Killing Hazy Shade Of Winter III wins: 1
+>Thermite II Qww<strong><strong><strong><strong>aaa</strong></strong></strong></strong>wins: 199
+>Ties: 0
+>
+>How did I get a win against Thermite?!?!
+>Here is an EXACT copy of what I sent to Pizza...
+>Thermite would've had to die within 3 cycles! ... :/
+>
+>;redcode-94
+>;name Killing Hazy Shade Of Winter III
+>;kill Hazy Shade Of Winter III
+>;author John K W
+>
+>p: ldp.b #0, #0
+>jmp <-1
+
+Any ideas, anyone :-?
+
+</pre>
+<p>Source: <a href="http://corewar.co.uk/cw/cw024.txt">http://corewar.co.<strong><strong>z</strong></strong>uk/cw/cw024.txt</a></p>
+<p>When executing the code of the second warrior "Killing Hazy Shade Of Winter III" I noticed there is a false assumption in the email. The warrior qdoesn't need to die in three cycles! The first round it'll execute LDP.B #0,#0 and become LDP.B #0,#-1, then it jumps <-1 to a location two higher than the warrior, which is usually empty code... but not always!</p>
+<p>The final line in Thermite's code is a JMP instruction to the launch-instruction which loads Thermite's bomber 'Brand'. If John K W's warrior was loaded at a position 100 or 101 from Thermite it would parasite into the bomber and become Brand before Thermite itself does. This is how the small seemingly suicidal warrior can kill Thermite.</p>
+<p>After 18 years, Q.E.D. :-)</p></blockquote>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Creating Shazam in Java</title>
+  <meta name="description" content="A couple of days ago I encountered this article: How Shazam WorksThis got me interested in how a program like Shazam works... And more importantly, how hard ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/04/playing-around-with-html-5/" title="Previous Post: Playing around with HTML 5">&laquo; Playing around with HTML 5</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/06/music-matching-part-deux/" title="next Post: Music Matching (part deux)">Music Matching (part deux) &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Creating Shazam in Java</h1>
+    <p class="post-meta">
+    	Jun 1, 2010 01:43:08
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>A couple of days ago I encountered this article: <a href="http://laplacian.wordpress.com/2009/01/10/how-shazam-works/">How Shazam Works</a></p>
+<p>This got me interested in how a program like Shazam works... And more importantly, how hard is it to program something similar in Java?</p>
+<p><!--more--></p>
+<h3>About Shazam</h3>
+<p>Shazam is an application which you can use to analyse/match music. When you install it on your phone, and hold the microphone to some music for about 20 to 30 seconds, it will tell you which song it is.</p>
+<p>When I first used it it gave me a magical feeling. "How did it do that!?". And even today, after using it a lot, it still has a bit of magical feel to it.<br />
+Wouldn't it be great if we can program something of our own that gives that same feeling? That was my goal for the past weekend.</p>
+<h3>Listen up..!</h3>
+<p>First things first, get the music sample to analyse we first need to listen to the microphone in our Java application...! This is something I hadn't done yet in Java, so I had no idea how hard this was going to be.</p>
+<p>But it turned out it was very easy:</p>
+<pre class="brush:java">
+
+final AudioFormat format = getFormat(); //Fill AudioFormat with the wanted settings
+DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+final TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+line.open(format);
+line.start();
+</pre>
+<p>Now we can read the data from the TargetDataLine just like a normal InputStream:</p>
+<pre class="brush:java">
+// In another thread I start:
+
+OutputStream out = new ByteArrayOutputStream();
+running = true;
+
+try {
+    while (running) {
+        int count = line.read(buffer, 0, buffer.length);
+        if (count &gt; 0) {
+            out.write(buffer, 0, count);
+        }
+    }
+    out.close();
+} catch (IOException e) {
+    System.err.println("I/O problems: " + e);
+    System.exit(-1);
+}
+</pre>
+<p>Using this method it is easy to open the microphone and record all the sounds! The AudioFormat I'm currently using is:</p>
+<pre class="brush:java">
+
+private AudioFormat getFormat() {
+    float sampleRate = 44100;
+    int sampleSizeInBits = 8;
+    int channels = 1; //mono
+    boolean signed = true;
+    boolean bigEndian = true;
+    return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+}
+</pre>
+<p>So, now we have the recorded data in a ByteArrayOutputStream, great! Step 1 complete.</p>
+<h3>Microphone data</h3>
+<p>The next challenge is analyzing the data, when I outputted the data I received in my byte array I got a long list of numbers, like this:</p>
+<pre class="brush:text">
+0
+0
+1
+2
+4
+7
+6
+3
+-1
+-2
+-4
+-2
+-5
+-7
+-8
+(etc)
+</pre>
+<p>Erhm... yes? This is sound?</p>
+<p>To see if the data could be visualized I took the output and placed it in Open Office to generate a line graph:</p>
+<p><a href="/images/graph.png"><img src="/images/graph-300x248.png" alt="" title="graph" width="300" height="248" class="alignnone size-medium wp-image-407" /></a></p>
+<p>Ah yes! This kind of looks like 'sound'. It looks like what you see when using for example Windows Sound Recorder.</p>
+<p>This data is actually known as <a href="http://en.wikipedia.org/wiki/Time_domain">time domain</a>. But these numbers are currently basically useless to us... if you read the above article on how Shazam works you'll read that they use a <a href="http://en.wikipedia.org/wiki/Spectrum_analyzer">spectrum analysis</a> instead of direct time domain data.<br />
+So the next big question is: How do we transform the current data into a spectrum analysis?</p>
+<h3>Discrete Fourier transform</h3>
+<p>To turn our data into usable data we need to apply the so called <a href="http://en.wikipedia.org/wiki/Discrete_Fourier_transform">Discrete Fourier Transformation</a>. This turns the data from time domain into frequency domain.<br />
+There is just one problem, if you transform the data into the frequency domain you loose every bit of information regarding time. So you'll know what the magnitude of all the frequencies are, but you have no idea when they appear.</p>
+<p>To solve this we need a sliding window. We take chunks of data (in my case 4096 bytes of data) and transform just this bit of information. Then we know the magnitude of all frequencies that occur during just these 4096 bytes.</p>
+<h3>Implementing this</h3>
+<p>Instead of worrying about the Fourier Transformation I googled a bit and found code for the so called FFT (Fast Fourier Transformation). I'm calling this code with the chunks:</p>
+<pre class="brush:java">
+
+byte audio[] = out.toByteArray();
+
+final int totalSize = audio.length;
+
+int amountPossible = totalSize/Harvester.CHUNK_SIZE;
+
+//When turning into frequency domain we'll need complex numbers:
+Complex[][] results = new Complex[amountPossible][];
+
+//For all the chunks:
+for(int times = 0;times &lt; amountPossible; times++) {
+    Complex[] complex = new Complex[Harvester.CHUNK_SIZE];
+    for(int i = 0;i &lt; Harvester.CHUNK_SIZE;i++) {
+        //Put the time domain data into a complex number with imaginary part as 0:
+        complex[i] = new Complex(audio[(times*Harvester.CHUNK_SIZE)+i], 0);
+    }
+    //Perform FFT analysis on the chunk:
+    results[times] = FFT.fft(complex);
+}
+
+//Done!
+</pre>
+<p>Now we have a double array containing all chunks as Complex[]. This array contains data about all frequencies. To visualize this data I decided to implement a full spectrum analyzer (just to make sure I got the math right).<br />
+To show the data I hacked this together:</p>
+<pre class="brush:java">
+
+for(int i = 0; i &lt; results.length; i++) {
+    int freq = 1;
+    for(int line = 1; line &lt; size; line++) {
+        // To get the magnitude of the sound at a given frequency slice
+        // get the abs() from the complex number.
+        // In this case I use Math.log to get a more managable number (used for color)
+        double magnitude = Math.log(results[i][freq].abs()+1);
+
+        // The more blue in the color the more intensity for a given frequency point:
+        g2d.setColor(new Color(0,(int)magnitude*10,(int)magnitude*20));
+        // Fill:
+        g2d.fillRect(i*blockSizeX, (size-line)*blockSizeY,blockSizeX,blockSizeY);
+		
+        // I used a improviced logarithmic scale and normal scale:
+        if (logModeEnabled && (Math.log10(line) * Math.log10(line)) &gt; 1) {
+            freq += (int) (Math.log10(line) * Math.log10(line));
+        } else {
+            freq++;
+        }
+    }
+}
+
+</pre>
+<h3>Introducing, Aphex Twin</h3>
+<p>This seems a bit of OT (off-topic), but I'd like to tell you about a electronic musician called Aphex Twin (Richard David James). He makes crazy electronic music... but some songs have an interesting feature. His biggest hit for example, <a href="http://en.wikipedia.org/wiki/Windowlicker">Windowlicker</a> has a spectrogram image in it.<br />
+If you look at the song as spectral image it shows a nice spiral. Another song, called 'Mathematical Equation' shows the face of Twin! More information can be found here: <a href="http://www.bastwood.com/aphex.php">Bastwood - Aphex Twin's face</a>.</p>
+<p>When running this song against my spectral analyzer I get the following result:</p>
+<p><a href="/images/face.png"><img src="/images/face-299x300.png" alt="" title="face" width="299" height="300" class="alignnone size-medium wp-image-410" /></a></p>
+<p>Not perfect, but it seems to be Twin's face!</p>
+<h3>Determining the key music points</h3>
+<p>The next step in Shazam's algorithm is to determine some key points in the song, save those points as a hash and then try to match on them against their database of over 8 million songs. This is done for speed, the lookup of a hash is O(1) speed. That explains a lot of the awesome performance of Shazam!</p>
+<p>Because I wanted to have everything working in one weekend (this is my maximum attention span sadly enough, then I need a new project to work on) I kept my algorithm as simple as possible. And to my surprise it worked.</p>
+<p>For each line the in spectrum analysis I take the points with the highest magnitude from certain ranges. In my case: 40-80, 80-120, 120-180, 180-300.</p>
+<pre class="brush:java">
+
+//For every line of data:
+
+for (int freq = LOWER_LIMIT; freq &lt; UPPER_LIMIT-1; freq++) {
+    //Get the magnitude:
+    double mag = Math.log(results[freq].abs() + 1);
+
+    //Find out which range we are in:
+    int index = getIndex(freq);
+
+    //Save the highest magnitude and corresponding frequency:
+    if (mag &gt; highscores[index]) {
+        highscores[index] = mag;
+        recordPoints[index] = freq;
+    }
+}
+
+//Write the points to a file:
+for (int i = 0; i &lt; AMOUNT_OF_POINTS; i++) {
+    fw.append(recordPoints[i] + "\t");
+}
+fw.append("\n");
+
+// ... snip ...
+
+
+public static final int[] RANGE = new int[] {40,80,120,180, UPPER_LIMIT+1};
+
+//Find out in which range
+public static int getIndex(int freq) {
+    int i = 0;
+    while(RANGE[i] &lt; freq) i++;
+        return i;
+    }
+}
+</pre>
+<p>When we record a song now, we get a list of numbers such as:</p>
+<pre class="brush:text">
+33	56	99	121	195	
+30	41	84	146	199	
+33	51	99	133	183	
+33	47	94	137	193	
+32	41	106	161	191	
+33	76	95	123	185	
+40	68	110	134	232	
+30	62	88	125	194	
+34	57	83	121	182	
+34	42	89	123	182	
+33	56	99	121	195	
+30	41	84	146	199	
+33	51	99	133	183	
+33	47	94	137	193	
+32	41	106	161	191	
+33	76	95	123	185	
+</pre>
+<p>If I record a song and look at it visually it looks like this:</p>
+<p><a href="/images/points.png"><img src="/images/points-228x300.png" alt="" title="points" width="228" height="300" class="alignnone size-medium wp-image-411" /></a><br />
+(all the red dots are 'important points')</p>
+<h3>Indexing my own music</h3>
+<p>With this algorithm in place I decided to index all my 3000 songs. Instead of using the microphone you can just open mp3 files, convert them to the correct format, and read them the same way we did with the microphone, using an AudioInputStream. Converting stereo music into mono-channel audio was a bit trickier then I hoped. Examples can be found online (requires a bit too much code to paste here) have to change the sampling a bit.</p>
+<h3>Matching!</h3>
+<p>The most important part of the program is the matching process. Reading Shazams paper they use hashing to get matches and the decide which song was the best match.</p>
+<p>Instead of using difficult point-groupings in time I decided to use a line of our data (for example "33, 47, 94, 137") as one hash: 1370944733<br />
+(in my tests using 3 or 4 points works best, but tweaking is difficult, I need to re-index my mp3 every time!)</p>
+<p>Example hash-code using 4 points per line:</p>
+<pre class="brush:java">
+
+//Using a little bit of error-correction, damping
+private static final int FUZ_FACTOR = 2;
+
+private long hash(String line) {
+    String[] p = line.split("\t");
+    long p1 = Long.parseLong(p[0]);
+    long p2 = Long.parseLong(p[1]);
+    long p3 = Long.parseLong(p[2]);
+    long p4 = Long.parseLong(p[3]);
+    return  (p4-(p4%FUZ_FACTOR)) * 100000000 + (p3-(p3%FUZ_FACTOR)) * 100000 + (p2-(p2%FUZ_FACTOR)) * 100 + (p1-(p1%FUZ_FACTOR));
+}
+
+</pre>
+<p>Now I create two data sets:</p>
+<p>- A list of songs, List&lt;String&gt; (List index is Song-ID, String is songname)<br />
+- Database of hashes: Map&lt;Long, List&lt;DataPoint&gt;&gt;</p>
+<p>The long in the database of hashes represents the hash itself, and it has a bucket of DataPoints.</p>
+<p>A DataPoint looks like:</p>
+<pre class="brush:java">
+private class DataPoint {
+
+    private int time;
+    private int songId;
+
+    public DataPoint(int songId, int time) {
+        this.songId = songId;
+        this.time = time;
+    }
+	
+    public int getTime() {
+        return time;
+    }
+    public int getSongId() {
+        return songId;
+    }
+}
+</pre>
+<p>Now we already have everything in place to do a lookup. First I read all the songs and generate hashes for each point of data. This is put into the hash-database.<br />
+The second step is reading the data of the song we need to match. These hashes are retrieved and we look at the matching datapoints.</p>
+<p>There is just one problem, for each hash there are some hits, but how do we determine which song is the correct song..? Looking at the amount of matches? No, this doesn't work...<br />
+The most important thing is timing. We must overlap the timing...! But how can we do this if we don't know where we are in the song? After all, we could just as easily have recorded the final chords of the song.</p>
+<p>By looking at the data I discovered something interesting, because we have the following data:</p>
+<p>- A hash of the recording<br />
+- A matching hash of the possible match<br />
+- A song ID of the possible match<br />
+- The current time in our own recording<br />
+- The time of the hash in the possible match</p>
+<p>Now we can substract the current time in our recording (for example, line 34) with the time of the hash-match (for example, line 1352). This difference is stored together with the song ID. Because this offset, this difference, tells us where we possibly could be in the song.<br />
+When we have gone through all the hashes from our recording we are left with a lot of song id's and offsets. The cool thing is, if you have a lot of hashes with matching offsets, you've found your song.</p>
+<h3>The results</h3>
+<p>For example, when listening to The Kooks - Match Box for just 20 seconds, this is the output of my program:</p>
+<pre class="brush:text">
+Done loading: 2921 songs
+
+Start matching song...
+
+Top 20 matches:
+
+01: 08_the_kooks_-_match_box.mp3 with 16 matches.
+02: 04 Racoon - Smoothly.mp3 with 8 matches.
+03: 05 Röyksopp - Poor Leno.mp3 with 7 matches.
+04: 07_athlete_-_yesterday_threw_everyting_a_me.mp3 with 7 matches.
+05: Flogging Molly - WMH - Dont Let Me Dia Still Wonderin.mp3 with 7 matches.
+06: coldplay - 04 - sparks.mp3 with 7 matches.
+07: Coldplay - Help Is Round The Corner (yellow b-side).mp3 with 7 matches.
+08: the arcade fire - 09 - rebellion (lies).mp3 with 7 matches.
+09: 01-coldplay-_clocks.mp3 with 6 matches.
+10: 02 Scared Tonight.mp3 with 6 matches.
+11: 02-radiohead-pyramid_song-ksi.mp3 with 6 matches.
+12: 03 Shadows Fall.mp3 with 6 matches.
+13: 04 Röyksopp - In Space.mp3 with 6 matches.
+14: 04 Track04.mp3 with 6 matches.
+15: 05 - Dress Up In You.mp3 with 6 matches.
+16: 05 Supergrass - Can't Get Up.mp3 with 6 matches.
+17: 05 Track05.mp3 with 6 matches.
+18: 05The Fox In The Snow.mp3 with 6 matches.
+19: 05_athlete_-_wires.mp3 with 6 matches.
+20: 06 Racoon - Feel Like Flying.mp3 with 6 matches.
+
+Matching took: 259 ms
+
+Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.
+</pre>
+<p>It works!!</p>
+<p>Listening for 20 seconds it can match almost all the songs I have. And even this <a href="http://www.youtube.com/watch?v=sLR9d4sMcq4">live recording of the Editors</a> could be matched to the correct song after listening 40 seconds!</p>
+<p>Again it feels like magic! :-)</p>
+<p>Currently, the code isn't in a releasable state and it doesn't work perfectly. It has been a pure weekend-hack, more like a proof-of-concept / algorithm exploration.</p>
+<p>Maybe, if enough people ask about it, I'll clean it up and release it somewhere.</p>
+<h3>Update:</h3>
+<p>The Shazam patent holders lawyers are sending me emails to stop me from releasing the code and removing this blogpost, read the story <a href="/2010/07/patent-infringement/">here</a>.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

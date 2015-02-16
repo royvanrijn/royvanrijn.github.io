@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Finding performance problems</title>
+  <meta name="description" content="Many projects I've worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/11/xor-doubly-linked-list/" title="Previous Post: XOR doubly linked list">&laquo; XOR doubly linked list</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/01/rainbow-tables/" title="next Post: Rainbow tables, reverse hash lookup">Rainbow tables, reverse hash lookup &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Finding performance problems</h1>
+    <p class="post-meta">
+    	Dec 14, 2010 13:19:08
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Many projects I've worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann's programming contests use C/C++ and maybe even CUDA to get the most out of their system.</p>
+<p>I'm usually using Java, just because I'm most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.</p>
+<p>The first tool I've tried it <a href="http://download.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html">Java Visual VM</a>. This tool is available in all the new <del datetime="2010-12-14T12:07:57+00:00">Sun</del> Oracle JVM's. Just go to the bin-directory and type <i>jvisualvm</i>. This program will attach to your running code and tries to extract all the information. The good part of this tool is the price, it is free!</p>
+<p>But if you really need to know what it going on inside your project, you should try YourKit. YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit's leading software products: <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.</p>
+<p>If you readers are interested I'll write a blog with some simple examples on how to fix performance issues in your program, and how to detect these issues using Visual VM and YourKit. </p>
+<p>Or I can do a comparison between the leading profilers (YourKit/JProfiler/Visual VM/etc)..?</p>
+<p>Let me know!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

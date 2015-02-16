@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Dinosaurize your street</title>
+  <meta name="description" content="After looking at The Wilderness Downtown, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experiment...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/07/patent-publicity/" title="Previous Post: Patent, publicity">&laquo; Patent, publicity</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/09/setter-vs-constructor-injection/" title="next Post: Setter vs Constructor injection">Setter vs Constructor injection &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Dinosaurize your street</h1>
+    <p class="post-meta">
+    	Sep 14, 2010 15:40:16
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>
+After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
+<p><!--more--></p>
+<p>
+It is nothing like The Wilderness Downtown, but still I'd like to share it ;-)</p>
+<p><br />
+    <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAA8DVlelElV7FnS-D75PKhsRTVeKiT8v9wE1qw6xBJCJfVMErizxSdjrF57Jc2gFGbdeVBfnEKZAfZ9w" type="text/javascript"></script><script type="text/javascript"><br />
+    var map;<br />
+    var panoClient;<br />
+    var nextPanoId;<br />
+    var geo;<br />
+    var urlPrefix = "http://cbk0.google.com/cbk?output=tile&panoid=";<br />
+    var urlPostfix1 = "&zoom=3&x=2&y=1";<br />
+    var urlPostfix2 = "&zoom=3&x=3&y=1";<br />
+    var urlPostfix3 = "&zoom=3&x=4&y=1";<br />
+    function initialize() {<br />
+      geo = new GClientGeocoder();<br />
+      panoClient = new GStreetviewClient();<br />
+    }<br />
+    function showPanoData(panoData) {<br />
+     if(panoData.links.length>1) {<br />
+      nextPanoId = panoData.links[1].panoId;<br />
+      document.getElementById('imagi1').src = urlPrefix+nextPanoId+urlPostfix1;<br />
+      document.getElementById('imagi2').src = urlPrefix+nextPanoId+urlPostfix2;<br />
+      document.getElementById('imagi3').src = urlPrefix+nextPanoId+urlPostfix3;<br />
+	if(!done) {<br />
+            setTimeout('next()',200);<br />
+        }<br />
+     }<br />
+    }<br />
+    var beforeLastPanoId = '';<br />
+    var lastPanoId = '';<br />
+    var done = false;<br />
+    function next() {<br />
+          if(beforeLastPanoId == nextPanoId) {<br />
+            done = true;<br />
+          } else {<br />
+             // Get the next panoId<br />
+             // Note that this is not sophisticated. At the end of the block, it will get stuck<br />
+             panoClient.getPanoramaById(nextPanoId, showPanoData);<br />
+             beforeLastPanoId = lastPanoId;<br />
+             lastPanoId = nextPanoId;<br />
+          }<br />
+    }<br />
+    var loc;<br />
+    function startDino() {<br />
+		done = false;<br />
+                panoClient.getNearestPanorama(loc, showPanoData);<br />
+    }<br />
+    function getAddress(form) {<br />
+        done = true;<br />
+        geo.getLocations(form.strnaam.value, function (result)<br />
+          {<br />
+            // If that was successful<br />
+            if (result.Status.code == G_GEO_SUCCESS) {<br />
+              geoResult = result;<br />
+              if(result.Placemark.length > 0) {<br />
+                var p = result.Placemark[0].Point.coordinates;<br />
+                var lng=p[0];<br />
+                var lat=p[1];<br />
+                loc = new GLatLng(lat,lng)<br />
+                setTimeout('startDino()', 500);<br />
+              }<br />
+            }<br />
+          }<br />
+        );<br />
+      }<br />
+    </script></p>
+<form name="drive">
+            Enter streetname, town and country:<br />
+            <input type="straatnaam" name="strnaam" value="A27, Zederik, Nederland" size="100" /><br />
+            <input type="button" id="hammerTime" name="button" value="Dinosaurize your street" onclick="getAddress(this.form)" /><br />
+        </form>
+<p></p>
+<div style="position: absolute;" id="google">
+	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi1" src="/images/" height="200" width="200" /><br />
+	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi2" src="/images/" height="200" width="200" /><br />
+	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi3" src="/images/" height="200" width="200" />
+        </div>
+<div style="position: relative;left: 213px; top:65px;">
+<img style="padding:0px; margin:0px; border:0px; background-color:transparent;" src="/images/walking.gif" alt="" title="walking" />
+</div>
+<div style="height:200px;"></div>
+<p>    <script><br />
+      initialize();<br />
+      document.getElementById('hammerTime').click();<br />
+    </script><br />
+</p>
+<p>
+Yes, there are a LOT of bugs... And no, I'm not going to fix them, so there is no need to notify me.<br />
+Some known bugs:</p>
+<ul>
+<li>Sometimes the dinosaur moonwalks (images go backwards)</li>
+<li>Locations aren't always found, it depends on Google Street View</li>
+<li>It can only walk from the startingpoint to the next junction, no complete routes.</li>
+</ul>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

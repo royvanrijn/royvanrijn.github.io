@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/12/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2009/12/inversion_of_logic/">Cleaner code: Inversion of logic</a></h1>
+    <p class="author">
+      <span class="date">Dec 11, 2009 10:14:10</span>
+    </p>
+    <h5>Design patterns</h5>
+<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_(computer_science)">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
+<p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p>
+<p>These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.</p>
+<p><!--more--></p>
+<h5>Inversion of logic</h5>
+<p>The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.</p>
+<p>Let me give an example, lets take the following code:</p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+			if(rentalRequest.isFormFilledCorrectly()) {
+				Tenant tenant = rentalRequest.getTenant();
+				if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
+					//Approve the request
+					//Process the request in database
+					//Send email to HQ
+					//Etc...
+				}				
+			}
+		}
+	}
+</pre>
+<p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+
+			if(validateRequest(rentalRequest)) {
+				//Approve the request
+				//Process the request in database
+				//Send email to HQ
+				//Etc...
+			}
+		}
+	}
+	
+	private boolean validateRequest(RentalRequest rentalRequest) {
+		if(rentalRequest.isFormFilledCorrectly()) {
+			Tenant tenant = rentalRequest.getTenant();
+			if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
+				return true;
+			}
+		}
+		return false;
+	}
+</pre>
+<p>Some programmers don't like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don't mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a 'requestIsValid' boolean and fill that instead.</p>
+<p>Anyway, the next step in refactoring this code is using what I call "Inversion of Logic". The idea is that you don't continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you'll lose a lot of nesting, making the code more readable. I'm going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method. </p>
+<pre class="brush:java">
+	public void processRequests(List&lt;RentalRequest&gt; requests) {
+		
+		for (RentalRequest rentalRequest : requests) {
+
+			if(!validateRequest(rentalRequest)) {
+				continue;
+			}
+			
+			//Approve the request
+			//Process the request in database
+			//Send email to HQ
+			//Etc...
+		}
+	}
+	
+	private boolean validateRequest(RentalRequest rentalRequest) {
+		if(!rentalRequest.isFormFilledCorrectly()) {
+			return false;
+		}
+		Tenant tenant = rentalRequest.getTenant();
+		if(tenant.getAge() &lt; 25 || !tenant.checkLicenceStillValid(tenant)) {
+			return false;
+		}
+		return true;
+	}
+</pre>
+<p>As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:</p>
+<p><em>IF form is correct<br />
+AND tenant age correct<br />
+AND tenant licence is valid<br />
+THEN proceed</em> </p>
+<p>We now eliminate the bad cases first:</p>
+<p><em>IF form is incorrect: deny rental<br />
+IF tenant's age or licence is invalid: deny rental<br />
+ELSE proceed</em></p>
+<p>I'm trying to do this everywhere I can, it realy helps the readability.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/inversion_of_logic/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">Java EE 6 released, including Servlet 3.0</a></h1>
+    <p class="author">
+      <span class="date">Dec 10, 2009 22:43:13</span>
+    </p>
+    <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
+<p>About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I've worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn't what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!<br />
+<!--more--><br />
+So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply... My next move was just to write about it, first on my own blog, then on <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">DZone</a> (05/30/2008) and on <a href="http://www.theserverside.com/tt/articles/article.tss?l=PonderingAboutJSR135">The Server Side</a> a half year later, december 2008.</p>
+<p>The only 'reply' I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened <a href="http://swik.net/GlassFish/The+Aquarium/Servlet+3.0+...+Almost+at+PDR/cmaui">here</a>.</p>
+<p>Now that the release is final I'm actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:</p>
+<pre class="brush:java">
+@Servlet(urlMappings={"/foo", "/bar"})
+public class MyServlet {
+     @GET
+     public void handleGet(HttpServletRequest req, HttpServletResponse res) {
+          //Handle the GET
+     }
+}
+</pre>
+<p>And this was my suggestion on how to improve it (see second article/link):</p>
+<pre class="brush:java">
+@ServletMapping(name="myServlet", mapping={"/foo", "/bar"})
+public class MyServlet extends HttpServlet {
+
+     @Override //keep strong typing!
+     public void doGet(HttpServletRequest req, HttpServletResponse res) {
+          ...
+     }
+}
+</pre>
+<p>And this is from the final release:</p>
+<pre class="brush:java">
+@WebServlet(name="myServlet", urlPatterns={"/foo","/bar"})
+public class MyServlet extends HttpServlet {
+
+     @Override //keep strong typing!
+     public void doGet(HttpServletRequest req, HttpServletResponse res) {
+          ...
+     }
+}
+</pre>
+<p>That's very similair, maybe a little too similair..? But anyway, I'm pleased about the result. It'll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.</p>
+<p>I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/steve-oakley-the-head-hunter/">Steve Oakley, the head hunter</a></h1>
+    <p class="author">
+      <span class="date">Dec 10, 2009 15:28:57</span>
+    </p>
+    <p>Every once in a while head hunters call me. They call you at home, at work, they work out your email adress and mail you... This will probably sound very familiar to most IT professionals.</p>
+<p>Anyway, the thing that strikes me is that about 50% of the time a head hunter calls, its Steve Oakley! And it isn't just me that is getting calls from Steve Oakley, no, all my collegues and friends are getting calls from him as well!</p>
+<p>So, are you in or out? Have you been called by Steve Oakley yet?</p>
+<p><img src="/images/steve_oakley.PNG" alt="I went to work, and all I got was a call from Steve Oakley" title="Steve Oakley" width="411" height="322" class="alignnone size-full wp-image-170" /></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/steve-oakley-the-head-hunter/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/testing-with-spring/">Testing with Spring</a></h1>
+    <p class="author">
+      <span class="date">Dec 8, 2009 23:49:31</span>
+    </p>
+    <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I'll describe these terms and show examples on how to create tests using JUnit and Spring's Test library.</p>
+<h5>Unit Testing</h5>
+<p>A unit-test is an automated test that tests <span class="underline">one</span> single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.</p>
+<p>Here is an example of a unit-test:</p>
+<p><!--more--></p>
+<pre class="brush:java">
+public class CalculatorTest {
+
+	private final Integer TOADD1 = 6;
+	private final Integer TOADD2 = 4;
+	private final Integer ANSWER = 10;
+	
+	@Test
+	public void testAdd() {
+		Calculator calculator = new Calculator();
+		
+		Integer returnedAnswer = calculator.add(TOADD1, TOADD2);
+		
+		Assert.assertEquals("The answer of " + TOADD1 + "+" + TOADD2 +
+			" should be " + ANSWER + " but was " + returnedAnswer, 
+			ANSWER, returnedAnswer);
+	}
+}
+</pre>
+<p>By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.</p>
+<h5>Test Driven Development</h5>
+<p>Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.</p>
+<p>What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:</p>
+<ol>
+<li>Write a unit-test that verifies your usecase</li>
+<li>Implement the interfaces you created for step 1<br /> (can be done quick and dirty, just to get the logic correct)</li>
+<li>Run the tests and confirm your code is logically correct</li>
+<li>Refactor your code into maintainable, readable, reusable code</li>
+<li>Confirm the code still works as designed by running the test(s)</li>
+</ol>
+<p>Actually, I don't write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I'm going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.</p>
+<h5>Integration testing</h5>
+<p>With unit testing you can verify that the smallest units of work are correct. But this doesn't give you any guarantees!</p>
+<p>A famous example is NASA's $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.</p>
+<p>Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested <span class="underline">a lot</span>, but apparently they neglected to test the components together.</p>
+<h5>Integration testing with Spring</h5>
+<p>Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.</p>
+<p>Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.</p>
+<p>One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending <i>org.springframework.test.AbstractDependencyInjectionSpringContextTests</i> or <i>org.springframework.test.AbstractTransactionalSpringContextTests</i>.</p>
+<p>If you want to use these classes you need two things:</p>
+<ul>
+<li>Create a seperate Spring configuration with test-beans (or use your normal Spring config)</li>
+<li>Override <i>String[] getConfigLocations()</i>, provide it with the location of your Spring configuration.</li>
+</ul>
+<p>Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.</p>
+<p>A small example:</p>
+<pre class="brush:java">
+public class PersonServiceTest 
+	extends AbstractDependencyInjectionSpringContextTests {
+
+	private PersonService personService;
+
+	/**
+	 * Integration test for my calculator.
+	 * It also calls the calculatorDao which is in the calculatorService.
+	 */
+	@Test
+	public void testAddPerson() {
+		
+		Person p = ...
+		
+		personService.add(p);
+		
+		//Test if the person has been added.
+	}
+	
+	/**
+	 * Provide the test with a configuration
+	 */
+	@Override
+	protected String[] getConfigLocations() {
+		return new String[] { "my-test-applicationcontext.xml" };
+	}
+}
+</pre>
+<h5>Testing with Spring 2.5+</h5>
+<p>With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.</p>
+<p>This is how you would use it:</p>
+<pre class="brush:java">
+import org.junit.runner.RunWith;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations= { "my-test-applicationcontext.xml" })
+public class PersonServiceTest {
+
+	@Autowired
+	private PersonService personService;
+
+	/**
+	 * Integration test for my calculator.
+	 * It also calls the calculatorDao which is in the calculatorService.
+	 */
+	@Test
+	public void testAddPerson() {
+		
+		Person p = ...
+		
+		personService.add(p);
+		
+		//Test if the person has been added.
+	}
+}
+</pre>
+<p>It works the same way as before, but instead of having to override the <i>AbstractDependencyInjectionSpringContextTests</i> you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.</p>
+<p>Hopefully I'll find the time to write another post on mocking, including EasyMock and Mockito.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/testing-with-spring/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/feed-your-curiosity/">Feed your curiosity</a></h1>
+    <p class="author">
+      <span class="date">Dec 8, 2009 18:21:54</span>
+    </p>
+    <p><i><b>Curiosity</b> is an emotion related to natural inquisitive behaviour such as exploration, investigation, and learning, evident by observation in human and many animal species.</i></p>
+<h5>Source: <a href="http://en.wikipedia.org/wiki/Curiosity">wikipedia</a></h5>
+<p>To me, curiosity is one of the greatest things we as humans have. It feeds you with knowledge and sparks your fantasy, its an emotion that tickles your brain and forces you to explore.</p>
+<p><img src="/images/curious_kitten.jpg" alt="Curiosity isn&#039;t limited to humans" title="kittens can be curious too" width="400" height="300" class="size-full wp-image-116" /></p>
+<p>In life its vital to search for new things, new limits, new experiences. Always keep asking questions, because with every answer you find, more questions will arise!</p>
+<p><!--more--><br />
+At first this sounds a bit depressing, more questions for every answer you get. This doesn't sound satisfactory, but trust me, it is! Its not the answer that gives you satisfaction, its the new array of questions that give satisfaction! Because these questions feed our curiosity.</p>
+<p>It also strikes me that children are very good in asking questions, and they come up with the most amazing questions! I really think this is a good skill, and its a shame we lose this when we get older. Why don't adults ask these questions? Is it the fear of the "dumb-question", does it make them look stupid?</p>
+<p>Here are some examples of good curious questions:</p>
+<ul>
+<li><b>Q: How do blind people know when they're done wiping toiletpaper?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>They can feel it from the drag, and then wipe two times extra (just to be sure)</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: If you smoke, and go into a coma. When you wake up, do you crave for a cigarette?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>It depends, after 8 days all the nicotine would be out of him/her bloodstream. So the physical chemical craving wouldn't be there when they wake up. They'll probably still have a habitual craving though.</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: Why don't our eyelashes grow?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>All hair follicles have a certain cycle. The hair grows for a certain time, and then it just drops out. Eyelashes have a short cycle-rate.</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: Do fish drink?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>It actually depends: Saltwater fish drink, and filter the salt and minerals with their gills. Freshwater fish absorb water with their bodies.</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: How many neck-vertebrates does a giraffe have?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>The same amount as we have, seven. Even a mouse has seven vertebrates. All mammals have seven vertebrates except the manatee and three-toed sloth (They only have six)</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: Can Elephants jump?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>No, they can't! They weigh too much. Also they get very uncomfortable if there is more then one feet of the ground at any time.</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: If you die from anti-freeze poisoning, would you be able to do cryopreservation?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>?</em></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><b>Q: A Dutch question: Waarom moet je bevroren eten altijd "ontdooien"? Dooien is het tegenovergestelde van bevriezen! Dus moet je iets toch dooien in plaats van ontdooien?</b></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>A: <em>?</em></li>
+</ul>
+<p>If you have curious/weird questions, or know answers to unanswered questions, please drop me a comment!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/feed-your-curiosity/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/atheist-look-on-christmas/">Atheist look on Christmas</a></h1>
+    <p class="author">
+      <span class="date">Dec 7, 2009 20:10:59</span>
+    </p>
+    <p>Something other then the usual technical posts...<br />
+As you might already know, I am an atheist. Yes, in my opinion there is no God, there never was and <i>(probably)</i> never will be. </p>
+<h2>Atheistic Christmas?</h2>
+<p>Being an Atheist with Christian friends I get a lot of questions. Recently a friend of mine asked: <i>"Why do you celebrate Christmas when you are an Atheist?"</i>.</p>
+<p>This question, to me, is quite simple. First of all, because it is a tradition. I think its a wonderful holiday. Ask around, what do people think about when you ask them about Christmas?</p>
+<p><!--more--><br />
+People think about:</p>
+<ul>
+<li>Christmas trees</li>
+<li>Snow!</li>
+<li>Santa Claus</li>
+<li>Toys, candy and gifts</li>
+<li>Decorations, lights</li>
+<li>Christmas dinner with relatives</li>
+<li>The poor, and less fortunate</li>
+<li>Christmas songs</li>
+<li>The Grinch</li>
+<li>Mistletoe</li>
+<li>Christmas cards</li>
+<li>Charles Dickens, A Christmas Carol</li>
+</ul>
+<p>All of these things have no connection to the Christian Christmas, except the name "Christ-".</p>
+<h2>The birth of Jesus</h2>
+<p>The date on which we celebrate Christmas is sometimes said to be the birthdate of Christ. But in fact this isn't true. The date has been borrowed from other holiday's. Originally people celebrated the Roman <a href="http://en.wikipedia.org/wiki/Winter_solstice">winter solstice</a> on the 25th of December. It was probably just convenient to borrow this date. </p>
+<p>So instead of saying I celebrate Christmas, I could just say I celebrate midwinter.</p>
+<h2>Santa Claus</h2>
+<p>Okay, how about Santa Claus, there is nothing more Christmas then Santa Claus. But again this figure has nothing to do with Christianity. The only thing God and Santa Claus have in common is the beard.</p>
+<p>I'm from the Netherlands, and on the 5th of december the old Saint Nicolaas (or <a href="http://en.wikipedia.org/wiki/Sinterklaas">Sinterklaas</a>) visits our country. At night he visits all the houses and he brings gifts for all the kids! Does this sound familiar? It should be, he and Santa are the same guy..!</p>
+<p><img src="/images/sinterklaas.jpg" alt="sinterklaas" title="sinterklaas" width="354" height="257" class="size-full wp-image-100" /></p>
+<p>When New York City was still called <a href="http://en.wikipedia.org/wiki/New_Amsterdam">New Amsterdam</a> the Dutch tradition took off in America. Slowly evolving (yes, holidays evolve too!) into the Santa Claus we all know today.</p>
+<p>And being Dutch I have a huge advantage, we celebrate Sinterklaas AND Santa Claus, getting gifts and candy twice!</p>
+<p>But again, a good reason to celebrate Christmas, it is based on a old Dutch tradition, and Santa Claus has nothing to do with Christianity.</p>
+<h2>Family, friends and relatives</h2>
+<p>For me, the single most important reason I celebrate Christmas as an Atheist are my family, relatives and friends. Its the time of year, with its long dark days and cold nights, that is perfectly suited for spending time with friends and family.</p>
+<p>Its also the perfect time of year to think about your own situation, about the people you know and love, about people who don't have it as good as you have. Its the time of year of giving and sharing.</p>
+<p>That is <b>the</b> most important reason to celebrate <s>Christmas</s> midwinter, winter solstice, late Sinterklaas.</p>
+<p><img src="/images/GodExits.jpg" alt="god exits" title="god_exits" width="464" height="500" class="size-full wp-image-99" /></p>
+<h2>Evolution...</h2>
+<p>Finally, I have to get something out of my system about evolution:</p>
+<p>Please get over it, evolution exists, there is enough prove. Just because it is called a theory it doesn't mean you can just throw it out of the Christmas decorated window. For example, did you know gravity is still a theory? It is, first it was known as <a href="http://en.wikipedia.org/wiki/Gravitation#Newton.27s_theory_of_gravitation">Newton's Theory of Gravitation</a>, and after that a guy named Albert Einstein wrote a better version, the <a href="http://en.wikipedia.org/wiki/General_relativity">General Theory of Relativity</a>. It is accepted that gravity exists and nobody doubts that. Just like gravity, evolution is <a href="http://www.notjustatheory.com/">not just a theory</a>.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/atheist-look-on-christmas/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/vmware-on-your-phone/">VMWare on your phone?</a></h1>
+    <p class="author">
+      <span class="date">Dec 7, 2009 11:47:56</span>
+    </p>
+    <p>Recently VMWare, known from its computer virtualization software, has announced they are developing a dual-boot mobile version. This would allow you to run both Windows Mobile and Android on your phone.</p>
+<p>But it isn't going to be a dual-boot you know from your computer, they are planning on running the OS'es at the same time. This would allow you to switch between OS on-the-fly. </p>
+<ul>
+<li>You want to use a Windows Mobile app? <i>*click*</i> </li>
+<li>Oh, you want to use something on the Andriod platform? <i>*click*.</i></li>
+</ul>
+<p>I'm very curious how this will work out performance-wise, but the idea itself is great!</p>
+<p>Via: <a href="http://www.computerworld.com.au/article/328811/vmware_developing_dual_os_smartphone_virtualisation">computerworld.com.au</a></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/vmware-on-your-phone/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/eureqa/">Eureqa</a></h1>
+    <p class="author">
+      <span class="date">Dec 4, 2009 21:14:48</span>
+    </p>
+    <p>I've just stumbled across a new program: <a href="http://ccsl.mae.cornell.edu/eureqa">Eureqa</a></p>
+<p>Its a program, developed by the Cornell Computational Synthesis Laboratory, that can detect equations in sets of data. Its primary goal is to identify the simplest mathematical formulas which could describe the underlying mechanisms that produced the data.</p>
+<p>Its best described using their instructional video:</p>
+<p><object type="application/x-shockwave-flash" style="width:425px; height:344px;" data="http://www.youtube.com/v/NhC1Qb-PQ5Q"><param name="movie" value="http://www.youtube.com/v/NhC1Qb-PQ5Q" /></object></p>
+<p>I've been playing around with it, for example trying to find a good prediction equation for the Son of Darts competition I blogged about earlier.</p>
+<p>The algorithm(s) used in this program are based around "<a href="http://en.wikipedia.org/wiki/Symbolic_Regression">symbolic regression</a>". It is a form of Genetic Programming (GA) where the computer processes a tree of possibilities recursively searching for the best suited building-blocks.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/eureqa/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/songsincode/">#songsincode</a></h1>
+    <p class="author">
+      <span class="date">Dec 4, 2009 19:09:29</span>
+    </p>
+    <p><img class="size-full wp-image-61 " title="songsincode" src="/images/8.jpg" alt="songsincode" width="267" height="296" /></p>
+<h2>What is #songsincode ?</h2>
+<p>Last week I discovered a new hype on Twitter. The so-called "#songsincode". It's a huge hype under programmers and technical users. The best way to explain is probably by showing an example:</p>
+<pre class="brush:java">if( door == red ) {
+   door.paint(black);
+}</pre>
+<p>This obviously is Paint It Black by the Rolling Stones (if the door is red, paint it black)</p>
+<h2>My own #songsincode:</h2>
+<p>Here is a collection of the #songsincode I created and tweeted:</p>
+<p><!--more--></p>
+<pre class="brush:java">if( silhouetto == man &amp;&amp; i.see(silhouetto)) {
+   scaramouche.doFandango();
+   if(thunderbolt &amp;&amp; lightning) {
+      me.frightened = true;
+   }
+}</pre>
+<hr />
+<pre class="brush:java">while(true) {
+   ableToCheckout();
+}
+//Unreachable code:
+leave();</pre>
+<hr />
+<pre class="brush:java">switch(random(2)) {
+   case 0: feel.partner = null;
+      break;
+   case 1: feel.onlyFriend = city.of(this, angel);
+}</pre>
+<hr />
+<pre class="brush:java">for(mydaddy : oh) {
+   whack();
+}
+jar.insert(whisky);</pre>
+<hr />
+<pre class="brush:java">man.amount = 1;
+man.come(love.name());
+man.come();
+man.go();</pre>
+<hr />
+<pre class="brush:java">life++;
+if(life &gt; you &amp;&amp; you != me) {
+   me.goto(lengths);
+   distance(you.eyes);
+   if(me.saidTooMuch()) {
+      me.setUp(it);
+   }
+}</pre>
+<hr />
+<pre class="brush:java">for(Person p:people) {
+   p.imagine();
+}</pre>
+<hr />
+<pre class="brush:java">boolean isLover(String name) {
+   if("Billy Jean".equals(name)) {
+      return false;
+   }
+   ...</pre>
+<hr />
+<pre class="brush:java">for(int i = 0;i &lt; 8; i++ ) {
+   System.out.println("MMmmmMMmmm");
+}
+throw new RuntimeException("test dummy");</pre>
+<hr />
+<pre class="brush:java">String bird;
+bird = "word";</pre>
+<hr />
+<pre class="brush:java">if(she != lovely &amp;&amp; she != wonderfull &amp;&amp; she != precious &amp;&amp; she.age &lt; 1 ...</pre>
+<hr />
+<pre class="brush:java">Submarine submarine = new Submarine(new Color(255,255,0));
+for(Person p:all) {
+   submarine.add(p);
+}</pre>
+<hr />
+<pre class="brush:java">while( !me.like(mondays) ) {
+   tellWhy(me);
+}</pre>
+<hr />
+<pre class="brush:java">while(young) {}
+//loops forever</pre>
+<hr />
+<pre class="brush:java">if(time == hammer) {
+   System.exit(1);
+}</pre>
+<hr />
+<pre class="brush:java">if( !women ) {
+   cry = false;
+}</pre>
+<hr />
+<pre class="brush:java">public static void main(String[] args) {
+     this.remove(religion);
+}</pre>
+<hr />
+<pre class="brush:java">while(!hasFound) {
+   lookFor();
+}</pre>
+<hr />
+<pre class="brush:java">if(grass=="green" &amp;&amp; girls == "pretty") {
+   takeMe(paradiseCity);
+}</pre>
+<hr />
+<pre class="brush:java">for(Leaf leaf:leafs) {
+   leaf.setColor(new Color(139,69,19));
+}
+sky.setColor(Color.GRAY);</pre>
+<hr />
+<pre class="brush:java">for(Thing thing:stuff) {
+   aintGotNo(thing);
+}
+complainAboutGod();
+for(Part part:bodyparts) {
+   gotMy(part);
+}
+gotMy(life);
+gotMy(freedom);
+gotMy(life);</pre>
+<hr />
+<pre class="brush:java">{
+     final countdown = 10;
+}</pre>
+<h2>My favourite:</h2>
+<p>And here is my all-time favourite (in CSS!!) created by <a href="http://twitter.com/Codepo8">@codepo8</a>:</p>
+<pre class="brush:java">.clowns{float:left;}
+.jokers{float:right};
+#me_you{position:fixed;margin:0 auto;width:100%}</pre>
+<p>I hope you liked them!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/songsincode/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/java-generics-for-compare/">Java Generics for Compare</a></h1>
+    <p class="author">
+      <span class="date">Dec 4, 2009 16:35:15</span>
+    </p>
+    <p>I've been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4... some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
+<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List&lt;Integer&gt; instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</p>
+<p>For example the piece of code below:</p>
+<p><!--more--></p>
+<pre class="brush:java">
+public class LabelPlaceholderComparator implements Comparator { 
+
+    /**{@inheritDoc */
+    public int compare(Object o1, Object o2) {
+        LabelPlaceholder p1 = (LabelPlaceholder) o1;
+        LabelPlaceholder p2 = (LabelPlaceholder) o2;
+        return p1.getLabel().compareTo(p2.getLabel());
+    }
+}</pre>
+<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey... the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
+<pre class="brush:java">
+List holders = fillList();
+Collections.sort(holders, new LabelPlaceholderComparator());
+</pre>
+<p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
+For example Eclipse says:</p>
+<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
+<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
+<em>@SuppressWarnings("unchecked")</em></p>
+<p>What a shame... Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn't know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
+<p><em>I've got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I'd rather have a specific Comparator for this job. Do you have one for me?</em></p>
+<p>The solution to this problem is very simple, but most neglect to use it:</p>
+<pre class="brush:java">public class LabelPlaceholderComparator implements Comparator&lt;LabelPlaceholder&gt; { 
+
+    /**{@inheritDoc */
+    public int compare(LabelPlaceholder p1, LabelPlaceholder p2) {
+        return p1.getLabel().compareTo(p2.getLabel());
+    }
+}</pre>
+<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don't have to cast anymore, because of the generics you can't put anything else in there.</p>
+<p>So, lets go to the conclusion: Why is the latter code better code?</p>
+<ol>
+<li>As you can see, the code is smaller!</li>
+<li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
+<li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don't have to read the Javadoc or the code to see what it does.</li>
+</ol>
+<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren't perfect, please use them where/when you can, it'll always add clarity to the code, and most of the time it'll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
+<p>Don't ever let me see public int compare(Object o1, Object o2); again!</p>
+<p>(You see, it is possible for me to have a discussion about Java generics without mentioning <a href="http://gafter.blogspot.com/2006/11/reified-generics-for-java.html">reified generics</a>!)</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/java-generics-for-compare/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/11" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 12 of 13</span>
+    
+      <a href="/page/13" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

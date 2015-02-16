@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android application #1</title>
+  <meta name="description" content="This weekend I wrote my first Android application: Love or HateThe idea behind the game is very simple. When you start it the application goes online and loo...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/05/android-application-1/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/05/wedding-video/" title="Previous Post: Wedding video">&laquo; Wedding video</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/05/bitcoin-mining/" title="next Post: Bitcoin mining">Bitcoin mining &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Android application #1</h1>
+    <p class="post-meta">
+    	May 29, 2011 18:22:14
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a><br />
+<br />
+The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
+<ul>
+<li>"I love it when"</li>
+<li>"I hate it when"</li>
+</ul>
+<p>
+The application now displays some user information (username/profile picture) and shows parts of the tweet. The words "love" and "hate" are removed and the user has to guess which of the two words was in the original tweet.<br /></p>
+<h3>Backend</h3>
+<p></p>
+<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I've used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.<br /></p>
+<h3>Frontend</h3>
+<p></p>
+<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don't have one... But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don't have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
+<p>The next discovery was: Android isn't at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.<br /></p>
+<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I've released my application in English (default), Dutch and French.<br /></p>
+<h3>Releasing to the Market</h3>
+<p></p>
+<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on "Export as signed Android application" and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.<br /></p>
+<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don't think I'll even see that return on investment, I've decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).<br /></p>
+<h3>Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="" title="ad_mob_logo_header" width="100" height="47" /></h3>
+<p>Now that I've invested 25 euro's, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.<br /></p>
+<h3>Results</h3>
+<p></p>
+<p>After one day I'm pretty surprised: Already 350 people have downloaded the application and I've already earned &gt; 50 cents from AdMob (2% ROI).<br /></p>
+<p>I've really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
+<p>(p.s. No, I'm not going to port my <a href="/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/2010/07/patent-infringement/">sued</a>)</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

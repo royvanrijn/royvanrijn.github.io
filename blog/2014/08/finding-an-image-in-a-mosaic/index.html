@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Finding an image in a mosaic</title>
+  <meta name="description" content="Browsing the Ludum Dare (see previous post) website I found this post from a friend Will. He made the following mosaic:Pretty interesting to see, I've alread...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/" title="Previous Post: Ludum Dare #30: A (dis-)connected world...">&laquo; Ludum Dare #30: A (dis-)connected world...</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2014/09/building-commander-keen-on-osx/" title="next Post: Building Commander Keen on OS/X">Building Commander Keen on OS/X &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Finding an image in a mosaic</h1>
+    <p class="post-meta">
+    	Aug 27, 2014 15:33:42
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Browsing the Ludum Dare (see <a href="/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
+<p><a href="/images/mosaic.jpg"><img class="aligncenter wp-image-1829" src="/images/mosaic.jpg" alt="mosaic" width="954" height="487" /></a></p>
+<p>Pretty interesting to see, I've already worked with him on improving the algorithm to generate these mosaics <a href="/2014/04/mosaic-algorithm/">in the past</a>. But next he set me a challenge: <em>Find your own game thumbnail, it is in there somewhere!</em></p>
+<p>This is the screenshot of my game, used as thumbnail:</p>
+<p><a href="/images/target.png"><img class="aligncenter wp-image-1833 size-medium" src="/images/target-300x187.png" alt="target" width="300" height="187" /></a></p>
+<p>So I went though the thumbnails, one time.. and a second time... then I decided to solve it like a real programmer:</p>
+<p><img class="aligncenter wp-image-1830 " src="/images/mosaic.gif" alt="mosaic" width="495" height="246" /></p>
+<p>&nbsp;</p>
+<p>How does it work? Well it is pretty simple:</p>
+<ol>
+<li>Input #1: mosaic.jpg</li>
+<li>Input #2: Amount of thumbnails width and height</li>
+<li>Input #3: screenshot.png</li>
+<li>The program resizes my game screenshot to the thumbnail size.</li>
+<li>Next it loops over all sub-images of the mosaic.</li>
+<li>For every sub-thumbnail: Calculate the error  (+=<em>Math.abs(mosaicPixelValue - screenshotPixelValue)</em> for each color, for each pixel)</li>
+<li>Store the location of the thumbnail with the smallest error!</li>
+</ol>
+<p><strong>That is it</strong>, solved it in 10 minutes of coding!<br />
+(and another 10 minutes to make the visual conformation and make the animated gif).</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Testing with Spring</title>
+  <meta name="description" content="To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I'll describe t...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/feed-your-curiosity/" title="Previous Post: Feed your curiosity">&laquo; Feed your curiosity</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/steve-oakley-the-head-hunter/" title="next Post: Steve Oakley, the head hunter">Steve Oakley, the head hunter &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Testing with Spring</h1>
+    <p class="post-meta">
+    	Dec 8, 2009 23:49:31
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I'll describe these terms and show examples on how to create tests using JUnit and Spring's Test library.</p>
+<h5>Unit Testing</h5>
+<p>A unit-test is an automated test that tests <span class="underline">one</span> single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.</p>
+<p>Here is an example of a unit-test:</p>
+<p><!--more--></p>
+<pre class="brush:java">
+public class CalculatorTest {
+
+	private final Integer TOADD1 = 6;
+	private final Integer TOADD2 = 4;
+	private final Integer ANSWER = 10;
+	
+	@Test
+	public void testAdd() {
+		Calculator calculator = new Calculator();
+		
+		Integer returnedAnswer = calculator.add(TOADD1, TOADD2);
+		
+		Assert.assertEquals("The answer of " + TOADD1 + "+" + TOADD2 +
+			" should be " + ANSWER + " but was " + returnedAnswer, 
+			ANSWER, returnedAnswer);
+	}
+}
+</pre>
+<p>By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.</p>
+<h5>Test Driven Development</h5>
+<p>Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.</p>
+<p>What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:</p>
+<ol>
+<li>Write a unit-test that verifies your usecase</li>
+<li>Implement the interfaces you created for step 1<br /> (can be done quick and dirty, just to get the logic correct)</li>
+<li>Run the tests and confirm your code is logically correct</li>
+<li>Refactor your code into maintainable, readable, reusable code</li>
+<li>Confirm the code still works as designed by running the test(s)</li>
+</ol>
+<p>Actually, I don't write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I'm going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.</p>
+<h5>Integration testing</h5>
+<p>With unit testing you can verify that the smallest units of work are correct. But this doesn't give you any guarantees!</p>
+<p>A famous example is NASA's $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.</p>
+<p>Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested <span class="underline">a lot</span>, but apparently they neglected to test the components together.</p>
+<h5>Integration testing with Spring</h5>
+<p>Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.</p>
+<p>Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.</p>
+<p>One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending <i>org.springframework.test.AbstractDependencyInjectionSpringContextTests</i> or <i>org.springframework.test.AbstractTransactionalSpringContextTests</i>.</p>
+<p>If you want to use these classes you need two things:</p>
+<ul>
+<li>Create a seperate Spring configuration with test-beans (or use your normal Spring config)</li>
+<li>Override <i>String[] getConfigLocations()</i>, provide it with the location of your Spring configuration.</li>
+</ul>
+<p>Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.</p>
+<p>A small example:</p>
+<pre class="brush:java">
+public class PersonServiceTest 
+	extends AbstractDependencyInjectionSpringContextTests {
+
+	private PersonService personService;
+
+	/**
+	 * Integration test for my calculator.
+	 * It also calls the calculatorDao which is in the calculatorService.
+	 */
+	@Test
+	public void testAddPerson() {
+		
+		Person p = ...
+		
+		personService.add(p);
+		
+		//Test if the person has been added.
+	}
+	
+	/**
+	 * Provide the test with a configuration
+	 */
+	@Override
+	protected String[] getConfigLocations() {
+		return new String[] { "my-test-applicationcontext.xml" };
+	}
+}
+</pre>
+<h5>Testing with Spring 2.5+</h5>
+<p>With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.</p>
+<p>This is how you would use it:</p>
+<pre class="brush:java">
+import org.junit.runner.RunWith;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations= { "my-test-applicationcontext.xml" })
+public class PersonServiceTest {
+
+	@Autowired
+	private PersonService personService;
+
+	/**
+	 * Integration test for my calculator.
+	 * It also calls the calculatorDao which is in the calculatorService.
+	 */
+	@Test
+	public void testAddPerson() {
+		
+		Person p = ...
+		
+		personService.add(p);
+		
+		//Test if the person has been added.
+	}
+}
+</pre>
+<p>It works the same way as before, but instead of having to override the <i>AbstractDependencyInjectionSpringContextTests</i> you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.</p>
+<p>Hopefully I'll find the time to write another post on mocking, including EasyMock and Mockito.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

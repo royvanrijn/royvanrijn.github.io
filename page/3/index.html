@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/3/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2014/04/creating-a-chatterbot/">Creating a chatterbot (Part 1)</a></h1>
+    <p class="author">
+      <span class="date">Apr 24, 2014 21:26:21</span>
+    </p>
+    <p>Ever since the first time I heard about the <a href="http://en.wikipedia.org/wiki/Turing_test">Turing Test</a> I've wanted to make my own chatbot. It started probably twenty plus years ago, when the only language I could program in was QBASIC. At that time I never got further than:</p>
+<p>> Hi computer!<br />
+> Hello.</p>
+<p>.... and now? ....</p>
+<h2>Current state</h2>
+<p>Since that first try (aged 10 or something) I've never tried to build another chatbot. But a couple of days ago I read a news article about the Loebner Prize, an annual event that tests the best chatbots in the world against some human judges, and it sparked my interest again.</p>
+<p>I started researching the Loebner Prize winners and there seems to be three distinct groups/types of chatbots and algorithms:</p>
+<ol>
+<li>Template based bots</li>
+<li>Crowdsourced bots</li>
+<li>Markov Chain bots</li>
+</ol>
+<p>Let me quickly describe how they work.</p>
+<h3>Template based bots</h3>
+<p>A lot of populair bots (like <a href="http://en.wikipedia.org/wiki/Artificial_Linguistic_Internet_Computer_Entity">A.L.I.C.E.</a> winner of the 2000, 2001 and 2004 Loebner Prize) use pre-defined templates. Most of them use a certain XML template called <a href="http://en.wikipedia.org/wiki/AIML">AIML</a>. This is a short example:</p>
+<pre class="brush:plain">
+&lt;category&gt;
+  &lt;pattern&gt;* YOUR NAME?&lt;/pattern&gt;
+  &lt;template&gt;My name is Chatbot.&lt;/template&gt;
+&lt;/category&gt;
+</pre>
+<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:<br />
+> What is your name?<br />
+> My name is Chatbot.</p>
+<p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don't seem very 'smart' and AI to me; so I'm not going to make another AIML-like bot.</p>
+<h3>Crowdsourced bots</h3>
+<p>One of the best (most human-like) chatbots is <a href="http://www.cleverbot.com/">Cleverbot</a>. But in my opinion it is one of the most simple bots around. It uses a nice trick and huge database. When it encounters a question it doesn't know/understand, it just ignores it, and stores it. In another chat session, it'll mimic and repeat that question to another human. The result is stored in the huge database for future conversations. As a result all the answers it gives are very human-like (because, well, they are human answers).</p>
+<p>But there is obviously a huge drawback, for example at one moment the bot is pretending to be a 18 year old male, the next moment it claims to be a 40 year old female. Then it starts talking about how much it loves horses, the next moment it says it hates animals...</p>
+<h3>Markov Chain bots</h3>
+<p>To keep this (long) blog post within reasonable length I'm not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let's for example say we store chains of length three.</p>
+<pre class="brush:plain">
+"Let's store this sentence, let's store it in a markov chain."
+
+1> Let's store this
+2> store this sentence
+3> this sentence let's
+4> sentence let's store
+5> let's store it
+6> store it in
+7> it in a
+8> in a markov
+9> a markov chain
+
+</pre>
+<p>Now let's imagine we are building a valid reply to a question and we already have "let's store"... what can we do next? We go into the chain and walk the nodes until we find the two matching results (1) and (5). So the sentence can continue with "this" or "it".</p>
+<p>Famous bots like MegaHAL kind of work this way (see their <a href="http://megahal.alioth.debian.org/How.html">explanation</a>). Although this feels much more like real AI/knowledge to me, it also has drawbacks. For example you can't say these bots are reasoning, they don't understand the environment/context it is in.</p>
+<h2>A new attempt</h2>
+<p>I've made a list of what my ideal chatbot should be:</p>
+<ul>
+<li>Learn through conversation/reading text</li>
+<li>Not just repeat, but understand relations and concepts</li>
+<li>Have different scopes, global knowledge, conversational scope</li>
+</ul>
+<p>Two days ago these ideas started to take shape in my head and I started writing the first code. The first goal is to make the bot able to read text and extract 'knowledge' from it.</p>
+<p>The first thing I had to do was to break up the input text into pieces, for this I found a great open source framework called <a href="https://opennlp.apache.org/">Apache OpenNLP</a>. It recognises words and sentences, it detects verbs, nouns, pronouns, adjectives, adverbs etc.</p>
+<p>The next thing I wanted to do was to turn all the nouns and verbs into their 'base'. When storing relations in the bots memory I want to avoid duplicate entries, so for example "fish are animals" and "fish is an animal" is the same. For that purpose I'm using <a href="http://wordnet.princeton.edu/">WordNet®</a> in combination with the Java library JWNL.</p>
+<p>Currently this is what the bot sees when given some input:</p>
+<pre class="brush:plain">
+> The bot can parse sentences and understand their base form
+Transformed: (The DT : WordPart) (bot NN : NounPart) (can MD : WordPart) (parse VB : VerbPart) (sentence NNS : NounPart) (and CC : WordPart) (understand VB : VerbPart) (their PRP$ : WordPart) (base form NN : NounPart) 
+> It can also parse names like Roy van Rijn and numbers like five hundred million and 4 hundred
+Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (parse VB : VerbPart) (name NNS : NounPart) (like IN : WordPart) (Roy van Rijn) (and CC : WordPart) (number NNS : NounPart) (like IN : WordPart) (500000000) (and CC : WordPart) (400) 
+</pre>
+<p>Understanding what kind of words are used and being able to transform them into the base-form will make it easier to store 'knowledge' and make sense of the world in the future.</p>
+<h2>Graph database</h2>
+<p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I'm in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I've got the following unit test working:</p>
+<pre class="brush:java">
+  // Set up some fruity test data:
+  // [thing] [connection] [thing] [optional: inverse connection]
+  graph.connect("human", "eat", "food", "eaten by");
+  graph.connect("apple", "be", "fruit", "contains");
+  graph.connect("banana", "be", "fruit", "contains");
+  graph.connect("strawberry", "be", "fruit", "contains");
+  graph.connect("fruit", "be", "food", "contains");
+  graph.connect("fruit", "fall", "tree");
+
+  //True: Does human eat banana?
+  Assert.assertTrue(graph.validate("human", "eat", "banana"));
+  //True: Does human eat strawberry?
+  Assert.assertTrue(graph.validate("human", "eat", "strawberry"));
+  //True: Is banana eaten by human?
+  Assert.assertTrue(graph.validate("banana", "eaten by", "human"));
+  //True: Does the group fruit contain strawberry?
+  Assert.assertTrue(graph.validate("food", "contains", "strawberry"));
+  //True: Is apple a fruit?
+  Assert.assertTrue(graph.validate("apple", "be", "food"));
+  //True: Do apples fall from trees?
+  Assert.assertTrue(graph.validate("apple", "fall", "tree"));
+
+  //False: Is strawberry a human?
+  Assert.assertFalse(graph.validate("strawberry", "be", "human"));
+  //False: Is fruit a strawberry?
+  Assert.assertFalse(graph.validate("fruit", "be", "strawberry"));
+</pre>
+<p>There are already more facts possible to extract from this 'knowledge database' than just the plain information I put in.</p>
+<h2>Data extraction</h2>
+<p>The next step in making my bot is going to be data extraction. I'm probably going to make a small template language that (might!) look like this:</p>
+<pre>
+Pattern: [noun] {be} (adj) [noun]
+Store: %1 is %2
+</pre>
+<p>The template should match sentences like "fish are animals", "roses are red", "Roy is a handsome dude" and "Roy is an obvious liar".</p>
+<p>The bot should be able to store all these 'facts' and put them in my graph/relation database. With these data extraction templates it should be possible to build a large knowledge base with facts for the bot, for example just by parsing a Wikipedia dump.</p>
+<p>Now I'm going to dive back into the code and continue my chatbot adventure, keep an eye out for part 2!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/04/creating-a-chatterbot/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/02/hacking-runkeeper-data/">Hacking your RunKeeper data</a></h1>
+    <p class="author">
+      <span class="date">Feb 14, 2014 23:38:17</span>
+    </p>
+    <p>This week I've started running/jogging, and I'm using <a href="http://www.runkeeper.com">RunKeeper</a> on my iPhone to track my progress.</p>
+<p>RunKeeper stores all the GPS data from your runs. This data is displayed per run, including a nice map of your route. Most important data can be reached throught the web interface, things like pace (min/km or min/mile) and distance. The most rewarding thing in running is breaking your own records, and RunKeeper has a couple of records:</p>
+<ul>
+<li>Longest run (distance)</li>
+<li>Longest run (time)</li>
+<li>Most calories burned in a run</li>
+<li>Fastest average pace</li>
+<li>etc</li>
+</ul>
+<p>As you can see, all those statistics are about single runs, what I'm missing are the following records:</p>
+<p>Fastest 1 KM, 3 KM, 5K, 10K etc.</p>
+<p>For example, when I've run a very fast 5.5 km run, I'd love to see this reflected as my 5K personal record, but right now it is lost because I've already done a slow 6 km run and a very fast 1 km sprint.</p>
+<h1>Export data</h1>
+<p>But luckily RunKeeper has a very useful option for us developers: <b>Settings > Export data</b>.<br />
+This results in a ZIP file with GPX files, raw GPS data with time and location!</p>
+<h2>JAXB</h2>
+<p>The first thing I did was download the XSD and generate the JAXB Java code:</p>
+<pre class="brush:plain">
+$ xjc -p com.royvanrijn.running.gpx gpx.xsd 
+parsing a schema...
+compiling a schema...
+com/royvanrijn/running/gpx/BoundsType.java
+com/royvanrijn/running/gpx/CopyrightType.java
+com/royvanrijn/running/gpx/EmailType.java
+com/royvanrijn/running/gpx/ExtensionsType.java
+com/royvanrijn/running/gpx/GpxType.java
+com/royvanrijn/running/gpx/LinkType.java
+com/royvanrijn/running/gpx/MetadataType.java
+com/royvanrijn/running/gpx/ObjectFactory.java
+com/royvanrijn/running/gpx/PersonType.java
+com/royvanrijn/running/gpx/PtType.java
+com/royvanrijn/running/gpx/PtsegType.java
+com/royvanrijn/running/gpx/RteType.java
+com/royvanrijn/running/gpx/TrkType.java
+com/royvanrijn/running/gpx/TrksegType.java
+com/royvanrijn/running/gpx/WptType.java
+com/royvanrijn/running/gpx/package-info.java
+</pre>
+<p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
+<pre class="brush:java">
+	JAXBContext jc = JAXBContext.newInstance("com.royvanrijn.running.gpx");
+	Unmarshaller unmarshaller = jc.createUnmarshaller();
+	JAXBElement&lt;GpxType&gt; root = (JAXBElement&lt;GpxType&gt;) unmarshaller.unmarshal(file);
+	List&lt;TrkType&gt; tracks = root.getValue().getTrk();
+</pre>
+<p>The next thing I did was translate the lat+long+time waypoints into 'legs' consisting of meters+seconds.<br />
+Those legs can be used to check for a record during longer runs, like this:</p>
+<pre class="brush:java">
+	@Override
+	public void analyze(List&lt;Leg&gt; legs) {
+		List&lt;Leg&gt; cache = new ArrayList&lt;Leg&gt;();
+		
+		double runningDistance = 0.0;
+		for(Leg leg:legs) {
+			//Add next leg to the tail:
+			cache.add(leg);
+			runningDistance += leg.getMeters();
+			
+			//If possible remove from head:
+			while((runningDistance-cache.get(0).getMeters()) &gt; targetDistance) {
+				runningDistance -= cache.remove(0).getMeters();
+			}
+			
+			if(runningDistance &gt; targetDistance) {
+				//Check if the current target distance time is a record:
+				checkTime(cache);
+			}
+		}
+	}
+</pre>
+<p>For example using a target of 5000 meters in a 5070 meter run, this analysis finds the following 5K times:</p>
+<pre class="brush:plain">
+5000.135743886022	00:29:57
+5001.356437683744	00:29:55
+5013.145427605677	00:30:01
+5009.98623847093	00:30:00
+5000.938905254762	00:30:01
+5001.8612669243685	00:30:03
+5000.555676905546	00:30:05
+5000.514815789608	00:30:07
+5000.514815789608	00:30:07
+</pre>
+<p>The information from RunKeeper website is:</p>
+<ul>
+<li>Distance: <b>5.07 km</b></li>
+<li>Time: <b>30:38</b></li>
+<li>Pace: <b>6:03</b></li>
+</ul>
+<p>But when analysing the data more accurately, it could have said:</p>
+<ul>
+<li>New personal record 3K: <b>00:16:46</b></li>
+<li>New personal record 5K: <b>00:29:55</b></li>
+</ul>
+<p>I couldn't believe this feature wasn't available in RunKeeper... but after a lot of Googling it turns out a lot of other people are looking for this 'most requested' feature! With a little bit of Java (100 lines of code) you can get a pretty good result:</p>
+<pre class="brush:plain">
+Done analyzing all runs:
+Fastest 100m run:	00:00:13
+Fastest 200m run:	00:00:48
+Fastest 400m run:	00:02:01
+Fastest 1500m run:	00:07:50
+Fastest 3000m run:	00:16:46
+Fastest 5000m run:	00:29:55
+Fastest 10000m run:	--:--:--
+</pre>
+<p>I'm now thinking of making a simple JavaScript application (no backend) that uses the RunKeeper export zip file as input and displays a lot of additional data. Are you interested in this? Please drop a comment and convince me to make this for you guys and girls!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/02/hacking-runkeeper-data/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2014/01/stargazing-my-first-telescope/">Stargazing: My first telescope</a></h1>
+    <p class="author">
+      <span class="date">Jan 12, 2014 12:15:41</span>
+    </p>
+    <p>A couple of months ago I was in the <a href="http://en.wikipedia.org/wiki/Eifel">Eifel</a> area in Germany. Surrounded by forests and hills, completely dark, I looked up to the sky and the view was amazing. The milky way was stunning, and there were so incredibly many stars...</p>
+<p>That is when I decided: I want a telescope!</p>
+<h2>Sky-Watcher Heritage 130p</h2>
+<p>After a lot of searching/reading I decided to go with an entry level <a href="http://en.wikipedia.org/wiki/Dobsonian_telescope">Dobsonian telescope</a> design. This type of telescope is usually cheaper to make, and easier to scale up; so for not a lot of money you get the most light-gathering which is very important in telescopes. It doesn't have the convenience of a GOTO mount, which automatically points your telescope to interesting stars and star clusters, so I'll have to learn to navigate on my own.</p>
+<p>What I bought was the <a href="http://www.skywatcher.com/product.php?cat=6&id=57">Sky-Watcher Heritage P130</a>, a telescope which has a truss-tube design so it is easier to carry around and take with me to Germany.</p>
+<p>After waiting for three weeks for clear skies (..sigh..) I had already hacked together a webcam so I could take pictures. This is how I created the following image of the moon:</p>
+<p><img src="/images/moon.png" alt="The moon" width="1023" height="572" class="aligncenter size-full wp-image-1673" /></p>
+<p style="text-align: center;font-size:10px;">(Sky-Watcher Heritage 130P, modified Microsoft Lifecam HD-3000, stacked using RegiStax 6)</p>
+<p>After playing around with this setup I decided I want to have 2x Barlow (which increases magnification 2 times again). I settled on an Ostara 1.25" achromatic 2x Barlow lens, which also has an T-adapter with EOS T-ring for my DSLR camera. Basically this turns my telescope into the lens of the camera. I'm very pleased with the results, the Barlow itself is great, but I've ditched the webcam completely and now only use my DSLR for astrophotographing.</p>
+<p>Initially my results weren't very good using the Barlow, the increased magnification pointed out another problem with my telescope: It needed collimation. Every once in a while the mirrors of a telescope need to be realigned. There are a lot of ways to do this, but the easiest and cheapest (free) method is using a DIY collimation cap. It is a cap with small hole in the middle, which I made from the Barlow dust cap. Now you can point the telescope to a bright wall and align the mirrors. This made another huge improvement to the image quality.</p>
+<p>Initially when looking at <a href="http://en.wikipedia.org/wiki/Jupiter">Jupiter</a> I could only see a disk with 4 planets in a row. But after collimation I can clearly see the bands on Jupiters surface. And after attaching the DSLR and filming a bit on magnified 640x480 (which results in a better picture after stacking then using 1080p for example), I stacked everything using RegiStax, this is the result:</p>
+<p><img src="/images/jupiter.png" alt="jupiter" width="640" height="480" class="aligncenter size-full wp-image-1677" /></p>
+<p style="text-align: center;font-size:10px;">(Sky-Watcher Heritage 130P, 2x Barlow, Canon 550D 640x480 cropped, stacked using RegiStax 6)</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2014/01/stargazing-my-first-telescope/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/12/6-traits-of-good-programmers/">6 common traits of good programmers</a></h1>
+    <p class="author">
+      <span class="date">Dec 12, 2013 14:54:47</span>
+    </p>
+    <p>I've had a lot of colleagues in my career, some good, some bad, some absolutely fantastic. In this post I'll go into some of the common traits that make them fantastic:</p>
+<ol>
+<li>Be inquisitive</li>
+<li>Share answers</li>
+<li>Community awareness</li>
+<li>Programmers pride</li>
+<li>Embrace laziness</li>
+<li>Spatial visualization</li>
+</ol>
+<h2>1: Be inquisitive</h2>
+<p>Always be inquisitive, if you encounter a problem the first thing all the great programmers do:</p>
+<p><img src="/images/google-300x105.png" alt="Google is your friend" width="300" height="105" class="alignnone size-medium wp-image-1642" /></p>
+<p>This will bring you to <a href="http://stackoverflow.com/">StackOverflow</a> questions, news groups, mailing lists, online documentation and more. This sounds very obvious but I've had a lot of colleagues that first asked a colleague instead of Googling. This is a bad habit in my opinion. Google has a <strong>lot</strong> more information than all your co-workers combined, there is no need to force a costly context switch upon your colleagues if you've got access to do greatest collective knowledge base.</p>
+<p>Most of the time the first hit on Google doesn't provide you with an answer, don't give up...! Keep on looking, try different search queries, dive into the source code. If non of the resources listed above yield an answer, ask the community, post a question on StackOverflow, ask on the mailing list or newsgroup.</p>
+<h2>2: Share answers</h2>
+<p>Once you've found the answer you've been looking for, done! Right?</p>
+<p><strong>WRONG!</strong> This is where you can distinguish yourself from the average programmer. You've got something important left to do.</p>
+<p><img src="/images/share-300x214.jpg" alt="share" width="300" height="214" class="alignnone size-medium wp-image-1650" /></p>
+<p>The longer it took you to find the answer, it'll also take other people the same time to find the answer. Backtrack how you came to the solution, write it down if necessary. Have you encountered your problem/question on StackOverflow? Forum posts? Newsgroups? If so, go back there and tell them about your answer. If there wasn't any question but you just used the wrong search queries to find something, write a blog post about your solution in your own words. Other people might find it easier thanks to you.</p>
+<p>I've even had cases where I asked a StackOverflow question, found the answer myself, and answered the question myself. This sound silly, but helps other programmers! <a href="http://stackoverflow.com/questions/11323415/is-eclipse-juno-wrong-with-this-ambiguous-method-error">[example]</a></p>
+<h2>3: Community awareness</h2>
+<p>It turns out there is a bug in Open Source framework N... what does a good programmer do?</p>
+<p>Two possible answers:</p>
+<ol>
+<li>Complain, find another alternative framework</li>
+<li>Download the source, patch it</li>
+</ol>
+<p>It turns out both are wrong. Open Source is only possible because there is a community willing to fix problems. So answer number one is an obvious mistake. You picked the framework with care (presumably), encountering a bug is rare and a great possibility to help the community.</p>
+<p>So what is wrong with the second answer? Instead of directly downloading the source and creating a path, first get in contact with the people behind the framework. One famous story is that Linus Torvalds (from Linux) rejected a beautifully crafted piece of code (which would greatly improve the speed of the Linux kernel) just because the author worked on it all alone for 6 months. First discuss your possible fix with the community, work together!</p>
+<p><img src="/images/needya-248x300.png" alt="needya" width="248" height="300" class="alignnone size-medium wp-image-1652" /></p>
+<p>Also, an open source project isn't <em>dead</em> because nobody has fixed your bug; it is dead because <strong>you</strong> didn't fix the bug.<br />
+<strong>You are the community!</strong></p>
+<h2>4: Programmer pride</h2>
+<p>Programmers should be proud. Once you've made something you can't wait to show the result to the clients and test your take on their ideas. If there a possible bug in a piece of code you wrote, touched or reviewed? Jump in there and help your colleagues!</p>
+<p><img src="/images/lion-pride-300x193.jpg" alt="Remember: Lion pride is also a team" width="300" height="193" class="alignnone size-medium wp-image-1660" /></p>
+<p>But beware, there is good pride and bad pride. Bad pride is when you think a code review isn't needed because <strong>you</strong>'ve made it. Bad pride is thinking you'll solve it <em>alone</em> instead of pair programming. Good pride is being proud of what you've made and feeling the shared ownership and responsibility. Be proud of your team, your product. Be passionate, but don't be proud of <em>yourself</em>. Embrace feedback, code reviews and pair programming!</p>
+<h2>5: Embrace laziness</h2>
+<p>In almost all professions the best employees are diligent and hard working. Except programmers, the best and most celebrated programmers are lazy. It is probably the only profession where it is considered a good trait (except maybe mattress and pillow testers).</p>
+<p>Perhaps the best-known lazy contribution to computing was the invention of the compiler by Grace Hopper in 1952. She did this, she said, because she <em>"was lazy"</em> and hoped that <em>"the programmer may return to being a mathematician"</em>.</p>
+<p>If a programmer is asked to do something on a regular basis he/she will instantly try to come up with a way to avoid it. Script once, run many times. This is also true for our clients, if a client is talking about repetitive work it starts to itch, we programmers instantly feel the urge to eliminate this and automate the tasks.</p>
+<p>Bill Gates once said: <em>“I choose a lazy person to do a hard job. Because a lazy person will find an easy way to do it.”</em></p>
+<p>Embrace the laziness, automate repetitive work, <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">don't repeat yourself</a>.</p>
+<p>Also: Lazy people will quickly learn keyboard shortcuts, like every good programmer should (!!)</p>
+<h2>6: Spatial visualization</h2>
+<p>To navigate an entire code base you'll need a mental model in your head. To do this you need <a href="http://en.wikipedia.org/wiki/Spatial_visualization_ability">spatial visualization ability</a>. Mental models in programming are usually called 'codespace'.</p>
+<p><img src="/images/spatial-skills-199x300.jpg" alt="spatial-skills" width="199" height="300" class="alignleft size-medium wp-image-1657" /></p>
+<p>Using spatial skill as a programmer works in two ways, first is knowing the entire code base. When you have to make a change or addition to some code you'll need to know where to look. Where do things happen, how does the flow between objects/instances go through the application. Which parts interact with each other.</p>
+<p>Second, you have to recognise the code you are working with (on source/text level). Most of the time you switch between multiple files and the best programmers I know are always aware of their location inside the file they are working on. Just by looking at the text outline/structure they can quickly navigate inside source files. This also requires great spatial visualization ability.</p>
+<p>There is also research being done about the link between programming, spatial skill and sex differences. It's been known that men and woman do have different spatial visualization in the brain. Maybe the current method of teaching programming or navigating in IDE's is better suited for males than females? </p>
+<p>More sources on spatial skills and programming:<br />
+- <a href="http://dl.acm.org/citation.cfm?id=1268852">Spatial skills and navigation of source code</a><br />
+- <a href="http://www.humantechnology.jyu.fi/articles/volume4/2008/jones-burnett.pdf">Spatial ability and learning to program</a><br />
+- <a href="http://pdf.aminer.org/000/364/952/using_sex_differences_to_link_spatial_cognition_and_program_comprehension.pdf">Using Sex Differences to Link Spatial Cognition and Program Comprehension</a> (interesting but provocative idea)</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/12/6-traits-of-good-programmers/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/11/developers-are-code-artists/">Developers are (code) artists</a></h1>
+    <p class="author">
+      <span class="date">Nov 26, 2013 11:27:31</span>
+    </p>
+    <p>Last week a manager went to an artist for a new painting in his living room:</p>
+<p>M: "Hello Mr Artist. I'd like a painting from you"<br />
+A: "Hi Mr Manager, what kind of painting do you want?"<br />
+M: "It needs to be 100 cm by 50 cm, for in my living room"<br />
+A: "Yes, I see, what do you want on the painting? I do abstract art."<br />
+M: "Something with a bit of green and blue"<br />
+... some more details ...<br />
+M: "When are you done with the painting?"<br />
+A: "Probably in three weeks!"<br />
+M: "Probably? I want to know exactly when it is done!"<br />
+A: "Well, oke, for you I'll have it done in three weeks"<br />
+M: "Why does it take you so long?"<br />
+A: "Huh? What kind of question is that?"<br />
+M: "Well, I can paint that canvas in under an hour! Why do you take three weeks?"<br />
+A: "Sure, I can fill the canvas with color in an hour as well, but that isn't a painting is it?"<br />
+M: "Why not?"<br />
+A: "....?"<br />
+M: "Can you do it in two weeks?"<br />
+A: "You're drunk, go home."</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/11/developers-are-code-artists/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/11/reviewing-devoxx-2013/">Review: Devoxx 2013</a></h1>
+    <p class="author">
+      <span class="date">Nov 18, 2013 23:05:06</span>
+    </p>
+    <p>As promised, here is my write-up for <a href="http://www.devoxx.be">Devoxx</a> 2013, the best Java conference in the world (maybe on par with JavaOne).</p>
+<h2>Day 0</h2>
+<p>Having work to do I arrived tuesday evening, day zero.</p>
+<h3>Devoxx wristband</h3>
+<p>For the second year in a row there was no line at all picking up the awesome wristband with NFC chip. This already is much better than most conferences which have lanyards with huge badges (yes, I'm looking at you JFall!). The Devoxx NFC chip is used by sponsors to get your email address and it is also used to check off lunch and the party to the Noxx. There is also a big sign in front of every conference room, there you can either give "Thumbs up" or "Thumbs down" after you've been to a session, with the NFC wristband. If there is no speaker presenting the huge movie theater screens show a tweet-stream, upcoming talks and the 'best' voted talks of the conference. A new feature this year was the middle 'star' in front of each conference room. If the queue of people gets too large you could 'star' a talk. When it becomes available online at <a href="http://www.parleys.com">Parleys</a> it will automatically be suggested to you online!</p>
+<h3>Speakers dinner</h3>
+<p>The speakers dinner was, like every year, very well organized. And it gave me the opportunity to speak to the brightest minds in the Java community. It was really inspirational and eventually led to change my <a href="/2013/11/devoxx-and-my-online-identity/">online identity</a>.</p>
+<h2>Day 1</h2>
+<p>The first day of the conference. Up too early to film some stock footage before all the people arrive. One advantage was the empty tram from Antwerp city center to Kinopolis.</p>
+<h3>Keynote</h3>
+<p>The start of the opening keynote had two guys (calling themselfs <a href="http://meta-ex.com/">Meta-eX</a>) where making amazing live music... with code! They used live-emacs to program <a href="http://clojure.org/">Clojure</a> code, which in turn used <a href="http://overtone.github.io/">Overtone</a> to play music in <a href="http://supercollider.sourceforge.net/">SuperCollider</a>. Using not one but two <a href="http://monome.org/">Monome</a> sequencers they made sequencing visible, displaying Clojure code with a beamer in the background.</p>
+<p>After that <a href="https://twitter.com/Stephan007">Stephan Janssen</a> gave us the latest Devoxx statistics, again maxed out with 3500 attendees (Devoxxians). He also talked about Devoxx4Kids with <a href="https://twitter.com/danieldeluca">Daniel De Luca</a> and they got a little present from <a href="http://www.aldebaran-robotics.com/en/">Aldebaran Robotics</a>: a <b>Nao</b> robot! He also talked about a substantial donation from Oracle for future Devoxx4Kids events!</p>
+<p>The final part of the keynote was a demonstration by Oracle, they made a cool chess playing robot using multiple <a href="http://www.raspberrypi.org/">Raspberry Pi's</a>. After talking about the upcoming internet of things they looked at the history of the Java language and some bold design decisions under the hood, comparing the language to a wolf in sheep's clothing. When the language Java was created it was pretty standard, looked a lot like C, but for blue collar programmers. But the technology under the hood was state of the art, not yet proven concepts. Today we take garbage collection, virtual machines for granted. When Java was created it was new and didn't perform yet. The gamble payed off though, garbage collectors, JIT compilers and smart virtual machines caught up and now often outperform static C++ programs.</p>
+<h3>The Habit of Highly Effective Technical Teams</h3>
+<p>The next talk I could attend (had to do some networking and filming) was by <a href="https://twitter.com/karianna">Martijn Verburg</a>. Lately he hasn't been able to do a lot of programming but he's working hard on his lean startup company and focuses on teamwork. In this talk he compared great agile teams with the Teenage Mutant Hero Turtles and other fun stuff. While actually making great points, for example: Having a shared goal. Like the TMHT, whom all fight for justice, your team has to have a shared goal as well. His talks are always full of humor but also have obvious and not so obvious rules, you'll learn and laugh! This is exactly the reason our company (<a href="http://www.jpoint.nl">JPoint</a>) flew him over for a day of hacking and a free talk for JUG members.</p>
+<h3>Teaching computer science with music</h3>
+<p>After being amazed by the Meta-eX performance during the keynote I decided to attend this talk by the programming member of the two man collective, <a href="https://twitter.com/samaaron">Sam Aaron</a>. He talked about his project <a href="http://www.cl.cam.ac.uk/projects/raspberrypi/sonicpi/">Sonic Pi</a>, a simple way to teach kids how to program. The main advantage of using music is the instant feedback during live coding. It was a nice inspirational talk about teaching and live coding music, and Sam Aaron is a great public speaker with huge enthusiasm.</p>
+<h3>Is it a car? Is it a computer? No, It's a Raspberry Pi JavaFX Informatics System</h3>
+<p>Simon Ritter talked about using embedded Java with a Raspberry Pi to communicate with his Audi S3 to create a in-car information system, complete with touchscreen and accelerometer. After accessing the car's CAN system he repurposed the steering wheel buttons for hands free control! A tantalizing talk about some real hardware hacking.</p>
+<h3>Hacking your own band with Clojure and Overtone</h3>
+<p>The final talk of the day was again with Sam Aaron, this time with his other band member Jonathan Graham. This time they explained how they created Overtone and other tools needed for their live performance like <a href="https://github.com/overtone/emacs-live/">emacs-live</a>. During the talk they often played some music making it a fun interactive experience. People asked questions and it was the perfect end of day one. The only drawback was Sam's endless enthusiasm, every time Jonathan started a sentence he was interrupted by Sam... poor Jonathan. :-)</p>
+<h3>Beer Central</h3>
+<p>For the second time our company sponsored free beer at the famous 'Beer Central'. The whole evening everybody was free to order any of the 300+ beers on stock! It was great fun and I caught up with a lot of (ex-) colleagues. The only drawback was getting back in the hotel around 06:10 after a wild night.</p>
+<h2>Day 2</h2>
+<p>For no obvious reason I decided to skip the keynote this morning.</p>
+<h3>Programmers are way cooler than musicians</h3>
+<p>Another talk about music, this time it was Geert Bevin talking about and playing on his <a href="http://www.eigenlabs.com/">eigenharp</a>. It was a fun talk but I didn't like it as much as most other people, it turned out to be one of the highest voted talks of the conference. Maybe it was the sound (which sometimes reminded me of the theremin, which I hate), or the fact I'd already been to two talks about music.</p>
+<h3>Java EE 7's Java API for Websocket</h3>
+<p>Ah, a serious talk about Java EE by Arun Gupta. This for me was a bit of a disappointment. The talk itself was good, gave a lot of insight into the new features that you get from Websockets. But I got soon distracted. It reminded me about the <a href="www.royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/">small fight</a> I had in 2009 about the new Servlet specification. The new websocket API again uses a LOT of annotations and yes, I understand there are some advantages for using them, there are also disadvantages. All the examples Arun showed used the annotations (and not the interfaces which are also there, yay!). For example:</p>
+<pre class="brush:java">@ServerEndpoint("/location")  //This is a good annotation, with meta information
+public class SomeEndpoint {
+
+   @OnOpen //Awww no this is where is goes wrong... it already says onOpen below
+   public void onOpen(Session session) {
+      ...
+   }
+
+   @OnClose //No no no...
+   public void onClose(Session session) {
+      ...
+   }
+
+   @OnError //NO!
+   public void error(Session session, Throwable t) {
+      ...
+   }
+
+   @OnMessage //...
+   public void textMessage(Session session, String msg) {
+      System.out.println("Text message: " + msg);
+   }
+}
+</pre>
+<p>The reasons I don't like those annotations, and rather was to see adapters:</p>
+<ul>
+<li>Interfaces are easier for code completion, ctrl-space knows what can be done</li>
+<li>Testing is easier with interfaces</li>
+<li>Less error-prone for beginning programmers (what happens on two OnOpen's? Which annotations can I use? What can the method fingerprints look like?)</li>
+<li>Annotations are for meta-data (like mapping!), not for describing code flow</li>
+</ul>
+<p>During the sessions I tweeted about this and at the end of the sessions Arun opened the twitterfeed to check for comments. The only thing he said about my comment was <i>"Roy, there is an Oracle document which describes when to use and not to use annotations, it is very clear, I'll send it!"</i>.</p>
+<p>And here are those rules:</p>
+<ol>
+<li>When defining an API that an application is going to implement and the container is going to call, use an interface, unless one of the following rules applies.</li>
+<li>If an application class is providing an API that's exposed to other applications, and that class also needs to provide methods that the container will call for lifecycle functions (or other container support or management functions), use an annotation to mark those methods so that the application has flexibility in the choice of names for those methods.</li>
+<li>If an application is going to expose an interface that another application (or user) is going to use <b>without</b> Java, use annotations to mark the methods that correspond to this interface. This avoids the need to define a Java interface that's never going to be used by anyone other than the one class implementing the interface.</li>
+<li>If there can be more than one occurrence of a method for a given purpose, use an annotation.</li>
+<li>If an interface is chosen and the interface has many methods, consider providing an "adapter" class that implements all the methods with nop implementations. Applications can then subclass this adapter class to avoid the need to implement all methods. It's often better to decompose the interface into multiple smaller interfaces.</li>
+</ol>
+<p>(source: <a href="https://java.net/projects/javaee-spec/pages/AnnotationRules">Annotation Rules</a>)</p>
+<p>As far as I can judge the first rule applies and non of the following rules break that.</p>
+<h3>Architecting Android Applications with Dagger</h3>
+<p>This talk surprised me! To be honest, the only reason I went to this talk was to have the best seat in the house for the JavaPosse... But I learned about a great framework. There is a problem using dependency injection frameworks in Android. The introspection and reflection is very slow and often causes the startup time to be 30% higher than it should be. This is why some of the great minds behind Google Guice invented Dagger. It originates from DAG-er which stands for Directional Acyclic Graph. It uses a separate compiler to analyze your code and generate new optimized injection code. This has two main advantages, if there is a problem in the graph it'll show during compile-time not runtime. And second the processing is done at compile-time, so the execution is as fast has handwritten code!</p>
+<h3>JavaPosse LIVE</h3>
+<p>Another year at Devoxx, another JavaPosse LIVE. This year only two of the new posse were at Devoxx: Dick Wall and Chet Haase. But they teamed up with Emmanuel Bernard and Guillaume Laforge from the french programming podcast 'Les Cast Codeurs'. It was the very first sessions at a conference I've seen where I left a little dumber, but I had a great time doing it.</p>
+<h3>Devoxx4Kids: Best Practises</h3>
+<p>Absolutely the best talk of the conference! Nah, just saying that because I was in it :-). During this talk Daniel De Luca, together with other Devoxx4Kids organizer (myself included) showed tools and best practises everybody can apply to get children into programming (your own kids, or a Devoxx4Kids session).</p>
+<p>It was great fun, and only if one person in the audience decides to organize a Devoxx4Kids session, it was an absolute success.</p>
+<h3>BOF: Lessons learned from Devoxx4Kids</h3>
+<p>Instead of answering questions after the session we all went into a BoF room for an informal meeting. We had a lot of people talking about there experiences with children, from Arun Gupta teaching programming Minecraft to 200 kids to parents talking about their own experiences. Inspiring!</p>
+<h3>Devoxx movie: The Counselor</h3>
+<p>It wasn't the best movie I've seen, it wasn't the worst. It had the most crazy sex scene I've ever seen in a movie (catfish?), but also absolutely no interesting story line. It was very 'american' pointing out the obvious things instead of leaving anything to the imagination, which I didn't like at all. Also, be prepared to leave the theater with a depression, no happy end. With this depression I didn't go to the Noxx afterparty (where Meta-eX did an amazing gig!) but me and some colleagues decided to walk 4 km to the hotel, to reflect on life.</p>
+<h2>Day 3</h2>
+<p>Sorry for the incredibly long blogpost, I'll keep the end short! The final (half) day at the conference I spend talking to a lot of people instead of going to the talks. I wanted to go to <b>'Taming Drones: How Java Controls the Uprising of the Drone Force'</b> but it was full...</p>
+<h3>Introduction to Google Glass</h3>
+<p>The only talk I did attend was by Alian Regnier, one of the few GlassExplorers in Europe, he gave us his insight and shared his experiences with Google Glass after owning it for 6 months. It will no doubtfully infect us in a couple of years. He skipped over most of the code and instead talked more about his experiences as a Google Glass wearer. It was interesting to hear, but not that informative.</p>
+<h2>Recap</h2>
+<p>This Devoxx for me had a lot of: Music, Embedded devices (Raspberry Pi) and some Java EE. The organization was perfect as always (although I'd rather see a sandwich instead of the horrible salad). I still love the rock-and-roll bracelet with NFC chip. There wasn't any big news, which was a bit of a shame. After announcing Devoxx FR two years ago, and Devoxx UK and Devoxx4Kids last year... it felt like 2013 was lacking something... I just don't know what.</p>
+<p>Also check out this amazing analysis of the conference tweets: <a href="http://blog.florian-hopf.de/2013/11/devoxx-in-tweets.html">http://blog.florian-hopf.de/2013/11/devoxx-in-tweets.html</a></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/11/reviewing-devoxx-2013/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/11/devoxx-and-my-online-identity/">Devoxx and my online identity</a></h1>
+    <p class="author">
+      <span class="date">Nov 15, 2013 16:19:07</span>
+    </p>
+    <p>This week I was at <a href="http://devoxx.be">Devoxx 2013</a> in Belgium. Like the previous years I helped film the event. Together with other a couple of <a href="http://www.devoxx.com/display/4KIDS/Home">Devoxx4Kids</a> organizers we also did a session and an informal <a href="http://en.wikipedia.org/wiki/Birds_of_a_Feather_(computing)">BoF</a> talk. I might do some more posts on the actual conference sessions later, lot of cool things to talk about, from making live music with Clojure and OverTone to flying quadcopters with <a href="https://www.thalmic.com/en/myo/">digital bracelets</a>.</p>
+<h2>Digital me</h2>
+<p>For me the biggest eye opener was during the pre-conference speakers dinner. Three times during this dinner/reception I was talking to someone and only after 30 minutes they suddenly realized they already knew me... online, not in real life. Because I've always used a crazy blue avatar and the anonymous 'redcode.nl' URL, people can't possibly connect the face to the online presence. That is when <a href="https://twitter.com/Imifos">Tasha Carl</a> suggested to me to use an actual picture instead. (just noticed she also doesn't have a recognizable picture, the irony!)</p>
+<p>When I got to the hotel that evening and fired up my laptop I decided to quickly bridge the gap between my digital appearance and real life. I've now changed my avatar at Twitter/Facebook/Vimeo/LinkedIn etc to the image above <i>(the iconic blue creature is still there!)</i>. Also as you might have noticed I've decided to switch my complete website to my other domain: <a href="http://www.royvanrijn.com">royvanrijn.com</a>. All the links online that point to <i>redcode.nl</i> will still work, but all the links on that page point to the new domain.</p>
+<h2>Instant confirmation</h2>
+<p>The following day I was walking around on the conference floor when a woman approached me. She asked "Are you Roy?". It turned out I replied to a tweet she wrote earlier that day and recognized my face from the image. Confirmation couldn't be more instant!</p>
+<p>The Devoxx theme this year was "Reborn at Devoxx", at this is absolutely true for me, my digital identity is actually reborn!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/11/devoxx-and-my-online-identity/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/">RuntimeExceptions within @Asynchronous methods</a></h1>
+    <p class="author">
+      <span class="date">Oct 21, 2013 22:09:10</span>
+    </p>
+    <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
+<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html">Future&lt;T&gt;</a>. When returning a <strong>Future</strong> it starts out completely empty, but the @Asynchronous can return something called <strong>AsyncResult&lt;T&gt;</strong> to fill the <strong>Future</strong> with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</p>
+<p>To find out more about how to use @Asynchronous and Future, read this page from <a href="http://tomee.apache.org/examples-trunk/async-methods/">TomEE</a>.</p>
+<p>The problem I've found with this annotation is how it handles RuntimeException. If you have a <strong>void</strong> as return value, and inside the asynchronous method a RuntimeException occurs, it'll be completely swallowed. Nothing will be send to your logs. This is something I couldn't find in any documentation.</p>
+<p>If you create a new Thread yourself (see example below) it will print the RuntimeException:</p>
+<pre class="brush:java">
+    public static void main(final String[] args) {
+		final Runnable t = new Runnable() {
+			@Override
+			public void run() {
+				throw new RuntimeException("Log me!!");
+			}
+		};
+		new Thread(t).start();
+	}
+</pre>
+<p>When executed you'll end up with the exception nicely printed in the console. But this isn't the case for @Asynchronous. For example if you do:</p>
+<pre class="brush:java">
+    @Asynchronous
+    public void test() {
+		throw new RuntimeException("Where am I?");
+    }
+</pre>
+<p>This exception is swallowed, never to be seen again. Because this wasn't what I expected it took me much longer then needed to find the actual bug!</p>
+<p>To fix this problem you can instead return a Future and call <em>get()</em>. When calling <em>get()</em> on a Future, and the asynchronous method ends with an exception, it'll immediately throw an <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutionException.html">ExecutionException</a> which wraps around the asynchronous exception (call getCause() to get it).</p>
+<p>But calling get() basically makes the call synchronous again instead of the fire-and-forget I wanted to have. So instead I've now ended up with a big try/catch block around the entire @Asynchronous method. It feels a bit wrong... did I miss something? Is there a better method to log the RuntimeException from @Asynchronous methods?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/10/java-default-methods-future-problem/">Java 'default' methods, future problem?</a></h1>
+    <p class="author">
+      <span class="date">Oct 17, 2013 12:33:20</span>
+    </p>
+    <p>In Java there is one golden rule, we <b>don't break backwards compatibility</b>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
+<h2>Extending interfaces</h2>
+<p>With the introduction of Lambda's in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <i>List.forEach</i> all custom implementations of the List interface won't compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
+<h2>default</h2>
+<p>To counter this the '<i>default</i>' keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn't have to be). For example, see the following new 'default' method from the Iterable interface:</p>
+<pre class="brush:java">
+    default void forEach(Consumer&lt;? super T&gt; action) {
+    	Objects.requireNonNull(action);
+    	for (T t : this) {
+        	action.accept(t);
+    	}
+    }
+</pre>
+<p>There are some important rules; the added code will operate on static data, it can't and should never manipulate state!<br />
+Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
+<h2>Possible future problems...</h2>
+<p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
+<pre class="brush:java">
+default Spliterator&lt;E&gt; spliterator()
+</pre>
+<p>Now (crazy example) I've made something called <b>MyListSet</b> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <i>spilerator()</i> on the same level and will thus collide with the following exception:</p>
+<pre class="brush:plain">
+class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
+  where T is a type-variable:
+    T extends Object declared in class MyListSet
+</pre>
+<p>The more these 'default' methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I'm not yet convinced about the default methods.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/java-default-methods-future-problem/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/10/openjdk-and-xkcd-random-number/">OpenJDK and XKCD: Random number</a></h1>
+    <p class="author">
+      <span class="date">Oct 15, 2013 16:47:44</span>
+    </p>
+    <p>A couple of days ago a our <a href="http://www.jpoint.nl">JPoint</a> hackathon we discussed building (Adopt) OpenJDK. After finding out a better way to build OpenJDK on Windows (<a href="/2013/10/building-openjdk-on-windows/">read it here</a>), I've made my first improvement to OpenJDK.</p>
+<p>This is a famous XKCD cartoon I wanted to implement:<br />
+<a href="http://xkcd.com/221/"><img src="/images/random_number.png" alt="getRandomNumber() { return 4; } // chosen by fair dice roll, guaranteed to be random" /></a></p>
+<p>Where do we get started? Actually it turned out it is fairly easy to make this 'improvement'. We just need to find the correct source file and do a build as described <a href="/2013/10/building-openjdk-on-windows/">here</a>.</p>
+<p>Instead of the HotSpot core (which is all written in C) the JDK libraries are just classes/Java files. If you want to look at these Java files you'll need to browse to <b>[openjdk]/jdk/src/share/classes</b>. There you'll find familiar directories/packages like "java.*", "javax.*" and even "sun.*".</p>
+<p>The file we need to change to <i>improve</i> Random is of course: <b>[openjdk]/jdk/src/share/classes/java/util/Random.java</b></p>
+<p>Now we browse until we find:</p>
+<pre class="brush:java">
+    /**
+     * Returns the next pseudorandom, uniformly distributed {@code int}
+     * value from this random number generator's sequence. The general
+     * contract of {@code nextInt} is that one {@code int} value is
+     * pseudorandomly generated and returned. All 2&lt;sup&gt;32&lt;/sup&gt; possible
+     * {@code int} values are produced with (approximately) equal probability.
+     *
+     * &lt;p&gt;The method {@code nextInt} is implemented by class {@code Random}
+     * as if by:
+     *  &lt;pre&gt; {@code
+     * public int nextInt() {
+     *   return next(32);
+     * }}&lt;/pre&gt;
+     *
+     * @return the next pseudorandom, uniformly distributed {@code int}
+     *         value from this random number generator's sequence
+     */
+    public int nextInt() {
+        return next(32);
+    }
+
+</pre>
+<p>Now we need fix the obvious error and turn it into:</p>
+<pre class="brush:java">
+    /**
+     * Returns guaranteed random number, rolled by nerdy DnD d20 dice.
+     *
+     * http://en.wikipedia.org/wiki/D20_System
+     *
+     * @return guaranteed random number
+     */
+    public int nextInt() {
+        return 14;
+    }
+
+</pre>
+<p>And after the build I pointed Eclipse to my newly generated JDK: <b>[openjdk]/build/windows-x86_64-normal-server-release/images/j2sdk-image</b>.<br />
+Next I run the following code:</p>
+<pre class="brush:java">
+
+import java.util.Random;
+
+public class Test {
+
+	public static void main(final String[] args) {
+		final Random rnd = new Random();
+		for(int i = 0; i &lt; 10; i++) {
+			System.out.println(rnd.nextInt());
+		}
+	}
+}
+
+</pre>
+<p>Result:</p>
+<pre class="brush:plain">
+14
+14
+14
+14
+14
+14
+14
+14
+14
+14
+</pre>
+<p><b>Serious note</b>:<br />
+This is absolutely not a valid patch but it really shows how easy it is to modify the JDK itself! There is a lot of low hanging fruit in the JDK, from missing unit tests, to unused imports to classes that don't use generics yet. For more things to hack on, please read: <a href="https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK">https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK</a>!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/openjdk-and-xkcd-random-number/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/2" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 3 of 13</span>
+    
+      <a href="/page/4" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Levenshtein Distance Challenge: Causes</title>
+  <meta name="description" content="Today I've been playing around with the Levenshtein distance. The Levenshtein distance is a number which measures the 'distance' between two strings. For exa...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/02/levenshtein-distance-challenge-causes/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/12/orchard-planting-greatest-common-divisor/" title="Previous Post: Orchard Planting: Greatest Common Divisor">&laquo; Orchard Planting: Greatest Common Divisor</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/03/devoxx-2011-talk-freely-available/" title="next Post: Devoxx 2011: Talk freely available">Devoxx 2011: Talk freely available &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Levenshtein Distance Challenge: Causes</h1>
+    <p class="post-meta">
+    	Feb 7, 2012 23:54:54
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Today I've been playing around with the <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a>. The Levenshtein distance is a number which measures the 'distance' between two strings. For example, the distance between "test" and "rest" is one.</p>
+<h2>The challenge</h2>
+<p>A Levenshtein distance of one is the key element in a challenge I've been reading about. I first encountered it on <a href="http://williamedwardscoder.tumblr.com/post/16756548314/causes-levenshtein-distance-challenge">williamedwardscoder</a>'s blog. </p>
+<p>The problem description:<br />
+<em><br />
+Two words are friends if they have a <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a> of 1. That is, you can add, remove, or substitute exactly one letter in word X to create word Y. A word’s social network consists of all of its friends, plus all of their friends, and all of their friends’ friends, and so on. Write a program to tell us how big the social network for the word “causes” is, using this <a href="https://raw.github.com/causes/puzzles/master/word_friends/word.list">word list</a>. Have fun!<br />
+</em></p>
+<h2>Java solution (8.1 sec)</h2>
+<p>After some Googling and tweaking I decided to make an implementation based on the <a href="http://en.wikipedia.org/wiki/Trie">Trie</a> structure. How this helps is excellently described by <a href="http://stevehanov.ca/blog/index.php?id=114">Steve Hanov</a>. I've also had a peek in another Java based Trie implementation by <a href="https://github.com/ximus/Causes-Challenge">Ximus</a>.</p>
+<p>I've been able to get the code below run in 8.1 seconds, which is pretty good. But I've read that there are Java implementations running in just 4 seconds...!? Maybe based on  Levenshtein Automata?</p>
+<pre class="brush:java">
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+public class FriendlyCauses {
+
+	public static void main(String[] args) throws Exception {
+		FriendlyCauses s = new FriendlyCauses();
+		s.find();
+	}
+
+	TrieNode[] root = new TrieNode[26];
+
+	public void find() throws Exception {
+		long timeBefore = System.currentTimeMillis();
+		File wordList = new File("word.list");
+		BufferedReader reader = new BufferedReader(new FileReader(wordList));
+
+		int wordsAdded = buildTrie(reader);
+		System.out.println("Done building the Trie; " + wordsAdded + " words added.");
+		findFriends("causes");
+		System.out.println("Amount of friends found: " + countWords(root));
+		System.out.println("Total time: " + (System.currentTimeMillis() - timeBefore) + "ms");
+	}
+
+	/**
+	 * This method builds the complete trie with all the words.
+	 */
+	public int buildTrie(BufferedReader reader) throws IOException {
+		int wordsAdded = 0;
+		while (reader.ready()) {
+			String next = reader.readLine();
+			int start = next.charAt(0) - 97;
+			TrieNode current = root[start];
+			if (current == null) {
+				root[start] = current = new TrieNode();
+			}
+			for (int i = 1; i &lt; next.length(); i++) {
+				int nextIndex = next.charAt(i) - 97;
+				if (current.children == null) {
+					current.children = new TrieNode[26];
+				}
+				if (current.children[nextIndex] == null) {
+					TrieNode deeper = new TrieNode();
+					current.children[nextIndex] = deeper;
+				}
+				current = current.children[nextIndex];
+			}
+			current.word = next;
+			wordsAdded++;
+		}
+		return wordsAdded;
+	}
+
+	private class TrieNode {
+		// The children:
+		TrieNode[] children;
+		// If this node is the end of a word, store the word here:
+		String word;
+		// This boolean indicates that the current node is a friend.
+		boolean isFriend;
+	}
+
+	// Temporary buffer of friends to investigate further:
+	public List&lt;String&gt; friendsToFind = new LinkedList&lt;String&gt;();
+
+	public void findFriends(String word) {
+		friendsToFind.add(word);
+
+		while (friendsToFind.size() &gt; 0) {
+			String friend = friendsToFind.remove(0);
+
+			int size = friend.length();
+
+			byte[] currentRow = new byte[size + 1];
+			for (int i = 0; i &lt;= size; i++) {
+				currentRow[i] = (byte) i;
+			}
+
+			// Search the Trie for the given friend:
+			for (int i = 0; i &lt; 26; i++) {
+				if (root[i] != null) {
+					searchTrieForWord(root[i], i + 97, friend, currentRow);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Walk the complete Trie again finding all the friends
+	 */
+	private int countWords(TrieNode[] ts) {
+		int amount = 0;
+		for (int i = 0; i &lt; 26; i++) {
+			TrieNode t = ts[i];
+			if (t != null) {
+				if (t.isFriend) {
+					amount++;
+					// Print/add t.word
+				}
+				if (t.children != null) {
+					amount += countWords(t.children);
+				}
+			}
+		}
+		return amount;
+	}
+
+	/**
+	 * Recursively walk the Trie calculating the Levenshtein distance to the
+	 * given word. When a friend is found, mark it and add it to a list. The new
+	 * friend needs to be processed further on.
+	 */
+	private void searchTrieForWord(TrieNode node, int letter, String word, byte[] previousRow) {
+
+		int size = previousRow.length;
+		byte[] currentRow = new byte[size];
+		currentRow[0] = (byte) (previousRow[0] + 1);
+
+		int minElement = currentRow[0];
+
+		for (int i = 0; i &lt; size - 1; i++) {
+			int newCurrentRowValue = currentRow[i] + 1;
+			newCurrentRowValue = Math.min(newCurrentRowValue,
+					previousRow[i + 1] + 1);
+
+			if (word.charAt(i) == letter) {
+				newCurrentRowValue = Math.min(newCurrentRowValue,
+						previousRow[i]);
+			} else {
+				newCurrentRowValue = Math.min(newCurrentRowValue,
+						previousRow[i] + 1);
+			}
+			if (newCurrentRowValue &lt; minElement) {
+				minElement = newCurrentRowValue;
+			}
+			currentRow[i + 1] = (byte) newCurrentRowValue;
+		}
+
+		// If the Levenshtein distance is 1 and the node at current depth is a
+		// word (and not yet friend):
+		if (currentRow[size - 1] == 1 && node.word != null && !node.isFriend) {
+			node.isFriend = true;
+			friendsToFind.add(node.word);
+		}
+
+		if (minElement &lt;= 1 && node.children != null) {
+			for (int i = 0; i &lt; node.children.length; i++) {
+				TrieNode child = node.children[i];
+				if (child != null) {
+					searchTrieForWord(child, i + 97, word, currentRow);
+				}
+			}
+		}
+	}
+}
+
+</pre>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Getting started: Arduino Mega</title>
+  <meta name="description" content="A couple of days ago I've received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, ca...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2012/06/getting-started-arduino-mega/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2012/05/we-are-now-cached/" title="Previous Post: We are now cached">&laquo; We are now cached</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2012/06/rotoscoping-in-prince-of-persia/" title="next Post: Rotoscoping in Prince of Persia">Rotoscoping in Prince of Persia &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Getting started: Arduino Mega</h1>
+    <p class="post-meta">
+    	Jun 7, 2012 13:00:50
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>A couple of days ago I've received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, capacitors, and a couple of sensors).</p>
+<p><img src="/images/arduino_mega-300x225.jpg" alt="" title="arduino_mega" width="300" height="225" class="alignright size-medium wp-image-1192" /></p>
+<h2>Arduino?</h2>
+<p>The Arduino is a handy little board with micro controller. It allows you to connect your computer using USB to the micro controller and easily program and upload the program to the board. I'm a very experienced programmer with almost no experience in electronics.</p>
+<p>I know what a resistor is and what it does, but I have no idea how/when to use which resistor. But I'd love to learn more, maybe even build some toy robots in the end. A final goal would be to have a working humanoid with 20+ servo's, but that goal might be a bit out of reach...</p>
+<h2>The examples</h2>
+<p>The first thing I've done after unboxing the Arduino was plugging it in my laptop and browsing to the <a href="http://www.arduino.cc">arduino.cc</a> website. There you can download the Arduino IDE.</p>
+<p>In the 'Learning' section (<a href="http://arduino.cc/en/Tutorial/HomePage">http://arduino.cc/en/Tutorial/HomePage</a>) you'll find everything you need to get started. There are diagrams on how to wire everything into the breadboard, and there are also code examples.</p>
+<p>Some stuff I made using the 'Learning' page:</p>
+<ul>
+<li>Blinking LED (the hardware Hello World, yay!)</li>
+<li>Slowly fading blinking LED</li>
+<li>Knight rider, KITT LED bar</li>
+<li>Tiny keyboard with 5 buttons</li>
+<li>Light reactive theremin</li>
+</ul>
+<p>And some projects that aren't on the example page, but could be made using the things I've learned:</p>
+<ul>
+<li>Extended keyboard with 5 buttons and LEDs!</li>
+<li>Light reactive LED bar (showing the amount of light in LEDs)</li>
+<li>Knock-sensor, LED shows when it 'feels/hears' a knock</li>
+</ul>
+<p>All the above was made in a single evening! And there is much much more that you could make with the Arduino. I haven't even started using servos and/or DC motors. The only problem left is lack of imagination!</p>
+<p>For a programmer the code is very easy to understand, and the <a href="http://arduino.cc/en/Reference/HomePage">Arduino Programming Language</a> used is closely related to the C/Java family.</p>
+<pre class="brush:java">
+/*
+  keyboard
+ 
+ Plays a pitch that changes based on a changing analog input
+ 
+ circuit:
+ * 3 force-sensing resistors from +5V to analog in 0 through 5
+ * 3 10K resistors from analog in 0 through 5 to ground
+ * 8-ohm speaker on digital pin 8
+ 
+ created 21 Jan 2010
+ modified 9 Apr 2012
+ by Tom Igoe 
+
+This example code is in the public domain.
+ 
+ http://arduino.cc/en/Tutorial/Tone3
+ 
+ */
+
+#include "pitches.h"
+
+const int threshold = 10;    // minimum reading of the sensors that generates a note
+
+// notes to play, corresponding to the 3 sensors:
+int notes[] = {
+  NOTE_A4, NOTE_B4,NOTE_C3 };
+
+void setup() {
+
+}
+
+void loop() {
+  for (int thisSensor = 0; thisSensor < 3; thisSensor++) {
+    // get a sensor reading:
+    int sensorReading = analogRead(thisSensor);
+
+    // if the sensor is pressed hard enough:
+    if (sensorReading > threshold) {
+      // play the note corresponding to this sensor:
+      tone(8, notes[thisSensor], 20);
+    } 
+  }
+}
+</pre>
+<p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
+<pre class="brush:java">
+int sensorValue = analogRead(A0); 
+String stringThree = "Sensor value: " + sensorValue;
+Serial.println(stringThree);
+</pre>
+<p>This little piece of code above gives unpredictable results because 'stringThree' never got an initial value before you started concatenating different data types. Instead you'll have to do:</p>
+<pre class="brush:java">
+int sensorValue = analogRead(A0); 
+String stringOne = "Sensor value: ";
+String stringThree = stringOne + sensorValue;
+Serial.println(stringThree);
+</pre>
+<p>Weird...! But I really suggest trying out the Arduino, give it a chance and you'll probably like it and learn a lot about electronics and microcontrollers.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

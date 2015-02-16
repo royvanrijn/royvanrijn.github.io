@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RuntimeExceptions within @Asynchronous methods</title>
+  <meta name="description" content="Since the introduction of EJB 3.1 we can use the @Asynchronous annotation. It provides a simple way to create a new asynchronous process in your application....">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2013/10/java-default-methods-future-problem/" title="Previous Post: Java 'default' methods, future problem?">&laquo; Java 'default' methods, future problem?</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2013/11/devoxx-and-my-online-identity/" title="next Post: Devoxx and my online identity">Devoxx and my online identity &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">RuntimeExceptions within @Asynchronous methods</h1>
+    <p class="post-meta">
+    	Oct 21, 2013 22:09:10
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
+<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html">Future&lt;T&gt;</a>. When returning a <strong>Future</strong> it starts out completely empty, but the @Asynchronous can return something called <strong>AsyncResult&lt;T&gt;</strong> to fill the <strong>Future</strong> with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</p>
+<p>To find out more about how to use @Asynchronous and Future, read this page from <a href="http://tomee.apache.org/examples-trunk/async-methods/">TomEE</a>.</p>
+<p>The problem I've found with this annotation is how it handles RuntimeException. If you have a <strong>void</strong> as return value, and inside the asynchronous method a RuntimeException occurs, it'll be completely swallowed. Nothing will be send to your logs. This is something I couldn't find in any documentation.</p>
+<p>If you create a new Thread yourself (see example below) it will print the RuntimeException:</p>
+<pre class="brush:java">
+    public static void main(final String[] args) {
+		final Runnable t = new Runnable() {
+			@Override
+			public void run() {
+				throw new RuntimeException("Log me!!");
+			}
+		};
+		new Thread(t).start();
+	}
+</pre>
+<p>When executed you'll end up with the exception nicely printed in the console. But this isn't the case for @Asynchronous. For example if you do:</p>
+<pre class="brush:java">
+    @Asynchronous
+    public void test() {
+		throw new RuntimeException("Where am I?");
+    }
+</pre>
+<p>This exception is swallowed, never to be seen again. Because this wasn't what I expected it took me much longer then needed to find the actual bug!</p>
+<p>To fix this problem you can instead return a Future and call <em>get()</em>. When calling <em>get()</em> on a Future, and the asynchronous method ends with an exception, it'll immediately throw an <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutionException.html">ExecutionException</a> which wraps around the asynchronous exception (call getCause() to get it).</p>
+<p>But calling get() basically makes the call synchronous again instead of the fire-and-forget I wanted to have. So instead I've now ended up with a big try/catch block around the entire @Asynchronous method. It feels a bit wrong... did I miss something? Is there a better method to log the RuntimeException from @Asynchronous methods?</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

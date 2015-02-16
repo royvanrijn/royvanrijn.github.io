@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Setter vs Constructor injection</title>
+  <meta name="description" content="Recently I've had a discussion with a collegue about Setter vs Constructor injection. For those who don't know what I'm talking about a quick example:Setter ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2010/09/dinosaur-in-your-street/" title="Previous Post: Dinosaurize your street">&laquo; Dinosaurize your street</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/" title="next Post: (Annotated) Field injection vs Constructor injection">(Annotated) Field injection vs Constructor injection &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Setter vs Constructor injection</h1>
+    <p class="post-meta">
+    	Sep 20, 2010 22:59:44
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Recently I've had a discussion with a collegue about Setter vs Constructor injection. For those who don't know what I'm talking about a quick example:</p>
+<p>Setter injection:</p>
+<pre class="brush:java">
+public class SomeClass {
+	
+	private SomeDependency someDependency;
+	
+	public SomeClass() {
+		//Empty constructor
+	}
+
+	public void setSomeDependency(SomeDependency someDependency) {
+		this.someDependency = someDependency;
+	}
+}
+</pre>
+<p>Constructor injection:</p>
+<pre class="brush:java">
+public class SomeClass {
+	
+	private final SomeDependency someDependency;
+	
+	public SomeClass(final SomeDependency someDependency) {
+		this.someDependency = someDependency;
+	}
+}
+</pre>
+<p>Ever since I've used constructor injection, I've never wanted to go back. For a good reason I might add. Constructor injection is just better, no discussion. Please allow me to explain.</p>
+<p><!--more--></p>
+<h1>Safe construction</h1>
+<p>First of all there is safety. In the case of setter injection it is perfectly possible to create the object without calling the setter(s). This would leave SomeClass in an uninitialized state. With constructor injection this could never happen, you just can't create the object without at least deliberately ignoring (null-ing) the arguments.</p>
+<p>Also, if you add a new dependency and forget to add the dependency in the XML... you'll end up with weird behaviour and NPE's while running your code. If you use constructor injection is would fail on startup because the correct constructor couldn't be found. Failing early.</p>
+<h1>Finalization</h1>
+<p>In the case of constructor injection you can make the dependencies final, this is something you just can't do with setter injection. This will further ensure the atomicity of SomeClass, it just can't exist without its dependency. And there are many many more reasons using 'final' is a good idea (google it).</p>
+<h1>But... isn't constructor injection less readable?</h1>
+<p>The only argument I've heard made against constructor injection is the fact that it becomes unreadable if you have too much incoming dependencies. But that argument is completely invalid!</p>
+<p>The problem isn't the constructor injection, it is a code smell. If your class has too much incoming dependencies you should reconsider this class. There is a good chance it is doing too much or having too much responsibilities. </p>
+<p>So, it is actualy a good thing that constructor injection becomes aweful with too much dependencies, it is a code-smell! If the list of incoming dependencies grows too large you need to refactor, not blame constructor injection.</p>
+<p>With setter injection it wouldn't be almost invisible, a bad thing.</p>
+<h1>Conclusion...</h1>
+<p>In every single way constructor injection beats setter injection, so please only use constructor injection from now, k? bye!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

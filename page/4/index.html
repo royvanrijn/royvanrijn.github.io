@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/4/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2013/10/building-openjdk-on-windows/">Building OpenJDK on Windows</a></h1>
+    <p class="author">
+      <span class="date">Oct 13, 2013 20:05:14</span>
+    </p>
+    <p>Tomorrow I'll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK build instructions</a>.</p>
+<p>Most <i>cool</i> developers today seem to be using OS/X, but some of us are stuck on Windows laptops. I actually choose to stick with Windows 7 because every single client I've worked for has Windows workstations and only require the application to run on Windows. But anyway Martijn said: <i>"Getting OpenJDK to build on Linux/Mac would be easy, Windows can be dicey"</i></p>
+<p>With a bit of Googling and some small problems I've got it working just fine on my Windows 7 (64 bit). Most information I got was from <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">this</a> write-up, but I encountered some problems and could skip some steps I didn't need.</p>
+<p>All the tools mentioned are <b>free</b>, but you <i>will</i> have to install some Microsoft Visual C++ packages to compile (which most Java programmers try to avoid).</p>
+<h2>Windows SDK for Windows 7.1</h2>
+<p>Instead of the blogpost above mentioning this step second, I recommend doing it first. If you install VisualC++ 2010 Express first this step might fail with some weird error. The solution? Uninstall VisualC++ 2010 Express and first install Windows SDK for Windows 7.1.</p>
+<p>So go here and install: <a href="http://www.microsoft.com/download/en/details.aspx?id=8279">http://www.microsoft.com/download/en/details.aspx?id=8279</a></p>
+<h2>Microsoft VisualC++ 2010 Express</h2>
+<p>Next install VisualC++ 2010 Express (beware, Microsoft tries to install another version, pick 2010 Express):<br />
+<a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express</a><br />
+And next Windows Imaging Component (64-bit):<br />
+<a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=1385">http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=1385</a></p>
+<h2>Cygwin (64 bit)</h2>
+<p>For some reason I ran into problems early on using the 64 bit Cygwin, so I decided to install the 64 bit version as well. This worked, so I recommend doing this.<br />
+During the installation you'll need to add some development packages:</p>
+<ul>
+<li>binutils</li>
+<li>cpio</li>
+<li>diffutils</li>
+<li>file</li>
+<li>gawk</li>
+<li>gcc-core</li>
+<li>m4</li>
+<li>unzip</li>
+<li>zip</li>
+</ul>
+<p>I might have forgotten one or two, this will probably popup during the 'configure' step below. If you find a missing package, please tell me and I'll update the post.</p>
+<h2>make</h2>
+<p>The version of 'make' that is packaged with Cygwin doesn't work with OpenJDK. Instead we need to download the source from <a href="http://ftp.gnu.org/gnu/make/">http://ftp.gnu.org/gnu/make/</a>. I picked version 3.82 (this one is mentioned on the OpenJDK page). I downloaded and unzipped the source code here: <b>C:\Projects\OpenJDK\make-3-82</b></p>
+<p>To compile, fire up Cygwin and type:</p>
+<pre class="brush:plain">
+$ cd /cygdrive/c/Projects/OpenJDK/make-3.82
+$ ./configure
+$ make
+</pre>
+<p>Now you could take the generated 'make.exe' and place it into the Cygwin bin directory, but this isn't needed.</p>
+<h2>freetype</h2>
+<p>Next we need to have Freetype, this step is done exacly like descriped <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">here</a>. Only do the 'Freetype' chapter generating the lib and dll.</p>
+<p>Once you've generated the lib+dll, make a new directory (I used <b>C:\Projects\OpenJDK\freetype</b>). Add the 'include' directory from the freetype source code used in the step before. Also create a 'lib' directory and place the generated lib and dll in it.</p>
+<h2>Hg/Ant/JDK7</h2>
+<p>The other article mentions you'll need to install TortoiseHg, Apache Ant and a current JDK 7 (as bootstrap). I didn't have to do this because I already had all three installed. But please go ahead, they are probably needed:</p>
+<ul>
+<li><a href="http://tortoisehg.bitbucket.org/download">TortoiseHg</a></li>
+<li><a href="http://ant.apache.org/bindownload.cgi">Apache Ant</a></li>
+<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7</a> (make sure this JDK 7, 64 bit, is set as JAVA_HOME)</li>
+</ul>
+<h2>Getting OpenJDK sources</h2>
+<p>The other article mentions a lot of PATH requirements that need to be set. I didn't encounter this at all because I configured my build in another way. First we'll need to get the OpenJDK source code.</p>
+<pre class="brush:plain">
+$ cd /cygdrive/C/Projects/OpenJDK/
+$ mkdir jdk8_tl
+$ hg clone http://hg.openjdk.java.net/jdk8/tl jdk8_tl
+$ cd jdk8_tl
+$ ./get_source.sh
+</pre>
+<p>This will create a new directory: /cygdrive/C/Projects/OpenJDK/jdk8_tl with all the sources!</p>
+<h2>Configure</h2>
+<p>Now we need to configure a build for OpenJDK. Instead of just calling './configure' we'll need to add a few extra options, we'll need to point it to the correct MAKE directory and we need to include our custom build freetype.</p>
+<pre class="brush:plain">
+./configure MAKE=/cygdrive/C/Projects/OpenJDK/make-3.82/make.exe with_freetype=/cygdrive/C/Projects/OpenJDK/freetype
+</pre>
+<p>This will throw a lot of warnings, but in the end it should print something like this:</p>
+<pre class="brush:plain">
+* OpenJDK target: OS: windows, CPU architecture: x86, address length: 64
+
+Tools summary:
+* Environment:    cygwin version 1.7.25(0.270/5/3) (root at /cygdrive/c/Development/cygwin64)
+* Boot JDK:       java version "1.7.0_40"  Java(TM) SE Runtime Environment (build 1.7.0_40-b43)  Java HotSpot(TM) 64-Bit Server VM (build 24.0-b56, mixed mode)  (at /cygdrive/c/progra~1/java/jdk17~1.0_4)
+* C Compiler:     Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
+* C++ Compiler:   Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
+
+Build performance summary:
+* Cores to use:   7
+* Memory limit:   16373 MB
+* ccache status:  not available for your system
+</pre>
+<p>After the configure step you should have a new build directory added.<br />
+Mine was located at: <b>/cygdrive/C/Projects/OpenJDK/jdk8_tl/build/windows-x86_64-normal-server-release</b></p>
+<h2>Build it</h2>
+<p>The next thing I did was to build everything, this can take anywhere from 10 to 40 minutes, my build took 20 minutes.</p>
+<pre class="brush:plain">
+$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+$ /cygdrive/C/Projects/OpenJDK/make-3.82/make.exe clean images
+</pre>
+<p>After a long wait and a lot of warnings and messages it says it created your very own JDK 8 build. Time to give it a try:</p>
+<pre class="brush:plain">
+$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+$ cd build/windows-x86_64-normal-server-release/images/j2sdk-image
+$ bin/java -version
+</pre>
+<p><img src="/images/814989381.jpg" alt="OpenJDK build completed" width="600" height="449" class="alignnone size-full wp-image-1494" /></p>
+<p><b>It worked!</b></p>
+<p>Like I said before, I encountered some problems and errors along the way. Most involved the wrong Cygwin (32 bit), this caused bash to crash (STATUS_ACCESS_VIOLATION) during the configure phase. Also I ran into a problem installing 'Microsoft SDK for Windows 7.1' which required me to first uninstall Microsoft VisualC++ 2010. Another problem was not installing 'diff' in Cygwin (diffutils) so the build found some other diff.exe (from Git?) which gave differences during the actual build causing it to stop.</p>
+<p>I might have forgotten to write down some step, if you encounter any problem (and solve them) please tell me so I can update this post!</p>
+<h2>Todo</h2>
+<p>One thing I should add is '<b>ccache</b>'. This tool greatly improves the build speed because it caches all unchanged classes/files. It was in Cygwin (32 bit) but it is missing in Cygwin (64 bit)... I'll have to compile and install it myself. This is one thing I haven't tried yet, but I probably should do!</p>
+<p><b>Update:</b> I've tried compiling and using ccache-3.1.9, but this broke the build. I might try different versions but for now I'll just skip 'clean'-ing altogether :-)</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/building-openjdk-on-windows/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/10/to-be-or-not-to-be-agile/">To be or not to be... Agile!</a></h1>
+    <p class="author">
+      <span class="date">Oct 2, 2013 15:32:05</span>
+    </p>
+    <p>In my career I've seen a lot of <strong>misconceptions</strong> about Agile. And I'd like to do a step back and explain what being Agile means to me.</p>
+<h2>We 'do' Agile</h2>
+<p>This is the biggest misconception of all, and the main reason for my blogpost. Again and again I'm hearing people/companies say: "We do agile". And this is just wrong... Agile isn't some system you 'do'. It isn't a selection of things you can learn from a book. It is just a mindset and all the other stuff are consequences, let me explain that!</p>
+<h2> The meaning of 'Agile'</h2>
+<p>If you look up the word Agile in the dictionary this is what it comes up with:</p>
+<blockquote><p>
+<strong>ag·ile</strong> adjective \ˈa-jəl, -ˌjī(-ə)l\<br />
+: able to move quickly and easily<br />
+: quick, smart, and clever</p>
+<p><small>Source: <a href="http://www.merriam-webster.com/dictionary/agile">http://www.merriam-webster.com/dictionary/agile</a></small>
+</p></blockquote>
+<p>Agile means you'll move quickly and easily. That is it basically, everything you do when you <em>are</em> agile boils down to:<br />
+Start quickly, get something done quickly, expect changes in movement and go with it easily.</p>
+<p>For example, in software, expect every bit of code to change (<a href="/2011/10/great-code-is-written-twice-or-more/">more than once</a>). This will automatically make your code easy to read, extend and refactor. Not only code will change, the requirements will change. Nobody knows what a system will look like in two/three years (those who say they do are wrong), we might have a good idea what to make at this movement, but once you get started people will want other things... this <em><strong>always</strong></em> happens. Stay open to these changes in your movement, be agile!</p>
+<h2>Agile, Scrum, we need to do stand ups!</h2>
+<p>Ah, the stand ups, you've been reading a book and it told you that you need stand ups? This is a requirement to be 'agile'? <strong>WRONG</strong>. Like I said before, it is all just a consequence. Why do we do these stand ups? Because you need to know what everybody around you is doing at this moment. In waterfall projects you already know what people would be doing weeks (even months) in advance. But if you embrace the agile mindset and accept all these changes you might not even know what you're doing tomorrow. The more you are open to changes and quickly move between tasks, the more often you'll need to update your colleagues. That is why some projects do stand ups, a consequence of being open for changes.</p>
+<h2>We use whiteboards and post-its, we do agile!</h2>
+<p>If your design and the requirements don't change, write everything down with a pen, or maybe put it in some Software Architect solution (Rational anybody?) or just inscribe it in a stone tablet. Instead, if you are agile and move quickly, designs and requirements change. You don't want to go into a meeting with a printed piece of paper which has tasks or designs etc, you'd rather want to have the design on a whiteboard. This will allow you to change it during the meeting instead of re-printing. Whiteboards are perfect to erase and redraw shapes and lines! It is just the best tool for somebody who <strong>is</strong> agile. Except for one problem, if you write down text and you have to move it... rewriting takes a long time. To counter this we use post-its: write once, stick everywhere! It complements the whiteboard very well. </p>
+<p>So do we need to use a whiteboard and post-its to 'be agile'? <strong>NO</strong>... Whiteboard and post-its are a consequence of being agile, it is the best tool for the job as far as I know.</p>
+<h2>Retrospective!</h2>
+<p>If you don't try new things and you don't want to change the way you are working (being not agile) you don't need to evaluate and come up with changes, obviously. But if you <em>are</em> agile, open for change, you need to have meetings on how you can change. As a consequence the retrospective arrives. This meeting is one of the most important meetings if you are agile; you talk about what can be improved in your process: What can make us more agile? What is holding us back?</p>
+<h2>No agile rules...</h2>
+<p>I don't think agile needs a set of rules, you just need people to <strong>explain</strong> the basic concept of the <strong>mindset</strong>. The other things most organizations treat as 'agile rules' can be considered best practices because they make sense if you are agile; but please <strong>don't just follow these rules</strong>.</p>
+<p>Learn from others, embrace the agile mindset and come up with your own system... that works <em><strong>for you</strong></em>!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/to-be-or-not-to-be-agile/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/10/congratulations-to-devoxx4kids/">Congratulations to Devoxx4Kids!</a></h1>
+    <p class="author">
+      <span class="date">Oct 2, 2013 14:35:27</span>
+    </p>
+    <p>If you haven't heard about Devoxx4Kids, first read the following post and watch the video: <a href="/2012/11/devoxx4kids/">here</a>!</p>
+<p>The people behind Java (Oracle) have recognized the great potential behind Devoxx4Kids and decided to award the 'concept' with a <a href="https://www.java.net//dukeschoice">Duke's Choice</a> award!<br />
+This was presented to Stephan Janssen (the original mastermind behind the concept) at JavaOne this year. Because I filmed the original event and also our Dutch event in Amsterdam I was asked to make a very short impression video which was shown at the JavaOne Community Keynote.</p>
+<p>You can see it here (including a great shout-out to me and my daughter, the 'mascotte') here:<br />
+(from 10:17 up to 14:55)</p>
+<p><object id="flashObj" width="640" height="358" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,47,0"><param name="movie" value="http://c.brightcove.com/services/viewer/federated_f9?isVid=1&isUI=1" /><param name="bgcolor" value="#FFFFFF" /><param name="flashVars" value="videoId=2698223954001&linkBaseURL=http%3A%2F%2Fmedianetwork.oracle.com%2Fvideo%2Fplayer%2F2698223954001&playerID=1217746023001&playerKey=AQ~~,AAAAAFcSbzI~,OkyYKKfkn3x1llKvCBQgVazGCPhNSKRX&domain=embed&dynamicStreaming=true" /><param name="base" value="http://admin.brightcove.com" /><param name="seamlesstabbing" value="false" /><param name="allowFullScreen" value="true" /><param name="swLiveConnect" value="true" /><param name="allowScriptAccess" value="always" /><embed src="http://c.brightcove.com/services/viewer/federated_f9?isVid=1&isUI=1" bgcolor="#FFFFFF" flashvars="videoId=2698223954001&linkBaseURL=http%3A%2F%2Fmedianetwork.oracle.com%2Fvideo%2Fplayer%2F2698223954001&playerID=1217746023001&playerKey=AQ~~,AAAAAFcSbzI~,OkyYKKfkn3x1llKvCBQgVazGCPhNSKRX&domain=embed&dynamicStreaming=true" base="http://admin.brightcove.com" name="flashObj" width="640" height="358" seamlesstabbing="false" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" swliveconnect="true" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></embed></object></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/10/congratulations-to-devoxx4kids/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/09/episode-1/">Episode #1</a></h1>
+    <p class="author">
+      <span class="date">Sep 1, 2013 17:30:35</span>
+    </p>
+    <p>Lately I've been having a lot of blog ideas, but I never take the time to write it all down in a blogpost.<br />
+That's why I'm now going to try to combine thing I love:</p>
+<ul>
+<li>Programming</li>
+<li>Technology</li>
+<li>Filming/video editing</li>
+</ul>
+<p>Here is the first episode of Roy on programming:</p>
+<p><iframe width="420" height="315" src="//www.youtube.com/embed/C6wU-3BPK_4" frameborder="0" allowfullscreen></iframe></p>
+<p>Item 1: Oculus Rift<br />
+- <a href="http://www.oculusvr.com/">http://www.oculusvr.com/</a><br />
+- <a href="http://www.reddit.com/r/oculus/">http://www.reddit.com/r/oculus/</a></p>
+<p>Item 2: Rich Hickey<br />
+- <a href="http://www.infoq.com/presentations/Simple-Made-Easy">http://www.infoq.com/presentations/Simple-Made-Easy</a><br />
+- <a href="http://www.infoq.com/presentations/Design-Composition-Performance">http://www.infoq.com/presentations/Design-Composition-Performance</a></p>
+<p>Item 3: Separation of Concerns<br />
+- <a href="http://en.wikipedia.org/wiki/Separation_of_concerns">http://en.wikipedia.org/wiki/Separation_of_concerns</a></p>
+<p>Music by:<br />
+- Nasty Goreng: <a href="https://soundcloud.com/nastygoreng">https://soundcloud.com/nastygoreng</a></p>
+<p>Please let me know what you think about it.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/09/episode-1/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/">No more DSL for acceptance/integration testing</a></h1>
+    <p class="author">
+      <span class="date">Jul 25, 2013 22:33:38</span>
+    </p>
+    <p>Everybody seems to be using <a href="http://fitnesse.org/">Fitnesse</a> or <a href="http://cukes.info/">Cucumber</a> for integration testing these days. The main idea is that users (testers/business analists and programmers) can write what your program should do in plain text. The programmer then creates a small layer of code which gets interpreted and executes your actual program to see if the specified requirements are met.</p>
+<h2>Fitnesse example</h2>
+<p>For example a (hypothetical) piece of code in Fitnesse as it could have been used in the Port of Rotterdam:</p>
+<pre class="brush:plain">
+!3 Anchorage tests
+
+!|given a ship                                |
+|Id  |Name       |Category|CallSign|Shipnumber|
+|1001|Maersk Bali|TANKER  |D6DZ8   |7420211   |
+
+|script                                                              |
+|When a ship called|MAERSK BALI|reaches the port                     |
+|And it reports anchor down                                          |
+|ensure            |the ship is shown in the list of anchored vessels|
+|check             |the list of anchored vessels now has size|1      |
+</pre>
+<p>This is something the testers and product owners can read and understand. Behind this layer of text Fitnesse will try to execute pieces of code. This is left as an exercise for the programmers to complete. They'll need to write something like:</p>
+<pre class="brush:java">
+GivenAShip:
+void setId(String id);
+void setName(String name);
+void setCategory(String category);
+void setCallSign(String callSign);
+void setShipnumber(String shipnumber);
+void execute(); //Stores the ship in the database
+
+AnchorageScenarios:
+void whenAShipCalledReachedThePort(String shipName);
+void andItReportsAnchorDown();
+boolean theShipIsShownInTheListOfAnchoredVessels();
+int theListOfAnchoredVesselsNowHasSize();
+</pre>
+<p>This is where the problems start, there is a lot of room for typos. Which will send you all over the codebase constantly translating Fitnesse text like "<em>and it reports anchor down</em>" to "<em>andItReportsAnchorDown</em>" during your searches.</p>
+<p>Also people always say, because it is 'plain text' the testers, analists and product owners can instantly start writing tests. But this just isn't true... It <strong>isn't</strong> just writing down tests/requirements, it is programming with a DSL. Normal human text isn't good enough, it still needs some DSL structure. They'll have to learn to <strong>program</strong> in the Fitnesse DSL language. In almost all project I've worked on, it is the programmers writing and maintaining tests, people from the business stay far away from Fitnesse.</p>
+<p>If you want to refactor the scenarios/fixtures in Fitnesse you're in for a treat. Everything is bound by name only, and renaming code for example won't rename the DSL! Using Fitnesse 'sounds' very agile, but it doesn't really make the code agile at all. Most test code I've worked on is <strong>fragile</strong>, very <strong>ridged</strong> and <strong>not easy to refactor</strong>. Why not take advantage of that IDE and statically typed language if the programmers are writing and maintaining the tests?</p>
+<h2>Using code instead</h2>
+<p>Today we had a "ShipIt"-day (nautical-pun intended) at work, where we're free to work on any project for 24 hours straight and we present our findings afterwards. This boosts the creative ideas and in the long run efficiency and innovation.</p>
+<p>After using Fitnesse now for three years we've become used to it, and don't ever <strong>question its usage</strong>. Although we feel the <strong>pain</strong> of the rigid/fragile test code on a daily basis. I decided to start rethinking the way we do acceptance tests. </p>
+<p>My goals was to make our tests:</p>
+<ul>
+<li>Simpler to write</li>
+<li>Easier to refactor</li>
+<li>Maintain the readability</li>
+<li>Easier to reuse</li>
+<li>Faster! (no DSL parsing)</li>
+</ul>
+<p>This is what the initial design now looks like. The example used above would become the following:</p>
+<pre class="brush:java">
+@Jitness        // Annotation that indicates this is a test class
+@SuiteSetUp({   // This is called once for all the methods in the class below
+	@Execute(
+			type = ShipExecutor.class,
+			data = { "1001", "Maersk Bali", "TANKER", "D6DZ8", "7420211" })
+	})
+})
+@SetUp({
+	       // @Execute annotations here will be called before each of the methods below
+	       // The @SetUp annotation can also be placed on a single method in the test class
+})
+public class AnchorageTests {
+
+	public void givingCommandAnchorDownCausesShipToAppearInList() {
+
+		final AnchorageScenarios scenarios = new AnchorageScenarios();
+
+		scenarios.whenAShipReachedThePortCalled("Maersk Bali");
+		scenarios.andItReportsAnchorDown();
+		Assert.assertTrue(scenarios.theShipIsShownInTheListOfAnchoredVessels());
+		Assert.assertEquals(1, scenarios.theListOfAnchoredVesselsNowHasSize());
+	}
+
+	public void anotherTestHere() {
+		... etc ...
+	}
+}
+</pre>
+<p>Using Jitness (<em>working title</em>) the scenarios will be implemented in exactly the same way we've already been doing. This makes it easier to transition from Fitnesse to this code.<br />
+The only bit of 'magic' is the execute annotation. You can write executors like this:</p>
+<pre class="brush:java">
+public class ShipExecutor implements Executor {
+
+	private ShipRepository repository = new ShipRepository();
+
+	@Override
+	public void before(final String[] args) throws Exception {
+                repository.store(parse(args));
+	}
+	
+	@Override
+	public void after(final String[] args) throws Exception {
+                repository.delete(parse(args));
+	}
+
+        private Ship parse(String[] args) {
+		return new ShipBuilder()
+                         .id(Long.parse(args[0])
+                         .name(args[1])
+                         .category(args[2])
+                         .callSign(args[3])
+                         .shipNumber(args[4])
+                         .build();
+        }
+}
+</pre>
+<p>A (more elaborate) sample of the output it generates, with failure:</p>
+<pre class="brush:plain">
+Results: 
+OK	BunkeringTests.SuiteSetUp
+OK	BunkeringTests.addTypeOfFuelToBunker
+OK	BunkeringTests.changeTypeOfFuelToBunker
+OK	BunkeringTests.removeTypeOfFuelToBunker
+OK	BunkeringTests.bunkeringOnIncomingMovement
+OK	BunkeringTests.bunkeringOnOutgoingMovement
+OK	BunkeringTests.loadBunkeringForOpenVesselVisit
+NOK	BunkeringTests.retrieveListOfBunkerBarges
+expected:<1> but was:<2>
+OK	BunkeringTests.SuiteTearDown
+Took: 128 ms
+</pre>
+<p>The main advantages of using this are obviously leveraging the full potential of your IDE, including renaming/refactoring. Changing methods and classes in your production code will automatically show up as changes in Jitness. And everything is easy to refactor because it is just code! This will eventually lead to much more <strong>agile code</strong>, <strong>simpler</strong> and <strong>easier to refactor</strong>. Obviously there is one main drawback, it is harder for testers to read and write. But if they pair up with a programmer this should be no problem I think. I'd rather have the testers learn a bit of coding than the programmers learn a text DSL which leads to fragile tests.</p>
+<p>Another big advantage is execution time, using compiled code is always faster than parsing plain text or HTML at runtime. Also this code is compiled during the build, so there is no need for additional classpath (Maven) plugins. I'm really fond of the idea to use code to describe the tests, and I'm very curious how my colleagues are going to rate this tomorrow when we demo the "ShipIt" ideas. With a couple of more days work this can be fully tested and made robust enough to start using it and maybe even open source it.</p>
+<p>What are your thoughts? Any ideas about improving the API? Should we just keep using Fitnesse/Cucumber or any other alternative DSL instead?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/06/ethics-for-programmers/">Ethics for programmers</a></h1>
+    <p class="author">
+      <span class="date">Jun 21, 2013 16:39:54</span>
+    </p>
+    <p>
+Programmers need more ethics.<br />
+And I'm not talking about 'craftsmanship' ethics such as <em>"always make clean code"</em>, <em>"be agile"</em> or <em>"coffee should be consumed pure and black"</em>.</p>
+<p>
+No, I'm talking about real ethics:</p>
+<blockquote><p><strong>Ethics</strong>, also known as <strong>moral philosophy</strong>, is a branch of philosophy that involves systematizing, defending and recommending concepts of <strong>right</strong> and <strong>wrong</strong> conduct.</p>
+<p style="font-size:0.8em">Source: <a href="http://en.wikipedia.org/wiki/Ethics">http://en.wikipedia.org/wiki/Ethics</a></p>
+</blockquote>
+<p>
+<h3>PRISM</h3>
+<p></p>
+<p>
+Almost all the programmers I know are very active online, and all of them are condemning the US government project called <a href="http://en.wikipedia.org/wiki/PRISM_(surveillance_program)">PRISM</a>. It is a huge electronic surveillance program, recently revealed by <a href="http://en.wikipedia.org/wiki/Edward_Snowden">Edward Snowden</a>. This program collects (all) data from a huge list of international websites such as Google, Facebook, AOL, Apple, Yahoo, Microsoft, and more.</p>
+<p>
+One can only imagine the magnitude of this project, it handles a humongous amount of data and it would have to filter and match the data. It will have a lot of (secret) API's and other methods of collecting the data. And this is all created by.... <b>us programmers</b>!</p>
+<p>
+<h3>Just say no...</h3>
+<p></p>
+<p>
+Why would somebody help the government in making these applications? I <em>ethically</em> wouldn't think about programming this. And I'm serious about it, I've already turned down two projects in my young career because of an ethical standpoint:</p>
+<ol>
+<li>Helping to tweak an algorithm for the Dutch government for missile guidance (it would have been a cool project!)</li>
+<li>A project for a telecom company doing deep packet inspection, enabling them to ask subscription costs for (free) mobile apps<br />
+(such as WhatsApp)</li>
+</ol>
+<p>
+Both these projects might influence my own, or other people's life in a negative way, and I refuse to help people do that. It's like being an arms dealer or gun manufacturer condemning the use of weapons. It would feel like selling a crowbar to a thief, making a bit of money, while actually enabling them to break in.</p>
+<p>
+<h3>Ethics!</h3>
+<p></p>
+<p>Maybe programmers should have an oath, something like the <a href="http://en.wikipedia.org/wiki/Hippocratic_Oath">Hippocratic Oath</a> or the <a href="http://en.wikipedia.org/wiki/Physician%27s_Oath">Physician's Oath</a>. Here are some of the rules I follow:</p>
+<ul>
+<li>I won't write code which helps/enables people to harm others</li>
+<li>I won't write code which will limit other people's freedom</li>
+<li>I won't work for companies using software patents to bully/attack other people and companies</li>
+<li>...</li>
+</ul>
+<p>If you have any good additions to the list, please drop a comment!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/06/ethics-for-programmers/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/06/devoxx4kids-in-the-netherlands/">Why are you not organizing a Devoxx4Kids?</a></h1>
+    <p class="author">
+      <span class="date">Jun 10, 2013 15:39:51</span>
+    </p>
+    <p>Last year I attended the first Devoxx4Kids in Gent (Belgium). It is a day where programmers introduce children aged 10 to 14 to programming. That day we used Scratch (a fun online programming framework), Lego Mindstorms and a Mars rover (with emulation). And it was a blast!</p>
+<p>Once I returned and edited <a href="https://vimeo.com/51393678">this</a> video and showed it to my colleagues we quickly came to the conclusion: We need to organize a Dutch version!</p>
+<h2>Organizing</h2>
+<p>Edwin (a <a href="http://www.jpoint.nl">JPoint</a> colleague) and I tried a couple of contacts and found a willing foe in the form of the <a href="http://www.uva.nl/en/home">University of Amsterdam</a>. They saw the potential and were kind enough to offer us rooms, laptops, Lego Mindstorms and a completely organized lunch! We in turn hired two students to assist with the sessions and took care of subscription, marketing and the technical know-how. It doesn't take a lot of organizational skills to organize a Devoxx4Kids session.</p>
+<h2>Devoxx4Kids NL</h2>
+<p>Last saturday was the moment of truth, in the morning kids and parents started to arrive at the university. We did a quick introduction, flew around with (off the shelf) quadcopter to start off with the wow-factor and then we went into the sessions. In Belgium all the parents left the kids, but this time most parents accompanied the children into the session rooms. In retrospect this wasn't very good and next time we should banish parents from the sessions. The sessions we organized:</p>
+<ul>
+<li><a href="http://scratch.mit.edu/about/">Scratch</a></li>
+<li><a href="http://mindstorms.lego.com/">Lego Mindstorms</a></li>
+<li><a href="http://www.arduino.cc//">Arduino</a> (my own session)</li>
+</ul>
+<p>The kids were split up into three groups and rotated over all the sessions. Every session was 90 minutes, in retrospect this is a bit long. Most kids got tired and a bit bored after about 45 to 60 minutes. The last track of the day the kids were a lot more distracted. For future Devoxx4Kids events I'd rather do short fun 45 minute sessions instead of complete in depth 90 minute sessions.</p>
+<p>Kids learn quickly... even faster than adults! I tried my Arduino session on a couple of adults and they took about 75 minutes to complete all the tasks. The kids did it in record time, we had to improvise and set them a new challenge on the fly. They first made a blinking LED, then hooked up a piezo buzzer to play some music, then they created a 'musical instrument' with a photoresistor and the piezo buzzer. Finally (improvised on-the-fly) we made them create a traffic light with three colored LEDs! The quick learning was also noticed in the other sessions.</p>
+<p>Our Devoxx4Kids was completely sold out in just 2 hours, so there is a lot of demand for events involving kids and programming. We are going to brainstorm this Wednesday on how we can do more on this front. Keep organizing Devoxx4Kids for 40 kids at the time? Or are there other options? How can we make it pay for itself instead of being fully voluntary...? All ideas are welcome, leave a comment/tweet/email!</p>
+<h2>Video impression</h2>
+<p>Are you not yet convinced you should organize a Devoxx4Kids in your neighbourhood/country? Just watch the video I made during our event:<br />
+<iframe src="http://player.vimeo.com/video/67959779" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<p>p.s. Having pictures and video help to tell the story. <a href="https://vimeo.com/51393678">This</a> video from Devoxx4Kids 2012 in Belgium helped us to get the University of Amsterdam involved!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/06/devoxx4kids-in-the-netherlands/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/05/teaching-programming-apprentices/">Teaching; Programming apprentices</a></h1>
+    <p class="author">
+      <span class="date">May 21, 2013 14:13:45</span>
+    </p>
+    <p>We have a huge problem.</p>
+<h3>The knowledge gap</h3>
+<p>I've been a professional programmer now for over a decade, and during this time I've met a LOT of excellent programmers. Most of them are partially autodidactic and learned the business side of programming in school. But non of these guru's/experts use their skills to teach the next generations. Sure, they attend programming conferences, give talks, join user groups etc. But all the other attendees are already good programmers! Companies usually send their brightest programmers to these conferences, not the beginning employees. This means there is already a gap in knowledge and it is increasing. The smart are getting smarter, and nobody is really helping the beginners...</p>
+<p><img src="/images/teacher-300x300.jpg" alt="Teacher cleaning chalkboard with duster" width="300" height="300" class="alignright size-medium wp-image-1373" /></p>
+<h3>Teachers salary</h3>
+<p>During my time in college I wasn't very happy with the programming teachers. They had some experience with the business side, they teached us about UML, gantt charts, and (then still hot) waterfall project planning. When it came to real programming, problem solving, algorithms, best practices... they didn't really teach us much.<br />
+Most of the time we had more programming experience and skill than the teachers.</p>
+<p>Although I haven't been in college for a couple of years, except two guest appearances at the University of Amsterdam, I don't think much has changed. The whole problem is the status and rewards of being a teacher. The average salary of a college teacher (here in the Netherlands) is about half, maybe two thirds of the average professional programmers salary. No wonder why most average or better programmers don't become teachers! Only the programmers with least experience and skill, or teachers which later on learned programming end up becoming programming teachers.</p>
+<h3>Mentoring/apprenticeship</h3>
+<p>In the ancient Greece and Roman times teachers were important professions. Especially the most experienced craftsmen, they did not only master their craft, but earned most money by passing their skills as master/mentor to their protégés. This doesn't happen anymore, the big names in programming now don't have apprentices to pass on their knowledge. In the best case they write books, which will take years before the school teachers have read them and adopt the ideas.</p>
+<h3>Devoxx4Kids?</h3>
+<p>I've already mentioned <a href="http://www.devoxx.com/display/4KIDS/Home">Devoxx4Kids</a> in <a href="/2012/11/devoxx4kids/">previous</a> blogposts. Although this is a great initiative (which I fully support, we're holding our own version in the Netherlands!). It helps getting kids excited in IT/programming, but it won't help getting the level of education to a higher level.</p>
+<h3>Highest status</h3>
+<p>Being a teacher/mentor should have the highest social status in our modern world, it should be the highest paid profession and all the guru's/experts should want to become teachers. But it isn't. It is poorly paid and absolutely not the sought after job. How can we change this?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/05/teaching-programming-apprentices/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/05/agile-epic-manifesto/">Agile: Epic Manifesto</a></h1>
+    <p class="author">
+      <span class="date">May 6, 2013 21:13:23</span>
+    </p>
+    <p>&nbsp;</p>
+<p>At work we've had a lot of discussion about epics lately. We seem to have forgotten what they are and how we learned to deal with epics. It became a 'theme' or just a big pile of stories which sounded like they belong together. But epics are much much more.</p>
+<p>An epic is a goal, and just one goal only. All the stories in the epic should contribute to that epic! Also the epics goal should be a business goal, never a technical goal. The epic should describe a <a href="http://en.wikipedia.org/wiki/SMART_criteria">SMART</a> described measurable goal without hinting towards a (technical) solution.</p>
+<p>&nbsp;</p>
+<h2>Epic manifesto</h2>
+<p>&nbsp;</p>
+<p>In our project we tend to forget what epics are for and <strong>why</strong> they are so important after some time.<br />
+To remind everybody we decided to write down a manifesto for the epic:</p>
+<ol>
+<li>An epic has just <em>one</em> goal, not more and not less.</li>
+<li>An epic is always measurable, thou should always ask "why" until the business value is clear.</li>
+<li>An epic has a fixed goal, new insights will lead to new epics.</li>
+<li>An epic should have a solution conceived with and verified by the stakeholders, users, product owner and the team.</li>
+<li>An epic contains only stories that help to achieve the goal.</li>
+<li>An epic is 'done' when the goal is achieved.</li>
+<li>An epic is only estimated in relative complexity, never in units of time.</li>
+<li>An epic is always in the correct order on the backlog (by the product owner).</li>
+<li>An epic is realized by the team with the minimal viable solution.</li>
+<li>Does your epic break one of the rules above? It is an epic failure!</li>
+</ol>
+<p>This is going on several walls in our building just to remind us how important correct epics are. If the initial goal is wrong, all the stories are wrong as well. The epic is the base of all the solutions you'll be creating and must be founded properly.</p>
+<p>Any thoughts on this subject, don't hesitate to reply. Agile projects get better by sharing best practices and trying to improve!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/05/agile-epic-manifesto/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2013/05/conference-videographer/">Conference videographer</a></h1>
+    <p class="author">
+      <span class="date">May 6, 2013 20:45:35</span>
+    </p>
+    <p>
+A couple of years ago, when our family was planning a trip to South Africa, I bought a nice DSLR. We had friends with excellent cameras, huge lenses and wild life photography experience. So instead of trying to compete with them I decided to buy a camera suited for filming. It was the rise of filming-DSLRs, and even television shows were adapting DSLRs for filming. I settled on a Canon 550D also known as Rebel T2i.</p>
+<h2?Devoxx 2011</p>
+<p>Just before I left for South Africa I decided to take the camera to the <a href="http://www.devoxx.com/">Devoxx</a> 2011 conference. I didn't even have a tripod at that time! After shooting some quick footage I decided to edit everything to make a nice movie and share it with the organiser. He liked it so much he placed it on the main website for a while. This is what I made:</p>
+<p><iframe src="http://player.vimeo.com/video/32170355" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<h2>Devoxx 2012</h2>
+<p>The following year Stephan asked me to be the official videographer for Devoxx 2012! So I went back and made another video, it seems like I'm turning from regular visitor/developer to videographer. I took some more time to analyse the conference to include the main sponsors, show every aspect of the conference and to get across the Devoxx atmosphere (including the James Bond theme, we all watched SkyFall during the conference!):</p>
+<p><iframe src="http://player.vimeo.com/video/53695846" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<h2>Devoxx4Kids 2012</h2>
+<p>The best time I had as videographer was during Devoxx4Kids. It is a separate event first hosted in 2012. The kids were having a great time and that is clearly visible in the video. Kids aren't shy at all and much easier to approach then adults. That is why I did some quick interviews and I love the result, I might do that in the future for other conferences as well:</p>
+<p><iframe src="http://player.vimeo.com/video/51393678" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<h2>Devoxx UK 2013</h2>
+<p>The latest conference I filmed was Devoxx UK. For the first time the Devoxx conference has crossed the big blue sea to go to the United Kingdom. I've tried to make the resulting video look a bit more professional although I'm still just a Java developer with a hobby:</p>
+<p><iframe src="http://player.vimeo.com/video/62905094" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
+<h2>The future...</h2>
+<p>The last three years I've filmed at three weddings, four conferences and edited together our vacations to South Africa, Norway and some trips into the Alps (wintersport). As an amateur videographer (with a growing list of references) there still is a lot to learn, but I'm really enjoying the process! Any tips/hints/tricks are absolutely welcome, and I'm open for invitations! </p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2013/05/conference-videographer/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/3" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 4 of 13</span>
+    
+      <a href="/page/5" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

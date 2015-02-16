@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quine - McCluskey</title>
+  <meta name="description" content="About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:personHasInsurence (A)personNe...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2009/12/quine-mccluskey/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2009/12/brainfck-in-redcode/" title="Previous Post: Corewars - Brainf*ck">&laquo; Corewars - Brainf*ck</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2009/12/son-of-darts/" title="next Post: Son Of Darts">Son Of Darts &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Quine - McCluskey</h1>
+    <p class="post-meta">
+    	Dec 4, 2009 15:55:20
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:</p>
+<ol>
+<li>personHasInsurence (A)</li>
+<li>personNeedsInsurence (B)</li>
+<li>personIsKnownAtThisAgency (C)</li>
+</ol>
+<p>We also had two particulair cases for an insurance page:</p>
+<p>Case 1:<br />
+Person has insurence and isn't yet known at this agency</p>
+<p>Case 2:<br />
+Person doesn't have insurence, needs insurence and is known at this agency</p>
+<p>Case 3:<br />
+Person doesn't have insurence, doesn't need insurence and is known at this agency</p>
+<p>So the view-logic was a bit complex:</p>
+<pre class="brush:java">
+if( (A && !C) || (!A && B && C) || (!A && !B && C ) ) {
+    showPage();
+}
+</pre>
+<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I've completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called "<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>"-algorithm, and I decided to implement it (just to learn how it works).</p>
+<h2>Quine - McCluskey algorithm</h2>
+<p>First of, lets go through a couple of terms.</p>
+<p><!--more--><br />
+Minterm: A small boolean function which has all the different input variables, <b>once</b>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A'BC (not A and B and C).</p>
+<p>The first thing you do using this algorithm is that you find so called "prime implicants". An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can't be combined with other implicants (for more details, read the wikipage with examples)!</p>
+<p>After combining all the minterm of your case(s), you'll end up with a "prime implicant chart". This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot "essential prime implicants".  That is, implicants which are unique in covering a field. You <u>have</u> to use these implicants in the final logic.</p>
+<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick's Method</a> to select the best/smallest option.</p>
+<p>Using the above example, if you minimize, you'll come down to:</p>
+<pre class="brush:java">
+if((!A && C) || (A && !C)) {
+    showPage();
+}
+</pre>
+<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I've seen lately!</p>
+<p>And if you need something even faster, try out <a href="http://en.wikipedia.org/wiki/Espresso_heuristic_logic_minimizer">Espresso</a>!</p>
+<p>ps. I love browsing this page: <a href="http://en.wikipedia.org/wiki/List_of_algorithms">List of algorithms</a><br />
+But OTOH, its kind of depressing I still have soo much to learn.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

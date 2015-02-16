@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Static state: Evil as well</title>
+  <meta name="description" content="Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in ...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/04/checked-exceptions-evil/" title="Previous Post: Checked Exceptions: Evil">&laquo; Checked Exceptions: Evil</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/" title="next Post: Reading iPhone GPS data from backup (with Java)">Reading iPhone GPS data from backup (with Java) &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">Static state: Evil as well</h1>
+    <p class="post-meta">
+    	Apr 19, 2011 19:23:26
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
+<h3>The scare</h3>
+<p>Quickly I looked around and went into overdrive mode:<br />
+<em>I need to fix this bug before somebody sees it!<br />
+I'm always yelling at people who break the build, and now it has happend to me...!</em><br />
+<!--more--></p>
+<p>Looking at the SVN comment it only said: "cleaned up some code" (or something)<br />
+That isn't very helpfull of myself...</p>
+<h3>The second scare</h3>
+<p>Then I noticed I changed only one file. The change should be contained and easy to fix. But then I had a moment of relief and scare at the same time:</p>
+<ul>
+<li>Phew, it isn't my fault... removing empty lines should not break builds...</li>
+<li>But... why the heck does removing an empty line break the build!?</li>
+</ul>
+<h3>The culprit</h3>
+<p>After looking around in the code, and the failing tests a collegue and me found the culprit: statefull static.</p>
+<p>In our application we've introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState's into the GlobalContext.</p>
+<p>Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE's and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.</p>
+<h3>The fix</h3>
+<p>The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything...</p>
+<p>Even better, get rid of the GlobalContext at all. It contained a couple of instances that could easily be injected into the other objects. This makes it much clearer to see which objects depend on which other objects and makes the code a heck of a lot easier to test.</p>
+<h3>Lessons learned...</h3>
+<p>This got me thinking, in which cases should you use static? Obviously "public static final"-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I've been thinking about this for a day now, but I can't come up with any good usecase. Do you know any? Mail me, comment below!</p>
+<p>So for now, my new rule: Don't use static unless you have a very good reason, and never ever have static (mutable) state!</p>
+<p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

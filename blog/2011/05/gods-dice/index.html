@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>God's Dice</title>
+  <meta name="description" content="Yay! There is a new Virtual Source Programming Contest: "God's Dice"After a bit of a messy start of the contest, within hours three people had a 100% score (...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2011/05/gods-dice/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div id="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2011/05/website-theme/" title="Previous Post: New website theme">&laquo; New website theme</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2011/05/wedding-video/" title="next Post: Wedding video">Wedding video &raquo; </a> 
+         
+      </div> 
+      <div class="clear">&nbsp;</div> 
+    </div> 
+
+    <h1 class="post-title">God's Dice</h1>
+    <p class="post-meta">
+    	May 9, 2011 09:07:36
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">"God's Dice"</a></p>
+<p><!--more--></p>
+<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="" title="godsdice" width="300" height="300" class="alignright size-full wp-image-809" /></a></p>
+<p>After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.</p>
+<p>The goal of the contest is this:</p>
+<ol>
+<li>Take a cube, with all sides length 1</li>
+<li>Place N (9 to 88) points anywhere on the surface of the cube</li>
+<li>Now calculate the surface area of all triangles between your points</li>
+<li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
+</ol>
+<p>So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.</p>
+<p>Up to now I've only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I'll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
+<p>And I've got some other idea's, which I won't share obviously for the contest sake!</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>

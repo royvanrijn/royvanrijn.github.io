@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/page/11/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <!-- This loops through the paginated posts -->
+  
+    <h1><a href="/blog/2010/02/compression-by-prediction/">Compression by prediction</a></h1>
+    <p class="author">
+      <span class="date">Feb 17, 2010 10:39:23</span>
+    </p>
+    <p>The last couple of weeks I have been playing around with compression/decompression algorithms. This is a field that has always intrigued me. It gives me a magical feeling, like a magician you wave some algorithm around and suddenly the files shrink and bytes dissapear. With the same motion you can undo all your actions and re-generate the original files from thin air!</p>
+<p><!--more--></p>
+<h1>Arithmetic Coding</h1>
+<p>Arithmetic coding is a different method to encode bytes. On itself it doesn't compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: "ABACB"</p>
+<p>First we assign a probability to each symbol:</p>
+<ul>
+<li>A: 45%</li>
+<li>B: 40%</li>
+<li>C: 15%</li>
+</ul>
+<p>Lets change these probabilities into ranges from 0.0 to 1.0:</p>
+<ul>
+<li>A: 0.00 to 0.45</li>
+<li>B: 0.45 to 0.85</li>
+<li>C: 0.85 to 1.00</li>
+</ul>
+<p>Now we start reading our input (ABACB). The first character we find is 'A'. First we do a lookup in the table, what range does 'A' have: 0.00 to 0.45. Lets remember these values as 'low' and 'high'.</p>
+<p>Time to encode the second character 'B'. The first thing we need to do is reset our ranges to be between low and high:</p>
+<ul>
+<li>A: 0.0000 to 0.2025</li>
+<li>B: 0.2025 to 0.3805</li>
+<li>C: 0.3805 to 0.4500</li>
+</ul>
+<p>We want to encode 'B', so we'll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
+<ul>
+<li>A: 0.2025 to 0.2826</li>
+<li>B: 0.2826 to 0.3538</li>
+<li>C: 0.3538 to 0.3805</li>
+</ul>
+<p>Encode 'A', we get low=0.2025 and high=0.2826. And adjust the table again:</p>
+<ul>
+<li>A: 0.202500 to 0.238545</li>
+<li>B: 0.238545 to 0.270585</li>
+<li>C: 0.270585 to 0.282600</li>
+</ul>
+<p>Encode 'C', we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
+<ul>
+<li>A: 0.27058500 to 0.27599175</li>
+<li>B: 0.27599175 to 0.28079775</li>
+<li>C: 0.28079775 to 0.28260000</li>
+</ul>
+<p>So, lets encode the final symbol 'B' and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
+<p>Now I we want to decode our message "0.28" we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is 'A' (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted 'A' we know our encoder encoded 'A', so we can follow the same steps as the encoder did and update the ranges in the same way, so we'll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range 'B', so we output 'B' and adjust again.</p>
+<p>As you can see this number "0.28" describes our whole message "ABACB"! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
+<h1>Prediction</h1>
+<p>The previous example works great, but there is a problem... if we assign equal probabilities to each possible symbol (each byte) we won't compress anything! The example above works because I took bigger probabilities for A and B then for C... So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
+<h2>Read and save table</h2>
+<p>One thing you can do is to first read the whole file and save the amount you see each character. Then you can scale these amounts into probabilities between 0.0 and 1.0 and save these probabilities to a file. Next we can use these probabilities to encode (and decode) our message! This will take quite a bit of overhead because you have to save the table..</p>
+<h2>Runtime adjustment</h2>
+<p>Another thing we can do is to just start with equal probabilities for each symbol and adjust the probabilities during the encoding. If we use the same method in encoding and decoding our probability table will remain the same.</p>
+<h2>Prediction by Partial Matching (PPM)</h2>
+<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter 'E' will probably have the highest count/probabilty. But if we encouter the symbols: "COMPRESSI" we know the next character will likely be an "O", not an "E"! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
+<h2>Context Mixing (CM)</h2>
+<p>With PPM you have one model which predicts the probability of the next symbol by looking at its past statistics. But why stop there? With Context Mixing (CM) you can have multiple models predicting the next symbol work together. When you do this right you and predict the next symbol even better and thus get better compression ratios! This is how the best current compression algorithms work.</p>
+<h1>Other methods</h1>
+<p>This is just one family of compression algorithms, there are a lot more which I won't describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/02/compression-by-prediction/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/02/handling-null-in-java/">Handling null in Java</a></h1>
+    <p class="author">
+      <span class="date">Feb 1, 2010 11:46:13</span>
+    </p>
+    <p>Its a problem I encouter in most JEE projects I've worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I'm trying to find out in this post.</p>
+<p><!--more--></p>
+<p>Lets start with a piece of business logic, in a world where we don't have null-values:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>This looks good and understandable! But this isn't what I see in most projects. Usually I see code like this:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+		if(person != null) {
+		    Set&lt;Account&gt; accounts = person.getAccounts();
+		    if(accounts != null) {
+		    	BigDecimal totalBalance = BigDecimal.ZERO;
+		    	for(Account account: accounts) {
+		    		if(account != null) {
+		    			totalBalance = totalBalance.add(account.getBalance());
+		    		}
+		    	}
+		    }
+		    return totalBalance;
+		} else {
+			return null;
+		}
+	}
+</pre>
+<p>Wow, that is not a pretty sight, not at all! What can we do about it and how did it happen?</p>
+<h2>Inversion of logic</h2>
+<p>The first strategy we can follow is based on <a href="/2009/12/inversion_of_logic/">inversion of logic</a> which I've blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+		if(person == null || person.getAccounts() == null) {
+			return null;
+		}
+		Set&lt;Account&gt; accounts = person.getAccounts();
+	   	BigDecimal totalBalance = BigDecimal.ZERO;
+	   	for(Account account: accounts) {
+	   		if(account != null) {
+	   			totalBalance = totalBalance.add(account.getBalance());
+	   		}
+	   	}
+		return totalBalance;
+	}
+</pre>
+<p>This is somewhat better, a bit shorter, but we still have all the '!= null' and '== null' checks we don't want.</p>
+<h2>Code by contract</h2>
+<p>The best way to get rid of null-checks is to get rid of nulls in your applicaties. Just don't return a null in all of the methods...! This sounds very easy and straight forward, but it is a bit harder then it sounds because it has become such a habbit.</p>
+<p>The good thing is that current IDE's are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
+<pre class="brush:java">
+	@Nullable
+	public Person getPerson(Long id) {
+		return something.retrievePerson(id);
+	}
+
+	
+	public void printPersonName(Long id) {
+		Person person = getPerson(id);
+		System.out.println(person.getName());
+		//Causes warning: getPerson is Nullable, thus this is a possible NPE! 
+	}
+</pre>
+<p>It also helps you to clearly state your assumed preconditions:</p>
+<pre class="brush:java">
+	public void printPersonName(@NotNull Person person) {
+		System.out.println(person.getName());
+		//Very good, we know we won't get a NPE here! 
+	}
+
+
+	public void executeThis() {
+		Person person = null;
+		printPersonName(person);
+		//Causes warning: person might be null, thus can cause a NPE!
+		//Code analysis tools and/or IDE will warn you about this.
+	}
+</pre>
+<p>It will also help you correct possible coding errors:</p>
+<pre class="brush:java">
+	@NotNull
+	public Person getPersonFromDatabase(@NotNull Long id) {
+		//Use JPQL
+		Query query = em.createQuery("SELECT p FROM Person p WHERE p.id = :value");
+		q.setParameter("value", id);
+		return q.getSingleResult();
+		//The IDE will complain about this. 
+		//The database might return null, we don't allow returning null in this method.
+	}
+</pre>
+<p>Using this method you have some more certainties. But it isn't a silver-bullet on its own. We have to stop and think, where do the null-values come from? </p>
+<p>Actually, when you stop returning null (which is entirely up to you and your team) there are still situations which are 'unchecked'. Namely external API's, frameworks, the ORM-mapper you are using. So everywhere where you execute methods that you haven't written, you still have to do manual checks. But make sure you do this right away. Then further on in the code, you don't have to check anything because of your @NotNull-contracts.<br />
+If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
+<pre class="brush:java">
+	@NotNull
+	public BigDecimal getBalance(@NotNull Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>In my experience this works very well, I've done this a couple of times, even before the @NotNull and @Nullable existed. Before this we would just add the information in our Javadoc. But with the IDE checking for it this has become a lot easier to use.</p>
+<h2>Null object pattern</h2>
+<p>A whole different approach then coding-by-contract is the use of a null-object. The idea behind this pattern is that you don't return null, but instead you return a real object. In our example we would do the following:</p>
+<pre class="brush:java">
+public interface Person {
+
+	String getName();
+	void setName(String name);
+
+	List&lt;Account&gt; getAccounts();
+	
+	//..etc..
+}
+
+public class NullPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+}
+</pre>
+<p>The huge advantage is that you can always safely call "person.getName()" and "person.getAccounts()" because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
+<pre class="brush:java">
+	public BigDecimal getBalance(Person person) {
+	    Set&lt;Account&gt; accounts = person.getAccounts();
+            //NullPerson returns empty list, no more NPE!
+	    BigDecimal totalBalance = BigDecimal.ZERO;
+	    for(Account account: accounts) {
+	        totalBalance = totalBalance.add(account.getBalance());
+	    }
+	    return totalBalance;
+	}
+</pre>
+<p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
+<pre class="brush:java">
+public class UnknownPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+
+}
+public class InvalidatedPerson implements Person {
+	
+	public String getName() {
+		return "";
+	}
+	
+	public void setName(String name) {}
+
+	public List&lt;Account&gt; getAccounts() {
+		return Collections.emptyList();
+	}
+}
+</pre>
+<p>Now you can return much more information then just a meaningless "null"!</p>
+<p>There is just one problem with this pattern. It also doesn't just solve your problems. Why do we want to calculate the total balance of a NullPerson? The moment you retrieve a person and it is an instance of NullPerson, catch it and handle the situation appropiatly, don't just continue.</p>
+<h2>Safe null operator</h2>
+<p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you've programmed in Groovy you might have seen it before:</p>
+<pre class="brush:java">
+		public String getFirstLetterOfName(Person person) {
+			return person?.getName()?.substring(0, 1);
+		}
+</pre>
+<p>The idea is that you use "?." instead of ".". The questionmark means: "If the variable we're calling is null, the result is null, else, call the next method".</p>
+<p>So in this case:</p>
+<ul>
+<li>If person is null: return null, else:</li>
+<li>If getName() is null: return null, else:</li>
+<li>Return result of substring(0, 1)</li>
+</ul>
+<p>If you would now write this code it would be:</p>
+<pre class="brush:java">
+		public String getFirstLetterOfName(Person person) {
+			if(person == null) {
+				return null;
+			}
+			if(person.getName() == null) {
+				return null;
+			}
+			return person.getName().substring(0, 1);
+		}
+</pre>
+<p>You could also give a default value:</p>
+<pre class="brush:java">
+		public void printName(Person person) {
+			System.out.println(person?.getName() ?: "Anonymous");
+		}
+</pre>
+<p>If person or getName() produce a null the "?:" operator will return the default String.</p>
+<p>Sounds pretty good eh? The only problem is that this new operator didn't make the final list of changes for Java 7.</p>
+<p>Fun fact: Do you know why the "?:"-operator is called the "Elvis"-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/02/handling-null-in-java/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/placement-of-circle-over-points/">Placement of circle over points</a></h1>
+    <p class="author">
+      <span class="date">Jan 27, 2010 15:02:57</span>
+    </p>
+    <p>For the Queue ICPC programming game <a href="http://queue.acm.org/icpc/index.cfm">Capture</a> I ran into a geometrical problem.<br />
+While programming my little robot I wanted to have an algorithm calculate this for me:</p>
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/placement-of-circle-over-points/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/i-hate-printers/">I hate printers</a></h1>
+    <p class="author">
+      <span class="date">Jan 27, 2010 12:54:58</span>
+    </p>
+    <ol>
+<li>Why, when one color has run out of ink, you can't print anything!?</li>
+<li>Why does a pencil cost $0,50 and does an ink-cartridge cost $30,-?</li>
+<li>Why does a pencil still work after 5 years and is an ink-cartridge completely dried up?</li>
+<li>Why is a new printer (including ink cartridge) sometimes cheaper then a seperate ink-cartridge (crazy!)</li>
+<li>Why do printers eat paper for lunch?</li>
+<li>Why is printer-software so invasive? What happened to a simple 'driver'</li>
+<li>Why does most hardware run perfectly under Linux, except printers?</li>
+</ol>
+<p>Screw this, I'll just mail my report instead of printing it...</p>
+<p>Printer-bashing comic: <a href="http://theoatmeal.com/comics/printers">Why I believe printers were sent from Hell</a></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/i-hate-printers/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/guess-the-algorithm/">Guess the algorithm</a></h1>
+    <p class="author">
+      <span class="date">Jan 23, 2010 21:54:24</span>
+    </p>
+    <p>Yesterday I found and programmed a nice little algorithm. I'm not going to tell you (yet) what it does and how its called, but I'll just show the code:</p>
+<pre class="brush:java">
+	private int function(int x, int y) {
+		int r = 0;
+		while(x!=0) {
+			if((x&1)==1) {
+				r+=y;
+			}
+			x&gt;&gt;&gt;=1;
+			y&lt;&lt;=1;
+		}
+		return r;
+	}
+</pre>
+<p>So tell me, what does this do, and what is the algorithm called?</p>
+<p><strong>Edit:</strong></p>
+<p>And indeed (it was a simple one) the correct solution is multiplication, and to be specific, Ethiopian or <a href="http://mathworld.wolfram.com/RussianMultiplication.html">Russian Multiplication</a>.</p>
+<p>I'll probably do more, harder ones, in the future..!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/guess-the-algorithm/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/dependency-injection-dissection/">Learn to use Dependency Injection</a></h1>
+    <p class="author">
+      <span class="date">Jan 18, 2010 17:43:08</span>
+    </p>
+    <p>Recently I placed a comment on <a href="http://blog.objectmentor.com/articles/2010/01/17/dependency-injection-inversion">this</a> interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.</p>
+<p>Now, by popular demand (one person requested it over Twitter), I'll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.</p>
+<p><!--more--></p>
+<h2>Ordering Milk</h2>
+<p>Lets take a look at the application we have. We have a service:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public interface MilkRequestService {
+
+	/**
+	 * Process a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void processOrder(String customer, Integer amountOfBottles);
+
+}
+</pre>
+<p>And we have a DAO (data access object) which will take care of persisting our order:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public interface MilkDAO {
+
+	/**
+	 * Save a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void saveOrder(String customer, Integer amountOfBottles);
+}
+</pre>
+<p>The implementation of this DAO isn't really interesting, lets just pretent it goes to the database:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkDAODatabaseImpl implements MilkDAO {
+
+	public void saveOrder(String customer, Integer amountOfBottles) {
+		//Puts order in database
+	}
+	
+}
+</pre>
+<p>And finally we have our service implementation:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	private MilkDAO milkDAO;
+	
+	/**
+	 * Create a new service:
+	 */
+	public MilkRequestServiceImpl() {
+		milkDAO = new MilkDAODatabaseImpl(
+				//With SQLConnection or something
+				);
+	}
+	
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		//Save the order:
+		milkDAO.saveOrder(customer, amountOfBottles);
+	}
+}</pre>
+<p>Lets pretent that we are good obeying programmers, although we didn't write our unit test up front, we are going to do it right away.</p>
+<p>So... we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceTest {
+
+	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+	
+	@Test
+	/**
+	 * Test our milk request service.
+	 * Pre:
+	 * - We have a customer that wants to order 5 bottles of milk
+	 * Post:
+	 * - The milk DAO got a request to save 5 bottles of milk
+	 */
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		milkRequestService.processOrder(customer, amountOfBottles);
+		
+		//Eeehh.... how do we check the call to the DAO?
+		
+		//HELP!!
+	}
+}
+</pre>
+<p>We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check... </p>
+<p>NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain't one of them.</p>
+<p>We need to refactor our code...!</p>
+<h2>The Factory</h2>
+<p>One possible solution to this problem is using a factory method. A factory creates objects so you don't have to. Its best shown using an example:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MilkFactory { //no pun intended
+	
+	/**
+	 * Here we save the mapping:
+	 */
+	private static Map&lt;Class, Object&gt; mapping;
+	
+	/**
+	 * Create the mapping
+	 */
+	static {
+		mapping = new HashMap&lt;Class, Object&gt;();
+		mapping.put(MilkDAO.class, new MilkDAODatabaseImpl());
+		mapping.put(MilkRequestService.class, new MilkDAODatabaseImpl());
+	}
+	
+	/**
+	 * Set a mapping by hand.
+	 * Should only be used when unit testing.
+	 * 
+	 * @param &lt;T&gt;
+	 * @param clazz
+	 * @param impl
+	 */
+	public static&lt;T&gt; void replaceMapping(Class&lt;T&gt; clazz, T impl) {
+		mapping.put(clazz, impl);
+	}
+
+	/**
+	 * Not threadsafe ugly code-monkey code.
+	 * @param &lt;T&gt;
+	 * @param requestedClass
+	 * @return
+	 */
+	public static&lt;T&gt; T get(Class&lt;T&gt; requestedClass) {
+		if(mapping.containsKey(requestedClass)) {
+			return (T)mapping.get(requestedClass);
+		} else {
+			throw new IllegalArgumentException("Doesn't exist");
+		}
+	}
+}
+</pre>
+<p>So, lets dissect this.</p>
+<p>The method get(class, object) will return an implementation for a given Class. It uses a Map to get the mapping. The map is created during the static initialization (yuk!) and contains the default mapping, but we can also provide our own mapping using replaceMapping(class, object).</p>
+<p>Now how do we use it? Lets see our new MilkRequestServiceImpl:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		
+		//Save the order:
+		MilkFactory.get(MilkDAO.class).saveOrder(customer, amountOfBottles);
+	}
+}
+</pre>
+<p>As you can see we no longer need the constructor, we get the required DAO from the factory when we need it.</p>
+<p>Now we can test it using the replaceMapping method:</p>
+<pre class="brush:java">package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceTest {
+
+	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+	
+	//@Test
+	/**
+	 * Test our milk request service.
+	 * Pre:
+	 * - We have a customer that wants to order 5 bottles of milk
+	 * Post:
+	 * - The milk DAO got a request to save 5 bottles of milk
+	 */
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		//Better use a mock here, for example using Mockito or EasyMock.
+		MilkFactory.replaceMapping(MilkDAO.class, new MilkDAO() {
+			public void saveOrder(String customer, Integer amountOfBottles) {
+				//Check if the customer = testUser
+				//Check if the amountOfBottles = 5;
+			}
+		});
+		
+		MilkFactory.get(MilkRequestService.class)
+			.processOrder(customer, amountOfBottles);
+	}
+}</pre>
+<p>As the comment says, you are probably much better of here using a mocking framework like EasyMock or Mockito. But the point is, we can test our class now without going to the database! We got our control back.</p>
+<h2>Dependency Injection</h2>
+<p>Instead of writing a factory, there is a better way to do this. It is the Hollywood principle "Don't call us, we'll call you".</p>
+<p>All the dependencies of the objects are injected into them instead of created (initial example) or retrieved (factory example). So our service will look like this:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkRequestServiceImpl implements MilkRequestService {
+
+	private MilkDAO milkDao;
+	
+	/**
+	 * The milkDao is given to us by our creator.
+	 * 
+	 * @param milkDao
+	 */
+	public MilkRequestServiceImpl(MilkDAO milkDao) {
+		this.milkDao = milkDao;
+	}
+	
+	/**
+	 * Place a new order for milk.
+	 */
+	public void processOrder(String customer, Integer amountOfBottles) {
+		//Log the order:
+		System.out.println("LOG: Customer " + customer + " wants "
+				+ amountOfBottles + " bottle"
+				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+		
+		//We just use the milkDao we got:
+		milkDao.saveOrder(customer, amountOfBottles);
+	}
+}
+</pre>
+<p>Now lets take a look at our test-code, it now looks like this:</p>
+<pre class="brush:java">
+	public void testProcessOrder() {
+		
+		final String customer = "testUser";
+		final Integer amountOfBottles = 5;
+		
+		//Better use a mock here, for example using Mockito or EasyMock.
+		MilkDAO testMilkDao = new MilkDAO() {
+			public void saveOrder(String customer, Integer amountOfBottles) {
+				//Check if the customer = testUser
+				//Check if the amountOfBottles = 5;
+			}
+		};
+		
+		MilkRequestService milkRequestService = new MilkRequestServiceImpl(testMilkDao);
+		
+		milkRequestService.processOrder(customer, amountOfBottles);
+	}
+</pre>
+<p>We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That's all. Instead of the hidden creation in the service itself or in the factory we are in full control.</p>
+<p>But if you want to use this application you'll need "something else" to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+public class MilkApplication {
+
+	public static void main(String[] args) {
+		MilkApplication app = new MilkApplication();
+		app.run();
+	}
+
+	public MilkApplication() {
+		//-----   Provide wiring:  -----
+		MilkDAO milkDao = new MilkDAODatabaseImpl();
+		milkRequestService = new MilkRequestServiceImpl(milkDao);
+		//------------------------------
+	}
+	
+	private MilkRequestService milkRequestService;
+	
+	/**
+	 * Do stuff:
+	 */
+	public void run() {
+		milkRequestService.processOrder("Roy van Rijn", 1);
+	}
+}
+</pre>
+<h2>Using Spring</h2>
+<p>The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you'll write something like this:</p>
+<pre class="brush:xml">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"&gt;
+
+	&lt;bean id="milkDao" class="nl.redcode.examples.milkman.MilkDAODatabaseImpl" /&gt;
+
+	&lt;bean id="milkRequestService" class="nl.redcode.examples.milkman.MilkRequestServiceImpl"&gt;
+		&lt;property name="milkDao" ref="milkDao" /&gt;
+	&lt;/bean&gt;
+&lt;/beans&gt;
+</pre>
+<p>Now you'll still need to retrieve these "beans" from Spring, this can be done using our old-friend the Factory!<br />
+It'll look something like this:</p>
+<pre class="brush:java">
+	ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
+		new String[] {"applicationContext.xml"});
+	MilkRequestService milkRequestService = appContext.getBean("milkRequestService");
+</pre>
+<p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
+<h2>Using Guice</h2>
+<p>Google Guice works exacly the same, only instead of using XML to define the mapping it only uses Java code and annotations.</p>
+<p>First we tell Guice which implementations are the default implementations, for example:</p>
+<pre class="brush:java">
+package nl.redcode.examples.milkman;
+
+@ImplementedBy(MilkDAODatabaseImpl.class)
+public interface MilkDAO {
+
+	/**
+	 * Save a new order.
+	 * @param customer
+	 * @param amountOfBottles
+	 */
+	public void saveOrder(String customer, Integer amountOfBottles);
+}
+</pre>
+<p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using 'Constructor Injection':</p>
+<pre class="brush:java">
+	/**
+	 * The milkDao is injected by Guice.
+	 * 
+	 * @param milkDao
+	 */
+	@Inject
+	public MilkRequestServiceImpl(MilkDAO milkDao) {
+		this.milkDao = milkDao;
+	}
+</pre>
+<p>Now if we want to use it, we retrieve it from Guice like so:</p>
+<pre class="brush:java">
+public class MilkApplication {
+
+	public static void main(String[] args) {
+		MilkApplication app = new MilkApplication();
+		app.run();
+	}
+	
+	/**
+	 * Do stuff:
+	 */
+	public void run() {
+		
+	    Injector injector = Guice.createInjector();
+	    MilkRequestService milkRequestService = 
+	        injector.getInstance(MilkRequestService.class);
+
+		milkRequestService.processOrder("Roy van Rijn", 1);
+	}
+}
+</pre>
+<p>Thats about it, you've seen:</p>
+<ul>
+<li>Why you should use these patterns</li>
+<li>How you would program them yourself (ugly monkey-code-style)</li>
+<li>How using Spring (with XML)</li>
+<li>How using Google Guice!</li>
+</ul>
+<p>Good luck and happy programming!</p>
+<p>ps. The code examples are just examples...!!</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/dependency-injection-dissection/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/movies-as-porn/">What if your favourite movie was remade as porno</a></h1>
+    <p class="author">
+      <span class="date">Jan 15, 2010 15:45:57</span>
+    </p>
+    <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
+<p>My collegues and I were discussing this, and we came up with a top 10. We've also started a twitter <a href="http://hashtags.org/moviesasporn">hashtag</a>.</p>
+<h5>Top 10</h5>
+<ol>
+<li>Shaving Ryan's Privates (everybodies favourite)</li>
+<li>The Curious Taste of Benjamin's Bottom</li>
+<li>Honey, I shagged the kids</li>
+<li>Missionary Impossible III</li>
+<li>Good Will Humping</li>
+<li>Free my Willy</li>
+<li>Legally Boned</li>
+<li>I Know Who you did last Summer</li>
+<li>Schindler's Fist</li>
+<li>Cliff Banger</li>
+</ol>
+<h5>Honourable mentions</h5>
+<p>And some honourable mentions to the titles that just didn't make the list:</p>
+<ul>
+<li>When Harry ate Sally</li>
+<li>Saturday Night Beaver</li>
+<li>Spankenstein</li>
+<li>Swollow Hal</li>
+<li>Sorest Rump</li>
+<li>Bangs of New York</li>
+<li>American Bangster</li>
+<li>Thighs Wide Shut</li>
+<li>Citizen Came</li>
+<li>The Green Milf</li>
+<li>The Porn Identity</li>
+<li>Crouching Woman, Hidden Camera</li>
+</ul>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/movies-as-porn/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/does-my-car-hate-me/">Does my car hate me?</a></h1>
+    <p class="author">
+      <span class="date">Jan 12, 2010 00:04:21</span>
+    </p>
+    <p>Why does my car do this to me? It bugs me everyday. When I drive with the snow outside I have to use my windscreen washer quite a lot. When I pull the little lever behind my steering wheel it spurts a jet of antifreeze/washer fluid onto my screen and it starts to wipe for about 10 times. Then it stops... my window is clean again!</p>
+<p><img src="/images/windscreen-300x186.jpg" alt="picture of dirty windscreen" title="windscreen" width="300" height="186" class="size-medium wp-image-222" /></p>
+<p>But after about 15 seconds it does one final sweep... and this last sweep <strong>always</strong> leaves ugly marks!</p>
+<p>Why do cars do this!!!? First it cleans my window perfectly, and then spoils it!</p>
+<p><strong>Update:</strong><br />
+A collegue adviced me this: If the car has just finished wiping, quickly switch on the manual and stop it. This will still cause one extra wipe, but it comes right after the others. This produces a slightly better result.</p>
+<p>I tried this two times on my car (a Fiat Bravo) and it worked one time, the other time it still did the final whipe after around 10 seconds.</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/does-my-car-hate-me/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2010/01/md5-fixed-point/">MD5 quine, fixed point</a></h1>
+    <p class="author">
+      <span class="date">Jan 5, 2010 16:04:53</span>
+    </p>
+    <h5>MD5 quines</h5>
+<p>Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?</p>
+<p>Thus: MD5(x) = x</p>
+<p>This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.</p>
+<p><!--more--></p>
+<h5>Information I've found</h5>
+<p>So I started investigating, soon I discovered <a href="http://www.mscs.dal.ca/~selinger/md5collision/">this</a> website about collisions. Its well known that all hashing algorithms must have collisions, you can't always produce a unique hash for input larger then the output of course.</p>
+<p>The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn't really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn't a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.</p>
+<p>So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).</p>
+<p>Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.</p>
+<p>But, of course, there is no randomness involved here - there either is a fixed point or there isn't. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).</p>
+<h5>Looking for the fixed point</h5>
+<p>I've just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)</p>
+<p>The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:</p>
+<p>1. Go into a loop<br />
+2. Find a fixed point (which is a loop of size 1)</p>
+<p>The weird thing is, if it ends up in a loop of size 1... I've found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!</p>
+<h5>Graph</h5>
+<p>Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.</p>
+<h5>Open questions</h5>
+<ul>
+<li>Are there loops? (It is possible there aren't any loops at all...?)</li>
+<li>Are there loops of size 1, a.k.a. fixed points?</li>
+<li>Which/how many 128 bit combinations can't be created with the input values?</li>
+<li>Which/how many collisions will you get with all the input values?</li>
+</ul>
+<p>More thoughts, errors, solutions..?</p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2010/01/md5-fixed-point/">More...</a>
+    </p>
+  
+    <h1><a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">Splitting up Spring Web Flow & Facelets into JARs</a></h1>
+    <p class="author">
+      <span class="date">Dec 15, 2009 15:25:15</span>
+    </p>
+    <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
+<p>This sounds straightforward but it took quite a bit of code and time... </p>
+<p><!--more--></p>
+<p>First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.</p>
+<p>The first thing I did was changing our flowRegistry:</p>
+<pre class="brush:xml">
+      &lt;!-- The registry of executable flow definitions --&gt;
+      &lt;webflow:flow-registry id=&quot;flowRegistry&quot; 
+         flow-builder-services=&quot;facesFlowBuilderServices&quot; 
+         base-path=&quot;classpath*:flows&quot;&gt;
+            &lt;webflow:flow-location-pattern value=&quot;/**/*-flow.xml&quot; /&gt;
+      &lt;/webflow:flow-registry&gt;
+</pre>
+<p>The <em>classpath*:</em> allows SWF to search the whole classpath for flow-directories containing a flow definition.<br />
+In our case it would be: <em>/flows/module1/module1-flow.xml</em></p>
+<p>When you try to run this, and access a page we got the following exception:</p>
+<pre class="brush:text">
+Caused by: java.lang.IllegalStateException: A ContextResource is required to get relative view paths within this context; the resource was file [D:\projects\projectfromjar\module1\bin\flows\module1\page1.xhtml]
+	at org.springframework.faces.webflow.FlowViewHandler.resolveResourcePath(FlowViewHandler.java:110)
+	at org.springframework.faces.webflow.FlowViewHandler.restoreView(FlowViewHandler.java:74)
+	at com.sun.facelets.FaceletViewHandler.restoreView(FaceletViewHandler.java:316)
+	at org.springframework.faces.webflow.JsfViewFactory.getView(JsfViewFactory.java:93)
+	at org.springframework.webflow.engine.ViewState.resume(ViewState.java:193)
+	at org.springframework.webflow.engine.Flow.resume(Flow.java:545)
+	at org.springframework.webflow.engine.impl.FlowExecutionImpl.resume(FlowExecutionImpl.java:259)
+	... 38 more
+</pre>
+<p>For some reason Spring Web Flow doesn't want to load the facelet. After browsing around Spring's forums I came across some solutions. They didn't do the trick, only when combining several methods I got it working for Spring Web Flow 2.0.7.</p>
+<p>This is how I did it, we need to tell Facelets to use our custom ClassPathResourceResolver:</p>
+<pre class="brush:xml">
+      &lt;!-- To load flows and pages from JARs, use this resolver --&gt;
+      &lt;context-param&gt;
+            &lt;param-name&gt;facelets.RESOURCE_RESOLVER&lt;/param-name&gt;
+            &lt;param-value&gt;nl.redcode.ClassPathResourceResolver&lt;/param-value&gt;
+      &lt;/context-param&gt;
+</pre>
+<p>The resolver itself is basic but does the job:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import java.net.URL;
+
+import com.sun.facelets.impl.ResourceResolver;
+
+public class ClassPathResourceResolver implements ResourceResolver {
+
+	public URL resolveUrl(String path) {
+	    return getClass().getResource(path);
+	}
+}
+</pre>
+<p>This will help Facelets to translate a given path to a java.net.URL using the current classloader.<br />
+Spring Web Flow is currently giving us a FileSystemResource, and this doesn't work because we want to load the pages with our classloader. For this we have the following wrapper:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ContextResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
+
+class CustomClassPathContextResource extends ClassPathResource implements ContextResource {
+
+    public CustomClassPathContextResource(String path, ClassLoader classLoader) {
+        super(path, classLoader);
+    }
+
+    public String getPathWithinContext() {
+        return getPath();
+    }
+
+    public Resource createRelative(String relativePath) {
+        String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
+        return new CustomClassPathContextResource(pathToUse, getClassLoader());
+    }
+}
+</pre>
+<p>To force Spring to use this Resource instead of FileSystemResource we use a post processor:</p>
+<pre class="brush:java">
+package nl.redcode;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
+
+public class FlowRegistryClassPathPostProcessor implements BeanPostProcessor {
+	
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+    
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if(bean instanceof FlowDefinitionRegistry) {
+            alterRegistry((FlowDefinitionRegistry) bean);
+        }
+        return bean;
+    }
+    
+    protected void alterRegistry(FlowDefinitionRegistry registry) {
+        for(String flowId : registry.getFlowDefinitionIds()) {
+            ApplicationContext ctx = registry.getFlowDefinition(flowId).getApplicationContext();
+            overrideResourceLoader((GenericApplicationContext) ctx);
+        }
+    }
+    
+    /**
+     * Override the ResourceLoader:
+     * We know our flow is always defined as "flows/module1".
+     * From the context we can derive the name of the flow (module1)
+     * So we build up the ClassPathResource base as:
+     * "flows/"+ ctx.getResource("")+ "/"
+     * 
+     * @param ctx
+     */
+    protected void overrideResourceLoader(GenericApplicationContext ctx) {
+    	final ClassPathResource cpr = new ClassPathResource("flows/"+ctx.getResource("").getFilename()+"/");
+
+    	ctx.setResourceLoader(new ResourceLoader() {
+        	
+        	public ClassLoader getClassLoader() {
+        		return cpr.getClassLoader();
+        	}
+
+        	public Resource getResource(String location) {
+        		return new CustomClassPathContextResource(cpr.getPath() + location, getClassLoader());
+        	}
+        });
+    }
+}
+</pre>
+<p>When the FlowDefinitionRegistry is created we provide it with a new ResourceLoader. When the resources are requested by Spring Web Flow we create our own CustomClassPathContextResource. This consists of our current location plus the defined location (viewId).</p>
+<p>To register this post processor add it to your project-servlet.xml:</p>
+<pre class="brush:xml">
+&lt;bean id=&quot;flowRegistryClassPathPostProcessor&quot; class=&quot;nl.redcode.FlowRegistryClassPathPostProcessor&quot; /&gt;
+</pre>
+<h5>How to use it</h5>
+<p>In our project we have the following flow(s) defined in a seperate JAR:<br />
+/flows/module1/module1-flow.xml</p>
+<p>And our pages are in the same directory:<br />
+/flows/module1/page1.xhtml<br />
+/flows/module1/page2.xhtml<br />
+etc...</p>
+<p>In the flow we can now use the following view-id's:</p>
+<pre class="brush:xml">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;flow 	xmlns=&quot;http://www.springframework.org/schema/webflow&quot;
+		xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+		xsi:schemaLocation=&quot;http://www.springframework.org/schema/webflow
+							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd&quot;&gt;
+
+    &lt;view-state id=&quot;start&quot; view=&quot;page1.xhtml&quot;/&gt;
+
+&lt;/flow&gt;
+</pre>
+<p>Its also possible to have pages in other places, you can define the views as relative paths. For example:<br />
+<em>"../../shared_pages/page2.xhtml"</em> turns into <em>"/shared_pages/page2.xhtml"</em><br />
+<em>"../pages/page3.xhtml"</em> turns into <em>"/flows/pages/page3.xhtml"</em></p>
+<p>The only problem we still have using this method is the deployment with RAD/Eclipse WTP and Facelets auto-refresh. For some reason after deploying our application locks the files in the bin-directory. Eclipse then can't delete this directory and fails to publish. Ending in one big #fail. But a simple clean, clean, republish, clean, rebuild, restart, shout, scream, cry, rebuild and republish will solve this.</p>
+<p>The big advantage is the fact that the flows and pages are now defined in their own JAR files, making releases and sharing classes (like shared services/shared menu's etc) much easier.</p>
+<p>Information on <a href="http://forum.springsource.org/showthread.php?t=64252">Spring forum</a></p>
+
+
+
+    
+    <p>
+    	<a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">More...</a>
+    </p>
+  
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    
+      <a href="/page/10" class="previous">Previous</a>
+    
+    <span class="page_number ">Page: 11 of 13</span>
+    
+      <a href="/page/12" class="next">Next</a>
+    
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+    
+    </div>
+
+  </div>
+  
+  <script> <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>
