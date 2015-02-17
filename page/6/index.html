@@ -57,14 +57,6 @@
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
       </div>
     </nav>
 
@@ -79,566 +71,1146 @@
 
   <!-- This loops through the paginated posts -->
   
-    <h1><a href="/blog/2012/06/rotoscoping-in-prince-of-persia/">Rotoscoping in Prince of Persia</a></h1>
-    <p class="author">
-      <span class="date">Jun 28, 2012 16:02:30</span>
-    </p>
-    <p>This afternoon I was reading about <a href="http://en.wikipedia.org/wiki/Rotoscoping">rotoscoping</a>. Rotoscoping is a technique where an artist takes a filmed movie and animates a drawn (cartoon) character frame by frame. The end result is highly realistic. The technique was first used in 1915's with an ink cartoon called <a href="http://en.wikipedia.org/wiki/Out_of_the_Inkwell">Out of the Inkwell</a> and has been used in many cartoons since.</p>
-<p>But what about video games?</p>
-<p>It turns out that Prince of Persia was the first computer game to use rotoscoping. That game brings back a lot of good memories to me, and probably everybody my age.</p>
-<p>After a quick search I found this little gem of a video:<br />
-<iframe width="420" height="315" src="http://www.youtube.com/embed/WAjRNU3DbSY" frameborder="0" allowfullscreen></iframe></p>
-<p>The person in the video is David Mechner. He is the younger brother of Jordan Mechner, the creator of Prince of Persia.<br />
-Jordan used the clips shown above to rotoscope the movements of the main character in the game.</p>
-<p>I had never realised <em>why</em> I loved Prince of Persia so much in my youth. But now I think it is probably because of rotoscopy! The animations are so realistic and life like, it has brought a whole new level of realism into video games.</p>
-<p>Here is another video of Jordan, showing even more rotoscoping in Prince of Persia:<br />
-<iframe width="560" height="315" src="http://www.youtube.com/embed/gC3WEwSJoHs" frameborder="0" allowfullscreen></iframe></p>
-<p>And the icing on the cake, a video about rotoscoping in Mortal Kombat 1:<br />
-<iframe width="560" height="315" src="http://www.youtube.com/embed/CUBAKk64FS8" frameborder="0" allowfullscreen></iframe></p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/06/rotoscoping-in-prince-of-persia/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/website-theme/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/06/getting-started-arduino-mega/">Getting started: Arduino Mega</a></h1>
-    <p class="author">
-      <span class="date">Jun 7, 2012 13:00:50</span>
-    </p>
-    <p>A couple of days ago I've received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, capacitors, and a couple of sensors).</p>
-<p><img src="/images/arduino_mega-300x225.jpg" alt="" title="arduino_mega" width="300" height="225" class="alignright size-medium wp-image-1192" /></p>
-<h2>Arduino?</h2>
-<p>The Arduino is a handy little board with micro controller. It allows you to connect your computer using USB to the micro controller and easily program and upload the program to the board. I'm a very experienced programmer with almost no experience in electronics.</p>
-<p>I know what a resistor is and what it does, but I have no idea how/when to use which resistor. But I'd love to learn more, maybe even build some toy robots in the end. A final goal would be to have a working humanoid with 20+ servo's, but that goal might be a bit out of reach...</p>
-<h2>The examples</h2>
-<p>The first thing I've done after unboxing the Arduino was plugging it in my laptop and browsing to the <a href="http://www.arduino.cc">arduino.cc</a> website. There you can download the Arduino IDE.</p>
-<p>In the 'Learning' section (<a href="http://arduino.cc/en/Tutorial/HomePage">http://arduino.cc/en/Tutorial/HomePage</a>) you'll find everything you need to get started. There are diagrams on how to wire everything into the breadboard, and there are also code examples.</p>
-<p>Some stuff I made using the 'Learning' page:</p>
-<ul>
-<li>Blinking LED (the hardware Hello World, yay!)</li>
-<li>Slowly fading blinking LED</li>
-<li>Knight rider, KITT LED bar</li>
-<li>Tiny keyboard with 5 buttons</li>
-<li>Light reactive theremin</li>
-</ul>
-<p>And some projects that aren't on the example page, but could be made using the things I've learned:</p>
-<ul>
-<li>Extended keyboard with 5 buttons and LEDs!</li>
-<li>Light reactive LED bar (showing the amount of light in LEDs)</li>
-<li>Knock-sensor, LED shows when it 'feels/hears' a knock</li>
-</ul>
-<p>All the above was made in a single evening! And there is much much more that you could make with the Arduino. I haven't even started using servos and/or DC motors. The only problem left is lack of imagination!</p>
-<p>For a programmer the code is very easy to understand, and the <a href="http://arduino.cc/en/Reference/HomePage">Arduino Programming Language</a> used is closely related to the C/Java family.</p>
-<pre class="brush:java">
-/*
-  keyboard
- 
- Plays a pitch that changes based on a changing analog input
- 
- circuit:
- * 3 force-sensing resistors from +5V to analog in 0 through 5
- * 3 10K resistors from analog in 0 through 5 to ground
- * 8-ohm speaker on digital pin 8
- 
- created 21 Jan 2010
- modified 9 Apr 2012
- by Tom Igoe 
-
-This example code is in the public domain.
- 
- http://arduino.cc/en/Tutorial/Tone3
- 
- */
-
-#include "pitches.h"
-
-const int threshold = 10;    // minimum reading of the sensors that generates a note
-
-// notes to play, corresponding to the 3 sensors:
-int notes[] = {
-  NOTE_A4, NOTE_B4,NOTE_C3 };
-
-void setup() {
-
-}
-
-void loop() {
-  for (int thisSensor = 0; thisSensor < 3; thisSensor++) {
-    // get a sensor reading:
-    int sensorReading = analogRead(thisSensor);
-
-    // if the sensor is pressed hard enough:
-    if (sensorReading > threshold) {
-      // play the note corresponding to this sensor:
-      tone(8, notes[thisSensor], 20);
-    } 
-  }
-}
-</pre>
-<p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
-<pre class="brush:java">
-int sensorValue = analogRead(A0); 
-String stringThree = "Sensor value: " + sensorValue;
-Serial.println(stringThree);
-</pre>
-<p>This little piece of code above gives unpredictable results because 'stringThree' never got an initial value before you started concatenating different data types. Instead you'll have to do:</p>
-<pre class="brush:java">
-int sensorValue = analogRead(A0); 
-String stringOne = "Sensor value: ";
-String stringThree = stringOne + sensorValue;
-Serial.println(stringThree);
-</pre>
-<p>Weird...! But I really suggest trying out the Arduino, give it a chance and you'll probably like it and learn a lot about electronics and microcontrollers.</p>
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/website-theme/">New website theme</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 7, 2011 01:52:14
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/website-theme/#disqus_thread"></a>
+    	</p>
+        When browsing through the posts on DZone I noticed a couple of new Wordpress plugins. When I tried them (on my live website of course) everything failed and produced errors. And of course I didn't do a proper backup before I started... sigh.
+Anyway, I was able to login with FTP, find the broken file and fix it (PHP, blegh)! But then I started experimenting with other parts of the website and tried some different WordPress themes. I've had the previous theme for a couple of years now. Time for something new! What do you guys think about this new one?
+South Africa
+The photo in the header, with the zebra's, was taking during my holiday in South Africa last year. 
+Edit: The zebra picture made it look like a website of the WNF, so I changed it!
+Some more:
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/06/getting-started-arduino-mega/">More...</a>
-    </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The complete (online) collection can be found here: https://picasaweb.google.com/roy.van.rijn/ZuidAfrika
+Avatar
+For years and years I've also been using this avatar:
+
+A lot of people have asked me why I'm using that avatar instead of a normal photo. I've been using this image since my teen years, when I had acne all over the place. I've just kept using it, and now people actually recognize it.
+I've drawn that cartoon image myself, no idea what it resambles, just something unidentified creature. It was actually drawn over a photo of our family pet dog Dana. Which my parents are probably going to have to put down pretty soon. She is now very old and sick, it is just a matter of days...
+
+
+
+	    <p>
+    		<a href="/blog/2011/05/website-theme/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2012/05/we-are-now-cached/">We are now cached</a></h1>
-    <p class="author">
-      <span class="date">May 9, 2012 16:16:22</span>
-    </p>
-    <p>Yesterday we (at <a href="http://www.jpoint.nl/" alt="JPoint, the company I work for.">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/" alt="Stefan Tilkov's blog">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
-<p>One of the things he mentioned was: If you don't use caching, you are an idiot.</p>
-<h2>Where do websites cache?</h2>
-<p>There are multiple tiers where caching of websites is done, and is useful.</p>
-<h3>Browser cache</h3>
-<p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There is absolutely no reason to go online.</p>
-<h3>Proxy cache</h3>
-<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn't changed it can provide the page instantly.</p>
-<h3>Reversed proxy cache</h3>
-<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a "reverse" proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
-<h2>Making pages cacheable</h2>
-<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan's rant, I'm completely convinced about that. If you don't do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn't work, and shouldn't be used (!). So what could we do?</p>
-<h3>Expires header</h3>
-<p>When sending a page back to the user you are able to set some HTTP headers. And "expires" is one of them.<br />
-An example:</p>
-<pre class="brush:plain">
-Expires: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>This indicates that the current page is valid until the timestamp. Then it 'Expires'. Easy!</p>
-<p>The only problem is generating the timestamp, it can be a bit tricky. Also you'll have to be sure you've set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
-<h3>Cache-Control headers</h3>
-<p>With HTTP 1.1 there is a new class of headers called "Cache-Control". These headers are more powerful than the Expires header.<br />
-To enable caching using Cache Control headers you can set:</p>
-<pre class="brush:plain">
-Cache-Control: max-age=3600, must-revalidate
-</pre>
-<p>The "max-age" is time in ms that the current page is valid. And by adding "must-revalidate" we tell the cache it should obey our max-age. If you don't want an object to be cached you can use:</p>
-<pre class="brush:plain">
-Cache-Control: no-cache
-</pre>
-<h2>Refreshing cached data</h2>
-<p>The two methods described above will tell the cache <b>if</b> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
-<h3>Last-Modified</h3>
-<p>Websites should always set the response header called "Last-Modified". This is a timestamp of the moment a webpage last changed.</p>
-<pre class="brush:plain">
-Last-Modified: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header "If-Modified-Since" and include the timestamp.</p>
-<pre class="brush:plain">
-If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>If the content on the server hasn't been changed it'll reply "304 Not Modified". The cache can now keep the cached version.</p>
-<h3>ETag</h3>
-<p>With HTTP 1.1 there is also an improved method of doing the "Last-Modified". Instead of using a timestamp (which is error prone), they've introduced the "ETag". This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
-<pre class="brush:plain">
-ETag: "686897696a7c876b7e"
-</pre>
-<p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
-<pre class="brush:plain">
-If-None-Match: "686897696a7c876b7e"
-</pre>
-<p>The term "If-None-Match" isn't very clear, but is means "if-etag-changed-since" and works the same way as "If-Modified-Since". When the ETag is the same the server will reply "304 Not Modified", it won't send the content back.</p>
-<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don't have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed...! But sometimes you'll know in advance if the content has been changed.</p>
-<h2>Improving royvanrijn.com</h2>
-<p>I'm using WordPress and I've found the excellent plugin "WP Total Cache".</p>
-<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you'll probably be reading this from the browser cache.</p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/05/we-are-now-cached/">More...</a>
-    </p>
+    <hr/>
   
-    <h1><a href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/">Ludum Dare #23: Itty-bitty botty</a></h1>
-    <p class="author">
-      <span class="date">Apr 22, 2012 17:17:22</span>
-    </p>
-    <p><img src="/images/bodyIdle1.png" alt="" title="bodyIdle1" width="80" height="100" class="alignleft size-full wp-image-1172" />The last two days I've been competing in a competition called Ludum Dare.</p>
-<p>This is a short, 48 hour, contest. In this time you have to build an entire game based on a theme given at the start of the 48 hours. It is a good exercise is planning, scaling, hacking, imagining and just having fun! I really enjoyed it, and recommend you join LD24 four months from now.</p>
-<h3>The concept:</h3>
-<p>For this game I decided to stick with Java. To make it playable for as many people I decided to make an Applet. It can easily become a standalone app, or maybe an Android app...!<br />
-I loved the old point-and-click games, from Dirty Larry to The Day of the Tentacle, from Monkey Island to Gobli(iiii)ns. So that was settled.</p>
-<h3>The big pro:</h3>
-<p>Not a lot of physics or game code.</p>
-<h3>The big con:</h3>
-<p>I'd have to brush off my paint skills because point-and-click adventures are filled with graphics and animation!<br />
-One big factor in games is music, and for this contest I took some midi control code I made some years ago. This was turned into a procedurally generated music generator. Every time you play you'll hear something new.</p>
-<h3>The result:</h3>
-<p>With visitors coming to see our little baby girl on Sunday I decided to end early.</p>
-<p>Screenshots:<br />
-<img src="/images/screenshot1.png" alt="" title="screenshot1" width="1023" height="670" class="alignright size-full wp-image-1169" /><br />
-<img src="/images/screenshot2.png" alt="" title="screenshot2" width="1025" height="669" class="alignright size-full wp-image-1170" /></p>
-<p>Here is my result, have fun playing the game: <a href="http://www.royvanrijn.com/ld23/index.html">Itty-bitty botty</a>!</p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/crowdflow-needs-you/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/03/female-coders-lighten-up/">Female coders, lighten up</a></h1>
-    <p class="author">
-      <span class="date">Mar 22, 2012 15:51:53</span>
-    </p>
-    <p><img src="/images/female-sign.jpg" alt="" title="female-sign" width="305" height="229" class="alignright size-full wp-image-1138" /></p>
-<h4>The Real Katie</h4>
-<p>Today I stumbled upon the following blogpost:<br />
-<a href="http://therealkatie.net/blog/2012/mar/21/lighten-up/">The Real Katie - Lighten Up</a></p>
-<p>Katie talks about the sexist jokes and remarks she regularly gets in the IT/programming world, and she is sick and tired of hearing "Come on, lighten up".</p>
-<p>The post is moving and shows how easy it is to offend people, not by a single remark, but by hundreds of similar remarks heard before.</p>
-<h4>Not an IT problem</h4>
-<p>There is one point I don't agree with though. I don't think it is fair to call this an IT/programmers problem. </p>
-<p>Let me explain:</p>
-<p>Obviously there are a lot of jerks, assholes and plain rude people around. Most of them are men, some are women. They pick on easy targets, the minorities. Sometimes the minority is a heavy male co-worker, sometimes it is the rare female programmer.</p>
-<p>I fully agree, we should call the bullies out more. We all should do something about this problem. Her blogpost has re-opened my eyes again to that problem. But this isn't a IT problem... it is a minority and rude people problem, a global social problem. It happens in <u>all</u> professions. Katie is just unlucky to be the minority in the field of work she loves.</p>
-<h4>More women in the IT</h4>
-<p>Also, I do agree that we could use more women in the IT world. At a young age we should teach boys and girls that there is no such thing as boy-jobs and girl-jobs, and both should learn the joy of programming! If we do that the problem of women being a minority in the IT world will disappear.</p>
-<p><b>BUT</b> that won't solve the global social problem of assholes picking on minorities.<br />
-That is something we are <u>all</u> responsible for.</p>
-<p>There will always be minorities and there will always be rude people (male or female). This is something we can't change. You <b>can</b> however call them out and disapprove the behavior.</p>
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/crowdflow-needs-you/">Crowdflow needs you!</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 1, 2011 18:03:55
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/crowdflow-needs-you/#disqus_thread"></a>
+    	</p>
+        Crowdflow wants to have your iPhone data, to generate pretty heatmaps!
+Why am I telling you this? Because they are using my backup-data-extractor code! See their most recent blog entry.
+The images they produce look very good, much better then the KML file in Google Earth!
+Be sure to help them soon, because Apple is working on deleting most location-data with the next iPhone update. After that, probably the next update, they'll encrypt the location data so it is much harder/impossible to read.
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/03/female-coders-lighten-up/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/05/crowdflow-needs-you/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2012/03/arthur-fry-day-or-fryday/">Arthur Fry Day (or: Fryday)</a></h1>
-    <p class="author">
-      <span class="date">Mar 13, 2012 10:03:16</span>
-    </p>
-    <h2>Scrumboard</h2>
-<div class="alignright size-medium">
-<a href="http://www.royvanrijn.com/arthur-fry-day/"><img src="/images/arthurfry_photo.jpg" alt="" title="Inventor of the Post-It note, and part time hero." width="150" height="208" /></a><br />
-<small>Source: wikipedia.org</small>
-</div>
-<p>
-Our project is doing <a href="http://en.wikipedia.org/wiki/Scrum_(development)">Scrum</a>, and one of the main aspects of Scrum is having everything clearly visible. A great example is the scrumboard, a huge whiteboard filled with Post-It notes.</p>
-<p>
-Post-It notes are perfect for this; small enough to be easy to handle; sticky enough so you can post them almost everywhere. I truly believe that without the Post-It note, Scrum wouldn't be possible and probably wouldn't even exist!</p>
-<h2>The hero</h2>
-<p>
-This all makes the real hero of the Agile movement: <a href="http://www.royvanrijn.com/arthur-fry-day/">Arthur Fry</a>. After somebody at 3M messed up a batch of glue, Arthur decided to add that glue to a piece of paper, creating the first Post-It notes.</p>
-<h2>Join us</h2>
-<p>
-This invention is much more important than the toilet, or wheel, or penicillin...! Celebrate and make the world aware of this unlikely hero, join us and celebrate <a href="http://www.royvanrijn.com/arthur-fry-day/">Arthur Fry Day</a>, this March 16th!</p>
-<p><img src="/images/preparations.png" alt="" title="We've already started our preparations, #arthurfryday" width="538" height="558" class="alignnone size-full wp-image-1125" /><br />
-<a href="http://www.royvanrijn.com/arthur-fry-day/"><img src="/images/arthurfryday-300x119.png" alt="" title="#arthurfryday" width="300" height="119" class="alignnone size-full" /></a></p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/03/arthur-fry-day-or-fryday/">More...</a>
-    </p>
+    <hr/>
   
-    <h1><a href="/blog/2012/03/devoxx-2011-talk-freely-available/">Devoxx 2011: Talk freely available</a></h1>
-    <p class="author">
-      <span class="date">Mar 8, 2012 14:36:23</span>
-    </p>
-    <p>Moments ago this tweet caught my eye:<br />
-<code><br />
-<strong><br />
-<a href="https://twitter.com/#!/devoxx/status/177745047092080640">Devoxx 2011</a>: "What Shazam doesn't want you to know!" by <a href="http://twitter.com/royvanrijn">@royvanrijn</a> is now freely available @ <a href="http://parleys.com/d/2869">http://parleys.com/d/2869</a><br />
-</strong><br />
-</code></p>
-<p>That means everybody can now watch my talk without any subscription! If you want to learn how algorithms like Shazam work, be sure to watch this talk. It might be easier to understand than my blog post a year ago.</p>
-<p>Without further ado:<br />
-<object width="850" height="400"><param name="movie" value="http://www.parleys.com/dist/share/parleysshare.swf" /><param name="allowFullScreen" value="true" /><param name="wmode" value="direct" /><param name="bgcolor" value="#222222" /><param name="flashVars" value="sv=true&amp;pageId=2869" /><embed src="http://www.parleys.com/dist/share/parleysshare.swf" type="application/x-shockwave-flash" flashvars="sv=true&amp;pageId=2869" allowfullscreen="true" bgcolor="#222222" width="850" height="400" /><br />
-</object></p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/03/devoxx-2011-talk-freely-available/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/02/levenshtein-distance-challenge-causes/">Levenshtein Distance Challenge: Causes</a></h1>
-    <p class="author">
-      <span class="date">Feb 7, 2012 23:54:54</span>
-    </p>
-    <p>Today I've been playing around with the <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a>. The Levenshtein distance is a number which measures the 'distance' between two strings. For example, the distance between "test" and "rest" is one.</p>
-<h2>The challenge</h2>
-<p>A Levenshtein distance of one is the key element in a challenge I've been reading about. I first encountered it on <a href="http://williamedwardscoder.tumblr.com/post/16756548314/causes-levenshtein-distance-challenge">williamedwardscoder</a>'s blog. </p>
-<p>The problem description:<br />
-<em><br />
-Two words are friends if they have a <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a> of 1. That is, you can add, remove, or substitute exactly one letter in word X to create word Y. A word’s social network consists of all of its friends, plus all of their friends, and all of their friends’ friends, and so on. Write a program to tell us how big the social network for the word “causes” is, using this <a href="https://raw.github.com/causes/puzzles/master/word_friends/word.list">word list</a>. Have fun!<br />
-</em></p>
-<h2>Java solution (8.1 sec)</h2>
-<p>After some Googling and tweaking I decided to make an implementation based on the <a href="http://en.wikipedia.org/wiki/Trie">Trie</a> structure. How this helps is excellently described by <a href="http://stevehanov.ca/blog/index.php?id=114">Steve Hanov</a>. I've also had a peek in another Java based Trie implementation by <a href="https://github.com/ximus/Causes-Challenge">Ximus</a>.</p>
-<p>I've been able to get the code below run in 8.1 seconds, which is pretty good. But I've read that there are Java implementations running in just 4 seconds...!? Maybe based on  Levenshtein Automata?</p>
-<pre class="brush:java">
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+      <div class="post-data">
+    	<h1><a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">iPhone locations on Google Maps with Javascript</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Apr 26, 2011 14:34:27
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread"></a>
+    	</p>
+        Wow, great news!
+After my previous blogpost a lot of people mailed me about the usability of my 'iPhone location data to Google Earth' tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.
+When chatting to Will about this he suggested using Javascript instead. Soon he had the code working that could parse the iPhone backup files. He then contacted Mark Olson, who helped him with the SQLLite format in Javascript. Together they finished it up so the resulting GPS data is shown in Google Maps.
+The result of their effort: http://markolson.github.com/js-sqlite-map-thing/
+To use it, drag the backup files into the upper part of the website. It will parse the files, locate the data and display the track on Google Maps!
+The source code can be found here: https://github.com/markolson/js-sqlite-map-thing
+Kudos to Will and Mark for this great application. Who knew Javascript could be this powerfull!?
 
-public class FriendlyCauses {
 
-	public static void main(String[] args) throws Exception {
-		FriendlyCauses s = new FriendlyCauses();
-		s.find();
+
+	    <p>
+    		<a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">Reading iPhone GPS data from backup (with Java)</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Apr 21, 2011 01:06:24
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread"></a>
+    	</p>
+        
+Today I noticed the following post on Slashdot: Apple Logging Locations of All iPhone Users
+And the article they are referring to can be found here
+First I was amazed, how can Apple do this? But on second thought, they aren't sending it yet to anybody, it is just something on the phone (and also on the phone's backup). My next reaction was: I want to see my own map! But to my disappointment it only works on Apple Mac's, not Windows/Linux.
+(Re-)building it in Java
+Because their code is open source and well explained on the website I decided to make my own version, in Java (cross platform!). Now, just a couple of hours since I read the article, I've got it working and it can be used as a base for extention. So I'd like to share the code!
+Step 1: Getting the correct file
+This step was the hardest part, technically. The backup Apple makes doesn't just have all the files as they are on your iPhone. Instead they all have names like: "b4d1c79c2f5fc1da044c18d1066b80b39b575590". They do however store the information in two files: Manifest.mbdb and Manifest.mbdx.
+The MBDB file only contains information about the original files, and the MBDX file contains pointers into the MBDB file with the Hex-filenames used in the backup. So we need to parse both files to be able to connect the original filename to the Hex-filename.
+Luckely somebody already did this in Python and posted it on stackoverflow. I took their idea and translated it into Java code.
+When this was fully translated it could resolve all the filenames. This meant I could map the target file "Library/Caches/locationd/consolidated.db" to the hex-filename "4096c9ec676f2847dc283405900e284a7c815836".
+Step 2: Reading the SQLLite file
+The contents of "4096c9ec676f2847dc283405900e284a7c815836" is just a SQLLite file. For this I decided to use SQLJet, a framework that can read(/and write) SQLLite files. Using just a couple of lines of code I had all the data I need: timestamp, latitude, longitude (and more! speed, course, confidence, altitude etc).
+Step 3: What to do with the geo data?
+The implementation created by Pete Warden has a nice map and timeline. But at this time I wanted to have results as fast as possible. That is why chose to just output a KML file. KML is a file format used by Google Earth and other applications.
+The results are far from nice (just plain ugly) but fun: click here for a screenshot
+Running the code
+The above code is mainly created for developers, the resulting JAR can't be executed. But I'm aware people will want to just have the KML file, and not go through the code. That is why I've uploaded an executable JAR. You can get it here: runnableiPhoneJTrack.zip (813 KB)
+To run the program, extract the three JAR-files and type:
+
+Usage:
+java -jar iPhoneJTrack.jar "&lt;location of backup directory&gt;"
+
+For example:
+java -jar iPhoneTracker.jar "C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590"
+
+This outputs a file named iPhoneData.kml, which can be loaded for example in Google Earth.
+Playing with the code
+I've pushed my code onto GitHub: https://github.com/royvanrijn/iPhoneJTrack
+Feel free to add features and send me pull requests!
+
+
+
+	    <p>
+    		<a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/04/static-state-evil-as-well/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/04/static-state-evil-as-well/">Static state: Evil as well</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Apr 19, 2011 19:23:26
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread"></a>
+    	</p>
+        Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!
+The scare
+Quickly I looked around and went into overdrive mode:
+I need to fix this bug before somebody sees it!
+I'm always yelling at people who break the build, and now it has happend to me...!
+
+Looking at the SVN comment it only said: "cleaned up some code" (or something)
+That isn't very helpfull of myself...
+The second scare
+Then I noticed I changed only one file. The change should be contained and easy to fix. But then I had a moment of relief and scare at the same time:
+
+Phew, it isn't my fault... removing empty lines should not break builds...
+But... why the heck does removing an empty line break the build!?
+
+The culprit
+After looking around in the code, and the failing tests a collegue and me found the culprit: statefull static.
+In our application we've introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState's into the GlobalContext.
+Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE's and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.
+The fix
+The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything...
+Even better, get rid of the GlobalContext at all. It contained a couple of instances that could easily be injected into the other objects. This makes it much clearer to see which objects depend on which other objects and makes the code a heck of a lot easier to test.
+Lessons learned...
+This got me thinking, in which cases should you use static? Obviously "public static final"-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I've been thinking about this for a day now, but I can't come up with any good usecase. Do you know any? Mail me, comment below!
+So for now, my new rule: Don't use static unless you have a very good reason, and never ever have static (mutable) state!
+p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.
+
+
+
+	    <p>
+    		<a href="/blog/2011/04/static-state-evil-as-well/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/04/checked-exceptions-evil/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/04/checked-exceptions-evil/">Checked Exceptions: Evil</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Apr 19, 2011 18:13:55
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread"></a>
+    	</p>
+        Today somebody posted a comment:
+
+'Could you write a post giving more details on why you think
+checked exceptions are "the embodiment of evil"?'
+So here it is.
+
+As you can see I haven't written a post in a long time (sorry). This post is also not going to be very comprehensive. Of course I could explain everything, but I'd rather link to another site which sums it up very nicely:
+http://c2.com/cgi/wiki?TheProblemWithCheckedExceptions
+Basically, I don't want to be forced to handle exceptions. Also, having to catch checked exceptions makes code unreadable, complex and harder to change/refactor.
+Of course I'm also aware that with runtime exceptions you are likely to forget to catch some exceptions, which is also very bad. That is why our application(s) catch and log all runtime exceptions and mail them to the developers. Execptions are always something very bad and should not be functional, exceptions should be... exceptions. Once they happen, all hell should break out and it should be fixed.
+
+
+
+	    <p>
+    		<a href="/blog/2011/04/checked-exceptions-evil/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">De Bruijn sequence in constant amortized time</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Feb 24, 2011 22:29:29
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread"></a>
+    	</p>
+        Follow up on the previous blogpost.
+Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:
+K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)
+It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that is isn't really constant time, but approaches it very much. Calculating the worst-case scenario isn't worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true.... until the array underneath needs to be resized. During this resize it'll take some more time. So the algorithm isn't really constant time, but constant amortized time.
+This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).
+
+	public String generateDeBruijnSequence(int k, int n) {
+		StringBuilder sequence = new StringBuilder();
+		generateLyndonWords(1, 1, k, new int[n+1], sequence);
+		return sequence.toString();
 	}
-
-	TrieNode[] root = new TrieNode[26];
-
-	public void find() throws Exception {
-		long timeBefore = System.currentTimeMillis();
-		File wordList = new File("word.list");
-		BufferedReader reader = new BufferedReader(new FileReader(wordList));
-
-		int wordsAdded = buildTrie(reader);
-		System.out.println("Done building the Trie; " + wordsAdded + " words added.");
-		findFriends("causes");
-		System.out.println("Amount of friends found: " + countWords(root));
-		System.out.println("Total time: " + (System.currentTimeMillis() - timeBefore) + "ms");
-	}
-
-	/**
-	 * This method builds the complete trie with all the words.
-	 */
-	public int buildTrie(BufferedReader reader) throws IOException {
-		int wordsAdded = 0;
-		while (reader.ready()) {
-			String next = reader.readLine();
-			int start = next.charAt(0) - 97;
-			TrieNode current = root[start];
-			if (current == null) {
-				root[start] = current = new TrieNode();
-			}
-			for (int i = 1; i &lt; next.length(); i++) {
-				int nextIndex = next.charAt(i) - 97;
-				if (current.children == null) {
-					current.children = new TrieNode[26];
+	
+	private void generateLyndonWords(int t, int p, int k, int[] a, StringBuilder sequence) {
+		if (t &gt; a.length-1) {
+			if((a.length-1)%p==0) {
+				for(int i = 1; i &lt; p+1;i++) {
+					sequence.append(a[i]);
 				}
-				if (current.children[nextIndex] == null) {
-					TrieNode deeper = new TrieNode();
-					current.children[nextIndex] = deeper;
-				}
-				current = current.children[nextIndex];
 			}
-			current.word = next;
-			wordsAdded++;
-		}
-		return wordsAdded;
-	}
-
-	private class TrieNode {
-		// The children:
-		TrieNode[] children;
-		// If this node is the end of a word, store the word here:
-		String word;
-		// This boolean indicates that the current node is a friend.
-		boolean isFriend;
-	}
-
-	// Temporary buffer of friends to investigate further:
-	public List&lt;String&gt; friendsToFind = new LinkedList&lt;String&gt;();
-
-	public void findFriends(String word) {
-		friendsToFind.add(word);
-
-		while (friendsToFind.size() &gt; 0) {
-			String friend = friendsToFind.remove(0);
-
-			int size = friend.length();
-
-			byte[] currentRow = new byte[size + 1];
-			for (int i = 0; i &lt;= size; i++) {
-				currentRow[i] = (byte) i;
-			}
-
-			// Search the Trie for the given friend:
-			for (int i = 0; i &lt; 26; i++) {
-				if (root[i] != null) {
-					searchTrieForWord(root[i], i + 97, friend, currentRow);
-				}
+		} else {
+			a[t] = a[t-p]; 
+			generateLyndonWords(t+1,p, k, a, sequence);
+			for(int j=a[t-p]+1; j&lt;=k-1; j++) {
+				a[t] = j; 
+				generateLyndonWords(t+1,t, k, a, sequence);
 			}
 		}
 	}
 
-	/**
-	 * Walk the complete Trie again finding all the friends
-	 */
-	private int countWords(TrieNode[] ts) {
-		int amount = 0;
-		for (int i = 0; i &lt; 26; i++) {
-			TrieNode t = ts[i];
-			if (t != null) {
-				if (t.isFriend) {
-					amount++;
-					// Print/add t.word
-				}
-				if (t.children != null) {
-					amount += countWords(t.children);
-				}
-			}
-		}
-		return amount;
-	}
-
-	/**
-	 * Recursively walk the Trie calculating the Levenshtein distance to the
-	 * given word. When a friend is found, mark it and add it to a list. The new
-	 * friend needs to be processed further on.
-	 */
-	private void searchTrieForWord(TrieNode node, int letter, String word, byte[] previousRow) {
-
-		int size = previousRow.length;
-		byte[] currentRow = new byte[size];
-		currentRow[0] = (byte) (previousRow[0] + 1);
-
-		int minElement = currentRow[0];
-
-		for (int i = 0; i &lt; size - 1; i++) {
-			int newCurrentRowValue = currentRow[i] + 1;
-			newCurrentRowValue = Math.min(newCurrentRowValue,
-					previousRow[i + 1] + 1);
-
-			if (word.charAt(i) == letter) {
-				newCurrentRowValue = Math.min(newCurrentRowValue,
-						previousRow[i]);
-			} else {
-				newCurrentRowValue = Math.min(newCurrentRowValue,
-						previousRow[i] + 1);
-			}
-			if (newCurrentRowValue &lt; minElement) {
-				minElement = newCurrentRowValue;
-			}
-			currentRow[i + 1] = (byte) newCurrentRowValue;
-		}
-
-		// If the Levenshtein distance is 1 and the node at current depth is a
-		// word (and not yet friend):
-		if (currentRow[size - 1] == 1 && node.word != null && !node.isFriend) {
-			node.isFriend = true;
-			friendsToFind.add(node.word);
-		}
-
-		if (minElement &lt;= 1 && node.children != null) {
-			for (int i = 0; i &lt; node.children.length; i++) {
-				TrieNode child = node.children[i];
-				if (child != null) {
-					searchTrieForWord(child, i + 97, word, currentRow);
-				}
-			}
-		}
-	}
-}
-
-</pre>
+Update June 7th 2012:
+I just stumbled across this interesting read: http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php
+The keypad example from that link can be easily calculated with the code above:
+generateDeBruijnSequence(9, 5).length() = 59049 :-)
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/02/levenshtein-distance-challenge-causes/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2011/12/orchard-planting-greatest-common-divisor/">Orchard Planting: Greatest Common Divisor</a></h1>
-    <p class="author">
-      <span class="date">Dec 30, 2011 13:21:59</span>
-    </p>
-    <p>The <a href="http://infinitesearchspace.dyndns.org/orchardplanting">Orchard Planting</a> contest from infinite search space is over. So it is time for a quick write-up.</p>
-<p>The rules are simple, on a grid of integers, place N points on the grid to get as much 4 points on a line and never more then 4 points on a line.</p>
-<p>My big break-through was when I figured out a way to improve the calculation speed of a solution, and make it possible to extend existing solutions (going back and forwards). To do this I used a unique vector (greatest common divisor vector) which is the same for all point on the same line:</p>
-<pre class="brush:java">
-//Calculate unique vector(hash):
-doubleIntVector(int x1, int y1, int x2, int y2) {
-    int stepx = x2-x1;
-    int stepy = y2-y1;
-    int gcd = gcd(abs(x2-x1), abs(y2-y1));
-    if(gcd &gt; 0) {
-        stepx /= gcd;
-        stepy /= gcd;
-    }
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">Generating de Bruijn sequences and Lyndon words</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Feb 24, 2011 10:32:52
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread"></a>
+    	</p>
+        Not so long ago I encountered something called the de Bruijn sequence. For now I'll only use this for an alphabet of (0,1), binary. But everything said here could also be applied to other alphabets. In this post I'll describe what this sequence is, and how you can generate them, using Lyndon words.
 
-    if(stepx &lt; 0) {
-        return (10000 * -stepx) + -stepy;
-    } else if(stepx == 0 && stepy &lt; 0){
-        return -stepy; //this looks curious... but fixed a bug
-    } else {
-        return (10000 * stepx) + stepy;
+What is a de Bruijn sequence?
+Well, it is a sequence (again, in this case binary) which contains all combinations/permutations of a specific length. And it does this only once.
+For example: B(2,4)
+
+000100110101111 (000)
+
+This sequence contains all possible permutations you can make in binary of length 4. The last part (000) is optional, and needed it you do not want the sequence looped. As you can see, the length of this sequence is 16. All sequences will have length 2^N.
+How do you construct these sequences?
+The next thing I wanted to know is how to construct these sequences. The first hit I got was from the MathWorld website. It states:
+Surprisingly, it turns out that the lexicographic sequence of Lyndon words of lengths divisible by N gives the lexicographically smallest de Bruijn sequence (Ruskey).
+Lyndon word..?
+It seems that the next step is generating Lyndon words. Lyndon words are the lexographically smallest rotation of a word. I haven't yet found a proper way to do this (I know there are) so here is what I do:
+Pseudo:
+
+lastLyndon = -1
+for all possible N's {
+    currentSmallestLyndon = smallestLyndonRotation(N)
+    if( currentSmallestLyndon &gt; lastLyndon ) {
+        lastLyndon = currentSmallestLyndon
+        print currentSmallestLyndon
     }
 }
-</pre>
-<p>Now we can evaluate the points:</p>
-<pre class="brush:java">
-for point A in points 0....N {
-    create list vectorsA 
-    for point B in points A+1....N {
-         vectorA.add( doubleIntVector(A.x, A.y, B.x, B.y) )
+
+And here is what I used to generate the smallestLyndonRotation (Java):
+
+	private BigInteger smallestLyndonRotation(BigInteger input, int size) {
+		BigInteger lowestForm = input;
+		BigInteger mask = BigInteger.ONE;
+		for(int i = 1;i&lt;size;i++) {
+			BigInteger possibleLowerForm = (input.and(mask).shiftLeft(size-i)).or(input.and(mask.negate()).shiftRight(i));
+			mask = mask.or(mask.shiftLeft(1));
+			if(possibleLowerForm.compareTo(lowestForm) == -1) {
+				lowestForm = possibleLowerForm;
+			}
+		}
+		return lowestForm;
+	}
+
+How does it work? Well, for example the input is: 0010.
+It loops over all rotations (using some bit-masking):
+
+0010
+0100
+1000
+0001
+
+And finds the smallest lexographically (0001) and returns this.
+The above pseudo code will spit out the following numbers:
+
+0000
+0001
+0011
+0101
+0111
+1111
+
+These are all the Lyndon words for N=4.
+Splitting, reducing the Lyndon words
+Now if we put the Lyndon words together we get:
+
+000000010011010101111111 (our sequence)
+0000100110101111 (de Bruijn sequence)
+
+We aren't quite there yet... but there is some resemblance. There is one more step left, we have to reduce/split the Lyndon words into its smallest unique part.
+Lets take the Lyndon words again:
+
+0000 -> 0 (4x)
+0001 -> 0001
+0011 -> 0011
+0101 -> 01 (2x)
+0111 -> 0111
+1111 -> 1 (4x)
+
+Results in: 0000100110101111, the sequence!
+And that is it! If we've created the smallest possible de Bruijn sequence for B(2,4).
+Here are some more sequences:
+
+01
+0011
+00010111
+0000100110101111
+00000100011001010011101011011111
+0000001000011000101000111001001011001101001111010101110110111111
+00000001000001100001010000111000100100010110001101000111100100110010101001011100110110011101001111101010110101111011011101111111
+00000000100000011000001010000011100001001000010110000110100001111000100010011000101010001011100011001000110110001110100011111001
+00101001001110010101100101101001011110011001101010011011100111011001111010011111101010101110101101101011111011011110111011111111
+00000000010000000110000001010000001110000010010000010110000011010000011110000100010000100110000101010000101110000110010000110110
+00011101000011111000100011000100101000100111000101001000101011000101101000101111000110011000110101000110111000111001000111011000111
+10100011111100100100101100100110100100111100101001100101010100101011100101101100101110100101111100110011100110101100110110100110111
+10011101010011101110011110110011111010011111110101010110101011110101101110101110110101111110110110111110111011110111111111
+
+You can download my complete (Java) source code: BinaryDeBruijnSequenceGenerator.zip
+
+
+
+	    <p>
+    		<a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/02/unit-testing-a-chess-engine/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/02/unit-testing-a-chess-engine/">Testing a chess engine</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Feb 7, 2011 10:02:46
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread"></a>
+    	</p>
+        About a week ago I decided to try and write a chess engine. I've encountered bitboards before, and I really liked working with them. Most references I found had to do with chess engines, so I decided to have a go.
+
+The single most important and time consuming aspect of building a chess engine is legal move generation. In all situations, be able to generate all legal moves that can be made on the board. At first this seems pretty straight forward, all pieces can move and attack in certain ways. But when you get to specific rules like castling and en-passant things get really tricky.
+But how do you know for sure your engine works and gets the right results? The many chess engine developers around the world found a great solution for this problem. Something I can only describe as universal integration-tests! They call it "perft" (from performance test). The first thing they do it create a particulair situation on the chess board. This can be described like in FEN notation.
+For example:
+ 
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+(initial chess starting position)
+
+All chess engines use this small language and understand how to set up their internal board. The next step is to generate all possible moves. From the example FEN above all possible moves are just 20 moves. But why stop here? From these 20 moves calculate all legal moves the opponent can make (also 20) which results in 400 moves. Continue doing this and you'll end up with a table like this:
+
+
+Depth 
+
+Nodes 
+
+Captures 
+
+E.p. 
+
+Castles 
+
+Promotions 
+
+Checks 
+
+Checkmates 
+
+
+
+1 
+
+20 
+
+0 
+
+0 
+
+0 
+
+0 
+
+0 
+
+0 
+
+
+
+2 
+
+400 
+
+0 
+
+0 
+
+0 
+
+0 
+
+0 
+
+0 
+
+
+
+3 
+
+8902 
+
+34 
+
+0 
+
+0 
+
+0 
+
+12 
+
+0 
+
+
+
+4 
+
+197281 
+
+1576 
+
+0 
+
+0 
+
+0 
+
+469 
+
+8 
+
+
+
+5 
+
+4865609 
+
+82719 
+
+258 
+
+0 
+
+0 
+
+27351 
+
+347 
+
+
+
+6 
+
+119060324 
+
+2812008 
+
+5248 
+
+0 
+
+0 
+
+809099 
+
+10828 
+
+
+
+As you can see, the numbers in these tables quickly become huge. This will ensure that a lot of situations are tested. Using these tables you can check if your program outputs the same values, and thus complies to all the rules. There are a lot of these tables online, using a FEN for starting position, and a table with all nodes that can be generated.
+The next problem is, when your numbers don't add up, how do you find the move 6 levels deep that goes wrong? Well, some engines can help you with that. Personally I used ROCE (Roman's Own Chess Engine). His engine has a "divide" function. First you set the board in a certain position using the FEN, and then you call the divide function, for example "divide 6". Now it shows a table like this:
+ 
+move : nodes
+e2e4 1249
+e2e3 2356
+f2f3 5356
+f2f4 6436
+(etc)
+
+This lists each node at level 1, and after that each number of nodes it results in at depth 6. If you also have this function in your own chess engine you can compare the numbers. Now you can pinpoint which of the first nodes contains the error. Do this move and try divide 5. This will guide you all the way to the specific move that is (or isn't) created! This was a huge help, and I love the way chess engine developers devised a way to have a kind of universal integration-tests which will point out the most commonly made bugs. You can take these tables, load them in a automatic test and keep running them every nights to see if things are still working like it should.
+How did my engine end up? Well, it worked perfect in the sense that it could generate all the good legal moves. Then I added a simple evaluation function and it could play chess. After that I implemented a simple search algorithm (alpha-beta using negamax) and it could beat two simple other chess engines and myself. And of course, after a week, I lost interest again and writing a blogpost about it is usually the nail to the coffin of most of my projects.
+So, what should I tackle next? I'm looking forward to having a new AZsPCs competition, but I think this might take a while...
+Update: A couple of readers have pointed out that these tests are obviously not unit tests, but rather integration or acceptance tests. You are completely right. I've called them Unit tests because I used JUnit and they run in the automatic build. But they do test integration..!
+
+
+
+	    <p>
+    		<a href="/blog/2011/02/unit-testing-a-chess-engine/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/01/exception-mailing/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/01/exception-mailing/">Exception mailing</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 6, 2011 00:36:51
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread"></a>
+    	</p>
+        
+A couple of weeks ago our Scrum team was thinking about exception handling. We don't use checked exceptions, since they are the embodiment of evil. So everything is translated into runtime exceptions whenever possible. But this is where the problems start: What do you do with the uncatched runtime exceptions?
+Taking it one step further
+Most projects will decide to just write the exceptions to the console, maybe to a log file. In some cases there is specialized software which will analyze log files, detect stacktraces and act on them. We decided to create a fast specialized solution. We want to have a mailbox where all the runtime exceptions end up, including stacktrace, system properties, program properties and even a screenshot.
+
+Catching the uncaught exception
+In Java you can set a exception handlers on Threads. You can set a handler on a Thread, but it is also possible to set a default exception handler. It is very easy:
+
+public class CustomUncaughtExceptionHandler implements UncaughtExceptionHandler {
+
+    public CustomUncaughtExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(this);
     }
-    sort(vectorsA)
-    //if vectorsA has three similair vectors you have 4 points on a line! 
-    //(3> = invalid and 2 = candidate for extending!)
+
+    @Override
+    public void uncaughtException(final Thread t, final Throwable throwable) {
+        //do something here!    
+    }
 }
 
-</pre>
-<p>If a point has three vectors that are the same, we have a line with four points! This can be checked easily if you sort the vectors and go through them once.</p>
-<p>Also adding and removing points becomes very easy. A lot of the GCD calculations can be cached. To remove a point, just remove the vectors it made. And to add a point, calculate all the new vectors. So in the end it basically all boils down to a lot of GCD calculations and sorting.</p>
-<p>Was this the fastest way to calculate solutions in this contest? I don't know, but I was really pleased when I figured it out. With a better algorithm for picking possible numbers (instead of hill-climbing) and some more processor power I bet I could have ended a bit higher up the hill.</p>
-<p>Also: Keep an eye out for the next contest, it is going to be an interesting one! January the 13th.</p>
+If an exception occurs, the uncaughtException method will be called. Then you can do anything you want with the throwable. As said before, we decided it is best for us that the application phones home and sends us an email with as much information as we can get.
+What to send?
+Our application is launched by JNLP and will run on several clients. We don't have complete contol over these clients, so we want to include as much information as possible to solve possible bugs in the application. The more information we have about the runtime, the easier it might be to find the problem. We grab all (relevant) system properties and program properties we can get. Including usernames, machine details.
+Creating a screenshot
+In Java there are actually two methods of creating a screenshot. The first method is the easiest, using the Java Robot:
+
+Robot robot = new Robot();
+ 
+BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+
+Very easy, but this can contain a LOT of information about the moment the exception occurs. It may provide valuable information. But we encountered a major security problem with the above method. Java will create an actual screenshot, the size of your application. But it doesn't know if your application is currently the active window..! When we did tests we saw screenshots with Skype messages in screen and browsers being active... We can't invade the lives of our users and send this information over the mail!
+So I decided to search for something less invasive. The main frame of our application has a paint method, and most of the time this method can still be called if we have an exception. It is possible to create our own Graphics object and let the main frame paint itself into memory. So eventually I settled on the code below:
+
+    private BufferedImage createScreenshot() {
+        try {
+            // Try to repaint the main frame of our application:
+            int w = this.screenshotComponent.getWidth();
+            int h = this.screenshotComponent.getHeight();
+            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            this.screenshotComponent.paintAll(image.getGraphics());
+            // We can't use Robot, it might capture a bit too much information
+            return image;
+        } catch (Exception e) {
+            // Screen can't be captured, don't throw exception, else we'll end up in a loop :-)
+            return null;
+        }
+    }
+
+Mailing the exception
+The next step in our solution is sending an email with all the information. This is done using Java Mail, an API to send emails. More about sending emails from Java here. In our case we create a pretty HTML email with all relevant information and three attachements:
+
+Text file with all system properties
+Text file with the complete exception
+The image/screenshot
+
+To create the email it is easy to create MimeBodyParts which contain the text, the only part a bit more complicated it to add the screenshot inside the email, this can be done using:
+
+	public MimeBodyPart createImagePart(final BufferedImage screenshot)
+			throws MessagingException {
+
+		if (screenshot == null) {
+			return null;
+		}
+
+		MimeBodyPart imagePart = new MimeBodyPart();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(screenshot, "jpg", outputStream);
+		} catch (IOException ioException) {
+			// Impossible to get the screenshot, return null and continue without it
+			return null;
+		}
+
+		DataSource source = new ByteArrayDataSource(outputStream.toByteArray(), "image/jpeg");
+		imagePart.setDataHandler(new DataHandler(source));
+		imagePart.setFileName("screenshot.jpg");
+		imagePart.setContentID("");
+		return imagePart;
+	}
+
+The only non-obvious line in the code above is setting the ContentID, this can be used to refer to the image-data in case of an HTML email. In the main email content I added the following line:
+
+        Screenshot: 
+
+The src="cid:screenshot" will cause the email to show the screenshot embedded inside the email. This makes the exception-email look very pretty.
+Even more in the future...?
+With our current implementation we'll be able to detect exceptions instantly (on every new email). Also we'll have more information then just a stacktrace, we have a screenshot and some parameters/system properties which can help us re-create the situation.
+To improve this even more I'm planning on adding a simple bounded FIFO queue. This queue will contain a list of actions performed by the user. These user-actions can be added automatically by using aspect oriented programming. For example annotating all the service methods. Everytime a service method is called we can add it to the bounded queue, which has a maximum of N elements, for example 20. If an exception occurs we print our the current queue, we can read the last N actions leading up to the exception. This too can be very helpful in re-creating the situation.
+What more information could be useful in an debug email like this? How do you guys solve exception handling?
 
 
 
-    
-    <p>
-    	<a href="/blog/2011/12/orchard-planting-greatest-common-divisor/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/01/exception-mailing/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2011/12/parleys-devoxx-talk-published/">Parleys: Devoxx talk published</a></h1>
-    <p class="author">
-      <span class="date">Dec 20, 2011 20:50:50</span>
-    </p>
-    <p>The guys at Devoxx/Parleys have already processed all the talks and post-processed them. So my talk it now available at Parleys.com.<br />
-There is one drawback though, the talk is currently for subscribers only. If you don't have one you can only watch the first two (very nervous) minutes.</p>
-<p>If you've attended Devoxx you will get a free subscription in the email.</p>
-<p>(p.s. The intro movie for all the Devoxx '11 talks is made by me as well!)</p>
-<p><object width="850" height="400"><param name="movie" value="http://www.parleys.com/dist/share/parleysshare.swf" /><param name="allowFullScreen" value="true" /><param name="wmode" value="direct" /><param name="bgcolor" value="#222222" /><param name="flashVars" value="sv=true&amp;pageId=2869" /><embed src="http://www.parleys.com/dist/share/parleysshare.swf" type="application/x-shockwave-flash" flashvars="sv=true&amp;pageId=2869" allowfullscreen="true" bgcolor="#222222" width="850" height="400" /><br />
-</object></p>
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/01/rainbow-tables/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 1, 2011 17:17:25
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread"></a>
+    	</p>
+        Today I've been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I'm not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!
+
+Hashing
+First off, lets talk about 'hashing', what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example... passwords:
+
+"test"     -> "098f6bcd4621d373cade4e832627b4f6"
+"password" -> "5f4dcc3b5aa765d61d8327deb882cf99"
+
+Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don't have anything, because the hash-function is only one-way.
+Attacking a hash
+Where there is security there will be crackers trying to break it. How would you go about attacking, reversing, a hash? The earliest form was just to create huge tables of:
+
+PLAIN_TEXT -> HASH
+
+And then check if the hash is your hash. If you have a match, you'll get into the system!
+The problem is that these tables take a very long time to compute and you'll end up with so much data you won't be able to store it. This made hashing pretty safe.
+Rainbow tables
+A couple of generations further down the line, crackers now use rainbow tables. It takes the best of both worlds having a small(-ish) table on disk, and doing minimal computations. So how do they work..?
+The reduce function
+Lets assume we start with a random piece of text. For example we want to crack all passwords of length 5 and consisting of [ABC...XYZ0123456789]. We can now calculate the hash value. Instead of storing this single pair, we do a little trick. We use something that is called a 'reduce function'. This is a selfmade one-way function that turns a hash back into a password! But not the original password (it isn't a reverse hash-function) but just into some other password.
+Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We'll end up with:
+
+Hash:   "random"                           -> "7ddf32e17a6ac5ce04a8ecbf782ca509"
+Reduce: "7ddf32e17a6ac5ce04a8ecbf782ca509" -> "ienw3"
+Hash:   "ienw3"                            -> "b9322e367ad002d5adf7ca60b8b61e86"
+        ... (1000 times) ...
+Hash:   "o1gti"                            -> "27aa4cbd3653a4617e0aec76ba3af9a4"
+
+The trick is, we throw away everything except the first input "random" and the final hash "27aa4cbd3653a4617e0aec76ba3af9a4"! This is the only part we need to store.
+Using a rainbow table
+How can we use the data above to reverse hashes you might ask? To use this table we need the input hash. For example "b9322e367ad002d5adf7ca60b8b61e86". First we check if this hash is in the database. If it is, we are very lucky, we can just re-generate that particulair chain and we know the plain text input!
+If we don't find anything (which is very likely) we apply our reduce function to the input-hash and then hash that result. Now we check the hashes again, regenerate the chain and find out the answer. This can be repeated until we hit our set limit (1000) in that case, if no match has been found, we can't reverse it.
+False alarms
+There is one problem in this algorithm. If you take a input-hash and then do a couple of reduce/hashes, and then you find a match... it might be a false alarm! The problem is that there might be input strings that result in the same hash. If this happens two chains will end up into one chain.
+If we would have done a couple of reduce/hashes from our input and find a match for endpoint "52cafa6b5e4a6509e6ed2b8e6976d780", the original chain might not have contained our input value. When we construct the complete chain it is possible that our input-hash isn't in the chain...!
+The 'rainbow' of the rainbow table
+The reason they call it a rainbow table has something to do with reducing the amount of false alarms. Until now we've talked about having one reduce-function. What if we would have multiple reduce functions? Then we could create multiple small tables, which would help reduce a little bit.
+Philippe Oechslin had a great idea. He used a different reduce algorithm for each step in the chain. So his tables are build using:
+
+input chain 1 -> hash -> reduce1 -> hash -> reduce2 -> .... -> reduceN -> hash
+input chain 2 -> hash -> reduce1 -> hash -> reduce2 -> .... -> reduceN -> hash
+input chain 3 -> hash -> reduce1 -> hash -> reduce2 -> .... -> reduceN -> hash
+
+(If you color the reduce functions you'll end up with a pretty rainbow pattern).
+How would you reverse a hash using this method? Well, the first step is the same, check if your input-hash is present in the stored hashes.
+Next we apply: 
+
+reduce1000 -> hash -> check
+reduce999 -> hash -> reduce1000 -> hash -> check
+reduce998 -> hash -> reduce999 -> hash -> reduce1000 -> hash -> check
+
+(etc)
+The big advantage is that similair hashes (collisions) will most likely use different reduce algorithms so they won't end up in the same chain.
+Conclusion
+Using rainbow tables you greatly decrease the amount of stored values. It isn't log(O), there is a bit of computation needed to do the lookups, but that as well is kept to a minimum. This results in a very fast method to crack passwords. But I think it can be used in other fields of computer science as well. There are a lot of situations where you'd like to have a very big hash-lookup table, and when it becomes too big, this can be used to reduce storage but maintain fairly good lookup times.
+Salting
+Almost every article about hashing and rainbow tables end with a short alinea about salting. You can do salting in a couple of different ways, but the idea is usually the same. The easiest form of salting is having on 'salt' for a complete database.
+One salt per database
+How does this work? Well, lets just generate a completely random piece of text: "thisisoursaltanditisverylarge". Now every time we store a new user we do "MD5(password + salt)". Because the password itself may be weak, we apply our large "database-salt" to it, and then we calculate the hash. 
+Now if you want to crack a hash in this system it is almost impossible. Unless you find out the salt, then you could re-create a complete rainbow table and crack all the passwords.
+Using a user value as salt
+An even better solution is to use a user-value as salt, for example their username or date of birth, or maybe their registration date/time. Now if somebody cracks the database and finds all the data they'll have to create a new rainbow table for each seperate user (!!!). This is even more secure and preferred over the database-salt.
+Just generate a random sequence...
+But the single best way of salting your database is to generate a large random salt for each user. You can just store this salt in the database next to the hash of the password. This is better then, for example, the username, because there are just less collisions. For example usernames like "root" or "admin" aren't very uncommon aren't they? So creating a rainbow table with "root" as salt might be worth the trouble. But creating one with a large random number just for a single user? That is hard and they'll probably quickly give up.
+Other uses for this algorithm
+I haven't been able to come up with a good other use for this algorithm yet, but I have the feeling tons of problems could potentially benefit from it! Can you come up with one?
 
 
 
-    
-    <p>
-    	<a href="/blog/2011/12/parleys-devoxx-talk-published/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/01/rainbow-tables/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/12/finding-performance-problems/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/12/finding-performance-problems/">Finding performance problems</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 14, 2010 13:19:08
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread"></a>
+    	</p>
+        Many projects I've worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann's programming contests use C/C++ and maybe even CUDA to get the most out of their system.
+I'm usually using Java, just because I'm most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.
+The first tool I've tried it Java Visual VM. This tool is available in all the new Sun Oracle JVM's. Just go to the bin-directory and type jvisualvm. This program will attach to your running code and tries to extract all the information. The good part of this tool is the price, it is free!
+But if you really need to know what it going on inside your project, you should try YourKit. YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit's leading software products: YourKit Java Profiler and YourKit .NET Profiler.
+If you readers are interested I'll write a blog with some simple examples on how to fix performance issues in your program, and how to detect these issues using Visual VM and YourKit. 
+Or I can do a comparison between the leading profilers (YourKit/JProfiler/Visual VM/etc)..?
+Let me know!
+
+
+
+	    <p>
+    		<a href="/blog/2010/12/finding-performance-problems/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/11/xor-doubly-linked-list/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/11/xor-doubly-linked-list/">XOR doubly linked list</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 24, 2010 10:50:02
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread"></a>
+    	</p>
+        Since a couple of days I've been working hard on the new Al Zimmermann's Programming Contest: Cards (also called Topswops).
+The challenge
+The idea is very easy, you take a series of numbers, from 1 to N. You shuffle the numbers around, for example:
+
+5,3,1,2,4
+
+
+Now we reverse the amount of numbers as stated by the first entry in the list. So in this case we reverse 5, and we get:
+
+4,2,1,3,5 
+
+We keep doing this, now reversing 4:
+
+3,1,2,4,5
+2,1,3,4,5
+1,2,3,4,5
+
+At this point, 1 is in front, we are done! No more reversals are possible.
+The problems
+When implementing this the first thing I did was to create an array and reverse parts of the array by swapping the items around. The problem is that the amount of swaps is pretty big! 
+So I started thinking about other ways to save the numbers in this challenge.. how about a linked list? This won't work because when updating the linked list you'll have to reverse all the pointers in the part you are reversing.
+So how about using a doubly linked list? This won't work because we have to swap the next/previous pointers for all the nodes we reverse.
+XOR doubly linked list
+Then I learned about the XOR doubly linked list. Let me explain how it works. The idea is that you don't have next and previous pointers, but you just have one pointer. This pointer is both the next AND the previous pointer! How is this possible you might ask?
+Well, this is where the XOR comes into play. Lets do a tiny bit of math:
+A ^ B = C
+Now:
+C ^ A = B
+C ^ B = A
+A property of the XOR is, if we have one value, we can calculate what the other value is!
+When we create the list we XOR the next and previous together, and we save the pointer to the first element in a seperate pointer. Lets say A = previous, B = next, C = stored value:
+
+previous ^ next = stored value
+stored value ^ previous = next
+stored value ^ next = previous
+
+If we traverse our XOR doubly linked list we know the current element and the one before that (previous), so we can always calculate the pointer to the next element!
+The advantages
+So why would we do this? It involves a bit more processing power and will obviously save you half of the pointer-memory compared to a normal doubly linked list. We now keep one XOR-ed value instead of two pointers.
+But there is another great advantage which might be usefull in the competition I mentioned above, reversability! As stated above using a doubly linked list wasn't helpfull because when we reverse a part all the previous and next pointers have to be swapped. But we don't have these pointers anymore, they are XOR-ed into one value! That means that we don't have to change anything!
+Lets assume we have a list of 80 items, and we want to reverse the first 40, what do we need to do now?
+
+Traverse to the 40th element
+Adjust the value of the 40th pointer, now the first element:
+TERMINATOR ^ (PTR TO 39)
+Adjust the value of the 1st pointer, it must have
+(PTR TO 2) ^ (PTR TO 41)
+Adjust the value of the 41th pointer, it must have
+(PTR TO 1) ^ (PTR TO 42)
+Pointer to the first element is now 40 (this has become our first element)
+
+Done! We have adjusted three pointers and nothing in the middle. B.t.w. TERMINATOR is a value which indicates the boundaries of the first and last elements, I've used -1 for this. When traversing we use this to check if we are done.
+Lets traverse the above reversed list, first we go to the first element (40) and perform the following XOR:
+
+stored_value (40) ^ TERMINATOR = next (39)
+
+This will result in 39, now we continue:
+
+stored_value (39) ^ previous (40) = next (38)
+stored_value (38) ^ previous (39) = next (37)
+...
+stored_value (2) ^ previous (3) = next (1)
+stored_value (1) ^ previous (2) = next (41) !!
+stored_value (41) ^ previous (1) = next (42) !!
+stored_value (42) ^ previous (41) = next (43) etc etc
+
+It works!
+A bit of dissapointment
+After implementing this it doesn't seem to be faster then using swaps to reverse everything in the whole array. This is probably due to a couple of things:
+
+The locality of a normal array is faster in memory
+You'll have to traverse N-nodes to reach the target to reverse
+The competition has max 97 elements, this might be too small to see the advantage
+
+My algorithm until now only used a single pointer to keep track of the first element, but it might be usefull to also keep a pointer to the last element. For example if we need to reverse everything up to N-1, I need to traverse from 1 to N-1. But if you have a last-element pointer, using the doubly in the XOR doubly linked list, we can just go backwards from N.
+Ah well, it might not have been usefull (yet?) but it is a beautiful algorithm!
+
+
+
+	    <p>
+    		<a href="/blog/2010/11/xor-doubly-linked-list/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/11/patent-infrigement-part-2/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/11/patent-infrigement-part-2/">Patent infringement (part 2)</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 24, 2010 09:56:46
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread"></a>
+    	</p>
+        After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, telling them this is just a hobby project, and will (in its current form) never be a replacement for Shazam. Also, I explained a lot of people hated Shazam and deleted the application after reading this blog... the only thing they got out of it is bad marketing.
+So I asked them for a peaceful solution, I'll release the code, tell everybody Landmark Digital Services is a good company after all, and that's it, both will benefit.
+This is the reply I got:
+Dear Mr. Van Rijn,
+I am an attorney for Landmark Digital Services.  Thank you for your response and attention to this important matter.  As we have stated in detail in previous communications, we would like you to refrain from releasing the code and to remove the blogpost explaining the algorithm.  While we appreciate your thoughtful comments and questions, we have already made our position clear and hope you will respect our interest in our IP.
+Sincerely,
+XXX
+Attorney
+Woodcock Washburn
+WHAT!? They tell me again to remove the blogpost, this is crazy! A blogpost describing an algorithm can never be infrigement of intellectual property. The whole idea of a patent is to preserve an idea, to write down what it does and how it works for future generations. A patent has to be publicly available for this sole reason. This isn't protecting their intellectual property, this is plain censorship.
+My reply to the email was short an concise:
+I'm sorry, but I can't comply. 
+Good luck.
+This was a week ago, lets see what they come up with this time...
+
+
+
+	    <p>
+    		<a href="/blog/2010/11/patent-infrigement-part-2/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/09/handling-frame-switching/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/09/handling-frame-switching/">Handling 'Frame switching'</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Sep 23, 2010 12:37:02
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread"></a>
+    	</p>
+        A couple of days ago I noticed this tweet:
+
+berenguel: What is your view on 'frame switching'?How do you manage (forced) interruptions of your workflow?How do you get the interruptor to give up?
+
+This is something I'm currently not experiencing, but I have been fighting this in the past. And I've come up with a quite effective way to eliminate this.
+
+
+Priority todo-list
+I'm just a regular guy, and just like all men I can only focus on a single thing. Context swithing/frame of reference switching is hard. If I'm working on a programming problem and people interrupt me, ask other technical questions, I lose my train of thought.
+So, how do you counter this? Well, first I made a list of things to do. This is always good to have, it directs your focus. My list is priorized. For example:
+
+Implement "General overview" page
+Fix bug with disappearing "Solve" button
+Refactor OfflineAvailableController
+Fix table layout bug
+
+Yay!
+Coffee time!
+The top post-it is the one I'm working on, that one has my complete focus. When the project lead comes and asks me questions, I ask him to prioritize it. He can add post-its to the list and/or shuffle the list. But there is one catch: Every time he changes or I finish the top priority I need a coffee break. This is my frame-switching moment, to clear my head.
+If you do this, and keep doing this (no exceptions!) the project lead will start putting his 'requests' (interruptions) beneath your current piece of work, without distracting you. Because else you go for a cup of coffee first.... This is what we want. When we finish what we are currently doing we get a little coffee break. When we've fully cleared our head we look at the next item in the todo-queue.
+Don't worry, it may sound a bit rude, they'll understand it if you explain the problem with frame-switching...! This just makes it visible.
+p.s. Berengual will probably write a blog post about his own experiences with frame-switching, I'll post a link when he does!
+
+
+
+	    <p>
+    		<a href="/blog/2010/09/handling-frame-switching/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
   
 
-  <!-- Pagination links -->
+  <!-- Pagination -->
+  
   <div class="pagination">
+    <div class="pagination-center">
     
-      <a href="/page/5" class="previous">Previous</a>
+      <div class="pagination-item"><a href="/page/5">&laquo; Prev</a></div>
     
-    <span class="page_number ">Page: 6 of 13</span>
+
     
-      <a href="/page/7" class="next">Next</a>
+      
+        <div class="pagination-item"><a href="/index.html">1</a></div>
+      
     
+      
+        <div class="pagination-item"><a href="/page/2">2</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/3">3</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/4">4</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/5">5</a></div>
+      
+    
+      
+        <div class="pagination-item"><b>6</b></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/7">7</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/8">8</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/9">9</a></div>
+      
+    
+
+    
+      <div class="pagination-item"><a href="/page/7">Next &raquo;</a></div>
+    
+    </div>
   </div>
+  
+
 </div>
 
       </div>
@@ -649,6 +1221,8 @@ There is one drawback though, the talk is currently for subscribers only. If you
   <div class="wrapper">
 
     <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
       
         <a href="https://www.linkedin.com/profile/view?id=10356027">
           <i class="svg-icon linkedin"></i>
@@ -669,12 +1243,15 @@ There is one drawback though, the talk is currently for subscribers only. If you
         <a href="/feed/index.xml">
           <i class="svg-icon rss"></i>
         </a>
+	  </div>
     
     </div>
 
   </div>
   
-  <script> <!-- Google Analytics -->
+  <script>
+  
+  <!-- Google Analytics -->
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -682,6 +1259,15 @@ There is one drawback though, the talk is currently for subscribers only. If you
 
   ga('create', 'UA-3219266-2', 'auto');
   ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn'; // required: replace example with your forum shortname
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
 
   </script>
 

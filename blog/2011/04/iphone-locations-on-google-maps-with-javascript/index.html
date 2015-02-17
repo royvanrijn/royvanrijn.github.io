@@ -57,14 +57,6 @@
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
       </div>
     </nav>
 
@@ -79,7 +71,7 @@
 
   <header class="post-header">
     
-    <div id="page-navigation"> 
+    <div class="page-navigation"> 
       <div class="left"> 
          
           <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/" title="Previous Post: Reading iPhone GPS data from backup (with Java)">&laquo; Reading iPhone GPS data from backup (with Java)</a> 
@@ -90,18 +82,19 @@
           <a href="/blog/2011/05/crowdflow-needs-you/" title="next Post: Crowdflow needs you!">Crowdflow needs you! &raquo; </a> 
          
       </div> 
-      <div class="clear">&nbsp;</div> 
+      <div class="clear"></div> 
     </div> 
 
     <h1 class="post-title">iPhone locations on Google Maps with Javascript</h1>
     <p class="post-meta">
     	Apr 26, 2011 14:34:27
+    	 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread"></a>
     </p>
   </header>
 
   <article class="post-content">
     <p>Wow, great news!</p>
-<p>After my <a href="/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my 'iPhone location data to Google Earth' tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
+<p>After my <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my 'iPhone location data to Google Earth' tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
 <p>When chatting to <a href="https://github.com/williame">Will</a> about this he suggested using Javascript instead. Soon he had the code working that could parse the iPhone backup files. He then contacted <a href="https://github.com/markolson">Mark Olson</a>, who helped him with the SQLLite format in Javascript. Together they finished it up so the resulting GPS data is shown in Google Maps.</p>
 <p>The result of their effort: <a href="http://markolson.github.com/js-sqlite-map-thing/">http://markolson.github.com/js-sqlite-map-thing/</a></p>
 <p>To use it, drag the backup files into the upper part of the website. It will parse the files, locate the data and display the track on Google Maps!<br />
@@ -131,6 +124,8 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 
     <div class="footer-wrapper">
       
+      <div class="footer-wrapper-content">
+      
         <a href="https://www.linkedin.com/profile/view?id=10356027">
           <i class="svg-icon linkedin"></i>
         </a>
@@ -150,12 +145,15 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
         <a href="/feed/index.xml">
           <i class="svg-icon rss"></i>
         </a>
+	  </div>
     
     </div>
 
   </div>
   
-  <script> <!-- Google Analytics -->
+  <script>
+  
+  <!-- Google Analytics -->
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -163,6 +161,15 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 
   ga('create', 'UA-3219266-2', 'auto');
   ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn'; // required: replace example with your forum shortname
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
 
   </script>
 

@@ -57,14 +57,6 @@
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
       </div>
     </nav>
 
@@ -79,699 +71,723 @@
 
   <!-- This loops through the paginated posts -->
   
-    <h1><a href="/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/">Test Swing applications in Fitnesse (Nonkey)</a></h1>
-    <p class="author">
-      <span class="date">Feb 8, 2013 11:35:28</span>
-    </p>
-    <h2>Fitnesse</h2>
-<p><a href="http://fitnesse.org/">Fitnesse</a> is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into 'fixtures', code that is called that, in turn, can call your application. An example of a fixture we use:</p>
-<pre class="brush:plain">
-|when the user logs in with username|roy               |and password   |test123   |
-|and asks for the account details                                                 |
-|ensure                             |displayed fullname|Roy van Rijn              |
-|ensure                             |websites contains |http://www.royvanrijn.com/|
-|ensure                             |websites contains |http://www.redcode.nl/    |
-</pre>
-<p>The corresponding Java code could be something like:</p>
-<pre class="brush:java">
-
-private Credentials credentials;
-private AccountDetails accountDetails;
-
-public void whenTheUserLogsInWithUsernameAndPassword(String username, String password) {
-    credentials = new Credentials(username, password);
-}
-
-public void andAsksFotTheAccountDetails() {
-    accountDetails = mySystem.getAccountDetails(credentials);
-}
-
-public boolean displayedFullname(String fullname) {
-    return fullname.equals(accountDetails.getFullename());
-}
-
-public boolean websitesContains(String url) {
-    for(String website:accountDetails.getWebsites()) {
-        if(url.equals(website)) {
-            return true;
-        }
-    }
-    return false;
-}
-</pre>
-<p>This is a very simplified example on how you could use Fitnesse to test your application. But the idea is very powerful, there are implementations for Java (initially) and now .NET, Groovy etc. Also, most of the time the system you're testing doesn't have a Java API but instead you'd like to test the user interface. With most Java applications being web applications there are numerous plugins to connect Fitnesse with for example Selenium to ease web application testing. The fixtures fill webpages and analyze the resulting HTML response.</p>
-<p>At my current client (Port of Rotterdam) we're building a very rich, partially offline, Swing application. This application has a backend and numerous clients running the Swing application. We've used Fitnesse to test the backend code from the start, and the last year we've put in some effort to also use Fitnesse for the Swing application. We've called this "Nonkey", being an automated version of our Monkey integration testing we'd been doing up to that moment.</p>
-<h2>UISpec4J</h2>
-<p>The first ingredient we need to test Swing GUI's in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
-<pre class="brush:java">
-    private Window mainWindow;
-    private JFrame mainFrame;
-
-    //Called from the Suite Set Up page:
-    public void launchNonkey() {
-        mainWindow = WindowInterceptor.run(new Trigger() {
-            @Override
-            public void run() throws Exception {
-                new OurApplication().launch();
-                // Get the main JFrame from Spring, used directly in some cases instead of UISpec4J
-                mainFrame = BeanFactory.getBean("mainFrame", MainFrame.class);
-            }
-        });
-    }
-</pre>
-<p>The WindowInterceptor captures the Swing application and allows for manipulation in a later stage. For example:</p>
-<pre class="brush:java">
-    //In some fixture:
-    public void loginWithUsernameAndPassword(String username, String password) {
-        //UISpec4J uses JComponent.setName() for lookup:
-        Panel loginPanel = nonKey.mainWindow.getPanel("loginPanel"); 
-        final TextBox usernameTextbox = loginPanel.getTextBox("usernameTextbox");
-        usernameTextbox.setText(username);
-        final TextBox passwordTextbox = loginPanel.getTextBox("passwordTextbox");
-        passwordTextbox.setText(password);
-        
-        loginPanel.getButton("loginButton").click();
-    }
-</pre>
-<p>This fixture causes the Swing application to fill in the username, password and press the login button. It is easy to read and can be launched from Fitnesse with a single line:</p>
-<pre class="brush:plain">
-|login with username|roy   |and password   |test123   |
-</pre>
-<p>Nice! We are done, we can test Swing GUI's in Fitnesse now! Well no... not really, unfortunately there are a couple more problem we ran into, regaring the Event Dispatch Thread (EDT).</p>
-<h2>Event Dispatch Thread (EDT)</h2>
-<p>The EDT, sometimes called Swing Thread, is a special thread. Everything you do in Swing should always happen on this thread. Setting components to visible, pressing buttons etc, all need to be done in the EDT. If you don't do this correctly the application gets into a lot of race conditions and it can even cause the application to hang.</p>
-<p>When we combined Fitnesse with UISpec4J and started making a lot of tests we noticed that sometimes mysteriously a test would fail without changes. It turned out to be a problem with the EDT. UISpec4J doesn't worry too much about the EDT, and when we click a button or setText (like the examples above) it does this in the current thread. In Fitnesse this thread is the thread that called the fixture, obviously not the EDT.</p>
-<p>We brainstormed a lot about how we could fix this, maybe change UISpec4Js code? This turned out to be a hellish task. How about setting SwingUtilities.invokeAndWait() in every fixture? That could work but is also a massive undertaking. We decided to take a look at how Fitnesse calls the fixtures. This is always done from a 'StatementExecutor'. So we decided to build a custom StatementExecutor which causes the fixtures to all run in the EDT.</p>
-<p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn't work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
-<pre class="brush:java">
-public class SwingSlimService extends SocketService {
-
-    public static SwingSlimService instance = null;
-    public static boolean verbose;
-    public static int port;
-
-    public static void main(final String[] args) throws Exception {
-        if (parseCommandLine(args)) {
-            startWithFactory(args, new SwingJavaSlimFactory()); //<-- custom SwingJavaSlimFactory!
-        } else {
-            parseCommandLineFailed(args);
-        }
-    }
-
-    protected static void parseCommandLineFailed(final String[] args) {
-        System.err.println("Invalid command line arguments:" + Arrays.asList(args));
-    }
-
-    protected static void startWithFactory(final String[] args, 
-            final SlimFactory slimFactory) throws Exception {
-        new SwingSlimService(port, slimFactory.getSlimServer(verbose));
-    }
-
-    protected static boolean parseCommandLine(final String[] args) {
-        final CommandLine commandLine = new CommandLine("[-v] port");
-        if (commandLine.parse(args)) {
-            verbose = commandLine.hasOption("v");
-            final String portString = commandLine.getArgument("port");
-            port = Integer.parseInt(portString);
-            return true;
-        }
-        return false;
-    }
-
-    public SwingSlimService(final int port, final SlimServer slimServer) throws Exception {
-        super(port, slimServer);
-        instance = this;
-    }
-}
-</pre>
-<p>Next we needed a custom JavaSlimFactory:</p>
-<pre class="brush:java">
-public class SwingJavaSlimFactory extends JavaSlimFactory {
-
-    @Override
-    public StatementExecutorInterface getStatementExecutor() {
-        return new SwingStatementExecutor(); //<-- custom SwingStatementExecutor!
-    }
-}
-</pre>
-<p>And last but not least our custom StatementExecutor which forces all calls into the EDT thread:</p>
-<pre class="brush:java">
-package com.portofrotterdam.hamis;
-
-import fitnesse.slim.StatementExecutor;
-import fitnesse.slim.StatementExecutorInterface;
-
-/**
- * HaMIS custom StatementExecutor, to call and create in the EDT thread
- */
-public class SwingStatementExecutor implements StatementExecutorInterface {
-
-    private final StatementExecutor wrapped = new StatementExecutor();
-
-    private abstract class EDTRunnable implements Runnable {
-
-        private Object returnValue;
-
-        @Override
-        public abstract void run();
-
-        public void setReturnValue(final Object returnValue) {
-            this.returnValue = returnValue;
-        }
-
-        public Object getReturnValue() {
-            return returnValue;
-        }
-    }
-
-    @Override
-    public Object call(final String instanceName, final String methodName, final Object... args) {
-
-        final EDTRunnable caller = new EDTRunnable() {
-
-            @Override
-            public void run() {
-                setReturnValue(wrapped.call(instanceName, methodName, args));
-            }
-        };
-        EDTRunner.run(caller);
-        return caller.getReturnValue();
-    }
-
-    @Override
-    public Object callAndAssign(final String variable,
-            final String instanceName,
-            final String methodName,
-            final Object[] args) {
-
-        final EDTRunnable callAndAssigner = new EDTRunnable() {
-
-            @Override
-            public void run() {
-                setReturnValue(wrapped.callAndAssign(variable, instanceName, methodName, args));
-            }
-        };
-        EDTRunner.run(callAndAssigner);
-        return callAndAssigner.getReturnValue();
-    }
-
-    @Override
-    public Object create(final String instanceName, final String className, final Object[] args) {
-
-        final EDTRunnable creater = new EDTRunnable() {
-
-            @Override
-            public void run() {
-                setReturnValue(wrapped.create(instanceName, className, args));
-            }
-        };
-        EDTRunner.run(creater);
-        return creater.getReturnValue();
-    }
-
-    @Override
-    public Object addPath(final String path) {
-        return wrapped.addPath(path);
-    }
-
-    @Override
-    public Object getInstance(final String instanceName) {
-        return wrapped.getInstance(instanceName);
-    }
-
-    @Override
-    public void reset() {
-        wrapped.reset();
-    }
-
-    @Override
-    public void setVariable(final String name, final Object value) {
-        wrapped.setVariable(name, value);
-    }
-
-    @Override
-    public boolean stopHasBeenRequested() {
-        return wrapped.stopHasBeenRequested();
-    }
-}
-</pre>
-<p>This uses a small static class we've used in our code before to safely run a Runnable on the EDT and invokeAndWait (without waiting IN the EDT):</p>
-<pre class="brush:java">
-public class EDTRunner {
-
-    public static void run(final Runnable r) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            r.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(r);
-            } catch (final InterruptedException e1) {
-                throw new RuntimeException(e1);
-            } catch (final InvocationTargetException e1) {
-                throw new RuntimeException(e1);
-            }
-        }
-    }
-}
-</pre>
-<p>The only thing left to do is to instruct Fitnesse to use our SlimService instead of the default implementation. This is done using the following parameter in our main page:</p>
-<pre class="brush:java">
-!define TEST_SYSTEM {slim}
-!define TEST_RUNNER {com.portofrotterdam.hamis.SwingSlimService}
-</pre>
-<p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you're done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
-<p>Good luck testing with Fitnesse in the near future, if you have any problems/improvements/ideas please let me know (in the comments below).</p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/12/neil-degrasse-tyson-and-stephen-colbert/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/12/facebook-status-deceased/">Facebook status: Deceased</a></h1>
-    <p class="author">
-      <span class="date">Dec 18, 2012 20:21:51</span>
-    </p>
-    <p>In the next couple of years dead will become an important aspect of the social networks. A time will come that most profiles on Facebook will belong to people who'll never be able to post another update. Currently due to inactivity most dead profiles will be deleted or become inactive, but I think dead will take a much more important role on the internet.</p>
-<p>My parents and even grandparents have a Facebook account now, but in twenty or thirty years, some people I'm connected to won't be alive anymore. It would be great to be able to browse the lives of people who are no longer around us. I'd love to read about my deceased grandmother for example, just to see how she lived her life. So instead of deleting inactive accounts, death should become more accepted and a part of our social web as well.</p>
+      <div class="post-data">
+    	<h1><a href="/blog/2011/12/neil-degrasse-tyson-and-stephen-colbert/">Neil DeGrasse Tyson and Stephen Colbert</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 14, 2011 13:02:03
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/neil-degrasse-tyson-and-stephen-colbert/#disqus_thread"></a>
+    	</p>
+        Most internet videos are a waste of time, but this one isn't! This is an interview of Stephen Colbert (out of his normal character) with Neil DeGrasse Tyson (Hayden Planetarium director, TV science host). 
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/12/facebook-status-deceased/">More...</a>
-    </p>
+
+	    <p>
+    		<a href="/blog/2011/12/neil-degrasse-tyson-and-stephen-colbert/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2012/11/devoxx-2012-the-video/">Devoxx 2012, the video</a></h1>
-    <p class="author">
-      <span class="date">Nov 17, 2012 11:51:20</span>
-    </p>
-    <p>Yesterday when I returned home from another amazing Devoxx conference I quickly created another impression video:</p>
-<p><iframe src="http://player.vimeo.com/video/53695846?badge=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/11/devoxx-2012-the-video/">More...</a>
-    </p>
+    <hr/>
   
-    <h1><a href="/blog/2012/11/devoxx4kids/">Devoxx4Kids</a></h1>
-    <p class="author">
-      <span class="date">Nov 16, 2012 18:48:38</span>
-    </p>
-    <p>A couple of weeks ago I went to Devoxx4Kids. Devoxx is a very well known Java conference (the best in the world actually!). This time they organized an event especially for kids ranging from 10 to 14 years old. The goal is twofold, the main goal is to just give them a good time, the second goal is to introduce them to programming and technology in a fun way.</p>
-<p>To show the world this is a great idea, Stephan invited me to film the event and capture the happy faces of the kids enjoying themselfs. And now after Devoxx 2012, I'm allowed to show it to everybody:<br />
-<iframe src="http://player.vimeo.com/video/51393678?badge=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></p>
-<p><small>(more information in Dutch and French: <a href="http://www.devoxx.com/display/4KIDS/Home">http://www.devoxx.com/display/4KIDS/Home</a>)</small></p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/11/devoxx4kids/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/12/the-project-manager-and-his-pregnant-wife/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/09/stacktraces-should-be-inverted/">Stacktraces should be inverted</a></h1>
-    <p class="author">
-      <span class="date">Sep 26, 2012 10:28:52</span>
-    </p>
-    <p>Stacktraces in Java are wrong. This is a conclusion that I've drawn after years of working with novice programmers.</p>
-<p>What is the first thing novice programmers do when they encounter a stacktrace? They start reading it, and this is wrong! The first thing you <em>should</em> do is scroll down. That is because the most important piece of the stacktrace is most likely at the bottom.</p>
-<h3>Caused by...</h3>
-<p>Stacktraces in Java are usually wrapped numerous times, because all the frameworks and the application server wants to add their own little bit of information around the original exception. The problem is that Java uses the "Caused by" way of printing the stacktrace. With the "Caused by" you'll get a lot of information about what happened (<em>afterwards</em>) first, until you get to the actual reason. </p>
-<p>For example:</p>
-<pre style="overflow: auto; border:1px dashed black; padding:10px;">
-com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused by: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-<strong>Caused by: java.lang.NullPointerException</strong>
-	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
-	at java.net.URLClassLoader$1.run(Unknown Source)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(Unknown Source)
-	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
-	<strong>at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)</strong>
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-</pre>
-<p>The first two traces aren't at all important, it tells us something went wrong with a webservice call. But the bottom trace gives us the real reason, a NullPointerException!</p>
-<h3>Caused!</h3>
-<p>I'd rather see stacktraces being inverted, so instead of saying:</p>
-<p><strong>Webservice failed | which is caused by -&gt; Webservice failed during translation | which is caused by -&gt; A NullPointerException!</strong></p>
-<p>It should say:</p>
-<p><strong>A NullPointerException | which caused -&gt; Webservice failed during translation | which caused -&gt; Webservice failed...</strong></p>
-<p>So using the example above it would become:</p>
-<pre style="overflow: auto; border:1px dashed black; padding:10px;">
-<strong>java.lang.NullPointerException</strong>
-	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
-	at java.net.URLClassLoader$1.run(Unknown Source)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(Unknown Source)
-	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
-	<strong>at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)</strong>
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-</pre>
-<p>This is much easier to understand (IMHO). The first exception you see is now also the first thing that happened. Much clearer for the novice programmer.</p>
-<p>Some more tips when you encounter a stacktrace:</p>
-<ul>
-<li>Look for the first line that starts with YOUR package, this is where your control over the code starts, where you might be able to fix it</li>
-<li>If there are a lot of other packages mentioned before YOUR package, Google it! You are probably not alone</li>
-</ul>
+      <div class="post-data">
+    	<h1><a href="/blog/2011/12/the-project-manager-and-his-pregnant-wife/">The project manager and his pregnant wife</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 9, 2011 00:21:15
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/the-project-manager-and-his-pregnant-wife/#disqus_thread"></a>
+    	</p>
+        Adding resources
+Today I've (again) seen this quote on Twitter:
+"A project manager is someone who thinks that 9 pregnant women can create a baby in 1 month"
+This obviously isn't the case. The story demonstrates that adding more people to a team won't (necessarily) make the team more effective. Because some processes can't be cut into smaller pieces and taken up by more people. It will even cause a bit of overhead, more opinions and thus, more time.
+
+What about one woman?
+Everybody knows 9 women can't create a baby in 1 month... so it isn't fair to make that comparison. How about one pregnant woman and the project manager? 
+Four weeks into the 'project' the project manager has his monthly meeting with his pregnant wife:
+Month #1
+Project manager: "How is everything going?"
+Wife: "Oh, just fine, no problems at all"
+Project manager: "Is there anything I can help you with?"
+Wife: "No, currently not, everything is going like it is supposed to"
+Project manager: "When do you think this baby-project is going to be completed?"
+Wife: "Well, it takes 9 months, so 8 months from now!"
+Month #2
+Project manager: "Hey, is everything still going fine?"
+Wife: "Yes, still feeling fine."
+Project manager: "Is there anything I can help you with?"
+Wife: "No, nothing that I can think of right now."
+Month #3
+Project manager: "Hey, still working on that baby?"
+Wife: "Yes, I'm starting to have a bit of morning sickness now..."
+Project manager: "Oh, can I help you with that?"
+Wife: "Not really, it is just something I have to live with"
+Project manager: "How does this affect the release date?"
+Wife: "It doesn't, I think... but I really wish we could release a bit sooner!"
+Month #4
+Project manager: "Hey, still having that morning sickness issue?"
+Wife: "A little bit, but it is almost gone now"
+Project manager: "Still on track for the release date?"
+Wife: "Yes, 5 months from now!"
+Month #5
+Project manager: "How is it going? Morning sickness issue resolved?"
+Wife: "Yes, but I need icecream and pickles."
+Project manager: "I'm on it. Any updates about the release date?"
+Wife: "ICECREAM!"
+Month #6
+Project manager: "Anything I can do for you right now?"
+Wife: "Yes, I think you can start building that baby room"
+Project manager: "When do you need it, when is the baby ready?"
+Wife: "Three months from now."
+Month #7
+Project manager: "The baby room is almost ready, how is that baby going?"
+Wife: "Just fine, just very tired. Two more months."
+Month #8
+Project manager: "I've got some more pickles for you!"
+Wife: "You know I hate pickles :-( I'm tired..."
+Project manager: "Sorry, how is the release coming along?"
+Wife: "One more month."
+Month #9
+Project manager: "Is the baby there yet?"
+Wife: "No, not yet, I'm tired but fine"
+Project manager: "But...? What about the release?"
+Wife: "Go away."
+Month #9 (plus one week)
+Project manager: "What is the delay? Where is my baby?"
+Wife: "It isn't here yet."
+Project manager: "How come? How did this happen!? I kept asking about the release date and you kept saying it would be done a week ago!?"
+Wife: "Get out."
+Month #9 (plus two weeks)
+Wife: "I'm ready! I've got this lovely baby for you."
+Project manager: "Great, where did it go wrong with that planning?"
+Project manager: "That babyroom has been ready for weeks now, and no baby!"
+Project manager: "How can we keep this from happening next time? Scrum? Lean? Agile? RUP?"
+Wife: "Screw you."
+This story also has an important message in it, I'll just leave that as an exercise for the reader.
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/09/stacktraces-should-be-inverted/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/12/the-project-manager-and-his-pregnant-wife/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">Hacking with the Mara-Naboisho Lion Project</a></h1>
-    <p class="author">
-      <span class="date">Sep 11, 2012 20:05:40</span>
-    </p>
-    <p>Yesterday a friend of mine pointed me to the following thread:<br />
-<a href="https://github.com/giving/giving.github.com/issues/11">https://github.com/giving/giving.github.com/issues/11</a></p>
-<p><img src="/images/lion-with-collar.jpg" alt="" title="lion-with-collar" width="340" height="234" class="alignright size-full wp-image-1267" /></p>
-<h3>giving.github.com</h3>
-<p>
-Giving.github is a project that tries to bring people together. There are a lot of programmers looking for fun projects in the world, and so are scientists/charities and other people with problems!</p>
-<p>Be sure to check it out, maybe you can help somebody as well.</p>
-<h3>Mara-Naboisho Lion Project</h3>
-<p>
-One of the problems posted to giving.github has something to do with Lion collars. The Mara-Naboisho Lion Project has a couple of collars and some files, but no idea what the data inside the files mean. Their initial description was:</p>
-<p>The Mara-Naboisho Lion Project has asked for our help decoding and plotting the positions of lions fitted with GPS collars.</p>
-<p>They receive SMSes from the collars:</p>
-<pre class="brush:plain">
-File: Collar07854_100806210058.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0806100028008c13ef348a0039d0fe000de8
-71004cc92b5ca92d6213ef26640039d108000de86b004cc92d5ca92d
-5d13ef18620039d101000de865004cc92c5ca92d5813ef0a930039d0
-fc000de864004cc9311c682d5413eefc170039d045000de7d4004cc9
-5b7c692c5013eeee280039d0ff000de85f004cc92a7c692d6fffffff
-ffffffffffffffffffffffffffffffffffff
-    
-File: Collar07854_100807060011.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0807020038008c13efb2eb0039d0ed000de8
-53004cc92e3cea2d8813efa5060039d0fb000de860004cc9291c6a2d
-8413ef96fd0039d0fc000de85e004cc92d5c6a2d7f13ef88e00039d0
-f6000de85a004cc92b5c6a2d7b13ef7ad80039d0fa000de85a004cc9
-327c6a2d77ffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffff
-</pre>
-<p>These are presumably SMS PDUs, although simple online decoders don't seem to make much sense of them.  There's the ASCII text "IRIDIUM" in them, presumably being the SMSC or sender or something string, as IRIDIUM is a satellite telephone system and presumably the bearer when the collars send up their positions.</p>
-<p>What format is it, and how do we decode it?</p>
-<h3>Not SMS PDU</h3>
-<p>This is where I started analyzing, and I quickly ruled out that the hex-code is pure PDU (which can easily be translated). It seems to be some dialect/own protocol.</p>
-<p>The first major breakthrough was realizing that there is one big header that both files have in common, and the real message starts with <strong>0A</strong>. And the two messages after that have a repeating pattern:</p>
-<pre class="brush:plain">
-
-Common header?
-
-074952494449554d000000000000000
-0000000000000000000000000000000
-040f333030303334303132323937383
-9300000000000000000000000000000
-0000f10a
-
-Sub header?
-SMS 1: 0806100028008c13
-SMS 2: 0807020038008c13
-
-
-Message #1:
-ef348a0039d0fe000de871004cc92b5ca92d6213
-ef26640039d108000de86b004cc92d5ca92d5d13
-ef18620039d101000de865004cc92c5ca92d5813
-ef0a930039d0fc000de864004cc9311c682d5413
-eefc170039d045000de7d4004cc95b7c692c5013
-eeee280039d0ff000de85f004cc92a7c692d6fff
-ffffffffffffffffffffffffffffffffffffffff
-
-Message #2:
-efb2eb0039d0ed000de853004cc92e3cea2d8813
-efa5060039d0fb000de860004cc9291c6a2d8413
-ef96fd0039d0fc000de85e004cc92d5c6a2d7f13
-ef88e00039d0f6000de85a004cc92b5c6a2d7b13
-ef7ad80039d0fa000de85a004cc9327c6a2d77ff
-ffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffff
-</pre>
-<p>This sure adds some structure to the files. I also guessed the first file has actually 6 entries and the second file has only 5 entries.</p>
-<h3>First field deciphered</h3>
-<p>The second breakthrough came through Twitter. I posted this problem in a tweet and after a couple of hours I got a reply that there was progress on the <a href="http://stackoverflow.com/questions/12347625/decode-sms-reporting-gps-positions-of-lions-in-kenya">stackoverflow</a> question.</p>
-<p>This was DStibbe's reply:</p>
-<p>---------------------------------------------------------------------------------<br />
-Perhaps the '13' is not part of the headers but the message instead?<br />
-The messages would then be:</p>
-<pre class="brush:plain">
-Message #1
-13ef 348a 0039 d0fe 000d e871 004c c92b 5ca9 2d62
-13ef 2664 0039 d108 000d e86b 004c c92d 5ca9 2d5d
-13ef 1862 0039 d101 000d e865 004c c92c 5ca9 2d58
-13ef 0a93 0039 d0fc 000d e864 004c c931 1c68 2d54
-13ee fc17 0039 d045 000d e7d4 004c c95b 7c69 2c50
-13ee ee28 0039 d0ff 000d e85f 004c c92a 7c69 2d6f
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff
-
-Message #2
-13ef b2eb 0039 d0ed 000d e853 004c c92e 3cea 2d88
-13ef a506 0039 d0fb 000d e860 004c c929 1c6a 2d84
-13ef 96fd 0039 d0fc 000d e85e 004c c92d 5c6a 2d7f
-13ef 88e0 0039 d0f6 000d e85a 004c c92b 5c6a 2d7b
-13ef 7ad8 0039 d0fa 000d e85a 004c c932 7c6a 2d77
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff
-</pre>
-<p>It does seem like a log , with the message for Aug 06 (guessing) has 6 entries and the second from Aug 07 having 7.<br />
-What would a collar record? I'm guessing longitude,latitude and timestamp?</p>
-<p>Chances are high that the first eight digits represent the timestamp. They are incremental from bottom to top.</p>
-<p>Eg. 13ef348a = 334443658.<br />
-334443658 seconds = 10 years, 8 months, 6 days, 23:00:58</p>
-<p>This matches the date in the title of the first sms: Collar07854_<strong>100806 210058</strong>.SMS<br />
-It even matches the timestamp minus 2 hrs in the title!<br />
----------------------------------------------------------------------------------</p>
-<h3>More information</h3>
-<p>At this point the progress stopped a bit, we couldn't get the other bytes translated. There seemed to be certain integer values: 0039 d0ed for example. This probably isn't floating point (which we thought it would be, latitude/longitude/altitude) because floating point numbers have the exponent in the first 11 bits. When a number starts with 00's it doesn't have the exponent part filled.</p>
-<p>So we asked the project for some more information, for example about the recorded data (where/when) and the manufacturer of the collars.<br />
-They gave us <a href="https://gist.github.com/3698320">this KML file</a>, and this company name: Vectronic-Aerospace.</p>
-<h3>Lat/lon, I've got you!</h3>
-<p>The biggest part we wanted to decipher was the lan/lon location (that is what the researchers want to have). I came to this breakthrough after reading a <a href="http://www.vectronic-aerospace.com/files/Flyer-GPS_Plus-Data_Manager.pdf">PDF</a> file from Vectronic-Aerospace's website. It has some screenshots from their original software (why aren't they using that free software?!). In these screenshots I noticed integer coordinates very close to the integers I've managed to get from the hex-data! It was called ECEF data, this is X,Y,<strong>Z</strong> data! Until now my guess was that the SMS files had lat/lon coded in binary, but it has XYZ information.</p>
-<p>After a quick google I managed to find some code to translate from ECEF coordinates to lat/lon and it gave me the following location:<br />
-Lat: 52.43067054630929<br />
-Lon: 13.525755535406619<br />
-Height: 88.99500464554876</p>
-<p>When plotted in Google Maps it gave me a location in Germany, at first I thought it was another dead end, but then I looked <a href="http://www.vectronic-aerospace.com/index.php?p=contact">here</a>. It turns out it was the EXACT location of Vectronic Aerospace, the creators of the collar! Problem solved.</p>
-<h3>What's next?</h3>
-<p>There are still some mysteries, for example... what are the last bytes? Looking at the screenshots in the PDF I suspect it would be main battery voltage, backup voltage and temperature. The project also probably wants to integrate the collar files with the website. And there are of course a lot more <a href="http://giving.github.com/">giving.github.com</a> problems to solve!</p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">More...</a>
-    </p>
+    <hr/>
   
-    <h1><a href="/blog/2012/07/visitors-you-make-me-proud/">Visitors, you make me proud</a></h1>
-    <p class="author">
-      <span class="date">Jul 16, 2012 10:34:24</span>
-    </p>
-    <p><img src="/images/ripIE.png" alt="" title="ripIE" width="304" height="222" class="alignright size-full wp-image-1256" /><br />
-With the sudden surge of visitors from Reddit (Hello!) I decided to take look at Google Analytics. And two things caught my eye:</p>
-<p>First of all, Google Analytics 'Realtime' is awesome, you can see minute by minute how many people are on your website and what they are looking at, where they come from (internetwise and geographically).</p>
-<p>Second, my website gets the right type of visitors, I'm so proud at you guys and girls...</p>
-<pre>
-1.	Chrome			53.83%
-2.	Firefox			20.70%
-3.	Safari			8.83%
-4.	Mozilla			7.48%
-5.	Android	Browser		4.85%
-6.	Internet Explorer	1.98%
-...
-</pre>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/07/visitors-you-make-me-proud/">More...</a>
-    </p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/12/bytebeat-algorithmic-symphonies/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
   
-    <h1><a href="/blog/2012/07/java-speed-of-math/">Java vs Javascript: Speed of Math</a></h1>
-    <p class="author">
-      <span class="date">Jul 15, 2012 11:17:02</span>
-    </p>
-    <p>Last week I've created a <a href="/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I've <a href="/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
-<p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn't have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
-<p><a href="/images/compare1.png"><img src="/images/compare1.png" alt="Comparing Javascript and Java" title="Comparing Javascript and Java" width="711" height="395" class="alignnone size-full wp-image-1238" /></a></p>
-<p>What has happened here? The output is the same, why is Java so much slower than Javascript? I would have suspected the opposite...</p>
-<p>I fired up the profiler to see what was causing the Java code to be so slow, and it turned out the method it spend most time in was Math.pow(). Other slow methods were Math.acos(), cos(), sin() etc. It turns out that the Math library isn't very fast, but there is an alternative, <a href="http://commons.apache.org/math/apidocs/org/apache/commons/math/util/FastMath.html">FastMath</a>. Apache Commons has implemented a faster Math library for commons-math. Lets see what changing Math.* to FastMath.* does to the performance:</p>
-<p><a href="/images/compare2.png"><img src="/images/compare2.png" alt="" title="compare2" width="703" height="406" class="alignnone size-full wp-image-1240" /></a></p>
-<p>This is already much better. But still the method causing most delay is FastMath.pow(). Why is Javascript so much faster? The method is made so you can calculate the power of two doubles, not only integer values. But I'm only doing Integer powers (7 and 8 to be precise). So I decided to implement my own method:</p>
-<pre class="brush:java">
-private double fasterPow(double d, int exp) {
-	double r = d;
-	for(int i = 1; i&lt;exp; i++) {
-		r *= d;
+      <div class="post-data">
+    	<h1><a href="/blog/2011/12/bytebeat-algorithmic-symphonies/">Bytebeat: Algorithmic Symphonies</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 7, 2011 16:42:08
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/bytebeat-algorithmic-symphonies/#disqus_thread"></a>
+    	</p>
+        A couple of days ago I first encountered "bytebeat". This is a new hype revolving algorithmic music and sounds. The basic idea is this:
+
+main(t) {
+  for(t=0;;t++)
+    putchar( t * (((t>>12) | (t>>8) ) & ( 63 & (t>>4))));
+}
+
+This simple loop has one variable, t (time). And every iteration we use t to calculate some output. Next, we take the output and pipe it into 8-bit 8-kHz PCM channel (for example /dev/audio!).
+A couple of examples in a YouTube video:
+
+In Java you could do the following:
+
+import javax.sound.sampled.*;
+
+public class AudioPump {
+
+	public static void main(String[] args) throws Exception {
+
+		AudioFormat format = new AudioFormat(8000f, 8, 1, false, false);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+		SourceDataLine soundLine = (SourceDataLine)AudioSystem.getLine(info);
+		soundLine.open(format, 32000);
+		soundLine.start();
+
+		byte[] buffer = new byte[8];
+		int t = 0;
+
+		while(true) {
+			for(int n = 0; n >7|t|t>>6)*10+4*(t&t>>13|t>>6);
 	}
-	return r;
+	//return (t*(t>>5|t>>8))>>(t>>16);
+	//return t*(((t>>12)|(t>>8))&(63&(t>>4)));
 }
-</pre>
-<p><strong>Warning: This isn't the same as Math.pow/FastMath.pow!</strong></p>
-<p><a href="/images/compare3.png"><img src="/images/compare3.png" alt="" title="compare3" width="704" height="401" class="alignnone size-full wp-image-1245" /></a></p>
-<p>The speed with this new method is much better and seems comparable with Javascript. Maybe this is an optimization the V8 engine does by default? Who knows.</p>
-<p>The slowest method in the program now is FastMath.acos. From highschool I know that acos(x) can also be calculated as atan(sqrt(1-x*x)/x). So I created a own version of acos. When benchmarked, the different methods: Math.acos(), FastMath.acos() and FastMath.atan(FastMath.sqrt(1-x*x)/x), the result is again surprising:</p>
-<p><a href="/images/compare4.png"><img src="/images/compare4.png" alt="" title="compare4" width="458" height="298" class="alignnone size-full wp-image-1247" /></a></p>
-<p>The custom acos() function is a bit faster than FastMath.acos() and a lot faster than Math.acos(). Using this function in the Mandelbulb renderer gives us the following metric:</p>
-<p><a href="/images/compare5.png"><img src="/images/compare5.png" alt="" title="compare5" width="694" height="594" class="alignnone size-full wp-image-1248" /></a></p>
-<p>So it turns out that with a bit of tweaking we can get the Java version faster than Javascript, but I would have never imagined Java would be slower in the first place. The Chrome V8 guys really did an amazing job improving the speed of their Javascript VM. Mozilla isn't far behind, they are getting +/- 2200 ms in the benchmark. Which is also faster than Java.Math and FastMath! It seems that V8's math implementation has some optimizations that Java could really use. The tricks used above don't make any difference with the Javascript version.</p>
-<p><strong>Edit 1:</strong> Is Javascript faster than Java?</p>
-<p>Well surprisingly in this case it is. With the code a 100% the same, using arrays as vector and Math.* the code actually runs faster in my browser!</p>
-<p><strong>Edit 2:</strong> People have been asking me: What could have been done to make it faster in Java? And, why is it slow?</p>
-<p>Well the answer is twofold:</p>
-<p>1) The Math libraries are made for 'double' in Java. Having a power() method work with doubles is much harder than working with just integer numbers. The only way to optimize this would be to overload the methods with int-variants. This would allow much greater speeds and optimizations. I think Java should add Math.pow(float, int), Math.pow(int, int) etc.</p>
-<p>2) All the Math libraries have to work in <em>all</em> situations, with negative numbers, small numbers, large numbers, zero, null etc. They tend to have a lot of checks to cope with all those scenario's. But most of the time you'll know more about the numbers you put in... For example, my fastPower method will only work with positive integers larger than zero. Maybe you know that the power will always have even numbers...? This all means that the implementation can be improved. The problem is, this <em>can't</em> be easily achieved in a generic (math) library.</p>
+
+
+These simple one-liners are able to produce amazing sounds and music!
+It becomes even easier to play around with bytebeat if you use one of the many Javascript implementations.
+Here is one (including the best song I've created): http://t.co/9oognysS
+The computer/synthetic sounds are also good for dubstep.
+For more information on this subject:
+- http://canonical.org/~kragen/bytebeat/
+- http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/07/java-speed-of-math/">More...</a>
-    </p>
+	    <p>
+    		<a href="/blog/2011/12/bytebeat-algorithmic-symphonies/">More...</a>
+    	</p>
+      </div>
+    </div>
   
-    <h1><a href="/blog/2012/07/introducing-mandelbulb-js/">Introducing: mandelbulb.js</a></h1>
-    <p class="author">
-      <span class="date">Jul 12, 2012 16:58:15</span>
-    </p>
-    <p>This afternoon Will (the friend I mentioned in <a href="/2012/07/mandelbulb-rendering/">this</a> previous post) showed up again on Google Talk.<br />
-He set me a new challenge: "How about translating your 3d engine/mandelbulb code into pure Javascript?"</p>
-<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" width="480" height="270" /></a></p>
-<p>This seemed impossible, but I quickly realized the code I had was very easy to convert. It is my first piece of Javascript larger than 10 lines I think, but it is working!</p>
-<p>If you have a bit of time:<br />
->>> <strong><a href="http://www.royvanrijn.com/img/mandelbulb.html">mandelbulb.js</a></strong></p>
-<p>Any Javascript developers who would like to take the code and improve on it (trust me, there is more then enough room for improvement) go ahead! I'm releasing it under creative commons, do with it what you like, just be sure to mention me!</p>
-<p>The code can be found here: <a href="https://github.com/royvanrijn/mandelbulb.js">https://github.com/royvanrijn/mandelbulb.js</a></p>
-<p>I've already included <a href="https://gist.github.com/3098912">one improvement</a> by Will himself, scanlines to smooth up the rendering (good for inpatient people!).</p>
-
-
-
-    
-    <p>
-    	<a href="/blog/2012/07/introducing-mandelbulb-js/">More...</a>
-    </p>
+    <hr/>
   
-    <h1><a href="/blog/2012/07/mandelbulb-rendering/">Mandelbulb rendering</a></h1>
-    <p class="author">
-      <span class="date">Jul 12, 2012 16:16:08</span>
-    </p>
-    <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same... So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I'm pretty pleased with the first results!</p>
-<h1>My first 3d engine (tm)</h1>
-<p>On sunday I had the first things ready, lighting (Blinn-Phong), soft shadows, but still I had no perspective build on (all rays travelled in the same direction) and I had no way to change the view point/camera position:</p>
-<p><img src="/images/raymarching.png" alt="Simple ray marching example, wrong perspective, two balls and a cube" /></p>
-<p>Next step was to render something other than spheres and cubes, and get the camera position under control, that breakthrough came monday evening:</p>
-<p><a href="http://www.royvanrijn.com/img/mandelbulb1.png"><img src="/images/mandelbulb1.png" alt="First Mandelbulb render, full of programming bugs" width="380" height="285" /></a></p>
-<p>My first mandelbulb! The perspective is still flat and it misses detail, we've also rendered through the camera/near field.<br />
-So I made some more improvements and managed to render a nice wallpaper for myself:</p>
-<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" width="480" height="270" /></a></p>
-<p>Yesterday I've been playing around with optimizing the code a little bit (less memory usage, already twice as fast as it was, but still slow). And I've added some glow and the ability to add 'distance fog'. Also I've recorded my first movie, just to show some moving fractals:</p>
-<p><iframe width="420" height="315" src="http://www.youtube.com/embed/r-sGABWMH2o" frameborder="0" allowfullscreen></iframe><br />
-<small>(yes, it has a glitch with the pink mandelbulb, can't be bothered to fix...)</small></p>
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/12/math-doodling-vi-hart/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/12/math-doodling-vi-hart/">Math doodling: Vi Hart</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 3, 2011 19:06:40
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/math-doodling-vi-hart/#disqus_thread"></a>
+    	</p>
+        As you might know I'm a big fan of math contests and basically just math in general. But only as long as it doesn't involve long/hard equations! Math is all around us, we just don't see it because we've been taught that math equals equations.
+There is one person that keeps amazing me with her math related blog: Vi
 
 
 
-    
-    <p>
-    	<a href="/blog/2012/07/mandelbulb-rendering/">More...</a>
-    </p>
+
+	    <p>
+    		<a href="/blog/2011/12/math-doodling-vi-hart/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/11/simple-made-easy/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/11/simple-made-easy/">Simple Made Easy</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 24, 2011 22:22:55
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/11/simple-made-easy/#disqus_thread"></a>
+    	</p>
+        When browsing this blog I came across a very good talk about programming and simplicity. What is simplicity? Things that are easy right? Wrong.
+
+
+
+I won't go into the subject, just watch this talk!!
+http://www.infoq.com/presentations/Simple-Made-Easy
+
+
+
+	    <p>
+    		<a href="/blog/2011/11/simple-made-easy/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/11/speaking-at-devoxx/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/11/speaking-at-devoxx/">Devoxx 2011: Speaking at Devoxx</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 19, 2011 16:01:11
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/11/speaking-at-devoxx/#disqus_thread"></a>
+    	</p>
+        I'm back home from Devoxx, I'm still alive (kind of) and it was great!
+First of all, I had never been to Devoxx before, so it was all a new experience for me. And second, I was speaking at this conference, which is my first international talk! In this blogpost I'll try to describe how it is, talking at Devoxx.
+Before the talk, other sessions
+There were a lot of good talks on Devoxx this year, mostly about HTML5, Android and new languages (like Clojure, Scala, Fantom, Ceylon). But to prepare for the talk I decided to stick with the sessions which had the well known international speakers (Joshua Bloch, Mark Reinhold, Brian Goetz, Chet Haase and of course the JavaPosse guys). Instead of learning new technical stuff I focused more on learning presentation skills instead.
+The first day I also brought my camera with me, and created the following video (which is currently featured at the Devoxx.com frontpage):
+
+Friday
+My own session was planned on Friday, the last day of the conference, in the last slot of the day. Initially I didn't like this spot (especially since it was the day after the Noxx party!), but when I saw the line of people waiting for popular sessions like Joshua Bloch's and/or the JavaPosse I was very glad I wasn't scheduled at the same time as them.
+When I arrived at the venue Friday morning I noticed the room I was scheduled in was empty and being torn down... that didn't look promising! But I quickly found out that 'room 6' was now in cinema room 4. And until the last moment the screens on the floor didn't show my session and the session (from David Geary) before me. So I didn't have a lot of hope, only my own colleagues would probably be able to find it...
+Then suddenly David Geary was done with his talk (HTML5 Game Development: The most fun you can have in a browser), time flew by... time to go to the front of the stage and prepare the laptop. When connecting the laptop I saw a huge line of people, queuing to leave the room... sigh. So I went to the sound-guy, getting a microphone strapped to my head, and warned the cameraman that I have the habit of walking around like bored zoo animal. He was playing some World of Warcraft in between the sessions, so I challenged him: you can practice your aim on me instead the coming hour.
+Then I looked back up at the audience, and to my pleasant surprise, the room was loaded. I quickly snapped this picture:
+
+Wow! And it kept getting more and more crowded, in the end people were sitting on the steps because all the seats were taken. Then the timer was suddenly at 59:50, my talk had begun! The microphone was open and I started talking to the audience. Up to this point I wasn't very nervous, but now I had to talk to all these people, in a foreign language (English). After the first joke landed, and the people reacted like I hoped, my confidence returned. During the talk I had to explain something with a bright orange stick, and before I knew it I was waving the stick around like a nerd jedi. Suddenly I remembered the poor cameraman, but one quick glance at the screen behind me and I could see he was doing an awesome job tracking my every move.
+When the countdown reached 18 minutes, I was pretty much done with the talk, but I was anticipating a lot of questions and I had an anti-patent rant ready. For the next 13 minutes I answered a lot of good questions. Then I decided it was time, I took the liberty (being the last talk) to thanks the audience and tell them Devoxx was now over. Something like: "This is the end of our Devoxx for this year! Have a safe trip home, and hopefully I'll see you all again next year!"
+Afterwards a lot of people congratulated me, and I've seen some great tweets about the talk. It felt great and recommend it to everybody: Just do it!
+The slides can be found here: http://www.slideshare.net/royvanrijn/what-shazam-doesnt-want-you-to-know
+And the talk will be freely available (with video, slides and screen capture!) on Parleys.com some time in the future (could take a while, months).
+
+
+
+	    <p>
+    		<a href="/blog/2011/11/speaking-at-devoxx/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/10/code-quality-confirmation/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/10/code-quality-confirmation/">Code quality: Confirmation</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Oct 24, 2011 15:32:29
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread"></a>
+    	</p>
+        Last week I wrote a blogpost on rewriting code and improving quality. And now we have some great news that will support my claims. To verify our project and convince management we are doing it the right way, we've send a copy of our code to TÜViT.
+TÜViT
+Most people from Europe will know TÜV. They test and certify cars, elevators and even nuclear power plants. They also verify IT security, quality, infrastructure, products, processes and their requirements. TÜViT is accredited by organisations and official bodies for the areas of IT security and IT quality.
+
+HaMIS
+Their verdict couldn't have been better, last week we've received a banner with 5 out of 5 stars! Just 5% of the projects that are submitted to get tested get 5 stars. More information can be found in the official press release and in the Automatiserings Gids (Dutch).
+Agile architecture and refactoring
+For some reason getting these 5 stars makes me very proud. Normally I don't care much about certification, they usually focus on the wrong issues. We know we are doing the right stuff, it feels good, and we're making good progress. And this is just a perfect verification from an external source, this will also assure management we are on the right track.
+
+
+
+	    <p>
+    		<a href="/blog/2011/10/code-quality-confirmation/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/10/great-code-is-written-twice-or-more/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/10/great-code-is-written-twice-or-more/">Great code is written twice (or more)</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Oct 21, 2011 20:46:13
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/great-code-is-written-twice-or-more/#disqus_thread"></a>
+    	</p>
+        
+The last couple of years more and more people have been moving towards Agile development. These techniques aren't new, most we're devised in the 80s or 90s. But finally these days programmers and (more importantly) business consultants, architects and clients have learned to love and embrace Agile development.
+Evolving requirements
+It has now become common knowledge that you can't write down all the requirements before you start the project. These requirements have to be written down in an evolutionary matter. In short cycles/sprints we build pieces of the program and also iteratively extract the latest requirements from our clients. This is all based on the principle of evolution. Like everything in life, you get the best with incremental steps towards improvement.
+Evolving code!
+But why stop there? Today most programmers have developed a mindset in which requirements have to be extracted evolutionary. But they seem to forget their own work!? They still think their frameworks and their architecture has to be solid at the start of their project. Also, once code is written, it is done.. right?
+Wrong. In my experience all great code is written at least twice. The first time you are too busy interpreting the requirements and figuring out what it should do. Sure, when you see certain patterns, we know that we need to extract methods and shift responsibilities around. The code you'll end up can be pretty good, but it isn't great.
+In our current project, almost all important features have been rewritten from scratch multiple times. And slowly but surely the code is becoming better and better. Once you've made the 3rd or 4th addition to a certain piece of code, or you've fixed another bug, you'll know where the code smells. You'll feel like avoiding that piece of code, and you are glad when you are done fiddling with it. What do I do when I get this feeling? I delete the code.
+But... but... then you have to start all over again!?
+Wrong again! Sure, there is nothing left in the IDE, the code is gone, maybe some tests survived. You do have a solid understanding what the code should do. You also know what the code looked like before, so you know where it hurt/smelled in the past! With this knowledge you'll write much better, maybe even great code! Sure, we could have kept the code and played with it some more, refactoring methods and responsibility... but there is nothing like grabbing the opportunity to start over again, and do it better.
+Again, like all things in life: To make something great, it has to go through multiple evolutionary iterations. This is true for your requirements, your architecture and also your code.
+Doing it twice, twice as slow?
+When I tell people that in my opinion all code needs to be written at least twice, they are afraid the project will take double the time. But this is far from true. Here is why:
+
+The second time you write the code, it'll only take a fraction of the time it took initially.
+After rewriting the quality of the code is significantly higher, improving maintainability, extendability and also programming velocity.
+
+Good luck, keep rewriting and evolve your code! And if you think rewriting doesn't work... we have proof!
+
+
+
+	    <p>
+    		<a href="/blog/2011/10/great-code-is-written-twice-or-more/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/10/programming-contest-orchard-planting/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/10/programming-contest-orchard-planting/">Programming Contest: Orchard Planting</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Oct 17, 2011 13:07:06
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/programming-contest-orchard-planting/#disqus_thread"></a>
+    	</p>
+        Yes! Another new programming contest: Orchard Planting
+
+The problem:
+On a grid you have to place trees (dots). If there are four trees in a line, you'll get a point. But: more then 4 trees in a line is illegal. What are the best solutions for N=11 to 60 trees?
+Up to now I haven't found a good method of constructing solutions yet, but I do have a very fast scorer which is a bit faster than O(N^2). There are some ideas brewing, which I obviously won't disclose here (maybe after the contest).
+
+I'm looking forward to competing with you, good luck all!
+
+
+
+	    <p>
+    		<a href="/blog/2011/10/programming-contest-orchard-planting/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/">Contacts lost after update to IOS5 (iPhone)</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Oct 17, 2011 12:52:55
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/#disqus_thread"></a>
+    	</p>
+        Yesterday I decided to (finally) upgrade to IOS 5. This new firmware for the iPhone/iPod Touch and iPad adds a lot of new features, including iCloud, iMessage and more.
+
+At first the upgrade seemed to be a huge success, everything worked and I loved the fact that all my apps were being updated runtime, all at once. But then I realized that all my contacts were gone! I could see all the names in the 'missed calls' section, but it said "No contacts" when calling/texting. I tried the "Recovery" option, but nothing seemed to help...
+Until I tried this:
+
+Go to Settings
+iCloud
+Disable 'Contacts' (slide)
+At this moment, all the contacts on my phone appeared again!
+Re-enable 'Contacts'
+Now iCloud asks if you want to combine the results, yes we do!
+
+This restored all my contacts and synchronized them with iCloud. It seems that (for some reason) the initial merge with iCloud failed or something.
+If you have this problem too, please let me know if this fix helps.
+
+
+
+	    <p>
+    		<a href="/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/08/meet-me-at-devoxx-2011/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/08/meet-me-at-devoxx-2011/">Meet me at Devoxx 2011</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Aug 5, 2011 15:53:21
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/08/meet-me-at-devoxx-2011/#disqus_thread"></a>
+    	</p>
+        This year I'll be presenting at Devoxx in Antwerp, Belgium. In my opinion it currently is the best Java conference in the world. It'll be my first talk in English.
+
+The titel of the talk is: What Shazam doesn't want you to know.
+During the talk I'll be explaining how Shazam works and how you can recreate this in Java yourself. But that's not all.. I'm also including the grand challenge of teaching everybody how the Fourier Transformation works, without going into math (I'm math-illiterate).
+Wish me luck, I'm really looking forward to it!
+Are you coming to Devoxx? Or do you have hints/tips for me, let me know!
+
+
+
+	    <p>
+    		<a href="/blog/2011/08/meet-me-at-devoxx-2011/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/bitcoin-mining/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/bitcoin-mining/">Bitcoin mining</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 30, 2011 20:07:09
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread"></a>
+    	</p>
+        A couple of months ago I've started using and mining bitcoins. If you don't know what bitcoin is yet, please watch the following video:
+
+Mining for bitcoins has become harder and harder. But as a pro, the price of the bitcoin has also increased quite a lot. Since I've started mining I've mined about 40 bitcoins (in pools). This is now worth about 9 dollars per bitcoin: 360 dollars!
+Mostly I've used my GPU for mining, this gives me the greatest speed. I found the Diablo Miner works best in my case, I even pushed some improvements into the codebase to let it work through proxies. But since a couple of days I've had a bitcoin miner in Java applet form running on this website! This is currently giving me about the same amount of bitcoins. Still, it is only about 0.01 bitcoin per day. Which comes down to 10 dollar cents a day. But still this is more then I earn for ads!
+I've removed the bitcoin applet from my main page (it can scare visitors if the CPU runs to 100%). But you can still use it on this website:
+SCRIPT DISABELED
+So, don't hesitate to hang around here for a while, with this page open :-) Lets see how much bitcoins my visitors can generate!
+Oh, to see the current 'exchange rate' of the Bitcoin, you can always view it on Mt Gox.
+
+
+
+	    <p>
+    		<a href="/blog/2011/05/bitcoin-mining/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/android-application-1/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/android-application-1/">Android application #1</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 29, 2011 18:22:14
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread"></a>
+    	</p>
+        This weekend I wrote my first Android application: Love or Hate
+
+The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:
+
+"I love it when"
+"I hate it when"
+
+
+The application now displays some user information (username/profile picture) and shows parts of the tweet. The words "love" and "hate" are removed and the user has to guess which of the two words was in the original tweet.
+Backend
+
+The backend of this is only Twitter itself. And connecting to Twitter was really easy. I've used JTwitter, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.
+Frontend
+
+So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don't have one... But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don't have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.
+The next discovery was: Android isn't at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.
+One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I've released my application in English (default), Dutch and French.
+Releasing to the Market
+
+Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on "Export as signed Android application" and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.
+To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don't think I'll even see that return on investment, I've decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).
+Adding ads from 
+Now that I've invested 25 euro's, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add AdMob ads in your application. You can read about it here.
+Results
+
+After one day I'm pretty surprised: Already 350 people have downloaded the application and I've already earned &gt; 50 cents from AdMob (2% ROI).
+I've really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)
+(p.s. No, I'm not going to port my music matching algorithm to Android and get sued)
+
+
+
+	    <p>
+    		<a href="/blog/2011/05/android-application-1/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/wedding-video/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 23, 2011 10:52:16
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread"></a>
+    	</p>
+        This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I've filmed something. I decided to edit everything together with some music. Here is the result:
+
+It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard...
+
+
+
+	    <p>
+    		<a href="/blog/2011/05/wedding-video/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/gods-dice/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/gods-dice/">God's Dice</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 9, 2011 09:07:36
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/gods-dice/#disqus_thread"></a>
+    	</p>
+        Yay! There is a new Virtual Source Programming Contest: "God's Dice"
+
+
+After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.
+The goal of the contest is this:
+
+Take a cube, with all sides length 1
+Place N (9 to 88) points anywhere on the surface of the cube
+Now calculate the surface area of all triangles between your points
+Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)
+
+So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.
+Up to now I've only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I'll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).
+And I've got some other idea's, which I won't share obviously for the contest sake!
+
+
+
+	    <p>
+    		<a href="/blog/2011/05/gods-dice/">More...</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
   
 
-  <!-- Pagination links -->
+  <!-- Pagination -->
+  
   <div class="pagination">
+    <div class="pagination-center">
     
-      <a href="/page/4" class="previous">Previous</a>
+      <div class="pagination-item"><a href="/page/4">&laquo; Prev</a></div>
     
-    <span class="page_number ">Page: 5 of 13</span>
+
     
-      <a href="/page/6" class="next">Next</a>
+      
+        <div class="pagination-item"><a href="/index.html">1</a></div>
+      
     
+      
+        <div class="pagination-item"><a href="/page/2">2</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/3">3</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/4">4</a></div>
+      
+    
+      
+        <div class="pagination-item"><b>5</b></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/6">6</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/7">7</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/8">8</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/9">9</a></div>
+      
+    
+
+    
+      <div class="pagination-item"><a href="/page/6">Next &raquo;</a></div>
+    
+    </div>
   </div>
+  
+
 </div>
 
       </div>
@@ -782,6 +798,8 @@ So I made some more improvements and managed to render a nice wallpaper for myse
   <div class="wrapper">
 
     <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
       
         <a href="https://www.linkedin.com/profile/view?id=10356027">
           <i class="svg-icon linkedin"></i>
@@ -802,12 +820,15 @@ So I made some more improvements and managed to render a nice wallpaper for myse
         <a href="/feed/index.xml">
           <i class="svg-icon rss"></i>
         </a>
+	  </div>
     
     </div>
 
   </div>
   
-  <script> <!-- Google Analytics -->
+  <script>
+  
+  <!-- Google Analytics -->
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -815,6 +836,15 @@ So I made some more improvements and managed to render a nice wallpaper for myse
 
   ga('create', 'UA-3219266-2', 'auto');
   ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn'; // required: replace example with your forum shortname
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
 
   </script>
 

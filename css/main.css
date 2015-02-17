@@ -16,7 +16,7 @@ body {
   line-height: 1.5;
   font-weight: 300;
   color: #111;
-  background-color: #fdfdfd;
+  background-color: #f0f0f0;
   -webkit-text-size-adjust: 100%; }
 
 /**
@@ -24,8 +24,7 @@ body {
  */
 h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
-ul, ol, dl, figure,
-.highlight {
+ul, ol, dl, figure {
   margin-bottom: 15px; }
 
 /**
@@ -60,27 +59,43 @@ li > ol {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 300; }
 
+hr {
+  height: 2px;
+  margin: 10px 0;
+  background-image: -webkit-linear-gradient(left, transparent, rgba(0, 0, 0, 0.1), transparent);
+  background-image: -moz-linear-gradient(left, transparent, rgba(0, 0, 0, 0.1), transparent);
+  background-image: -ms-linear-gradient(left, transparent, rgba(0, 0, 0, 0.1), transparent);
+  background-image: -o-linear-gradient(left, transparent, rgba(0, 0, 0, 0.1), transparent);
+  border: 0; }
+
 /**
  * Links
  */
 a {
-  color: #2a7ae2;
-  text-decoration: none; }
+  color: #1977ca;
+  text-decoration: none;
+  border-bottom: 1px dotted #cbd2d6; }
   a:visited {
-    color: #1756a9; }
+    color: #114f86; }
   a:hover {
-    color: #111;
-    text-decoration: underline; }
+    color: #a5b2b9; }
+
+h1 > a {
+  color: #111; }
+
+h1 > a:visited {
+  color: #111; }
 
 /**
  * Blockquotes
  */
 blockquote {
-  color: #828282;
-  border-left: 4px solid #e8e8e8;
+  color: #222222;
+  border-left: 5px solid #c8c8c8;
   padding-left: 15px;
-  font-size: 18px;
-  letter-spacing: -1px;
+  font-size: 16px;
+  letter-spacing: 0px;
+  font-family: 'Helvetica Neue', Helvetica, Calibri, Arial, Verdana, sans-serif;
   font-style: italic; }
   blockquote > :last-child {
     margin-bottom: 0; }
@@ -91,9 +106,9 @@ blockquote {
 pre,
 code {
   font-size: 15px;
-  border: 1px solid #e8e8e8;
-  border-radius: 3px;
-  background-color: #eef; }
+  border: 1px solid #c8c8c8;
+  border-radius: 5px;
+  background-color: #f8f8f8; }
 
 code {
   padding: 1px 5px; }
@@ -110,16 +125,16 @@ pre {
  * Wrapper
  */
 .wrapper {
-  max-width: -webkit-calc(950px - (30px * 2));
-  max-width: calc(950px - (30px * 2));
+  max-width: -webkit-calc(1050px - (30px * 2));
+  max-width: calc(1050px - (30px * 2));
   margin-right: auto;
   margin-left: auto;
   padding-right: 30px;
   padding-left: 30px; }
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 950px) {
     .wrapper {
-      max-width: -webkit-calc(950px - (30px));
-      max-width: calc(950px - (30px));
+      max-width: -webkit-calc(1050px - (30px));
+      max-width: calc(1050px - (30px));
       padding-right: 15px;
       padding-left: 15px; } }
 
@@ -140,16 +155,28 @@ pre {
   height: 16px;
   vertical-align: middle; }
   .icon > svg path {
-    fill: #828282; }
+    fill: #626262; }
+
+.post-comments {
+  font-variant: small-caps; }
 
 /**
  * Site header
  */
 .site-header {
-  border-top: 5px solid #424242;
-  border-bottom: 1px solid #e8e8e8;
-  min-height: 56px;
+  border-top: 4px solid #222222;
   position: relative; }
+
+/**
+ * Fix header
+ */
+header > div.wrapper {
+  background-color: #fdfdfd;
+  padding-top: 5px; }
+
+div.page-content > div.wrapper {
+  background-color: #fdfdfd;
+  padding: 30px; }
 
 .site-title {
   font-size: 26px;
@@ -158,7 +185,7 @@ pre {
   margin-bottom: 0;
   float: left; }
   .site-title, .site-title:visited {
-    color: #424242; }
+    color: #222222; }
 
 .site-nav {
   float: right;
@@ -175,8 +202,8 @@ pre {
       position: absolute;
       top: 9px;
       right: 30px;
-      background-color: #fdfdfd;
-      border: 1px solid #e8e8e8;
+      background-color: #f0f0f0;
+      border: 1px solid #c8c8c8;
       border-radius: 5px;
       text-align: right; }
       .site-nav .menu-icon {
@@ -191,7 +218,7 @@ pre {
           width: 18px;
           height: 15px; }
           .site-nav .menu-icon > svg path {
-            fill: #424242; }
+            fill: #222222; }
       .site-nav .trigger {
         clear: both;
         display: none; }
@@ -206,19 +233,23 @@ pre {
  * Site footer
  */
 .site-footer {
-  border-top: 1px solid #e8e8e8;
   padding: 30px 0; }
 
 .footer-wrapper {
-  margin-left: auto;
-  margin-right: auto;
-  width: 300px; }
+  width: 990px;
+  text-align: center; }
+
+.footer-wrapper-content {
+  margin: 0 auto;
+  display: inline-block; }
+  .footer-wrapper-content > a {
+    border-bottom: none; }
 
 /**
  * Page content
  */
 .page-content {
-  padding: 30px 0; }
+  padding: 0px; }
 
 .page-heading {
   font-size: 20px; }
@@ -231,7 +262,7 @@ pre {
 
 .post-meta {
   font-size: 14px;
-  color: #828282; }
+  color: #626262; }
 
 .post-link {
   display: block;
@@ -258,7 +289,7 @@ pre {
   font-size: 42px;
   letter-spacing: -1px;
   line-height: 1; }
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 950px) {
     .post-title {
       font-size: 36px; } }
 
@@ -266,17 +297,17 @@ pre {
   margin-bottom: 30px; }
   .post-content h2 {
     font-size: 32px; }
-    @media screen and (max-width: 900px) {
+    @media screen and (max-width: 950px) {
       .post-content h2 {
         font-size: 28px; } }
   .post-content h3 {
     font-size: 26px; }
-    @media screen and (max-width: 900px) {
+    @media screen and (max-width: 950px) {
       .post-content h3 {
         font-size: 22px; } }
   .post-content h4 {
     font-size: 20px; }
-    @media screen and (max-width: 900px) {
+    @media screen and (max-width: 950px) {
       .post-content h4 {
         font-size: 18px; } }
 
@@ -293,143 +324,274 @@ pre {
   margin-right: auto; }
 
 /**
- * Syntax highlighting styles
+ * Index post section:
  */
-.highlight {
-  background: #fff; }
-  .highlight .c {
-    color: #998;
-    font-style: italic; }
-  .highlight .err {
-    color: #a61717;
-    background-color: #e3d2d2; }
-  .highlight .k {
-    font-weight: bold; }
-  .highlight .o {
-    font-weight: bold; }
-  .highlight .cm {
-    color: #998;
-    font-style: italic; }
-  .highlight .cp {
-    color: #999;
-    font-weight: bold; }
-  .highlight .c1 {
-    color: #998;
-    font-style: italic; }
-  .highlight .cs {
-    color: #999;
-    font-weight: bold;
-    font-style: italic; }
-  .highlight .gd {
-    color: #000;
-    background-color: #fdd; }
-  .highlight .gd .x {
-    color: #000;
-    background-color: #faa; }
-  .highlight .ge {
-    font-style: italic; }
-  .highlight .gr {
-    color: #a00; }
-  .highlight .gh {
-    color: #999; }
-  .highlight .gi {
-    color: #000;
-    background-color: #dfd; }
-  .highlight .gi .x {
-    color: #000;
-    background-color: #afa; }
-  .highlight .go {
-    color: #888; }
-  .highlight .gp {
-    color: #555; }
-  .highlight .gs {
-    font-weight: bold; }
-  .highlight .gu {
-    color: #aaa; }
-  .highlight .gt {
-    color: #a00; }
-  .highlight .kc {
-    font-weight: bold; }
-  .highlight .kd {
-    font-weight: bold; }
-  .highlight .kp {
-    font-weight: bold; }
-  .highlight .kr {
-    font-weight: bold; }
-  .highlight .kt {
-    color: #458;
-    font-weight: bold; }
-  .highlight .m {
-    color: #099; }
-  .highlight .s {
-    color: #d14; }
-  .highlight .na {
-    color: #008080; }
-  .highlight .nb {
-    color: #0086B3; }
-  .highlight .nc {
-    color: #458;
-    font-weight: bold; }
-  .highlight .no {
-    color: #008080; }
-  .highlight .ni {
-    color: #800080; }
-  .highlight .ne {
-    color: #900;
-    font-weight: bold; }
-  .highlight .nf {
-    color: #900;
-    font-weight: bold; }
-  .highlight .nn {
-    color: #555; }
-  .highlight .nt {
-    color: #000080; }
-  .highlight .nv {
-    color: #008080; }
-  .highlight .ow {
-    font-weight: bold; }
-  .highlight .w {
-    color: #bbb; }
-  .highlight .mf {
-    color: #099; }
-  .highlight .mh {
-    color: #099; }
-  .highlight .mi {
-    color: #099; }
-  .highlight .mo {
-    color: #099; }
-  .highlight .sb {
-    color: #d14; }
-  .highlight .sc {
-    color: #d14; }
-  .highlight .sd {
-    color: #d14; }
-  .highlight .s2 {
-    color: #d14; }
-  .highlight .se {
-    color: #d14; }
-  .highlight .sh {
-    color: #d14; }
-  .highlight .si {
-    color: #d14; }
-  .highlight .sx {
-    color: #d14; }
-  .highlight .sr {
-    color: #009926; }
-  .highlight .s1 {
-    color: #d14; }
-  .highlight .ss {
-    color: #990073; }
-  .highlight .bp {
-    color: #999; }
-  .highlight .vc {
-    color: #008080; }
-  .highlight .vg {
-    color: #008080; }
-  .highlight .vi {
-    color: #008080; }
-  .highlight .il {
-    color: #099; }
+.post {
+  display: block;
+  overflow: auto;
+  margin: auto;
+  clear: both; }
+
+.post-thumbnail {
+  align: top;
+  float: left;
+  width: 100px;
+  padding: 10px 30px 30px 0px; }
+
+.post-thumbnail-img {
+  border-radius: 5px;
+  padding: 0px;
+  margin: 0px;
+  height: 100px;
+  width: 100px; }
+
+.post-data {
+  width: 860px;
+  float: left; }
+
+.pagination-center {
+  margin: 0 auto;
+  display: inline-block; }
+
+.pagination {
+  width: 990px;
+  padding: 0px 10px;
+  text-align: center; }
+
+.pagination-item {
+  padding-right: 5px;
+  min-width: 15px;
+  float: left; }
+  .pagination-item > a {
+    border-bottom: none; }
+
+.page-navigation {
+  border-radius: 10px;
+  border: 1px dotted #c8c8c8;
+  padding: 10px 30px;
+  margin-bottom: 30px; }
+
+/*
+ * GitHub style for Pygments syntax highlighter, for use with Jekyll
+ * Courtesy of GitHub.com
+ */
+.highlight pre, pre, .highlight .hll {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 5px; }
+
+.highlight .c {
+  color: #999988;
+  font-style: italic; }
+
+.highlight .err {
+  color: #a61717;
+  background-color: #e3d2d2; }
+
+.highlight .k {
+  font-weight: bold; }
+
+.highlight .o {
+  font-weight: bold; }
+
+.highlight .cm {
+  color: #999988;
+  font-style: italic; }
+
+.highlight .cp {
+  color: #999999;
+  font-weight: bold; }
+
+.highlight .c1 {
+  color: #999988;
+  font-style: italic; }
+
+.highlight .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic; }
+
+.highlight .gd {
+  color: #000000;
+  background-color: #ffdddd; }
+
+.highlight .gd .x {
+  color: #000000;
+  background-color: #ffaaaa; }
+
+.highlight .ge {
+  font-style: italic; }
+
+.highlight .gr {
+  color: #aa0000; }
+
+.highlight .gh {
+  color: #999999; }
+
+.highlight .gi {
+  color: #000000;
+  background-color: #ddffdd; }
+
+.highlight .gi .x {
+  color: #000000;
+  background-color: #aaffaa; }
+
+.highlight .go {
+  color: #888888; }
+
+.highlight .gp {
+  color: #555555; }
+
+.highlight .gs {
+  font-weight: bold; }
+
+.highlight .gu {
+  color: #800080;
+  font-weight: bold; }
+
+.highlight .gt {
+  color: #aa0000; }
+
+.highlight .kc {
+  font-weight: bold; }
+
+.highlight .kd {
+  font-weight: bold; }
+
+.highlight .kn {
+  font-weight: bold; }
+
+.highlight .kp {
+  font-weight: bold; }
+
+.highlight .kr {
+  font-weight: bold; }
+
+.highlight .kt {
+  color: #445588;
+  font-weight: bold; }
+
+.highlight .m {
+  color: #009999; }
+
+.highlight .s {
+  color: #dd1144; }
+
+.highlight .n {
+  color: #333333; }
+
+.highlight .na {
+  color: teal; }
+
+.highlight .nb {
+  color: #0086b3; }
+
+.highlight .nc {
+  color: #445588;
+  font-weight: bold; }
+
+.highlight .no {
+  color: teal; }
+
+.highlight .ni {
+  color: purple; }
+
+.highlight .ne {
+  color: #990000;
+  font-weight: bold; }
+
+.highlight .nf {
+  color: #990000;
+  font-weight: bold; }
+
+.highlight .nn {
+  color: #555555; }
+
+.highlight .nt {
+  color: navy; }
+
+.highlight .nv {
+  color: teal; }
+
+.highlight .ow {
+  font-weight: bold; }
+
+.highlight .w {
+  color: #bbbbbb; }
+
+.highlight .mf {
+  color: #009999; }
+
+.highlight .mh {
+  color: #009999; }
+
+.highlight .mi {
+  color: #009999; }
+
+.highlight .mo {
+  color: #009999; }
+
+.highlight .sb {
+  color: #dd1144; }
+
+.highlight .sc {
+  color: #dd1144; }
+
+.highlight .sd {
+  color: #dd1144; }
+
+.highlight .s2 {
+  color: #dd1144; }
+
+.highlight .se {
+  color: #dd1144; }
+
+.highlight .sh {
+  color: #dd1144; }
+
+.highlight .si {
+  color: #dd1144; }
+
+.highlight .sx {
+  color: #dd1144; }
+
+.highlight .sr {
+  color: #009926; }
+
+.highlight .s1 {
+  color: #dd1144; }
+
+.highlight .ss {
+  color: #990073; }
+
+.highlight .bp {
+  color: #999999; }
+
+.highlight .vc {
+  color: teal; }
+
+.highlight .vg {
+  color: teal; }
+
+.highlight .vi {
+  color: teal; }
+
+.highlight .il {
+  color: #009999; }
+
+.highlight .gc {
+  color: #999;
+  background-color: #EAF2F5; }
+
+.highlight pre code * {
+  white-space: nowrap; }
+
+.highlight pre {
+  overflow-x: auto; }
+
+.highlight pre code {
+  white-space: pre; }
 
 .svg-icon {
   width: 40px;
