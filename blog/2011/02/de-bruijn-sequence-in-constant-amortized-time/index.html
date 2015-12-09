@@ -94,38 +94,44 @@
 
   <article class="post-content">
     <p>Follow up on the previous blogpost.</p>
+
 <p>Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:</p>
-<p><i>K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)</i></p>
-<p>It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that is isn't really constant time, but approaches it very much. Calculating the worst-case scenario isn't worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true.... until the array underneath needs to be resized. During this resize it'll take some more time. So the algorithm isn't really constant time, but constant amortized time.</p>
+
+<p><em>K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)</em></p>
+
+<p>It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that is isn’t really constant time, but approaches it very much. Calculating the worst-case scenario isn’t worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true…. until the array underneath needs to be resized. During this resize it’ll take some more time. So the algorithm isn’t really constant time, but constant amortized time.</p>
+
 <p>This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).</p>
-<pre class="brush:java">
-	public String generateDeBruijnSequence(int k, int n) {
-		StringBuilder sequence = new StringBuilder();
-		generateLyndonWords(1, 1, k, new int[n+1], sequence);
-		return sequence.toString();
-	}
-	
-	private void generateLyndonWords(int t, int p, int k, int[] a, StringBuilder sequence) {
-		if (t &gt; a.length-1) {
-			if((a.length-1)%p==0) {
-				for(int i = 1; i &lt; p+1;i++) {
-					sequence.append(a[i]);
-				}
-			}
-		} else {
-			a[t] = a[t-p]; 
-			generateLyndonWords(t+1,p, k, a, sequence);
-			for(int j=a[t-p]+1; j&lt;=k-1; j++) {
-				a[t] = j; 
-				generateLyndonWords(t+1,t, k, a, sequence);
-			}
-		}
-	}
-</pre>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">generateDeBruijnSequence</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="o">();</span>
+	<span class="n">generateLyndonWords</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">],</span> <span class="n">sequence</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">sequence</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">generateLyndonWords</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">,</span> <span class="kt">int</span> <span class="n">p</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">sequence</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">((</span><span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)%</span><span class="n">p</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">sequence</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+		<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">];</span> 
+		<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">p</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">]+</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;=</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span> 
+			<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">t</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p><strong>Update June 7th 2012:</strong><br />
 I just stumbled across this interesting read: <a href="http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php">http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php</a></p>
+
 <p>The keypad example from that link can be easily calculated with the code above:<br />
 generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
+
 
   </article>
 

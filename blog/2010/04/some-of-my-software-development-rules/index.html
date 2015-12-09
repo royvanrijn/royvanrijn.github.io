@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Some of my software development rules</title>
-  <meta name="description" content="Here are (in my opinion) five of the most important 'rules' in software development.Changes happenThe reason why waterfall doesn't work and agile works a lot...">
+  <meta name="description" content="Here are (in my opinion) five of the most important ‘rules’ in software development.Changes happenThe reason why waterfall doesn’t work and agile works a lot...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,21 +93,31 @@
   </header>
 
   <article class="post-content">
-    <p>Here are (in my opinion) five of the most important 'rules' in software development.</p>
-<p><!--more--></p>
-<h2>Changes happen</h2>
-<p>The reason why waterfall doesn't work and agile works a lot better. Changes happen. People will always change their mind, over time technology changes and situations change. So during software development you will have to be flexible with the requirements.</p>
-<h2>Create software that the client wants, not what he says he wants.</h2>
+    <p>Here are (in my opinion) five of the most important ‘rules’ in software development.</p>
+
+<h1 id="changes-happen">Changes happen</h1>
+
+<p>The reason why waterfall doesn’t work and agile works a lot better. Changes happen. People will always change their mind, over time technology changes and situations change. So during software development you will have to be flexible with the requirements.</p>
+
+<h1 id="create-software-that-the-client-wants-not-what-he-says-he-wants">Create software that the client wants, not what he says he wants.</h1>
+
 <p>What the clients tells you he wants might not (entirely) be what he/she actually wants or the organisation needs. It is vital to ask questions and release early. When you have something visible, let the client judge it.<br />
 Some people say there is one major drawback of showing designs and the application early on, the client probably gets new ideas and wants to change the design. But that actually is a good thing, you still have much time left to plan these changes! If you do a waterfall-method and release on delivery date.. the client still wants his/her changes (!).</p>
-<h2>Always write down decisions.</h2>
+
+<h1 id="always-write-down-decisions">Always write down decisions.</h1>
+
 <p>During a project, especially during the startup, there are a lot of choices to be made. Is it going to be a web application, or standalone? What frameworks are we going to use?<br />
-All these decisions are made with arguments, pro's and con's, write those down! A project-wiki would be a perfect place. If some members leave the team and new members join the team this information is vital. When the new members join the team their first reaction will be "Why are they doing it this way and not ...?". Reading the argumentation will help them understand the situation and get them up to speed. Also, during projects there are always moments when you reflect on choices made in the past: "Why did we do ... wouldn't we have done better if we did/used ...". You can now always review the past arguments to see if the current situation has changed so much that a reconsideration would be in order or not.</p>
-<h2>The team owns the code.</h2>
-<p>If you write a piece of code, it is not your code. The code belongs to the collective, the team. If somebody changes your code, embrace it, it was probably needed. If you see an ugly piece of code you didn't write, you are also responsible, refactor it.</p>
-<h2>Commit driven development.</h2>
-<p>Test driven development is a great idea. First write a unit-test, check to see if it fails, now write your code until the test succeeds. This way you know two important things, the final code is easy to test (it was written with testing in mind) and the code does what the test expects. But there is one major drawback, most people (not all) simply can't work this way. For some people it works great, but some developers want to write their tests afterwards. And that is ok, there is just one important rule: Never check your code in (the trunk) if it isn't tested and doesn't have proper documentation (e.g. JavaDoc). So: It is no problem if you write code and then tests, or tests then the code, as long as you write them before commiting to your SCM repository.</p>
-<p>There are situations when you need to write a lot of new code, in that case you still want to be able to check your code in, even if you aren't done yet. For these situations you create a feature-branch. On this branch you develop all the new funtionality and once it is done, documented and tested, merge it with the trunk.</p>
+All these decisions are made with arguments, pro’s and con’s, write those down! A project-wiki would be a perfect place. If some members leave the team and new members join the team this information is vital. When the new members join the team their first reaction will be “Why are they doing it this way and not …?”. Reading the argumentation will help them understand the situation and get them up to speed. Also, during projects there are always moments when you reflect on choices made in the past: “Why did we do … wouldn’t we have done better if we did/used …”. You can now always review the past arguments to see if the current situation has changed so much that a reconsideration would be in order or not.</p>
+
+<h1 id="the-team-owns-the-code">The team owns the code.</h1>
+
+<p>If you write a piece of code, it is not your code. The code belongs to the collective, the team. If somebody changes your code, embrace it, it was probably needed. If you see an ugly piece of code you didn’t write, you are also responsible, refactor it.</p>
+
+<h1 id="commit-driven-development">Commit driven development.</h1>
+
+<p>Test driven development is a great idea. First write a unit-test, check to see if it fails, now write your code until the test succeeds. This way you know two important things, the final code is easy to test (it was written with testing in mind) and the code does what the test expects. But there is one major drawback, most people (not all) simply can’t work this way. For some people it works great, but some developers want to write their tests afterwards. And that is ok, there is just one important rule: Never check your code in (the trunk) if it isn’t tested and doesn’t have proper documentation (e.g. JavaDoc). So: It is no problem if you write code and then tests, or tests then the code, as long as you write them before commiting to your SCM repository.</p>
+
+<p>There are situations when you need to write a lot of new code, in that case you still want to be able to check your code in, even if you aren’t done yet. For these situations you create a feature-branch. On this branch you develop all the new funtionality and once it is done, documented and tested, merge it with the trunk.</p>
 
   </article>
 

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Android application #1</title>
-  <meta name="description" content="This weekend I wrote my first Android application: Love or HateThe idea behind the game is very simple. When you start it the application goes online and loo...">
+  <meta name="description" content="This weekend I wrote my first Android application: Love or Hate  The idea behind the game is very simple. When you start it the application goes online and l...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,34 +93,47 @@
   </header>
 
   <article class="post-content">
-    <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a><br />
-<br />
-The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
+    <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a>  </p>
+
+<p>The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
+
 <ul>
-<li>"I love it when"</li>
-<li>"I hate it when"</li>
+  <li>“I love it when”</li>
+  <li>“I hate it when”</li>
 </ul>
-<p>
-The application now displays some user information (username/profile picture) and shows parts of the tweet. The words "love" and "hate" are removed and the user has to guess which of the two words was in the original tweet.<br /></p>
-<h3>Backend</h3>
-<p></p>
-<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I've used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.<br /></p>
-<h3>Frontend</h3>
-<p></p>
-<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don't have one... But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don't have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
-<p>The next discovery was: Android isn't at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.<br /></p>
-<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I've released my application in English (default), Dutch and French.<br /></p>
-<h3>Releasing to the Market</h3>
-<p></p>
-<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on "Export as signed Android application" and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.<br /></p>
-<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don't think I'll even see that return on investment, I've decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).<br /></p>
-<h3>Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="" title="ad_mob_logo_header" width="100" height="47" /></h3>
-<p>Now that I've invested 25 euro's, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.<br /></p>
-<h3>Results</h3>
-<p></p>
-<p>After one day I'm pretty surprised: Already 350 people have downloaded the application and I've already earned &gt; 50 cents from AdMob (2% ROI).<br /></p>
-<p>I've really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
-<p>(p.s. No, I'm not going to port my <a href="/blog/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/blog/2010/07/patent-infringement/">sued</a>)</p>
+
+<p>The application now displays some user information (username/profile picture) and shows parts of the tweet. The words “love” and “hate” are removed and the user has to guess which of the two words was in the original tweet.  </p>
+
+<h1 id="backend">Backend</h1>
+
+<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I’ve used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.  </p>
+
+<h1 id="frontend">Frontend</h1>
+
+<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don’t have one… But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don’t have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
+
+<p>The next discovery was: Android isn’t at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.  </p>
+
+<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I’ve released my application in English (default), Dutch and French.  </p>
+
+<h1 id="releasing-to-the-market">Releasing to the Market</h1>
+
+<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on “Export as signed Android application” and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.  </p>
+
+<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don’t think I’ll even see that return on investment, I’ve decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).  </p>
+
+<h1 id="adding-ads-from-admoblogoheaderadmoblogoheader">Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="ad_mob_logo_header" /></h1>
+
+<p>Now that I’ve invested 25 euro’s, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.  </p>
+
+<h1 id="results">Results</h1>
+
+<p>After one day I’m pretty surprised: Already 350 people have downloaded the application and I’ve already earned &gt; 50 cents from AdMob (2% ROI).  </p>
+
+<p>I’ve really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
+
+<p>(p.s. No, I’m not going to port my <a href="/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/2010/07/patent-infringement/">sued</a>)</p>
+
 
   </article>
 

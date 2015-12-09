@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Corewars - An Introduction to Hostile Programming</title>
-  <meta name="description" content="Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle p...">
+  <meta name="description" content="Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle p...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -91,37 +91,43 @@
   </header>
 
   <article class="post-content">
-    <p>Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
+    <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
+
 <p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
-<p>Here's an example of a typical Corewar program:</p>
-<pre class="brush:text">
-     org   wipe
 
-     step  equ 5
-     first equ bomb-10
+<p>Here’s an example of a typical Corewar program:</p>
 
-bomb:mov.i #1,       -1
+<figure class="highlight"><pre><code class="language-text" data-lang="text">org   wipe
+    
+step  equ 5
+first equ bomb-10
+    
+    bomb:mov.i #1,       -1
+    
+    ptr: sub   #step,    #first
+    wipe:jmz.f ptr,      @ptr
+    
+mov   bomb,     &gt;ptr
+djn.f wipe,     {ptr-5
+    
+end</code></pre></figure>
 
-ptr: sub   #step,    #first
-wipe:jmz.f ptr,      @ptr
+<p>This simple example of scissors once held a 20 point lead over it’s rivals. The first instruction is never executed, it’s the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
 
-     mov   bomb,     >ptr
-     djn.f wipe,     {ptr-5
+<p>Corewar is still going strong, and celebrates it’s 25th anniversary in 2009. If you’d like to discover more about Corewar, here are the top resources:</p>
 
-     end
-</pre>
-<p>This simple example of scissors once held a 20 point lead over it's rivals. The first instruction is never executed, it's the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
-<p>Corewar is still going strong, and celebrates it's 25th anniversary in 2009. If you'd like to discover more about Corewar, here are the top resources:</p>
 <ul>
-<li><a href="http://vyznev.net/corewar/guide.html">The Beginner's Guide to Redcode</a> will teach you the language of Corewar</li>
-<li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
-<li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
-<li><a href=" http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
-<li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
-<li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
-<li><a href="irc://irc.freenode.net/#COREWARS">#corewars</a> is the official Corewar discussion channel, hosted by <a href="irc://irc.freenode.net/#COREWARS">irc.freenode.net</a></li>
+  <li><a href="http://vyznev.net/corewar/guide.html">The Beginner’s Guide to Redcode</a> will teach you the language of Corewar</li>
+  <li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
+  <li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
+  <li><a href="http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
+  <li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
+  <li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
+  <li>#corewars is the official Corewar discussion channel, hosted by irc.freenode.net</li>
 </ul>
+
 <p>What are your experiences with Corewar, have you ever had any success?</p>
+
 
   </article>
 

@@ -94,45 +94,50 @@
 
   <article class="post-content">
     <p>The <a href="http://infinitesearchspace.dyndns.org/orchardplanting">Orchard Planting</a> contest from infinite search space is over. So it is time for a quick write-up.</p>
+
 <p>The rules are simple, on a grid of integers, place N points on the grid to get as much 4 points on a line and never more then 4 points on a line.</p>
+
 <p>My big break-through was when I figured out a way to improve the calculation speed of a solution, and make it possible to extend existing solutions (going back and forwards). To do this I used a unique vector (greatest common divisor vector) which is the same for all point on the same line:</p>
-<pre class="brush:java">
-//Calculate unique vector(hash):
-doubleIntVector(int x1, int y1, int x2, int y2) {
-    int stepx = x2-x1;
-    int stepy = y2-y1;
-    int gcd = gcd(abs(x2-x1), abs(y2-y1));
-    if(gcd &gt; 0) {
-        stepx /= gcd;
-        stepy /= gcd;
-    }
 
-    if(stepx &lt; 0) {
-        return (10000 * -stepx) + -stepy;
-    } else if(stepx == 0 && stepy &lt; 0){
-        return -stepy; //this looks curious... but fixed a bug
-    } else {
-        return (10000 * stepx) + stepy;
-    }
-}
-</pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Calculate unique vector(hash):</span>
+<span class="n">doubleIntVector</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">stepx</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">stepy</span> <span class="o">=</span> <span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">gcd</span> <span class="o">=</span> <span class="n">gcd</span><span class="o">(</span><span class="n">abs</span><span class="o">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">),</span> <span class="n">abs</span><span class="o">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">));</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">gcd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">stepx</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+        <span class="n">stepy</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="o">-</span><span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="nf">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">stepy</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span> <span class="c1">//this looks curious... but fixed a bug</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Now we can evaluate the points:</p>
-<pre class="brush:java">
-for point A in points 0....N {
-    create list vectorsA 
-    for point B in points A+1....N {
-         vectorA.add( doubleIntVector(A.x, A.y, B.x, B.y) )
-    }
-    sort(vectorsA)
-    //if vectorsA has three similair vectors you have 4 points on a line! 
-    //(3> = invalid and 2 = candidate for extending!)
-}
 
-</pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span> <span class="n">point</span> <span class="n">A</span> <span class="n">in</span> <span class="n">points</span> <span class="mi">0</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+    <span class="n">create</span> <span class="n">list</span> <span class="n">vectorsA</span> 
+    <span class="k">for</span> <span class="n">point</span> <span class="n">B</span> <span class="n">in</span> <span class="n">points</span> <span class="n">A</span><span class="o">+</span><span class="mi">1</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+         <span class="n">vectorA</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">doubleIntVector</span><span class="o">(</span><span class="n">A</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">y</span><span class="o">)</span> <span class="o">)</span>
+    <span class="o">}</span>
+    <span class="n">sort</span><span class="o">(</span><span class="n">vectorsA</span><span class="o">)</span>
+    <span class="c1">//if vectorsA has three similair vectors you have 4 points on a line! </span>
+    <span class="c1">//(3&gt; = invalid and 2 = candidate for extending!)</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>If a point has three vectors that are the same, we have a line with four points! This can be checked easily if you sort the vectors and go through them once.</p>
+
 <p>Also adding and removing points becomes very easy. A lot of the GCD calculations can be cached. To remove a point, just remove the vectors it made. And to add a point, calculate all the new vectors. So in the end it basically all boils down to a lot of GCD calculations and sorting.</p>
-<p>Was this the fastest way to calculate solutions in this contest? I don't know, but I was really pleased when I figured it out. With a better algorithm for picking possible numbers (instead of hill-climbing) and some more processor power I bet I could have ended a bit higher up the hill.</p>
+
+<p>Was this the fastest way to calculate solutions in this contest? I don’t know, but I was really pleased when I figured it out. With a better algorithm for picking possible numbers (instead of hill-climbing) and some more processor power I bet I could have ended a bit higher up the hill.</p>
+
 <p>Also: Keep an eye out for the next contest, it is going to be an interesting one! January the 13th.</p>
+
 
   </article>
 

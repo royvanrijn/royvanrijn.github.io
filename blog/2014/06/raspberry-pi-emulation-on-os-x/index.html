@@ -94,116 +94,136 @@
 
   <article class="post-content">
     <p>Today a colleague and I wanted to install <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGR">gnuradio</a> on a Raspberry Pi. This can than be combined with the amazing RTL-SDR dongle. This dongle this is a DVB-T USB stick, but can be turned into full software defined radio.</p>
+
 <p>More information on that can be found here: <a href="http://www.rtl-sdr.com/about-rtl-sdr/">http://www.rtl-sdr.com/about-rtl-sdr/</a>.</p>
-<h1>Compiling gnuradio</h1>
+
+<h1 id="compiling-gnuradio">Compiling gnuradio</h1>
+
 <p>When trying to compile gnuradio on the RPi (Raspberry Pi) we followed <a href="http://k1gto.blogspot.nl/2012/09/compiling-gnuradio-on-raspberry-pi-raspi.html">this</a> description. But we quickly ran into a problem, compiling would take 20+ hours!</p>
-<p>After running 'make' and grabbing a cup of coffee we set ourself a new goal, is it possible to emulate the RPi on our fast Macbook instead?</p>
-<p><b>Spoiler:</b> Building in the emulator is just as slow. There is a slightly faster method involving <a href="http://sentryytech.blogspot.nl/2013/02/faster-compiling-on-emulated-raspberry.html">chroot</a>. But if you really want speed you'll have to set up a <a href="http://www.openframeworks.cc/setup/raspberrypi/Raspberry-Pi-Cross-compiling-guide.html">cross compiler environment</a>, which I haven't been able to get up and running yet.</p>
-<h1>Qemu</h1>
-<p>After following a couple of guides that didn't work we finally managed to get Qemu up and running, this is what we did:</p>
+
+<p>After running ‘make’ and grabbing a cup of coffee we set ourself a new goal, is it possible to emulate the RPi on our fast Macbook instead?</p>
+
+<p><strong>Spoiler:</strong> Building in the emulator is just as slow. There is a slightly faster method involving <a href="http://sentryytech.blogspot.nl/2013/02/faster-compiling-on-emulated-raspberry.html">chroot</a>. But if you really want speed you’ll have to set up a <a href="http://www.openframeworks.cc/setup/raspberrypi/Raspberry-Pi-Cross-compiling-guide.html">cross compiler environment</a>, which I haven’t been able to get up and running yet.</p>
+
+<h1 id="qemu">Qemu</h1>
+
+<p>After following a couple of guides that didn’t work we finally managed to get Qemu up and running, this is what we did:</p>
+
 <ul>
-<li>Install and upgrade Xcode to 4.3 or above</li>
-<li>Install the latest version of <a href="http://mxcl.github.com/homebrew/">Homebrew</a></li>
+  <li>Install and upgrade Xcode to 4.3 or above</li>
+  <li>Install the latest version of <a href="http://mxcl.github.com/homebrew/">Homebrew</a></li>
 </ul>
+
 <p>Now we need to modify the Homebrew formula (which downloads and install qemu) to the correct version:</p>
-<pre class="brush:plain">
-osx$ vi /usr/local/Library/Formula/qemu.rb
-</pre>
-<p>I'm using the osx$ prefix for commands that are executed on your OS X machine, pi$ for commands on the virtual Raspberry Pi.</p>
-<p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <b>qemu.rb</b></p>
-<pre class="brush:plain">
-require 'formula'
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ vi /usr/local/Library/Formula/qemu.rb</code></pre></figure>
+
+<p>I’m using the osx$ prefix for commands that are executed on your OS X machine, pi$ for commands on the virtual Raspberry Pi.</p>
+
+<p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <strong>qemu.rb</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">require &#39;formula&#39;
 
 class Qemu &lt; Formula
-  homepage 'http://www.qemu.org/'
-  url 'http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2'
+  homepage &#39;http://www.qemu.org/&#39;
+  url &#39;http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2&#39;
 
-  depends_on 'jpeg'
-  depends_on 'gnutls'
-  depends_on 'glib'
+  depends_on &#39;jpeg&#39;
+  depends_on &#39;gnutls&#39;
+  depends_on &#39;glib&#39;
 
   fails_with :clang do
     build 318
   end
 
   def install
-    system "./configure", "--prefix=#{prefix}",
-                          "--cc=#{ENV.cc}",
-                          "--host-cc=#{ENV.cc}",
-                          "--enable-cocoa",
-                          "--disable-bsd-user",
-                          "--disable-guest-agent"
-    system "make install"
+    system &quot;./configure&quot;, &quot;--prefix=#{prefix}&quot;,
+                          &quot;--cc=#{ENV.cc}&quot;,
+                          &quot;--host-cc=#{ENV.cc}&quot;,
+                          &quot;--enable-cocoa&quot;,
+                          &quot;--disable-bsd-user&quot;,
+                          &quot;--disable-guest-agent&quot;
+    system &quot;make install&quot;
   end
-end
-</pre>
+end</code></pre></figure>
+
 <p>After setting qemu.rb to the correct version you can install qemu:</p>
-<pre class="brush:plain">
-osx$ brew install qemu --env=std --cc=gcc-4.2
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ brew install qemu --env=std --cc=gcc-4.2</code></pre></figure>
+
 <p>Now check if qemu is installed correctly:</p>
-<pre class="brush:plain">
-osx$ qemu-system-arm -version
-QEMU emulator version 1.7.1, Copyright (c) 2003-2008 Fabrice Bellard
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -version
+QEMU emulator version 1.7.1, Copyright (c) 2003-2008 Fabrice Bellard</code></pre></figure>
+
 <p>Now we need to download two thing:</p>
+
 <ol>
-<li>Linux kernel</li>
-<li>Raspbian image</li>
+  <li>Linux kernel</li>
+  <li>Raspbian image</li>
 </ol>
+
 <p>To download the linux kernel:</p>
-<pre class="brush:plain">
-osx$ curl http://xecdesign.com/downloads/linux-qemu/kernel-qemu > kernel-qemu
-</pre>
-<p>Now we've downloaded the latest version of the <a href="http://www.raspberrypi.org/downloads/">raspbian image</a>.<br />
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ curl http://xecdesign.com/downloads/linux-qemu/kernel-qemu &gt; kernel-qemu</code></pre></figure>
+
+<p>Now we’ve downloaded the latest version of the <a href="http://www.raspberrypi.org/downloads/">raspbian image</a>.<br />
 In our case: 2014-01-07-wheezy-raspbian.img</p>
-<h1>First boot</h1>
+
+<h1 id="first-boot">First boot</h1>
+
 <p>Now it is time to start the image in the emulator:</p>
-<pre class="brush:plain">
-osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+
 <p>This first boot is a bit special because we only initialize /bin/bash. This is because we need to make two changes to the system:</p>
+
 <p>We need to add a comment to this file:</p>
-<pre class="brush:plain">
-pi$ vi /etc/ld.so.preload
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ vi /etc/ld.so.preload</code></pre></figure>
+
 <p>Comment this line by placing a # in front of the line:</p>
-<pre class="brush:plain">
-#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so</code></pre></figure>
+
 <p>Now create the following file:</p>
-<pre class="brush:plain">
-pi$ vi /etc/udev/rules.d/90-qemu.rules
-</pre>
-<p>And put in the following content: <b>90-qemu.rules</b></p>
-<pre class="brush:plain">
-KERNEL=="sda", SYMLINK+="mmcblk0"
-KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
-KERNEL=="sda2", SYMLINK+="root"
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ vi /etc/udev/rules.d/90-qemu.rules</code></pre></figure>
+
+<p>And put in the following content: <strong>90-qemu.rules</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL==&quot;sda&quot;, SYMLINK+=&quot;mmcblk0&quot;
+KERNEL==&quot;sda?&quot;, SYMLINK+=&quot;mmcblk0p%n&quot;
+KERNEL==&quot;sda2&quot;, SYMLINK+=&quot;root&quot;</code></pre></figure>
+
 <p>Now we can stop the emulator and make one final change, the image file is a bit small and we need to increase the size before we continue:</p>
-<pre class="brush:plain">
-osx$ qemu-img resize 2014-01-07-wheezy-raspbian.img +8G
-</pre>
-<p>From now on we can do a normal boot (save this command) by removing the "init=/bin/bash" part:</p>
-<pre class="brush:plain">
-osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-img resize 2014-01-07-wheezy-raspbian.img +8G</code></pre></figure>
+
+<p>From now on we can do a normal boot (save this command) by removing the “init=/bin/bash” part:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+
 <p>The last thing we need to do to get our virtual Raspberry Pi up and running is:</p>
-<pre class="brush:plain">
-pi$ sudo ln -snf mmcblk0p2 /dev/root
-pi$ sudo raspi-config
-</pre>
-<p>In this menu, you can "Expand filesystem" to make use of the increased image size (need to reboot afterwards).</p>
-<p>Now you are ready to explore the raspberry pi without actually needing one. </p>
-<p><b>(Broken) sources</b>:<br />
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ sudo ln -snf mmcblk0p2 /dev/root
+pi$ sudo raspi-config</code></pre></figure>
+
+<p>In this menu, you can “Expand filesystem” to make use of the increased image size (need to reboot afterwards).</p>
+
+<p>Now you are ready to explore the raspberry pi without actually needing one.</p>
+
+<p><strong>(Broken) sources</strong>:<br />
 <a href="https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X">https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X</a><br />
 <a href="http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/">http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/</a></p>
-<p>Some problems we've encountered:</p>
+
+<p>Some problems we’ve encountered:</p>
+
 <ul>
-<li>qemu raspberry pi boot getting stuck in 'scsi' loop (fixed by using version 1.7.1)</li>
-<li>Disk size problems, resize didn't work, expand filesystem didn't work (fixed expanding and using ln -snf)</li>
+  <li>qemu raspberry pi boot getting stuck in ‘scsi’ loop (fixed by using version 1.7.1)</li>
+  <li>Disk size problems, resize didn’t work, expand filesystem didn’t work (fixed expanding and using ln -snf)</li>
 </ul>
+
 
   </article>
 

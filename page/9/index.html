@@ -88,28 +88,36 @@
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/son-of-darts/#disqus_thread"></a>
     	</p>
-        Another thing I've been very busy with lately is AZsPCs (Al Zimmermanns Programming Competition). The current contest is called Son of Darts.
-The idea behind these contests are that they are easy to grasp, but very hard to master.
-Lets take three darts. You have to throw them to a dartboard which is divided into 4 regions. For example, the values on these regions are: 1,2,4,6.
-The first question is: What is the lowest value you can't throw with these three darts?
-This is easy to calculate:
-Can we throw one? Yes: 1 dart in the 1
-Can we throw two? Yes: 1 dart in the 2, or 2 darts in the 1
-etc etc
-Can we throw nine? Yes: 6,2,1
-Can we throw ten? Yes: 6,4
-Can we throw eleven? Yes: 6,4,1
-Can we throw twelve? Yes: 6,6
-Can we throw thirteen? Yes: 6,6,1
-Can we throw fourteen? Yes: 6,6,2
-Can we throw fifteen? Err... no, sorry...
-So the score is: 15 points.
-The main question: Can you think of better values for the regions of the dartboard to get a higher topscore??
-This is what the competition is about. But not only for a dartboard consisting of 4 regions, but up to 40 regions. And not only for three darts, but also 4, 5 and even 6 darts.
-If you can create a good solver its pretty easy to bruteforce up to a certain point, but the problem is, you quickly get more and more options for which you have to check the scores... It is an exponential function...!
-Actually, this is not a new puzzle. Its been around of quite a long time. But its more commenly known as the local postage stamp problem (LPSP). Formulated just a little bit different, instead of a dartboard with regions you have a postcard with room for H stamps. What is the lowest value you can't create with stamps Nh? Also check out Wolfram's description of the problem.
-This problem has been proven to be NP-hard, so bruteforcing won't be an option, you'll need to use something different. Put on your thinking-caps and create some good innovative heuristics.
+        <p>Another thing I’ve been very busy with lately is AZsPCs (Al Zimmermanns Programming Competition). The current contest is called <a href="http://www.azspcs.net/Contest/SonOfDarts">Son of Darts</a>.</p>
 
+<p>The idea behind these contests are that they are easy to grasp, but very hard to master.</p>
+
+<p>Lets take three darts. You have to throw them to a dartboard which is divided into 4 regions. For example, the values on these regions are: 1,2,4,6.<br />
+The first question is: What is the lowest value you can’t throw with these three darts?</p>
+
+<p>This is easy to calculate:<br />
+Can we throw one? Yes: 1 dart in the 1<br />
+Can we throw two? Yes: 1 dart in the 2, or 2 darts in the 1<br />
+etc etc<br />
+Can we throw nine? Yes: 6,2,1<br />
+Can we throw ten? Yes: 6,4<br />
+Can we throw eleven? Yes: 6,4,1<br />
+Can we throw twelve? Yes: 6,6<br />
+Can we throw thirteen? Yes: 6,6,1<br />
+Can we throw fourteen? Yes: 6,6,2<br />
+Can we throw fifteen? Err… no, sorry…</p>
+
+<p>So the score is: 15 points.</p>
+
+<p>The main question: Can you think of better values for the regions of the dartboard to get a higher topscore??</p>
+
+<p>This is what the competition is about. But not only for a dartboard consisting of 4 regions, but up to 40 regions. And not only for three darts, but also 4, 5 and even 6 darts.</p>
+
+<p>If you can create a good solver its pretty easy to bruteforce up to a certain point, but the problem is, you quickly get more and more options for which you have to check the scores… It is an <a href="http://en.wikipedia.org/wiki/Exponential_function">exponential function</a>…!</p>
+
+<p>Actually, this is not a new puzzle. Its been around of quite a long time. But its more commenly known as the <a href="http://en.wikipedia.org/wiki/Postage_stamp_problem">local postage stamp problem</a> (LPSP). Formulated just a little bit different, instead of a dartboard with regions you have a postcard with room for H stamps. What is the lowest value you can’t create with stamps Nh? Also check out <a href="http://mathworld.wolfram.com/PostageStampProblem.html">Wolfram’s</a> description of the problem.</p>
+
+<p>This problem has been proven to be NP-hard, so bruteforcing won’t be an option, you’ll need to use something different. Put on your thinking-caps and create some good innovative <a href="http://en.wikipedia.org/wiki/Heuristic">heuristics</a>.</p>
 
 
 	    <p>
@@ -137,44 +145,57 @@ This problem has been proven to be NP-hard, so bruteforcing won't be an option, 
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread"></a>
     	</p>
-        About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:
+        <p>About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:</p>
 
-personHasInsurence (A)
-personNeedsInsurence (B)
-personIsKnownAtThisAgency (C)
+<ol>
+  <li>personHasInsurence (A)</li>
+  <li>personNeedsInsurence (B)</li>
+  <li>personIsKnownAtThisAgency (C)</li>
+</ol>
 
-We also had two particulair cases for an insurance page:
-Case 1:
-Person has insurence and isn't yet known at this agency
-Case 2:
-Person doesn't have insurence, needs insurence and is known at this agency
-Case 3:
-Person doesn't have insurence, doesn't need insurence and is known at this agency
-So the view-logic was a bit complex:
+<p>We also had two particulair cases for an insurance page:</p>
 
-if( (A && !C) || (!A && B && C) || (!A && !B && C ) ) {
-    showPage();
-}
+<p>Case 1:<br />
+Person has insurence and isn’t yet known at this agency</p>
 
-Then I remebered something I learned at school some time ago. So called karnaugh maps. I've completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called "Quine McCluskey"-algorithm, and I decided to implement it (just to learn how it works).
-Quine - McCluskey algorithm
-First of, lets go through a couple of terms.
+<p>Case 2:<br />
+Person doesn’t have insurence, needs insurence and is known at this agency</p>
 
-Minterm: A small boolean function which has all the different input variables, once. So for example, a minterm using the above variables would be: ABC (A and B and C), or A'BC (not A and B and C).
-The first thing you do using this algorithm is that you find so called "prime implicants". An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can't be combined with other implicants (for more details, read the wikipage with examples)!
-After combining all the minterm of your case(s), you'll end up with a "prime implicant chart". This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot "essential prime implicants".  That is, implicants which are unique in covering a field. You have to use these implicants in the final logic.
-When you have multiple options left to combine to cover all the fields, you can use Petrick's Method to select the best/smallest option.
-Using the above example, if you minimize, you'll come down to:
+<p>Case 3:<br />
+Person doesn’t have insurence, doesn’t need insurence and is known at this agency</p>
 
-if((!A && C) || (A && !C)) {
-    showPage();
-}
+<p>So the view-logic was a bit complex:</p>
 
-The algorithm is pretty fun to program, and its a bit different from most algorithms I've seen lately!
-And if you need something even faster, try out Espresso!
-ps. I love browsing this page: List of algorithms
-But OTOH, its kind of depressing I still have soo much to learn.
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="n">showPage</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
 
+<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I’ve completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called “<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>“-algorithm, and I decided to implement it (just to learn how it works).</p>
+
+<h1 id="quine---mccluskey-algorithm">Quine - McCluskey algorithm</h1>
+
+<p>First of, lets go through a couple of terms.</p>
+
+<p>Minterm: A small boolean function which has all the different input variables, <strong>once</strong>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A’BC (not A and B and C).</p>
+
+<p>The first thing you do using this algorithm is that you find so called “prime implicants”. An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can’t be combined with other implicants (for more details, read the wikipage with examples)!</p>
+
+<p>After combining all the minterm of your case(s), you’ll end up with a “prime implicant chart”. This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot “essential prime implicants”. That is, implicants which are unique in covering a field. You have to use these implicants in the final logic.</p>
+
+<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick’s Method</a> to select the best/smallest option.</p>
+
+<p>Using the above example, if you minimize, you’ll come down to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">((!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">showPage</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I’ve seen lately!</p>
+
+<p>And if you need something even faster, try out <a href="http://en.wikipedia.org/wiki/Espresso_heuristic_logic_minimizer">Espresso</a>!</p>
+
+<p>ps. I love browsing this page: <a href="http://en.wikipedia.org/wiki/List_of_algorithms">List of algorithms</a><br />
+But OTOH, its kind of depressing I still have soo much to learn.</p>
 
 
 	    <p>
@@ -202,13 +223,16 @@ But OTOH, its kind of depressing I still have soo much to learn.
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/brainfck-in-redcode/#disqus_thread"></a>
     	</p>
-        I've implemented a Brainfuck interpreter!
-Yes, you heard it right, Brainfuck (BF).
-BF is an esoteric programming language. More information on BF can be found here.
-The language itself is pretty simple, and most of it was implemented rather quickly in Redcode. The only big problem was navigating back to the correct closing brackets in a loop. This is now solved by counting the amount of open/close brackets in between.
-So here is the code:
+        <p>I’ve implemented a Brainfuck interpreter!</p>
 
-;----------------------------------------------
+<p>Yes, you heard it right, Brainfuck (BF).<br />
+BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language">esoteric</a> programming language. More information on BF can be found <a href="http://esolangs.org/wiki/Brainfuck">here</a>.</p>
+
+<p>The language itself is pretty simple, and most of it was implemented rather quickly in Redcode. The only big problem was navigating back to the correct closing brackets in a loop. This is now solved by counting the amount of open/close brackets in between.</p>
+
+<p>So here is the code:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">;----------------------------------------------
 ;redcode-94nop 
 ;name Brainfuck Interpreter (v0.3) 
 ;author Roy van Rijn 
@@ -246,8 +270,7 @@ START   mov.b   }PTR            , #0
        jmp     @-1 
 
 
-cLT     jmp     START           , &lt;PTR 
-cGT     jmp     START           , &gt;PTR 
+cLT     jmp     START           , PTR 
 
 
 cOUT    mov.b   @PTR            , &lt;6000         ;sts.b  @PTR 
@@ -830,8 +853,7 @@ EOF     dat     0               , -10           ; Halt
 PTR     dat     #PROGRAM        , #1            ; A: Execution pointer, B: Data pointer 
 
 
-end START
-
+end START</code></pre></figure>
 
 
 	    <p>
@@ -859,10 +881,11 @@ end START
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread"></a>
     	</p>
-        In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about OISC (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.
-And here is the result:
+        <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
 
-;-----------------------------------------------
+<p>And here is the result:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">;-----------------------------------------------
 ;redcode-94odd
 ;name SUBLEQ Hello World
 ;author Roy van Rijn
@@ -906,129 +929,7 @@ START  add.a  *PTR        , SUBSTR
        mov.a  @PTR        , NEWPTR
 
 ;Check if output is OUT, print and go to next instruction:
-       mov.a  &lt;PTR        , 1
-       sne.ab #0          , #OUT
-       jmp    PRINT
-
-;Substract and determine if the value &lt;= 0
-SUBSTR sub.a  PROGRAM     , PROGRAM
-       slt.a  #CORESIZE/2 , @-1
-       jmn.ba NEXT        , @-2
-
-;Jump to new address:
-NEWPTR mov.ab #0          , #0
-       mov.f  NEWPTR      , PTR
-       add.f  EQ          , PTR
-       seq.ab NEWPTR      , #HALT
-
-;Check for HALT (jump to DAT-PROGRAM)
-       jmp RESET
-
-LABEL
-PROGRAM
-
-;-----------------------------------------------
-;Translated version of the Hello World program from:
-;http://mozaika.com.au/oleg/subleq/
-
-
-dat A-LABEL,0
-dat A-LABEL,0
-dat 3,0
-dat p-LABEL,0
-dat Z-LABEL ,0
-dat 6,0
-
-dat Z-LABEL ,0
-dat A-LABEL ,0
-dat 9,0
-
-dat Z-LABEL ,0
-
-dat Z-LABEL ,0
-dat A-LABEL,0
-
-A dat PROGRAM ,0
-dat OUT ,0
-dat 15,0
-
-dat m1-LABEL,0
-dat p-LABEL,0
-dat 18,0
-
-dat A-LABEL ,0
-dat A-LABEL ,0
-dat 21,0
-
-dat E-LABEL ,0
-dat Z-LABEL ,0
-dat 24,0
-
-dat Z-LABEL ,0
-dat A-LABEL ,0
-dat 27,0
-
-dat Z-LABEL,0
-dat Z-LABEL,0
-dat 30,0
-
-dat b-LABEL,0
-dat b-LABEL,0
-dat 33,0
-
-dat p-LABEL,0
-dat Z-LABEL,0
-dat 36,0
-
-dat Z-LABEL ,0
-dat b-LABEL,0
-dat 39,0
-
-dat Z-LABEL,0
-dat Z-LABEL,0
-dat 42,0
-
-dat E-LABEL,0
-dat b-LABEL,0
-dat 48,0 ;?+3
-
-dat Z-LABEL ,0
-dat Z-LABEL,0
-dat 51,0 ;?+3
-
-dat p-LABEL,0
-dat A-LABEL,0
-dat 54,0 ;?+3
-
-dat Z-LABEL ,0
-dat Z-LABEL ,0
-dat 0,0
-
-dat 0 ,0
-dat 0 ,0
-dat -1,0
-
-;data
-p dat H-LABEL,0
-Z dat 0,0
-m1 dat -1,0
-b dat 0,0
-H dat 72,0 ;:H
-dat 101,0 ; e
-dat 108,0 ; l
-dat 108,0 ; l
-dat 111,0 ; o
-dat 32,0 ; space
-dat 87,0 ; W
-dat 111,0 ; o
-dat 114,0 ; r
-dat 108,0 ; l
-dat 100,0 ; d
-E dat E-LABEL,0
-
-end START
-;-----------------------------------------------
-
+       mov.a</code></pre></figure>
 
 
 	    <p>
@@ -1056,38 +957,42 @@ end START
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread"></a>
     	</p>
-        Corewar is a game from the 1980's, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.
-Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.
-Here's an example of a typical Corewar program:
+        <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
 
-     org   wipe
+<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
 
-     step  equ 5
-     first equ bomb-10
+<p>Here’s an example of a typical Corewar program:</p>
 
-bomb:mov.i #1,       -1
+<figure class="highlight"><pre><code class="language-text" data-lang="text">org   wipe
+    
+step  equ 5
+first equ bomb-10
+    
+    bomb:mov.i #1,       -1
+    
+    ptr: sub   #step,    #first
+    wipe:jmz.f ptr,      @ptr
+    
+mov   bomb,     &gt;ptr
+djn.f wipe,     {ptr-5
+    
+end</code></pre></figure>
 
-ptr: sub   #step,    #first
-wipe:jmz.f ptr,      @ptr
+<p>This simple example of scissors once held a 20 point lead over it’s rivals. The first instruction is never executed, it’s the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
 
-     mov   bomb,     >ptr
-     djn.f wipe,     {ptr-5
+<p>Corewar is still going strong, and celebrates it’s 25th anniversary in 2009. If you’d like to discover more about Corewar, here are the top resources:</p>
 
-     end
+<ul>
+  <li><a href="http://vyznev.net/corewar/guide.html">The Beginner’s Guide to Redcode</a> will teach you the language of Corewar</li>
+  <li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
+  <li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
+  <li><a href="http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
+  <li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
+  <li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
+  <li>#corewars is the official Corewar discussion channel, hosted by irc.freenode.net</li>
+</ul>
 
-This simple example of scissors once held a 20 point lead over it's rivals. The first instruction is never executed, it's the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.
-Corewar is still going strong, and celebrates it's 25th anniversary in 2009. If you'd like to discover more about Corewar, here are the top resources:
-
-The Beginner's Guide to Redcode will teach you the language of Corewar
-pMARS is a portable implementation of the Corewar virtual machine
-Corewar Tutorials exist on virtually every aspect of the game
-Koenigstuhl is an archive of thousands of published Corewar programs
-SAL organises a number of on-going king of the hill tournaments
-sfghoul and impomatic report the latest Corewar news on their blogs
-#corewars is the official Corewar discussion channel, hosted by irc.freenode.net
-
-What are your experiences with Corewar, have you ever had any success?
-
+<p>What are your experiences with Corewar, have you ever had any success?</p>
 
 
 	    <p>

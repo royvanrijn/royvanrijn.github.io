@@ -88,385 +88,410 @@
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread"></a>
     	</p>
-        Recently I placed a comment on this interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.
-Now, by popular demand (one person requested it over Twitter), I'll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.
+        <p>Recently I placed a comment on <a href="http://blog.objectmentor.com/articles/2010/01/17/dependency-injection-inversion">this</a> interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.</p>
 
-Ordering Milk
-Lets take a look at the application we have. We have a service:
+<p>Now, by popular demand (one person requested it over Twitter), I’ll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.</p>
 
-package nl.redcode.examples.milkman;
+<h1 id="ordering-milk">Ordering Milk</h1>
 
-public interface MilkRequestService {
+<p>Lets take a look at the application we have. We have a service:</p>
 
-	/**
-	 * Process a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void processOrder(String customer, Integer amountOfBottles);
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-}
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-And we have a DAO (data access object) which will take care of persisting our order:
+	<span class="cm">/**</span>
+<span class="cm">	 * Process a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 
-package nl.redcode.examples.milkman;
+<span class="o">}</span></code></pre></figure>
 
-public interface MilkDAO {
+<p>And we have a DAO (data access object) which will take care of persisting our order:</p>
 
-	/**
-	 * Save a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void saveOrder(String customer, Integer amountOfBottles);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-The implementation of this DAO isn't really interesting, lets just pretent it goes to the database:
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
-package nl.redcode.examples.milkman;
+	<span class="cm">/**</span>
+<span class="cm">	 * Save a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
-public class MilkDAODatabaseImpl implements MilkDAO {
+<p>The implementation of this DAO isn’t really interesting, lets just pretent it goes to the database:</p>
 
-	public void saveOrder(String customer, Integer amountOfBottles) {
-		//Puts order in database
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="n">MilkDAO</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Puts order in database</span>
+	<span class="o">}</span>
 	
-}
+<span class="o">}</span></code></pre></figure>
 
-And finally we have our service implementation:
-package nl.redcode.examples.milkman;
+<p>And finally we have our service implementation:</p>
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	private MilkDAO milkDAO;
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
 	
-	/**
-	 * Create a new service:
-	 */
-	public MilkRequestServiceImpl() {
-		milkDAO = new MilkDAODatabaseImpl(
-				//With SQLConnection or something
-				);
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * Create a new service:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">(</span>
+				<span class="c1">//With SQLConnection or something</span>
+				<span class="o">);</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
-		//Save the order:
-		milkDAO.saveOrder(customer, amountOfBottles);
-	}
-}
-Lets pretent that we are good obeying programmers, although we didn't write our unit test up front, we are going to do it right away.
-So... we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
+		<span class="c1">//Save the order:</span>
+		<span class="n">milkDAO</span><span class="o">.</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-package nl.redcode.examples.milkman;
+<p>Lets pretent that we are good obeying programmers, although we didn’t write our unit test up front, we are going to do it right away.</p>
 
-public class MilkRequestServiceTest {
+<p>So… we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!</p>
 
-	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
+
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">();</span>
 	
-	@Test
-	/**
-	 * Test our milk request service.
-	 * Pre:
-	 * - We have a customer that wants to order 5 bottles of milk
-	 * Post:
-	 * - The milk DAO got a request to save 5 bottles of milk
-	 */
-	public void testProcessOrder() {
+	<span class="nd">@Test</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Test our milk request service.</span>
+<span class="cm">	 * Pre:</span>
+<span class="cm">	 * - We have a customer that wants to order 5 bottles of milk</span>
+<span class="cm">	 * Post:</span>
+<span class="cm">	 * - The milk DAO got a request to save 5 bottles of milk</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
+		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
-		milkRequestService.processOrder(customer, amountOfBottles);
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 		
-		//Eeehh.... how do we check the call to the DAO?
+		<span class="c1">//Eeehh.... how do we check the call to the DAO?</span>
 		
-		//HELP!!
-	}
-}
+		<span class="c1">//HELP!!</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check... 
-NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain't one of them.
-We need to refactor our code...!
-The Factory
-One possible solution to this problem is using a factory method. A factory creates objects so you don't have to. Its best shown using an example:
-package nl.redcode.examples.milkman;
+<p>We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check…</p>
 
-import java.util.HashMap;
-import java.util.Map;
+<p>NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain’t one of them.</p>
 
-public class MilkFactory { //no pun intended
+<p>We need to refactor our code…!</p>
+
+<h1 id="the-factory">The Factory</h1>
+
+<p>One possible solution to this problem is using a factory method. A factory creates objects so you don’t have to. Its best shown using an example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkFactory</span> <span class="o">{</span> <span class="c1">//no pun intended</span>
 	
-	/**
-	 * Here we save the mapping:
-	 */
-	private static Map&lt;Class, Object&gt; mapping;
+	<span class="cm">/**</span>
+<span class="cm">	 * Here we save the mapping:</span>
+<span class="cm">	 */</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
 	
-	/**
-	 * Create the mapping
-	 */
-	static {
-		mapping = new HashMap&lt;Class, Object&gt;();
-		mapping.put(MilkDAO.class, new MilkDAODatabaseImpl());
-		mapping.put(MilkRequestService.class, new MilkDAODatabaseImpl());
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * Create the mapping</span>
+<span class="cm">	 */</span>
+	<span class="kd">static</span> <span class="o">{</span>
+		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">());</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Set a mapping by hand.
-	 * Should only be used when unit testing.
-	 * 
-	 * @param &lt;T&gt;
-	 * @param clazz
-	 * @param impl
-	 */
-	public static&lt;T&gt; void replaceMapping(Class&lt;T&gt; clazz, T impl) {
-		mapping.put(clazz, impl);
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * Set a mapping by hand.</span>
+<span class="cm">	 * Should only be used when unit testing.</span>
+<span class="cm">	 * </span>
+<span class="cm">	 * @param &lt;T&gt;</span>
+<span class="cm">	 * @param clazz</span>
+<span class="cm">	 * @param impl</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">clazz</span><span class="o">,</span> <span class="n">impl</span><span class="o">);</span>
+	<span class="o">}</span>
 
-	/**
-	 * Not threadsafe ugly code-monkey code.
-	 * @param &lt;T&gt;
-	 * @param requestedClass
-	 * @return
-	 */
-	public static&lt;T&gt; T get(Class&lt;T&gt; requestedClass) {
-		if(mapping.containsKey(requestedClass)) {
-			return (T)mapping.get(requestedClass);
-		} else {
-			throw new IllegalArgumentException("Doesn't exist");
-		}
-	}
-}
+	<span class="cm">/**</span>
+<span class="cm">	 * Not threadsafe ugly code-monkey code.</span>
+<span class="cm">	 * @param &lt;T&gt;</span>
+<span class="cm">	 * @param requestedClass</span>
+<span class="cm">	 * @return</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">get</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">mapping</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Doesn&#39;t exist&quot;</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-So, lets dissect this.
-The method get(class, object) will return an implementation for a given Class. It uses a Map to get the mapping. The map is created during the static initialization (yuk!) and contains the default mapping, but we can also provide our own mapping using replaceMapping(class, object).
-Now how do we use it? Lets see our new MilkRequestServiceImpl:
+<p>So, lets dissect this.</p>
 
-package nl.redcode.examples.milkman;
+<p>The method get(class, object) will return an implementation for a given Class. It uses a Map to get the mapping. The map is created during the static initialization (yuk!) and contains the default mapping, but we can also provide our own mapping using replaceMapping(class, object).</p>
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<p>Now how do we use it? Lets see our new MilkRequestServiceImpl:</p>
 
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
 		
-		//Save the order:
-		MilkFactory.get(MilkDAO.class).saveOrder(customer, amountOfBottles);
-	}
-}
+		<span class="c1">//Save the order:</span>
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-As you can see we no longer need the constructor, we get the required DAO from the factory when we need it.
-Now we can test it using the replaceMapping method:
-package nl.redcode.examples.milkman;
+<p>As you can see we no longer need the constructor, we get the required DAO from the factory when we need it.</p>
 
-public class MilkRequestServiceTest {
+<p>Now we can test it using the replaceMapping method:</p>
 
-	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
+
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">();</span>
 	
-	//@Test
-	/**
-	 * Test our milk request service.
-	 * Pre:
-	 * - We have a customer that wants to order 5 bottles of milk
-	 * Post:
-	 * - The milk DAO got a request to save 5 bottles of milk
-	 */
-	public void testProcessOrder() {
+	<span class="c1">//@Test</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Test our milk request service.</span>
+<span class="cm">	 * Pre:</span>
+<span class="cm">	 * - We have a customer that wants to order 5 bottles of milk</span>
+<span class="cm">	 * Post:</span>
+<span class="cm">	 * - The milk DAO got a request to save 5 bottles of milk</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
+		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
-		//Better use a mock here, for example using Mockito or EasyMock.
-		MilkFactory.replaceMapping(MilkDAO.class, new MilkDAO() {
-			public void saveOrder(String customer, Integer amountOfBottles) {
-				//Check if the customer = testUser
-				//Check if the amountOfBottles = 5;
-			}
-		});
+		<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.</span>
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+				<span class="c1">//Check if the customer = testUser</span>
+				<span class="c1">//Check if the amountOfBottles = 5;</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
 		
-		MilkFactory.get(MilkRequestService.class)
-			.processOrder(customer, amountOfBottles);
-	}
-}
-As the comment says, you are probably much better of here using a mocking framework like EasyMock or Mockito. But the point is, we can test our class now without going to the database! We got our control back.
-Dependency Injection
-Instead of writing a factory, there is a better way to do this. It is the Hollywood principle "Don't call us, we'll call you".
-All the dependencies of the objects are injected into them instead of created (initial example) or retrieved (factory example). So our service will look like this:
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+			<span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-package nl.redcode.examples.milkman;
+<p>As the comment says, you are probably much better of here using a mocking framework like EasyMock or Mockito. But the point is, we can test our class now without going to the database! We got our control back.</p>
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<h1 id="dependency-injection">Dependency Injection</h1>
 
-	private MilkDAO milkDao;
+<p>Instead of writing a factory, there is a better way to do this. It is the Hollywood principle “Don’t call us, we’ll call you”.</p>
+
+<p>All the dependencies of the objects are injected into them instead of created (initial example) or retrieved (factory example). So our service will look like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
 	
-	/**
-	 * The milkDao is given to us by our creator.
-	 * 
-	 * @param milkDao
-	 */
-	public MilkRequestServiceImpl(MilkDAO milkDao) {
-		this.milkDao = milkDao;
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * The milkDao is given to us by our creator.</span>
+<span class="cm">	 * </span>
+<span class="cm">	 * @param milkDao</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
 		
-		//We just use the milkDao we got:
-		milkDao.saveOrder(customer, amountOfBottles);
-	}
-}
+		<span class="c1">//We just use the milkDao we got:</span>
+		<span class="n">milkDao</span><span class="o">.</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-Now lets take a look at our test-code, it now looks like this:
+<p>Now lets take a look at our test-code, it now looks like this:</p>
 
-	public void testProcessOrder() {
-		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
-		
-		//Better use a mock here, for example using Mockito or EasyMock.
-		MilkDAO testMilkDao = new MilkDAO() {
-			public void saveOrder(String customer, Integer amountOfBottles) {
-				//Check if the customer = testUser
-				//Check if the amountOfBottles = 5;
-			}
-		};
-		
-		MilkRequestService milkRequestService = new MilkRequestServiceImpl(testMilkDao);
-		
-		milkRequestService.processOrder(customer, amountOfBottles);
-	}
-
-We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That's all. Instead of the hidden creation in the service itself or in the factory we are in full control.
-But if you want to use this application you'll need "something else" to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!
-
-package nl.redcode.examples.milkman;
-
-public class MilkApplication {
-
-	public static void main(String[] args) {
-		MilkApplication app = new MilkApplication();
-		app.run();
-	}
-
-	public MilkApplication() {
-		//-----   Provide wiring:  -----
-		MilkDAO milkDao = new MilkDAODatabaseImpl();
-		milkRequestService = new MilkRequestServiceImpl(milkDao);
-		//------------------------------
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 	
-	private MilkRequestService milkRequestService;
+	<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 	
-	/**
-	 * Do stuff:
-	 */
-	public void run() {
-		milkRequestService.processOrder("Roy van Rijn", 1);
-	}
-}
-
-Using Spring
-The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you'll write something like this:
-
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"&gt;
-
-	&lt;bean id="milkDao" class="nl.redcode.examples.milkman.MilkDAODatabaseImpl" /&gt;
-
-	&lt;bean id="milkRequestService" class="nl.redcode.examples.milkman.MilkRequestServiceImpl"&gt;
-		&lt;property name="milkDao" ref="milkDao" /&gt;
-	&lt;/bean&gt;
-&lt;/beans&gt;
-
-Now you'll still need to retrieve these "beans" from Spring, this can be done using our old-friend the Factory!
-It'll look something like this:
-
-	ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
-		new String[] {"applicationContext.xml"});
-	MilkRequestService milkRequestService = appContext.getBean("milkRequestService");
-
-This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!
-Using Guice
-Google Guice works exacly the same, only instead of using XML to define the mapping it only uses Java code and annotations.
-First we tell Guice which implementations are the default implementations, for example:
-
-package nl.redcode.examples.milkman;
-
-@ImplementedBy(MilkDAODatabaseImpl.class)
-public interface MilkDAO {
-
-	/**
-	 * Save a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void saveOrder(String customer, Integer amountOfBottles);
-}
-
-We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using 'Constructor Injection':
-
-	/**
-	 * The milkDao is injected by Guice.
-	 * 
-	 * @param milkDao
-	 */
-	@Inject
-	public MilkRequestServiceImpl(MilkDAO milkDao) {
-		this.milkDao = milkDao;
-	}
-
-Now if we want to use it, we retrieve it from Guice like so:
-
-public class MilkApplication {
-
-	public static void main(String[] args) {
-		MilkApplication app = new MilkApplication();
-		app.run();
-	}
+	<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.</span>
+	<span class="n">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">//Check if the customer = testUser</span>
+			<span class="c1">//Check if the amountOfBottles = 5;</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
 	
-	/**
-	 * Do stuff:
-	 */
-	public void run() {
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
+	
+	<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That’s all. Instead of the hidden creation in the service itself or in the factory we are in full control.</p>
+
+<p>But if you want to use this application you’ll need “something else” to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkApplication</span><span class="o">();</span>
+		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="nf">MilkApplication</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c1">//-----   Provide wiring:  -----</span>
+		<span class="n">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">();</span>
+		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
+		<span class="c1">//------------------------------</span>
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Do stuff:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">&quot;Roy van Rijn&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="using-spring">Using Spring</h1>
+
+<p>The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you’ll write something like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.springframework.org/schema/beans&quot;</span>
+       <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">&quot;</span>
+<span class="s">http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd&quot;</span><span class="nt">&gt;</span>
+
+	<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;milkDao&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.examples.milkman.MilkDAODatabaseImpl&quot;</span> <span class="nt">/&gt;</span>
+
+	<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;milkRequestService&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.examples.milkman.MilkRequestServiceImpl&quot;</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;milkDao&quot;</span> <span class="na">ref=</span><span class="s">&quot;milkDao&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></figure>
+
+<p>Now you’ll still need to retrieve these “beans” from Spring, this can be done using our old-friend the Factory!<br />
+It’ll look something like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ClassPathXmlApplicationContext</span><span class="o">(</span>
+	<span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">&quot;applicationContext.xml&quot;</span><span class="o">});</span>
+<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&quot;milkRequestService&quot;</span><span class="o">);</span></code></pre></figure>
+
+<p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
+
+<h1 id="using-guice">Using Guice</h1>
+
+<p>Google Guice works exacly the same, only instead of using XML to define the mapping it only uses Java code and annotations.</p>
+
+<p>First we tell Guice which implementations are the default implementations, for example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="n">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Save a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using ‘Constructor Injection’:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
+<span class="cm"> * The milkDao is injected by Guice.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param milkDao</span>
+<span class="cm"> */</span>
+<span class="nd">@Inject</span>
+<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now if we want to use it, we retrieve it from Guice like so:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkApplication</span><span class="o">();</span>
+		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Do stuff:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 		
-	    Injector injector = Guice.createInjector();
-	    MilkRequestService milkRequestService = 
-	        injector.getInstance(MilkRequestService.class);
+	    <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
+	    <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
+	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-		milkRequestService.processOrder("Roy van Rijn", 1);
-	}
-}
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">&quot;Roy van Rijn&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-Thats about it, you've seen:
+<p>Thats about it, you’ve seen:</p>
 
-Why you should use these patterns
-How you would program them yourself (ugly monkey-code-style)
-How using Spring (with XML)
-How using Google Guice!
+<ul>
+  <li>Why you should use these patterns</li>
+  <li>How you would program them yourself (ugly monkey-code-style)</li>
+  <li>How using Spring (with XML)</li>
+  <li>How using Google Guice!</li>
+</ul>
 
-Good luck and happy programming!
-ps. The code examples are just examples...!!
+<p>Good luck and happy programming!</p>
 
+<p>ps. The code examples are just examples…!!</p>
 
 
 	    <p>
@@ -494,38 +519,43 @@ ps. The code examples are just examples...!!
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread"></a>
     	</p>
-        What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?
-My collegues and I were discussing this, and we came up with a top 10. We've also started a twitter hashtag.
-Top 10
+        <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
 
-Shaving Ryan's Privates (everybodies favourite)
-The Curious Taste of Benjamin's Bottom
-Honey, I shagged the kids
-Missionary Impossible III
-Good Will Humping
-Free my Willy
-Legally Boned
-I Know Who you did last Summer
-Schindler's Fist
-Cliff Banger
+<p>My collegues and I were discussing this, and we came up with a top 10. We’ve also started a twitter <a href="http://hashtags.org/moviesasporn">hashtag</a>.</p>
 
-Honourable mentions
-And some honourable mentions to the titles that just didn't make the list:
+<h1 id="top-10">Top 10</h1>
 
-When Harry ate Sally
-Saturday Night Beaver
-Spankenstein
-Swollow Hal
-Sorest Rump
-Bangs of New York
-American Bangster
-Thighs Wide Shut
-Citizen Came
-The Green Milf
-The Porn Identity
-Crouching Woman, Hidden Camera
+<ol>
+  <li>Shaving Ryan’s Privates (everybodies favourite)</li>
+  <li>The Curious Taste of Benjamin’s Bottom</li>
+  <li>Honey, I shagged the kids</li>
+  <li>Missionary Impossible III</li>
+  <li>Good Will Humping</li>
+  <li>Free my Willy</li>
+  <li>Legally Boned</li>
+  <li>I Know Who you did last Summer</li>
+  <li>Schindler’s Fist</li>
+  <li>Cliff Banger</li>
+</ol>
 
+<h1 id="honourable-mentions">Honourable mentions</h1>
 
+<p>And some honourable mentions to the titles that just didn’t make the list:</p>
+
+<ul>
+  <li>When Harry ate Sally</li>
+  <li>Saturday Night Beaver</li>
+  <li>Spankenstein</li>
+  <li>Swollow Hal</li>
+  <li>Sorest Rump</li>
+  <li>Bangs of New York</li>
+  <li>American Bangster</li>
+  <li>Thighs Wide Shut</li>
+  <li>Citizen Came</li>
+  <li>The Green Milf</li>
+  <li>The Porn Identity</li>
+  <li>Crouching Woman, Hidden Camera</li>
+</ul>
 
 
 	    <p>
@@ -553,14 +583,18 @@ Crouching Woman, Hidden Camera
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/does-my-car-hate-me/#disqus_thread"></a>
     	</p>
-        Why does my car do this to me? It bugs me everyday. When I drive with the snow outside I have to use my windscreen washer quite a lot. When I pull the little lever behind my steering wheel it spurts a jet of antifreeze/washer fluid onto my screen and it starts to wipe for about 10 times. Then it stops... my window is clean again!
+        <p>Why does my car do this to me? It bugs me everyday. When I drive with the snow outside I have to use my windscreen washer quite a lot. When I pull the little lever behind my steering wheel it spurts a jet of antifreeze/washer fluid onto my screen and it starts to wipe for about 10 times. Then it stops… my window is clean again!</p>
 
-But after about 15 seconds it does one final sweep... and this last sweep always leaves ugly marks!
-Why do cars do this!!!? First it cleans my window perfectly, and then spoils it!
-Update:
-A collegue adviced me this: If the car has just finished wiping, quickly switch on the manual and stop it. This will still cause one extra wipe, but it comes right after the others. This produces a slightly better result.
-I tried this two times on my car (a Fiat Bravo) and it worked one time, the other time it still did the final whipe after around 10 seconds.
+<p><img src="/images/windscreen-300x186.jpg" alt="picture of dirty windscreen" /></p>
 
+<p>But after about 15 seconds it does one final sweep… and this last sweep <strong>always</strong> leaves ugly marks!</p>
+
+<p>Why do cars do this!!!? First it cleans my window perfectly, and then spoils it!</p>
+
+<p><strong>Update:</strong><br />
+A collegue adviced me this: If the car has just finished wiping, quickly switch on the manual and stop it. This will still cause one extra wipe, but it comes right after the others. This produces a slightly better result.</p>
+
+<p>I tried this two times on my car (a Fiat Bravo) and it worked one time, the other time it still did the final whipe after around 10 seconds.</p>
 
 
 	    <p>
@@ -588,34 +622,53 @@ I tried this two times on my car (a Fiat Bravo) and it worked one time, the othe
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread"></a>
     	</p>
-        MD5 quines
-Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?
-Thus: MD5(x) = x
-This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.
+        <h1 id="md5-quines">MD5 quines</h1>
 
-Information I've found
-So I started investigating, soon I discovered this website about collisions. Its well known that all hashing algorithms must have collisions, you can't always produce a unique hash for input larger then the output of course.
-The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn't really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn't a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.
-So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).
-Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.
-But, of course, there is no randomness involved here - there either is a fixed point or there isn't. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).
-Looking for the fixed point
-I've just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)
-The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:
-1. Go into a loop
-2. Find a fixed point (which is a loop of size 1)
-The weird thing is, if it ends up in a loop of size 1... I've found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!
-Graph
-Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.
-Open questions
+<p>Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?</p>
 
-Are there loops? (It is possible there aren't any loops at all...?)
-Are there loops of size 1, a.k.a. fixed points?
-Which/how many 128 bit combinations can't be created with the input values?
-Which/how many collisions will you get with all the input values?
+<p>Thus: MD5(x) = x</p>
 
-More thoughts, errors, solutions..?
+<p>This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.</p>
 
+<h1 id="information-ive-found">Information I’ve found</h1>
+
+<p>So I started investigating, soon I discovered <a href="http://www.mscs.dal.ca/~selinger/md5collision/">this</a> website about collisions. Its well known that all hashing algorithms must have collisions, you can’t always produce a unique hash for input larger then the output of course.</p>
+
+<p>The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn’t really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn’t a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.</p>
+
+<p>So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).</p>
+
+<p>Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.</p>
+
+<p>But, of course, there is no randomness involved here - there either is a fixed point or there isn’t. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).</p>
+
+<h1 id="looking-for-the-fixed-point">Looking for the fixed point</h1>
+
+<p>I’ve just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)</p>
+
+<p>The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:</p>
+
+<ol>
+  <li>Go into a loop  </li>
+  <li>Find a fixed point (which is a loop of size 1)</li>
+</ol>
+
+<p>The weird thing is, if it ends up in a loop of size 1… I’ve found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!</p>
+
+<h1 id="graph">Graph</h1>
+
+<p>Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.</p>
+
+<h1 id="open-questions">Open questions</h1>
+
+<ul>
+  <li>Are there loops? (It is possible there aren’t any loops at all…?)</li>
+  <li>Are there loops of size 1, a.k.a. fixed points?</li>
+  <li>Which/how many 128 bit combinations can’t be created with the input values?</li>
+  <li>Which/how many collisions will you get with all the input values?</li>
+</ul>
+
+<p>More thoughts, errors, solutions..?</p>
 
 
 	    <p>
@@ -643,24 +696,27 @@ More thoughts, errors, solutions..?
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread"></a>
     	</p>
-        In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. But we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.
-This sounds straightforward but it took quite a bit of code and time... 
+        <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
 
-First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.
-The first thing I did was changing our flowRegistry:
+<p>This sounds straightforward but it took quite a bit of code and time…</p>
 
-      &lt;!-- The registry of executable flow definitions --&gt;
-      &lt;webflow:flow-registry id=&quot;flowRegistry&quot; 
-         flow-builder-services=&quot;facesFlowBuilderServices&quot; 
-         base-path=&quot;classpath*:flows&quot;&gt;
-            &lt;webflow:flow-location-pattern value=&quot;/**/*-flow.xml&quot; /&gt;
-      &lt;/webflow:flow-registry&gt;
+<p>First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.</p>
 
-The classpath*: allows SWF to search the whole classpath for flow-directories containing a flow definition.
-In our case it would be: /flows/module1/module1-flow.xml
-When you try to run this, and access a page we got the following exception:
+<p>The first thing I did was changing our flowRegistry:</p>
 
-Caused by: java.lang.IllegalStateException: A ContextResource is required to get relative view paths within this context; the resource was file [D:\projects\projectfromjar\module1\bin\flows\module1\page1.xhtml]
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- The registry of executable flow definitions --&gt;</span>
+<span class="nt">&lt;webflow:flow-registry</span> <span class="na">id=</span><span class="s">&quot;flowRegistry&quot;</span> 
+   <span class="na">flow-builder-services=</span><span class="s">&quot;facesFlowBuilderServices&quot;</span> 
+   <span class="na">base-path=</span><span class="s">&quot;classpath*:flows&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;webflow:flow-location-pattern</span> <span class="na">value=</span><span class="s">&quot;/**/*-flow.xml&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/webflow:flow-registry&gt;</span></code></pre></figure>
+
+<p>The <em>classpath*:</em> allows SWF to search the whole classpath for flow-directories containing a flow definition.<br />
+In our case it would be: <em>/flows/module1/module1-flow.xml</em></p>
+
+<p>When you try to run this, and access a page we got the following exception:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Caused by: java.lang.IllegalStateException: A ContextResource is required to get relative view paths within this context; the resource was file [D:\projects\projectfromjar\module1\bin\flows\module1\page1.xhtml]
 	at org.springframework.faces.webflow.FlowViewHandler.resolveResourcePath(FlowViewHandler.java:110)
 	at org.springframework.faces.webflow.FlowViewHandler.restoreView(FlowViewHandler.java:74)
 	at com.sun.facelets.FaceletViewHandler.restoreView(FaceletViewHandler.java:316)
@@ -668,147 +724,154 @@ Caused by: java.lang.IllegalStateException: A ContextResource is required to get
 	at org.springframework.webflow.engine.ViewState.resume(ViewState.java:193)
 	at org.springframework.webflow.engine.Flow.resume(Flow.java:545)
 	at org.springframework.webflow.engine.impl.FlowExecutionImpl.resume(FlowExecutionImpl.java:259)
-	... 38 more
+	... 38 more</code></pre></figure>
 
-For some reason Spring Web Flow doesn't want to load the facelet. After browsing around Spring's forums I came across some solutions. They didn't do the trick, only when combining several methods I got it working for Spring Web Flow 2.0.7.
-This is how I did it, we need to tell Facelets to use our custom ClassPathResourceResolver:
+<p>For some reason Spring Web Flow doesn’t want to load the facelet. After browsing around Spring’s forums I came across some solutions. They didn’t do the trick, only when combining several methods I got it working for Spring Web Flow 2.0.7.</p>
 
-      &lt;!-- To load flows and pages from JARs, use this resolver --&gt;
-      &lt;context-param&gt;
-            &lt;param-name&gt;facelets.RESOURCE_RESOLVER&lt;/param-name&gt;
-            &lt;param-value&gt;nl.redcode.ClassPathResourceResolver&lt;/param-value&gt;
-      &lt;/context-param&gt;
+<p>This is how I did it, we need to tell Facelets to use our custom ClassPathResourceResolver:</p>
 
-The resolver itself is basic but does the job:
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- To load flows and pages from JARs, use this resolver --&gt;</span>
+<span class="nt">&lt;context-param&gt;</span>
+      <span class="nt">&lt;param-name&gt;</span>facelets.RESOURCE_RESOLVER<span class="nt">&lt;/param-name&gt;</span>
+      <span class="nt">&lt;param-value&gt;</span>nl.redcode.ClassPathResourceResolver<span class="nt">&lt;/param-value&gt;</span>
+<span class="nt">&lt;/context-param&gt;</span></code></pre></figure>
 
-package nl.redcode;
+<p>The resolver itself is basic but does the job:</p>
 
-import java.net.URL;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
 
-import com.sun.facelets.impl.ResourceResolver;
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
 
-public class ClassPathResourceResolver implements ResourceResolver {
+<span class="kn">import</span> <span class="nn">com.sun.facelets.impl.ResourceResolver</span><span class="o">;</span>
 
-	public URL resolveUrl(String path) {
-	    return getClass().getResource(path);
-	}
-}
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassPathResourceResolver</span> <span class="kd">implements</span> <span class="n">ResourceResolver</span> <span class="o">{</span>
 
-This will help Facelets to translate a given path to a java.net.URL using the current classloader.
-Spring Web Flow is currently giving us a FileSystemResource, and this doesn't work because we want to load the pages with our classloader. For this we have the following wrapper:
+	<span class="kd">public</span> <span class="n">URL</span> <span class="nf">resolveUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="k">return</span> <span class="nf">getClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-package nl.redcode;
+<p>This will help Facelets to translate a given path to a java.net.URL using the current classloader.<br />
+Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t work because we want to load the pages with our classloader. For this we have the following wrapper:</p>
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ContextResource;
-import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
 
-class CustomClassPathContextResource extends ClassPathResource implements ContextResource {
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ContextResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
 
-    public CustomClassPathContextResource(String path, ClassLoader classLoader) {
-        super(path, classLoader);
-    }
+<span class="kd">class</span> <span class="nc">CustomClassPathContextResource</span> <span class="kd">extends</span> <span class="n">ClassPathResource</span> <span class="kd">implements</span> <span class="n">ContextResource</span> <span class="o">{</span>
 
-    public String getPathWithinContext() {
-        return getPath();
-    }
+    <span class="kd">public</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">classLoader</span><span class="o">);</span>
+    <span class="o">}</span>
 
-    public Resource createRelative(String relativePath) {
-        String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
-        return new CustomClassPathContextResource(pathToUse, getClassLoader());
-    }
-}
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPathWithinContext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getPath</span><span class="o">();</span>
+    <span class="o">}</span>
 
-To force Spring to use this Resource instead of FileSystemResource we use a post processor:
+    <span class="kd">public</span> <span class="n">Resource</span> <span class="nf">createRelative</span><span class="o">(</span><span class="n">String</span> <span class="n">relativePath</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">pathToUse</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">applyRelativePath</span><span class="o">(</span><span class="n">getPath</span><span class="o">(),</span> <span class="n">relativePath</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">pathToUse</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-package nl.redcode;
+<p>To force Spring to use this Resource instead of FileSystemResource we use a post processor:</p>
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
 
-public class FlowRegistryClassPathPostProcessor implements BeanPostProcessor {
+<span class="kn">import</span> <span class="nn">org.springframework.beans.BeansException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.config.BeanPostProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.ApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.support.GenericApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ResourceLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.webflow.definition.registry.FlowDefinitionRegistry</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlowRegistryClassPathPostProcessor</span> <span class="kd">implements</span> <span class="n">BeanPostProcessor</span> <span class="o">{</span>
 	
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessBeforeInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+    <span class="o">}</span>
     
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if(bean instanceof FlowDefinitionRegistry) {
-            alterRegistry((FlowDefinitionRegistry) bean);
-        }
-        return bean;
-    }
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessAfterInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">bean</span> <span class="k">instanceof</span> <span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">alterRegistry</span><span class="o">((</span><span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="n">bean</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+    <span class="o">}</span>
     
-    protected void alterRegistry(FlowDefinitionRegistry registry) {
-        for(String flowId : registry.getFlowDefinitionIds()) {
-            ApplicationContext ctx = registry.getFlowDefinition(flowId).getApplicationContext();
-            overrideResourceLoader((GenericApplicationContext) ctx);
-        }
-    }
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">alterRegistry</span><span class="o">(</span><span class="n">FlowDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">flowId</span> <span class="o">:</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinitionIds</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinition</span><span class="o">(</span><span class="n">flowId</span><span class="o">).</span><span class="na">getApplicationContext</span><span class="o">();</span>
+            <span class="n">overrideResourceLoader</span><span class="o">((</span><span class="n">GenericApplicationContext</span><span class="o">)</span> <span class="n">ctx</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
     
-    /**
-     * Override the ResourceLoader:
-     * We know our flow is always defined as "flows/module1".
-     * From the context we can derive the name of the flow (module1)
-     * So we build up the ClassPathResource base as:
-     * "flows/"+ ctx.getResource("")+ "/"
-     * 
-     * @param ctx
-     */
-    protected void overrideResourceLoader(GenericApplicationContext ctx) {
-    	final ClassPathResource cpr = new ClassPathResource("flows/"+ctx.getResource("").getFilename()+"/");
+    <span class="cm">/**</span>
+<span class="cm">     * Override the ResourceLoader:</span>
+<span class="cm">     * We know our flow is always defined as &quot;flows/module1&quot;.</span>
+<span class="cm">     * From the context we can derive the name of the flow (module1)</span>
+<span class="cm">     * So we build up the ClassPathResource base as:</span>
+<span class="cm">     * &quot;flows/&quot;+ ctx.getResource(&quot;&quot;)+ &quot;/&quot;</span>
+<span class="cm">     * </span>
+<span class="cm">     * @param ctx</span>
+<span class="cm">     */</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">overrideResourceLoader</span><span class="o">(</span><span class="n">GenericApplicationContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="kd">final</span> <span class="n">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ClassPathResource</span><span class="o">(</span><span class="s">&quot;flows/&quot;</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">&quot;/&quot;</span><span class="o">);</span>
 
-    	ctx.setResourceLoader(new ResourceLoader() {
+    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="nf">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
         	
-        	public ClassLoader getClassLoader() {
-        		return cpr.getClassLoader();
-        	}
+        	<span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getClassLoader</span><span class="o">()</span> <span class="o">{</span>
+        		<span class="k">return</span> <span class="n">cpr</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">();</span>
+        	<span class="o">}</span>
 
-        	public Resource getResource(String location) {
-        		return new CustomClassPathContextResource(cpr.getPath() + location, getClassLoader());
-        	}
-        });
-    }
-}
+        	<span class="kd">public</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(</span><span class="n">String</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+        		<span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">cpr</span><span class="o">.</span><span class="na">getPath</span><span class="o">()</span> <span class="o">+</span> <span class="n">location</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
+        	<span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-When the FlowDefinitionRegistry is created we provide it with a new ResourceLoader. When the resources are requested by Spring Web Flow we create our own CustomClassPathContextResource. This consists of our current location plus the defined location (viewId).
-To register this post processor add it to your project-servlet.xml:
+<p>When the FlowDefinitionRegistry is created we provide it with a new ResourceLoader. When the resources are requested by Spring Web Flow we create our own CustomClassPathContextResource. This consists of our current location plus the defined location (viewId).</p>
 
-&lt;bean id=&quot;flowRegistryClassPathPostProcessor&quot; class=&quot;nl.redcode.FlowRegistryClassPathPostProcessor&quot; /&gt;
+<p>To register this post processor add it to your project-servlet.xml:</p>
 
-How to use it
-In our project we have the following flow(s) defined in a seperate JAR:
-/flows/module1/module1-flow.xml
-And our pages are in the same directory:
-/flows/module1/page1.xhtml
-/flows/module1/page2.xhtml
-etc...
-In the flow we can now use the following view-id's:
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;flowRegistryClassPathPostProcessor&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.FlowRegistryClassPathPostProcessor&quot;</span> <span class="nt">/&gt;</span></code></pre></figure>
 
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;flow 	xmlns=&quot;http://www.springframework.org/schema/webflow&quot;
-		xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-		xsi:schemaLocation=&quot;http://www.springframework.org/schema/webflow
-							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd&quot;&gt;
+<h1 id="how-to-use-it">How to use it</h1>
 
-    &lt;view-state id=&quot;start&quot; view=&quot;page1.xhtml&quot;/&gt;
+<p>In our project we have the following flow(s) defined in a seperate JAR:<br />
+/flows/module1/module1-flow.xml</p>
 
-&lt;/flow&gt;
+<p>And our pages are in the same directory:<br />
+/flows/module1/page1.xhtml<br />
+/flows/module1/page2.xhtml<br />
+etc…</p>
 
-Its also possible to have pages in other places, you can define the views as relative paths. For example:
-"../../shared_pages/page2.xhtml" turns into "/shared_pages/page2.xhtml"
-"../pages/page3.xhtml" turns into "/flows/pages/page3.xhtml"
-The only problem we still have using this method is the deployment with RAD/Eclipse WTP and Facelets auto-refresh. For some reason after deploying our application locks the files in the bin-directory. Eclipse then can't delete this directory and fails to publish. Ending in one big #fail. But a simple clean, clean, republish, clean, rebuild, restart, shout, scream, cry, rebuild and republish will solve this.
-The big advantage is the fact that the flows and pages are now defined in their own JAR files, making releases and sharing classes (like shared services/shared menu's etc) much easier.
-Information on Spring forum
+<p>In the flow we can now use the following view-id’s:</p>
 
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;flow</span> 	<span class="na">xmlns=</span><span class="s">&quot;http://www.springframework.org/schema/webflow&quot;</span>
+		<span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+		<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.springframework.org/schema/webflow</span>
+<span class="s">							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;view-state</span> <span class="na">id=</span><span class="s">&quot;start&quot;</span> <span class="na">view=</span><span class="s">&quot;page1.xhtml&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/flow&gt;</span></code></pre></figure>
+
+<p>Its also possible to have pages in other places, you can define the views as relative paths. For example:<br />
+<em>”../../shared_pages/page2.xhtml”</em> turns into <em>“/shared_pages/page2.xhtml”</em><br />
+<em>”../pages/page3.xhtml”</em> turns into <em>“/flows/pages/page3.xhtml”</em></p>
+
+<p>The only problem we still have using this method is the deployment with RAD/Eclipse WTP and Facelets auto-refresh. For some reason after deploying our application locks the files in the bin-directory. Eclipse then can’t delete this directory and fails to publish. Ending in one big #fail. But a simple clean, clean, republish, clean, rebuild, restart, shout, scream, cry, rebuild and republish will solve this.</p>
+
+<p>The big advantage is the fact that the flows and pages are now defined in their own JAR files, making releases and sharing classes (like shared services/shared menu’s etc) much easier.</p>
+
+<p>Information on <a href="http://forum.springsource.org/showthread.php?t=64252">Spring forum</a></p>
 
 
 	    <p>
@@ -836,95 +899,104 @@ Information on Spring forum
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread"></a>
     	</p>
-        Design patterns
-Almost all programmers have heard about and used design patterns. And there are a lot of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.
-There are more groups of patterns, for example take Dependency Injection (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like concurrency patterns.
-These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.
+        <h1 id="design-patterns">Design patterns</h1>
 
-Inversion of logic
-The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.
-Let me give an example, lets take the following code:
+<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_%28computer_science%29">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
 
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
-			if(rentalRequest.isFormFilledCorrectly()) {
-				Tenant tenant = rentalRequest.getTenant();
-				if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
-					//Approve the request
-					//Process the request in database
-					//Send email to HQ
-					//Etc...
-				}				
-			}
-		}
-	}
+<p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p>
 
-Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:
+<p>These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.</p>
 
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
+<h1 id="inversion-of-logic">Inversion of logic</h1>
 
-			if(validateRequest(rentalRequest)) {
-				//Approve the request
-				//Process the request in database
-				//Send email to HQ
-				//Etc...
-			}
-		}
-	}
+<p>The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.</p>
+
+<p>Let me give an example, lets take the following code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	private boolean validateRequest(RentalRequest rentalRequest) {
-		if(rentalRequest.isFormFilledCorrectly()) {
-			Tenant tenant = rentalRequest.getTenant();
-			if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+				<span class="c1">//Approve the request</span>
+				<span class="c1">//Process the request in database</span>
+				<span class="c1">//Send email to HQ</span>
+				<span class="c1">//Etc...</span>
+			<span class="o">}</span>				
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-Some programmers don't like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don't mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a 'requestIsValid' boolean and fill that instead.
-Anyway, the next step in refactoring this code is using what I call "Inversion of Logic". The idea is that you don't continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you'll lose a lot of nesting, making the code more readable. I'm going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method. 
+<p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
 
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
-
-			if(!validateRequest(rentalRequest)) {
-				continue;
-			}
-			
-			//Approve the request
-			//Process the request in database
-			//Send email to HQ
-			//Etc...
-		}
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	private boolean validateRequest(RentalRequest rentalRequest) {
-		if(!rentalRequest.isFormFilledCorrectly()) {
-			return false;
-		}
-		Tenant tenant = rentalRequest.getTenant();
-		if(tenant.getAge() &lt; 25 || !tenant.checkLicenceStillValid(tenant)) {
-			return false;
-		}
-		return true;
-	}
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+    
+		<span class="k">if</span><span class="o">(</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
+			<span class="c1">//Approve the request</span>
+			<span class="c1">//Process the request in database</span>
+			<span class="c1">//Send email to HQ</span>
+			<span class="c1">//Etc...</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
 
-As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:
-IF form is correct
-AND tenant age correct
-AND tenant licence is valid
-THEN proceed 
-We now eliminate the bad cases first:
-IF form is incorrect: deny rental
-IF tenant's age or licence is invalid: deny rental
-ELSE proceed
-I'm trying to do this everywhere I can, it realy helps the readability.
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+		<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
 
+<p>Some programmers don’t like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don’t mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a ‘requestIsValid’ boolean and fill that instead.</p>
+
+<p>Anyway, the next step in refactoring this code is using what I call “Inversion of Logic”. The idea is that you don’t continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you’ll lose a lot of nesting, making the code more readable. I’m going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+    
+		<span class="k">if</span><span class="o">(!</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">continue</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="c1">//Approve the request</span>
+		<span class="c1">//Process the request in database</span>
+		<span class="c1">//Send email to HQ</span>
+		<span class="c1">//Etc...</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(!</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">||</span> <span class="o">!</span><span class="n">tenant</span><span class="o">.</span><span class="na">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:</p>
+
+<p><em>IF form is correct<br />
+AND tenant age correct<br />
+AND tenant licence is valid<br />
+THEN proceed</em></p>
+
+<p>We now eliminate the bad cases first:</p>
+
+<p><em>IF form is incorrect: deny rental<br />
+IF tenant’s age or licence is invalid: deny rental<br />
+ELSE proceed</em></p>
+
+<p>I’m trying to do this everywhere I can, it realy helps the readability.</p>
 
 
 	    <p>
@@ -952,46 +1024,49 @@ I'm trying to do this everywhere I can, it realy helps the readability.
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread"></a>
     	</p>
-        Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.
-About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I've worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn't what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!
+        <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
 
-So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply... My next move was just to write about it, first on my own blog, then on DZone (05/30/2008) and on The Server Side a half year later, december 2008.
-The only 'reply' I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened here.
-Now that the release is final I'm actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:
+<p>About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I’ve worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn’t what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!  </p>
 
-@Servlet(urlMappings={"/foo", "/bar"})
-public class MyServlet {
-     @GET
-     public void handleGet(HttpServletRequest req, HttpServletResponse res) {
-          //Handle the GET
-     }
-}
+<p>So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply… My next move was just to write about it, first on my own blog, then on <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">DZone</a> (05/30/2008) and on <a href="http://www.theserverside.com/tt/articles/article.tss?l=PonderingAboutJSR135">The Server Side</a> a half year later, december 2008.</p>
 
-And this was my suggestion on how to improve it (see second article/link):
+<p>The only ‘reply’ I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened <a href="http://swik.net/GlassFish/The+Aquarium/Servlet+3.0+...+Almost+at+PDR/cmaui">here</a>.</p>
 
-@ServletMapping(name="myServlet", mapping={"/foo", "/bar"})
-public class MyServlet extends HttpServlet {
+<p>Now that the release is final I’m actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:</p>
 
-     @Override //keep strong typing!
-     public void doGet(HttpServletRequest req, HttpServletResponse res) {
-          ...
-     }
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Servlet</span><span class="o">(</span><span class="n">urlMappings</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="o">{</span>
+     <span class="nd">@GET</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//Handle the GET</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-And this is from the final release:
+<p>And this was my suggestion on how to improve it (see second article/link):</p>
 
-@WebServlet(name="myServlet", urlPatterns={"/foo","/bar"})
-public class MyServlet extends HttpServlet {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServletMapping</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">mapping</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
 
-     @Override //keep strong typing!
-     public void doGet(HttpServletRequest req, HttpServletResponse res) {
-          ...
-     }
-}
+     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="o">...</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-That's very similair, maybe a little too similair..? But anyway, I'm pleased about the result. It'll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.
-I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.
+<p>And this is from the final release:</p>
 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">urlPatterns</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span><span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="o">...</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>That’s very similair, maybe a little too similair..? But anyway, I’m pleased about the result. It’ll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.</p>
+
+<p>I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.</p>
 
 
 	    <p>
@@ -1019,11 +1094,13 @@ I love the spec, despite the lack of feedback and replies from the expert group,
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread"></a>
     	</p>
-        Every once in a while head hunters call me. They call you at home, at work, they work out your email adress and mail you... This will probably sound very familiar to most IT professionals.
-Anyway, the thing that strikes me is that about 50% of the time a head hunter calls, its Steve Oakley! And it isn't just me that is getting calls from Steve Oakley, no, all my collegues and friends are getting calls from him as well!
-So, are you in or out? Have you been called by Steve Oakley yet?
+        <p>Every once in a while head hunters call me. They call you at home, at work, they work out your email adress and mail you… This will probably sound very familiar to most IT professionals.</p>
 
+<p>Anyway, the thing that strikes me is that about 50% of the time a head hunter calls, its Steve Oakley! And it isn’t just me that is getting calls from Steve Oakley, no, all my collegues and friends are getting calls from him as well!</p>
 
+<p>So, are you in or out? Have you been called by Steve Oakley yet?</p>
+
+<p><img src="/images/steve_oakley.PNG" alt="I went to work, and all I got was a call from Steve Oakley" /></p>
 
 
 	    <p>
@@ -1051,121 +1128,142 @@ So, are you in or out? Have you been called by Steve Oakley yet?
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread"></a>
     	</p>
-        To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I'll describe these terms and show examples on how to create tests using JUnit and Spring's Test library.
-Unit Testing
-A unit-test is an automated test that tests one single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.
-Here is an example of a unit-test:
+        <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I’ll describe these terms and show examples on how to create tests using JUnit and Spring’s Test library.</p>
 
+<h1 id="unit-testing">Unit Testing</h1>
 
-public class CalculatorTest {
+<p>A unit-test is an automated test that tests one single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.</p>
 
-	private final Integer TOADD1 = 6;
-	private final Integer TOADD2 = 4;
-	private final Integer ANSWER = 10;
+<p>Here is an example of a unit-test:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CalculatorTest</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD1</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">ANSWER</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
 	
-	@Test
-	public void testAdd() {
-		Calculator calculator = new Calculator();
+	<span class="nd">@Test</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAdd</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">Calculator</span> <span class="n">calculator</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Calculator</span><span class="o">();</span>
 		
-		Integer returnedAnswer = calculator.add(TOADD1, TOADD2);
+		<span class="n">Integer</span> <span class="n">returnedAnswer</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">TOADD1</span><span class="o">,</span> <span class="n">TOADD2</span><span class="o">);</span>
 		
-		Assert.assertEquals("The answer of " + TOADD1 + "+" + TOADD2 +
-			" should be " + ANSWER + " but was " + returnedAnswer, 
-			ANSWER, returnedAnswer);
-	}
-}
+		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">&quot;The answer of &quot;</span> <span class="o">+</span> <span class="n">TOADD1</span> <span class="o">+</span> <span class="s">&quot;+&quot;</span> <span class="o">+</span> <span class="n">TOADD2</span> <span class="o">+</span>
+			<span class="s">&quot; should be &quot;</span> <span class="o">+</span> <span class="n">ANSWER</span> <span class="o">+</span> <span class="s">&quot; but was &quot;</span> <span class="o">+</span> <span class="n">returnedAnswer</span><span class="o">,</span> 
+			<span class="n">ANSWER</span><span class="o">,</span> <span class="n">returnedAnswer</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.
-Test Driven Development
-Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.
-What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:
+<p>By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.</p>
 
-Write a unit-test that verifies your usecase
-Implement the interfaces you created for step 1 (can be done quick and dirty, just to get the logic correct)
-Run the tests and confirm your code is logically correct
-Refactor your code into maintainable, readable, reusable code
-Confirm the code still works as designed by running the test(s)
+<h1 id="test-driven-development">Test Driven Development</h1>
 
-Actually, I don't write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I'm going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.
-Integration testing
-With unit testing you can verify that the smallest units of work are correct. But this doesn't give you any guarantees!
-A famous example is NASA's $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.
-Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested a lot, but apparently they neglected to test the components together.
-Integration testing with Spring
-Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.
-Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.
-One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending org.springframework.test.AbstractDependencyInjectionSpringContextTests or org.springframework.test.AbstractTransactionalSpringContextTests.
-If you want to use these classes you need two things:
+<p>Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.</p>
 
-Create a seperate Spring configuration with test-beans (or use your normal Spring config)
-Override String[] getConfigLocations(), provide it with the location of your Spring configuration.
+<p>What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:</p>
 
-Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.
-A small example:
+<ol>
+  <li>Write a unit-test that verifies your usecase</li>
+  <li>Implement the interfaces you created for step 1<br />
+(can be done quick and dirty, just to get the logic correct)</li>
+  <li>Run the tests and confirm your code is logically correct</li>
+  <li>Refactor your code into maintainable, readable, reusable code</li>
+  <li>Confirm the code still works as designed by running the test(s)</li>
+</ol>
 
-public class PersonServiceTest 
-	extends AbstractDependencyInjectionSpringContextTests {
+<p>Actually, I don’t write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I’m going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.</p>
 
-	private PersonService personService;
+<h1 id="integration-testing">Integration testing</h1>
 
-	/**
-	 * Integration test for my calculator.
-	 * It also calls the calculatorDao which is in the calculatorService.
-	 */
-	@Test
-	public void testAddPerson() {
+<p>With unit testing you can verify that the smallest units of work are correct. But this doesn’t give you any guarantees!</p>
+
+<p>A famous example is NASA’s $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.</p>
+
+<p>Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested a lot, but apparently they neglected to test the components together.</p>
+
+<h1 id="integration-testing-with-spring">Integration testing with Spring</h1>
+
+<p>Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.</p>
+
+<p>Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.</p>
+
+<p>One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending <em>org.springframework.test.AbstractDependencyInjectionSpringContextTests</em> or <em>org.springframework.test.AbstractTransactionalSpringContextTests</em>.</p>
+
+<p>If you want to use these classes you need two things:</p>
+
+<ul>
+  <li>Create a seperate Spring configuration with test-beans (or use your normal Spring config)</li>
+  <li>Override <em>String[] getConfigLocations()</em>, provide it with the location of your Spring configuration.</li>
+</ul>
+
+<p>Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.</p>
+
+<p>A small example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> 
+	<span class="kd">extends</span> <span class="n">AbstractDependencyInjectionSpringContextTests</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Integration test for my calculator.</span>
+<span class="cm">	 * It also calls the calculatorDao which is in the calculatorService.</span>
+<span class="cm">	 */</span>
+	<span class="nd">@Test</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
 		
-		Person p = ...
+		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
 		
-		personService.add(p);
+		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
 		
-		//Test if the person has been added.
-	}
+		<span class="c1">//Test if the person has been added.</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Provide the test with a configuration
-	 */
-	@Override
-	protected String[] getConfigLocations() {
-		return new String[] { "my-test-applicationcontext.xml" };
-	}
-}
+	<span class="cm">/**</span>
+<span class="cm">	 * Provide the test with a configuration</span>
+<span class="cm">	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">protected</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">getConfigLocations</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;my-test-applicationcontext.xml&quot;</span> <span class="o">};</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-Testing with Spring 2.5+
-With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.
-This is how you would use it:
+<h1 id="testing-with-spring-25">Testing with Spring 2.5+</h1>
 
-import org.junit.runner.RunWith;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+<p>With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.</p>
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations= { "my-test-applicationcontext.xml" })
-public class PersonServiceTest {
+<p>This is how you would use it:</p>
 
-	@Autowired
-	private PersonService personService;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.junit.runner.RunWith</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.test.AbstractDependencyInjectionSpringContextTests</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.test.context.ContextConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringJUnit4ClassRunner</span><span class="o">;</span>
 
-	/**
-	 * Integration test for my calculator.
-	 * It also calls the calculatorDao which is in the calculatorService.
-	 */
-	@Test
-	public void testAddPerson() {
+<span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ContextConfiguration</span><span class="o">(</span><span class="n">locations</span><span class="o">=</span> <span class="o">{</span> <span class="s">&quot;my-test-applicationcontext.xml&quot;</span> <span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> <span class="o">{</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Integration test for my calculator.</span>
+<span class="cm">	 * It also calls the calculatorDao which is in the calculatorService.</span>
+<span class="cm">	 */</span>
+	<span class="nd">@Test</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
 		
-		Person p = ...
+		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
 		
-		personService.add(p);
+		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
 		
-		//Test if the person has been added.
-	}
-}
+		<span class="c1">//Test if the person has been added.</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-It works the same way as before, but instead of having to override the AbstractDependencyInjectionSpringContextTests you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.
-Hopefully I'll find the time to write another post on mocking, including EasyMock and Mockito.
+<p>It works the same way as before, but instead of having to override the <em>AbstractDependencyInjectionSpringContextTests</em> you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.</p>
 
-
+<p>Hopefully I’ll find the time to write another post on mocking, including EasyMock and Mockito.</p>
 
 	    <p>
     		<a href="/blog/2009/12/testing-with-spring/">More...</a>
@@ -1192,80 +1290,117 @@ Hopefully I'll find the time to write another post on mocking, including EasyMoc
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread"></a>
     	</p>
-        Curiosity is an emotion related to natural inquisitive behaviour such as exploration, investigation, and learning, evident by observation in human and many animal species.
-Source: wikipedia
-To me, curiosity is one of the greatest things we as humans have. It feeds you with knowledge and sparks your fantasy, its an emotion that tickles your brain and forces you to explore.
+        <p><em><strong>Curiosity</strong> is an emotion related to natural inquisitive behaviour such as exploration, investigation, and learning, evident by observation in human and many animal species.</em></p>
 
-In life its vital to search for new things, new limits, new experiences. Always keep asking questions, because with every answer you find, more questions will arise!
+<h1 id="source-wikipedia">Source: <a href="http://en.wikipedia.org/wiki/Curiosity">wikipedia</a></h1>
 
-At first this sounds a bit depressing, more questions for every answer you get. This doesn't sound satisfactory, but trust me, it is! Its not the answer that gives you satisfaction, its the new array of questions that give satisfaction! Because these questions feed our curiosity.
-It also strikes me that children are very good in asking questions, and they come up with the most amazing questions! I really think this is a good skill, and its a shame we lose this when we get older. Why don't adults ask these questions? Is it the fear of the "dumb-question", does it make them look stupid?
-Here are some examples of good curious questions:
+<p>To me, curiosity is one of the greatest things we as humans have. It feeds you with knowledge and sparks your fantasy, its an emotion that tickles your brain and forces you to explore.</p>
 
-Q: How do blind people know when they're done wiping toiletpaper?
+<p><img src="/images/curious_kitten.jpg" alt="Curiosity isn't limited to humans" /></p>
 
-&nbsp;
+<p>In life its vital to search for new things, new limits, new experiences. Always keep asking questions, because with every answer you find, more questions will arise!</p>
 
-A: They can feel it from the drag, and then wipe two times extra (just to be sure)
+<p>At first this sounds a bit depressing, more questions for every answer you get. This doesn’t sound satisfactory, but trust me, it is! Its not the answer that gives you satisfaction, its the new array of questions that give satisfaction! Because these questions feed our curiosity.</p>
 
-&nbsp;
+<p>It also strikes me that children are very good in asking questions, and they come up with the most amazing questions! I really think this is a good skill, and its a shame we lose this when we get older. Why don’t adults ask these questions? Is it the fear of the “dumb-question”, does it make them look stupid?</p>
 
-Q: If you smoke, and go into a coma. When you wake up, do you crave for a cigarette?
+<p>Here are some examples of good curious questions:</p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: How do blind people know when they’re done wiping toiletpaper?</strong></li>
+</ul>
 
-A: It depends, after 8 days all the nicotine would be out of him/her bloodstream. So the physical chemical craving wouldn't be there when they wake up. They'll probably still have a habitual craving though.
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>They can feel it from the drag, and then wipe two times extra (just to be sure)</em></li>
+</ul>
 
-Q: Why don't our eyelashes grow?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: If you smoke, and go into a coma. When you wake up, do you crave for a cigarette?</strong></li>
+</ul>
 
-A: All hair follicles have a certain cycle. The hair grows for a certain time, and then it just drops out. Eyelashes have a short cycle-rate.
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>It depends, after 8 days all the nicotine would be out of him/her bloodstream. So the physical chemical craving wouldn’t be there when they wake up. They’ll probably still have a habitual craving though.</em></li>
+</ul>
 
-Q: Do fish drink?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: Why don’t our eyelashes grow?</strong></li>
+</ul>
 
-A: It actually depends: Saltwater fish drink, and filter the salt and minerals with their gills. Freshwater fish absorb water with their bodies.
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>All hair follicles have a certain cycle. The hair grows for a certain time, and then it just drops out. Eyelashes have a short cycle-rate.</em></li>
+</ul>
 
-Q: How many neck-vertebrates does a giraffe have?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: Do fish drink?</strong></li>
+</ul>
 
-A: The same amount as we have, seven. Even a mouse has seven vertebrates. All mammals have seven vertebrates except the manatee and three-toed sloth (They only have six)
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>It actually depends: Saltwater fish drink, and filter the salt and minerals with their gills. Freshwater fish absorb water with their bodies.</em></li>
+</ul>
 
-Q: Can Elephants jump?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: How many neck-vertebrates does a giraffe have?</strong></li>
+</ul>
 
-A: No, they can't! They weigh too much. Also they get very uncomfortable if there is more then one feet of the ground at any time.
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>The same amount as we have, seven. Even a mouse has seven vertebrates. All mammals have seven vertebrates except the manatee and three-toed sloth (They only have six)</em></li>
+</ul>
 
-Q: If you die from anti-freeze poisoning, would you be able to do cryopreservation?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: Can Elephants jump?</strong></li>
+</ul>
 
-A: ?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li>A: <em>No, they can’t! They weigh too much. Also they get very uncomfortable if there is more then one feet of the ground at any time.</em></li>
+</ul>
 
-Q: A Dutch question: Waarom moet je bevroren eten altijd "ontdooien"? Dooien is het tegenovergestelde van bevriezen! Dus moet je iets toch dooien in plaats van ontdooien?
+<p> </p>
 
-&nbsp;
+<ul>
+  <li><strong>Q: If you die from anti-freeze poisoning, would you be able to do cryopreservation?</strong></li>
+</ul>
 
-A: ?
+<p> </p>
 
-If you have curious/weird questions, or know answers to unanswered questions, please drop me a comment!
+<ul>
+  <li>A: <em>?</em></li>
+</ul>
 
+<p> </p>
+
+<ul>
+  <li><strong>Q: A Dutch question: Waarom moet je bevroren eten altijd “ontdooien”? Dooien is het tegenovergestelde van bevriezen! Dus moet je iets toch dooien in plaats van ontdooien?</strong></li>
+</ul>
+
+<p> </p>
+
+<ul>
+  <li>A: <em>?</em></li>
+</ul>
+
+<p>If you have curious/weird questions, or know answers to unanswered questions, please drop me a comment!</p>
 
 
 	    <p>
@@ -1293,47 +1428,69 @@ If you have curious/weird questions, or know answers to unanswered questions, pl
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread"></a>
     	</p>
-        Something other then the usual technical posts...
-As you might already know, I am an atheist. Yes, in my opinion there is no God, there never was and (probably) never will be. 
-Atheistic Christmas?
-Being an Atheist with Christian friends I get a lot of questions. Recently a friend of mine asked: "Why do you celebrate Christmas when you are an Atheist?".
-This question, to me, is quite simple. First of all, because it is a tradition. I think its a wonderful holiday. Ask around, what do people think about when you ask them about Christmas?
+        <p>Something other then the usual technical posts…<br />
+As you might already know, I am an atheist. Yes, in my opinion there is no God, there never was and <em>(probably)</em> never will be.</p>
 
-People think about:
+<h1 id="atheistic-christmas">Atheistic Christmas?</h1>
 
-Christmas trees
-Snow!
-Santa Claus
-Toys, candy and gifts
-Decorations, lights
-Christmas dinner with relatives
-The poor, and less fortunate
-Christmas songs
-The Grinch
-Mistletoe
-Christmas cards
-Charles Dickens, A Christmas Carol
+<p>Being an Atheist with Christian friends I get a lot of questions. Recently a friend of mine asked: <em>“Why do you celebrate Christmas when you are an Atheist?”</em>.</p>
 
-All of these things have no connection to the Christian Christmas, except the name "Christ-".
-The birth of Jesus
-The date on which we celebrate Christmas is sometimes said to be the birthdate of Christ. But in fact this isn't true. The date has been borrowed from other holiday's. Originally people celebrated the Roman winter solstice on the 25th of December. It was probably just convenient to borrow this date. 
-So instead of saying I celebrate Christmas, I could just say I celebrate midwinter.
-Santa Claus
-Okay, how about Santa Claus, there is nothing more Christmas then Santa Claus. But again this figure has nothing to do with Christianity. The only thing God and Santa Claus have in common is the beard.
-I'm from the Netherlands, and on the 5th of december the old Saint Nicolaas (or Sinterklaas) visits our country. At night he visits all the houses and he brings gifts for all the kids! Does this sound familiar? It should be, he and Santa are the same guy..!
+<p>This question, to me, is quite simple. First of all, because it is a tradition. I think its a wonderful holiday. Ask around, what do people think about when you ask them about Christmas?</p>
 
-When New York City was still called New Amsterdam the Dutch tradition took off in America. Slowly evolving (yes, holidays evolve too!) into the Santa Claus we all know today.
-And being Dutch I have a huge advantage, we celebrate Sinterklaas AND Santa Claus, getting gifts and candy twice!
-But again, a good reason to celebrate Christmas, it is based on a old Dutch tradition, and Santa Claus has nothing to do with Christianity.
-Family, friends and relatives
-For me, the single most important reason I celebrate Christmas as an Atheist are my family, relatives and friends. Its the time of year, with its long dark days and cold nights, that is perfectly suited for spending time with friends and family.
-Its also the perfect time of year to think about your own situation, about the people you know and love, about people who don't have it as good as you have. Its the time of year of giving and sharing.
-That is the most important reason to celebrate Christmas midwinter, winter solstice, late Sinterklaas.
+<p>People think about:</p>
 
-Evolution...
-Finally, I have to get something out of my system about evolution:
-Please get over it, evolution exists, there is enough prove. Just because it is called a theory it doesn't mean you can just throw it out of the Christmas decorated window. For example, did you know gravity is still a theory? It is, first it was known as Newton's Theory of Gravitation, and after that a guy named Albert Einstein wrote a better version, the General Theory of Relativity. It is accepted that gravity exists and nobody doubts that. Just like gravity, evolution is not just a theory.
+<ul>
+  <li>Christmas trees</li>
+  <li>Snow!</li>
+  <li>Santa Claus</li>
+  <li>Toys, candy and gifts</li>
+  <li>Decorations, lights</li>
+  <li>Christmas dinner with relatives</li>
+  <li>The poor, and less fortunate</li>
+  <li>Christmas songs</li>
+  <li>The Grinch</li>
+  <li>Mistletoe</li>
+  <li>Christmas cards</li>
+  <li>Charles Dickens, A Christmas Carol</li>
+</ul>
 
+<p>All of these things have no connection to the Christian Christmas, except the name “Christ-“.</p>
+
+<h1 id="the-birth-of-jesus">The birth of Jesus</h1>
+
+<p>The date on which we celebrate Christmas is sometimes said to be the birthdate of Christ. But in fact this isn’t true. The date has been borrowed from other holiday’s. Originally people celebrated the Roman <a href="http://en.wikipedia.org/wiki/Winter_solstice">winter solstice</a> on the 25th of December. It was probably just convenient to borrow this date.</p>
+
+<p>So instead of saying I celebrate Christmas, I could just say I celebrate midwinter.</p>
+
+<h1 id="santa-claus">Santa Claus</h1>
+
+<p>Okay, how about Santa Claus, there is nothing more Christmas then Santa Claus. But again this figure has nothing to do with Christianity. The only thing God and Santa Claus have in common is the beard.</p>
+
+<p>I’m from the Netherlands, and on the 5th of december the old Saint Nicolaas (or <a href="/images/sinterklaas.jpg">Sinterklaas</a>) visits our country. At night he visits all the houses and he brings gifts for all the kids! Does this sound familiar? It should be, he and Santa are the same guy..!</p>
+
+<p><img src="/images/sinterklaas.jpg" alt="sinterklaas" /></p>
+
+<p>When New York City was still called <a href="http://en.wikipedia.org/wiki/New_Amsterdam">New Amsterdam</a> the Dutch tradition took off in America. Slowly evolving (yes, holidays evolve too!) into the Santa Claus we all know today.</p>
+
+<p>And being Dutch I have a huge advantage, we celebrate Sinterklaas AND Santa Claus, getting gifts and candy twice!</p>
+
+<p>But again, a good reason to celebrate Christmas, it is based on a old Dutch tradition, and Santa Claus has nothing to do with Christianity.</p>
+
+<h1 id="family-friends-and-relatives">Family, friends and relatives</h1>
+
+<p>For me, the single most important reason I celebrate Christmas as an Atheist are my family, relatives and friends. Its the time of year, with its long dark days and cold nights, that is perfectly suited for spending time with friends and family.</p>
+
+<p>Its also the perfect time of year to think about your own situation, about the people you know and love, about people who don’t have it as good as you have. Its the time of year of giving and sharing.</p>
+
+<p>That is <strong>the</strong> most important reason to celebrate Christmas midwinter, winter solstice, late Sinterklaas.</p>
+
+<p><img src="/images/GodExits.jpg" alt="god exits" /></p>
+
+<h1 id="evolution">Evolution…</h1>
+
+<p>Finally, I have to get something out of my system about evolution:</p>
+
+<p>Please get over it, evolution exists, there is enough prove. Just because it is called a theory it doesn’t mean you can just throw it out of the Christmas decorated window. For example, did you know gravity is still a theory? It is, first it was known as <a href="http://en.wikipedia.org/wiki/Gravitation#Newton.27s_theory_of_gravitation">Newton’s Theory of Gravitation</a>, and after that a guy named Albert Einstein wrote a better version, the <a href="http://en.wikipedia.org/wiki/General_relativity">General Theory of Relativity</a>. It is accepted that gravity exists and nobody doubts that. Just like gravity, evolution is <a href="http://www.notjustatheory.com/">not just a theory</a>.</p>
 
 
 	    <p>
@@ -1361,15 +1518,18 @@ Please get over it, evolution exists, there is enough prove. Just because it is 
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread"></a>
     	</p>
-        Recently VMWare, known from its computer virtualization software, has announced they are developing a dual-boot mobile version. This would allow you to run both Windows Mobile and Android on your phone.
-But it isn't going to be a dual-boot you know from your computer, they are planning on running the OS'es at the same time. This would allow you to switch between OS on-the-fly. 
+        <p>Recently VMWare, known from its computer virtualization software, has announced they are developing a dual-boot mobile version. This would allow you to run both Windows Mobile and Android on your phone.</p>
 
-You want to use a Windows Mobile app? *click* 
-Oh, you want to use something on the Andriod platform? *click*.
+<p>But it isn’t going to be a dual-boot you know from your computer, they are planning on running the OS’es at the same time. This would allow you to switch between OS on-the-fly.</p>
 
-I'm very curious how this will work out performance-wise, but the idea itself is great!
-Via: computerworld.com.au
+<ul>
+  <li>You want to use a Windows Mobile app? <em>*click*</em></li>
+  <li>Oh, you want to use something on the Andriod platform? <em>*click*.</em></li>
+</ul>
 
+<p>I’m very curious how this will work out performance-wise, but the idea itself is great!</p>
+
+<p>Via: <a href="http://www.computerworld.com.au/article/328811/vmware_developing_dual_os_smartphone_virtualisation">computerworld.com.au</a></p>
 
 
 	    <p>
@@ -1397,13 +1557,15 @@ Via: computerworld.com.au
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread"></a>
     	</p>
-        I've just stumbled across a new program: Eureqa
-Its a program, developed by the Cornell Computational Synthesis Laboratory, that can detect equations in sets of data. Its primary goal is to identify the simplest mathematical formulas which could describe the underlying mechanisms that produced the data.
-Its best described using their instructional video:
+        <p>I’ve just stumbled across a new program: <a href="http://ccsl.mae.cornell.edu/eureqa">Eureqa</a></p>
 
-I've been playing around with it, for example trying to find a good prediction equation for the Son of Darts competition I blogged about earlier.
-The algorithm(s) used in this program are based around "symbolic regression". It is a form of Genetic Programming (GA) where the computer processes a tree of possibilities recursively searching for the best suited building-blocks.
+<p>Its a program, developed by the Cornell Computational Synthesis Laboratory, that can detect equations in sets of data. Its primary goal is to identify the simplest mathematical formulas which could describe the underlying mechanisms that produced the data.</p>
 
+<p>Its best described using their instructional video:</p>
+
+<p>I’ve been playing around with it, for example trying to find a good prediction equation for the Son of Darts competition I blogged about earlier.</p>
+
+<p>The algorithm(s) used in this program are based around “<a href="http://en.wikipedia.org/wiki/Symbolic_Regression">symbolic regression</a>”. It is a form of Genetic Programming (GA) where the computer processes a tree of possibilities recursively searching for the best suited building-blocks.</p>
 
 
 	    <p>
@@ -1431,132 +1593,183 @@ The algorithm(s) used in this program are based around "symbolic regression". It
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread"></a>
     	</p>
-        
-What is #songsincode ?
-Last week I discovered a new hype on Twitter. The so-called "#songsincode". It's a huge hype under programmers and technical users. The best way to explain is probably by showing an example:
-if( door == red ) {
-   door.paint(black);
-}
-This obviously is Paint It Black by the Rolling Stones (if the door is red, paint it black)
-My own #songsincode:
-Here is a collection of the #songsincode I created and tweeted:
+        <p><img src="/images/8.jpg" alt="songsincode" /></p>
 
-if( silhouetto == man &amp;&amp; i.see(silhouetto)) {
-   scaramouche.doFandango();
-   if(thunderbolt &amp;&amp; lightning) {
-      me.frightened = true;
-   }
-}
+<h1 id="what-is-songsincode-">What is #songsincode ?</h1>
 
-while(true) {
-   ableToCheckout();
-}
-//Unreachable code:
-leave();
+<p>Last week I discovered a new hype on Twitter. The so-called “#songsincode”. It’s a huge hype under programmers and technical users. The best way to explain is probably by showing an example:</p>
 
-switch(random(2)) {
-   case 0: feel.partner = null;
-      break;
-   case 1: feel.onlyFriend = city.of(this, angel);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="n">door</span> <span class="o">==</span> <span class="n">red</span> <span class="o">)</span> <span class="o">{</span>
+   <span class="n">door</span><span class="o">.</span><span class="na">paint</span><span class="o">(</span><span class="n">black</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
-for(mydaddy : oh) {
-   whack();
-}
-jar.insert(whisky);
+<p>This obviously is Paint It Black by the Rolling Stones (if the door is red, paint it black)</p>
 
-man.amount = 1;
-man.come(love.name());
-man.come();
-man.go();
+<h1 id="my-own-songsincode">My own #songsincode:</h1>
 
-life++;
-if(life &gt; you &amp;&amp; you != me) {
-   me.goto(lengths);
-   distance(you.eyes);
-   if(me.saidTooMuch()) {
-      me.setUp(it);
-   }
-}
+<p>Here is a collection of the #songsincode I created and tweeted:</p>
 
-for(Person p:people) {
-   p.imagine();
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="n">silhouetto</span> <span class="o">==</span> <span class="n">man</span> <span class="o">&amp;&amp;</span> <span class="n">i</span><span class="o">.</span><span class="na">see</span><span class="o">(</span><span class="n">silhouetto</span><span class="o">))</span> <span class="o">{</span>
+   <span class="n">scaramouche</span><span class="o">.</span><span class="na">doFandango</span><span class="o">();</span>
+   <span class="k">if</span><span class="o">(</span><span class="n">thunderbolt</span> <span class="o">&amp;&amp;</span> <span class="n">lightning</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">me</span><span class="o">.</span><span class="na">frightened</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-boolean isLover(String name) {
-   if("Billy Jean".equals(name)) {
-      return false;
-   }
-   ...
+<hr />
 
-for(int i = 0;i &lt; 8; i++ ) {
-   System.out.println("MMmmmMMmmm");
-}
-throw new RuntimeException("test dummy");
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">ableToCheckout</span><span class="o">();</span>
+<span class="o">}</span>
+<span class="c1">//Unreachable code:</span>
+<span class="n">leave</span><span class="o">();</span></code></pre></figure>
 
-String bird;
-bird = "word";
+<hr />
 
-if(she != lovely &amp;&amp; she != wonderfull &amp;&amp; she != precious &amp;&amp; she.age &lt; 1 ...
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">switch</span><span class="o">(</span><span class="n">random</span><span class="o">(</span><span class="mi">2</span><span class="o">))</span> <span class="o">{</span>
+   <span class="k">case</span> <span class="mi">0</span><span class="o">:</span> <span class="n">feel</span><span class="o">.</span><span class="na">partner</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+      <span class="k">break</span><span class="o">;</span>
+   <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="n">feel</span><span class="o">.</span><span class="na">onlyFriend</span> <span class="o">=</span> <span class="n">city</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">angel</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
-Submarine submarine = new Submarine(new Color(255,255,0));
-for(Person p:all) {
-   submarine.add(p);
-}
+<hr />
 
-while( !me.like(mondays) ) {
-   tellWhy(me);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">mydaddy</span> <span class="o">:</span> <span class="n">oh</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">whack</span><span class="o">();</span>
+<span class="o">}</span>
+<span class="n">jar</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">whisky</span><span class="o">);</span></code></pre></figure>
 
-while(young) {}
-//loops forever
+<hr />
 
-if(time == hammer) {
-   System.exit(1);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">man</span><span class="o">.</span><span class="na">amount</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+<span class="n">man</span><span class="o">.</span><span class="na">come</span><span class="o">(</span><span class="n">love</span><span class="o">.</span><span class="na">name</span><span class="o">());</span>
+<span class="n">man</span><span class="o">.</span><span class="na">come</span><span class="o">();</span>
+<span class="n">man</span><span class="o">.</span><span class="na">go</span><span class="o">();</span></code></pre></figure>
 
-if( !women ) {
-   cry = false;
-}
+<hr />
 
-public static void main(String[] args) {
-     this.remove(religion);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">life</span><span class="o">++;</span>
+<span class="k">if</span><span class="o">(</span><span class="n">life</span> <span class="o">&gt;</span> <span class="n">you</span> <span class="o">&amp;&amp;</span> <span class="n">you</span> <span class="o">!=</span> <span class="n">me</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">me</span><span class="o">.</span><span class="na">goto</span><span class="o">(</span><span class="n">lengths</span><span class="o">);</span>
+   <span class="n">distance</span><span class="o">(</span><span class="n">you</span><span class="o">.</span><span class="na">eyes</span><span class="o">);</span>
+   <span class="k">if</span><span class="o">(</span><span class="n">me</span><span class="o">.</span><span class="na">saidTooMuch</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">me</span><span class="o">.</span><span class="na">setUp</span><span class="o">(</span><span class="n">it</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-while(!hasFound) {
-   lookFor();
-}
+<hr />
 
-if(grass=="green" &amp;&amp; girls == "pretty") {
-   takeMe(paradiseCity);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">people</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">p</span><span class="o">.</span><span class="na">imagine</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
 
-for(Leaf leaf:leafs) {
-   leaf.setColor(new Color(139,69,19));
-}
-sky.setColor(Color.GRAY);
+<hr />
 
-for(Thing thing:stuff) {
-   aintGotNo(thing);
-}
-complainAboutGod();
-for(Part part:bodyparts) {
-   gotMy(part);
-}
-gotMy(life);
-gotMy(freedom);
-gotMy(life);
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLover</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">if</span><span class="o">(</span><span class="s">&quot;Billy Jean&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="o">...</span></code></pre></figure>
 
-{
-     final countdown = 10;
-}
-My favourite:
-And here is my all-time favourite (in CSS!!) created by @codepo8:
-.clowns{float:left;}
-.jokers{float:right};
-#me_you{position:fixed;margin:0 auto;width:100%}
-I hope you liked them!
+<hr />
 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="o">;</span> <span class="n">i</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
+   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;MMmmmMMmmm&quot;</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;test dummy&quot;</span><span class="o">);</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">bird</span><span class="o">;</span>
+<span class="n">bird</span> <span class="o">=</span> <span class="s">&quot;word&quot;</span><span class="o">;</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">she</span> <span class="o">!=</span> <span class="n">lovely</span> <span class="o">&amp;&amp;</span> <span class="n">she</span> <span class="o">!=</span> <span class="n">wonderfull</span> <span class="o">&amp;&amp;</span> <span class="n">she</span> <span class="o">!=</span> <span class="n">precious</span> <span class="o">&amp;&amp;</span> <span class="n">she</span><span class="o">.</span><span class="na">age</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">...</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Submarine</span> <span class="n">submarine</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Submarine</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">255</span><span class="o">,</span><span class="mi">255</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
+<span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">all</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">submarine</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span> <span class="o">!</span><span class="n">me</span><span class="o">.</span><span class="na">like</span><span class="o">(</span><span class="n">mondays</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+   <span class="n">tellWhy</span><span class="o">(</span><span class="n">me</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span><span class="n">young</span><span class="o">)</span> <span class="o">{}</span>
+<span class="c1">//loops forever</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">time</span> <span class="o">==</span> <span class="n">hammer</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">!</span><span class="n">women</span> <span class="o">)</span> <span class="o">{</span>
+   <span class="n">cry</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+     <span class="k">this</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">religion</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(!</span><span class="n">hasFound</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">lookFor</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">grass</span><span class="o">==</span><span class="s">&quot;green&quot;</span> <span class="o">&amp;&amp;</span> <span class="n">girls</span> <span class="o">==</span> <span class="s">&quot;pretty&quot;</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">takeMe</span><span class="o">(</span><span class="n">paradiseCity</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Leaf</span> <span class="nl">leaf:</span><span class="n">leafs</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">leaf</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">139</span><span class="o">,</span><span class="mi">69</span><span class="o">,</span><span class="mi">19</span><span class="o">));</span>
+<span class="o">}</span>
+<span class="n">sky</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="n">Color</span><span class="o">.</span><span class="na">GRAY</span><span class="o">);</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Thing</span> <span class="nl">thing:</span><span class="n">stuff</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">aintGotNo</span><span class="o">(</span><span class="n">thing</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="n">complainAboutGod</span><span class="o">();</span>
+<span class="k">for</span><span class="o">(</span><span class="n">Part</span> <span class="nl">part:</span><span class="n">bodyparts</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">gotMy</span><span class="o">(</span><span class="n">part</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="n">gotMy</span><span class="o">(</span><span class="n">life</span><span class="o">);</span>
+<span class="n">gotMy</span><span class="o">(</span><span class="n">freedom</span><span class="o">);</span>
+<span class="n">gotMy</span><span class="o">(</span><span class="n">life</span><span class="o">);</span></code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">{</span>
+     <span class="kd">final</span> <span class="n">countdown</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="my-favourite">My favourite:</h1>
+
+<p>And here is my all-time favourite (in CSS!!) created by <a href="http://twitter.com/Codepo8">@codepo8</a>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span><span class="na">clowns</span><span class="o">{</span><span class="kt">float</span><span class="o">:</span><span class="n">left</span><span class="o">;}</span>
+<span class="o">.</span><span class="na">jokers</span><span class="o">{</span><span class="kt">float</span><span class="o">:</span><span class="n">right</span><span class="o">};</span>
+<span class="err">#</span><span class="n">me_you</span><span class="o">{</span><span class="nl">position:</span><span class="n">fixed</span><span class="o">;</span><span class="nl">margin:</span><span class="mi">0</span> <span class="n">auto</span><span class="o">;</span><span class="nl">width:</span><span class="mi">100</span><span class="o">%}</span></code></pre></figure>
+
+<p>I hope you liked them!</p>
 
 
 	    <p>
@@ -1584,51 +1797,64 @@ I hope you liked them!
 			</span>
 			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread"></a>
     	</p>
-        I've been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4... some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!
-In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List&lt;Integer&gt; instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.
-For example the piece of code below:
+        <p>I’ve been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4… some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
 
+<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List<integer> instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</integer></p>
 
-public class LabelPlaceholderComparator implements Comparator { 
+<p>For example the piece of code below:</p>
 
-    /**{@inheritDoc */
-    public int compare(Object o1, Object o2) {
-        LabelPlaceholder p1 = (LabelPlaceholder) o1;
-        LabelPlaceholder p2 = (LabelPlaceholder) o2;
-        return p1.getLabel().compareTo(p2.getLabel());
-    }
-}
-Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey... the Javadoc says it only accepts LabelPlaceholders! So lets use this code:
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span> <span class="o">{</span> 
 
-List holders = fillList();
-Collections.sort(holders, new LabelPlaceholderComparator());
+    <span class="cm">/**{@inheritDoc */</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
+        <span class="n">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.
-For example Eclipse says:
-Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;
-At this point, most programmers at the company I work for now will just ignore this warning. They might even add:
-@SuppressWarnings("unchecked")
-What a shame... Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn't know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):
-I've got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I'd rather have a specific Comparator for this job. Do you have one for me?
-The solution to this problem is very simple, but most neglect to use it:
-public class LabelPlaceholderComparator implements Comparator&lt;LabelPlaceholder&gt; { 
+<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
 
-    /**{@inheritDoc */
-    public int compare(LabelPlaceholder p1, LabelPlaceholder p2) {
-        return p1.getLabel().compareTo(p2.getLabel());
-    }
-}
-As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don't have to cast anymore, because of the generics you can't put anything else in there.
-So, lets go to the conclusion: Why is the latter code better code?
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
+<span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nf">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
 
-As you can see, the code is smaller!
-There are no casts, the code is safer (no ClassCastException or eleborate class checks)
-If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don't have to read the Javadoc or the code to see what it does.
+<p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
+For example Eclipse says:</p>
 
-Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren't perfect, please use them where/when you can, it'll always add clarity to the code, and most of the time it'll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.
-Don't ever let me see public int compare(Object o1, Object o2); again!
-(You see, it is possible for me to have a discussion about Java generics without mentioning reified generics!)
+<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
 
+<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
+<em>@SuppressWarnings(“unchecked”)</em></p>
+
+<p>What a shame… Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn’t know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
+
+<p><em>I’ve got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I’d rather have a specific Comparator for this job. Do you have one for me?</em></p>
+
+<p>The solution to this problem is very simple, but most neglect to use it:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
+
+    <span class="cm">/**{@inheritDoc */</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="n">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don’t have to cast anymore, because of the generics you can’t put anything else in there.</p>
+
+<p>So, lets go to the conclusion: Why is the latter code better code?</p>
+
+<ol>
+  <li>As you can see, the code is smaller!</li>
+  <li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
+  <li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don’t have to read the Javadoc or the code to see what it does.</li>
+</ol>
+
+<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren’t perfect, please use them where/when you can, it’ll always add clarity to the code, and most of the time it’ll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
+
+<p>Don’t ever let me see public int compare(Object o1, Object o2); again!</p>
+
+<p>(You see, it is possible for me to have a discussion about Java generics without mentioning <a href="http://gafter.blogspot.com/2006/11/reified-generics-for-java.html">reified generics</a>!)</p>
 
 
 	    <p>

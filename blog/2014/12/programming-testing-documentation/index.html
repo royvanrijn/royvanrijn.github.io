@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Programming, testing, documentation</title>
-  <meta name="description" content="This week I've started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelle...">
+  <meta name="description" content="This week I’ve started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelle...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,38 +93,60 @@
   </header>
 
   <article class="post-content">
-    <p>This week I've started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelled in EA (Enterprise Architect), from use cases to the REST API fields. Next we need to perform the actual programming, and the testers write down their tests.</p>
-<h2>Realization</h2>
+    <p>This week I’ve started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelled in EA (Enterprise Architect), from use cases to the REST API fields. Next we need to perform the actual programming, and the testers write down their tests.</p>
+
+<h1 id="realization">Realization</h1>
+
 <p>What is in the <strong>documentation</strong>?<br />
 - A description of who inputs what and what the results should be</p>
+
 <p>What is in the <strong>code</strong>?<br />
 - A description of who inputs what and what the results should be</p>
+
 <p>What is in the <strong>test</strong>?<br />
 - A description of who inputs what and what the results should be</p>
-<p>Come to think of it... <strong>programming IS testing IS documenting</strong>, we are all doing exactly the same thing! This sounds a bit wasteful doesn't it?</p>
-<h2>Duplication</h2>
+
+<p>Come to think of it… <strong>programming IS testing IS documenting</strong>, we are all doing exactly the same thing! This sounds a bit wasteful doesn’t it?</p>
+
+<h1 id="duplication">Duplication</h1>
+
 <p>Is this (triple) duplication a bad thing? Well, not exactly, it is a good thing the tests and the code are written twice, this greatly reduces the amount of bugs and errors that always happen when writing something. Thinking and writing those things twice is actually a good thing!<br />
-<strong>BUT</strong>...</p>
-<h2>Divergence</h2>
+<strong>BUT</strong>…</p>
+
+<h1 id="divergence">Divergence</h1>
+
 <p>There is a major problem with having duplication: divergence.</p>
-<p>What happens when a programmer decides to change the fields in the REST API? The moment he does that the documentation isn't correct. In the best case all three, documentation, tests and code, get (<em>manually</em>) updated. But this just <strong>never</strong> happens in real life... Tests start lacking behind, documentation ends up being wrong, code ends up doing things we don't expect. Mostly because we are human and don't like doing things manually, we are focused on one thing, the code, or the test, or EA.</p>
-<p>Another problem is that all three documents are 'alive'. During design sessions people will change the documentation in EA, but this isn't yet implemented in the code. Also the test isn't yet updated. So at every possible moment in time <em>none</em> of the documents hold the entire truth. If you read the documentation you can never rely that the code is actually implemented.</p>
-<h2>Verify and automate!</h2>
-<p>If all three things (documentation, tests, code) do the same thing (namely 'describing how the program should behave') why don't we automatically verify this?</p>
+
+<p>What happens when a programmer decides to change the fields in the REST API? The moment he does that the documentation isn’t correct. In the best case all three, documentation, tests and code, get (<em>manually</em>) updated. But this just <strong>never</strong> happens in real life… Tests start lacking behind, documentation ends up being wrong, code ends up doing things we don’t expect. Mostly because we are human and don’t like doing things manually, we are focused on one thing, the code, or the test, or EA.</p>
+
+<p>Another problem is that all three documents are ‘alive’. During design sessions people will change the documentation in EA, but this isn’t yet implemented in the code. Also the test isn’t yet updated. So at every possible moment in time <em>none</em> of the documents hold the entire truth. If you read the documentation you can never rely that the code is actually implemented.</p>
+
+<h1 id="verify-and-automate">Verify and automate!</h1>
+
+<p>If all three things (documentation, tests, code) do the same thing (namely ‘describing how the program should behave’) why don’t we automatically verify this?</p>
+
 <p>If you have a REST API description with all fields and types in Enterprise Architect, why not verify this with the actual code?<br />
 A use case describes all possible paths and the expected outcomes, this is 100% the same as your (automated) tests should be!</p>
+
 <p>We could <em>(and should!)</em> automate and verify this.</p>
+
 <p>This morning the architect showed us three random examples from pieces of documentation in EA (to teach us how to work with the tool). But <em>NONE</em> of the three examples were complete and/or correct. Not a single example was the same in the documentation as implemented in the code. If this is the case, why even bother writing the documentation? It will keep diverging and become more and more useless.</p>
-<h2>Tooling</h2>
-<p>In a previous project I did, we didn't have any real documentation. We 'only' had Fitnesse tests! But those tests were just as readable as documentation.<br />
+
+<h1 id="tooling">Tooling</h1>
+
+<p>In a previous project I did, we didn’t have any real documentation. We ‘only’ had Fitnesse tests! But those tests were just as readable as documentation.<br />
 The big advantage was that we had a complete set of tests that:</p>
+
 <ul>
-<li>are readable as documentation (like use cases)</li>
-<li>are executable and verify our code does what we expect (and visa versa)</li>
-<li>ensure the documentation, tests and code are <strong>the same</strong></li>
+  <li>are readable as documentation (like use cases)</li>
+  <li>are executable and verify our code does what we expect (and visa versa)</li>
+  <li>ensure the documentation, tests and code are <strong>the same</strong></li>
 </ul>
-<p>This fixes all the problems regarding divergence and testing. When we wrote down the specification we instantly have our use cases. How do we know the code isn't ready yet? When this documentation is executed, it fails! Writing this initial test text should be done together with programmers, testers and the product owner.</p>
-<p>So is Fitnesse the best tool for the job? Probably not, it isn't as elaborate as Enterprise Architect (thankfully?) but maybe it could use some more structure. The big advantage of EA is the re-use of (partial) use cases when we create a new part of the application, you just drag and link parts together. In my experience people don't treat Fitnesse with the proper respect (it is 'just' test code). For some reason Fitnesse code always ends up as spaghetti code, isn't reusable and becomes a mess, while it should be considered the entire complete and only truth!</p>
+
+<p>This fixes all the problems regarding divergence and testing. When we wrote down the specification we instantly have our use cases. How do we know the code isn’t ready yet? When this documentation is executed, it fails! Writing this initial test text should be done together with programmers, testers and the product owner.</p>
+
+<p>So is Fitnesse the best tool for the job? Probably not, it isn’t as elaborate as Enterprise Architect (thankfully?) but maybe it could use some more structure. The big advantage of EA is the re-use of (partial) use cases when we create a new part of the application, you just drag and link parts together. In my experience people don’t treat Fitnesse with the proper respect (it is ‘just’ test code). For some reason Fitnesse code always ends up as spaghetti code, isn’t reusable and becomes a mess, while it should be considered the entire complete and only truth!</p>
+
 <p>Most tools seem to be very developer focussed, Fitnesse and Cucumber. What other tools can help us accomplish this goal of automating and verifying this trinity? Are there better alternatives?</p>
 
   </article>

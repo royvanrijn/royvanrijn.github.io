@@ -93,175 +93,56 @@
   </header>
 
   <article class="post-content">
-    <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html" alt="link to blog post">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
+    <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
+
 <p>And here is the result:</p>
-<p><!--more--></p>
-<div class="highlight"><pre><code class="language-brainfuck" data-lang="brainfuck"><span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
-<span class="c">;redcode</span><span class="nb">-</span><span class="c">94odd</span>
-<span class="c">;name SUBLEQ Hello World</span>
-<span class="c">;author Roy van Rijn</span>
-<span class="c">;assert 1</span>
-<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
-<span class="c">;Implementation of the OISC SUBLEQ interpreter</span><span class="nt">.</span><span class="c"></span>
-<span class="c">; All instructions take 3 lines:</span>
-<span class="c">; dat A</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">; dat B</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">; dat C</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">;</span>
-<span class="c">; The interpreter works as following:</span>
-<span class="c">;</span>
-<span class="c">; Substract A from B</span>
-<span class="c">; If B is less or equal to zero jump to C</span>
-<span class="c">; Else go to the next instruction (</span><span class="nb">+</span><span class="c">3)</span>
-<span class="c">;</span>
-<span class="c">; If the jump is to HALT (</span><span class="nb">-</span><span class="c">1) the program will halt</span>
-<span class="c">; If the substraction is OUT (</span><span class="nb">-</span><span class="c">2) the program will output the amount substracted</span>
-<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
-<span class="c">HALT   equ </span><span class="nb">-</span><span class="c">1</span>
-<span class="c">OUT    equ </span><span class="nb">-</span><span class="c">2</span>
 
-<span class="c">;Pointers used by program:</span>
-<span class="c">EQ     dat PROGRAM</span><span class="nb">-</span><span class="c">1      </span><span class="nt">,</span><span class="c"> PROGRAM</span>
-<span class="c">PTR    dat PROGRAM        </span><span class="nt">,</span><span class="c"> PROGRAM</span><span class="nb">+</span><span class="c">1</span>
-<span class="c">RESETV dat PROGRAM</span><span class="nb">-</span><span class="c">SUBSTR </span><span class="nt">,</span><span class="c"> PROGRAM</span><span class="nb">-</span><span class="c">SUBSTR ;reset values</span>
-<span class="c">NEXTV  dat #3             </span><span class="nt">,</span><span class="c"> #3</span>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">;-----------------------------------------------
+;redcode-94odd
+;name SUBLEQ Hello World
+;author Roy van Rijn
+;assert 1
+;-----------------------------------------------
+;Implementation of the OISC SUBLEQ interpreter.
+; All instructions take 3 lines:
+; dat A,0
+; dat B,0
+; dat C,0
+;
+; The interpreter works as following:
+;
+; Substract A from B
+; If B is less or equal to zero jump to C
+; Else go to the next instruction (+3)
+;
+; If the jump is to HALT (-1) the program will halt
+; If the substraction is OUT (-2) the program will output the amount substracted
+;-----------------------------------------------
+HALT   equ -1
+OUT    equ -2
 
-<span class="c">;Print to command line:</span>
-<span class="c">PRINT  mov</span><span class="nt">.</span><span class="c">ab *SUBSTR     </span><span class="nt">,</span><span class="c"> #0</span>
-<span class="c">       mov</span><span class="nt">.</span><span class="c">b  </span><span class="nb">-</span><span class="c">1          </span><span class="nt">,</span><span class="c"> </span><span class="nv">&lt;</span><span class="c">1000 ;sts</span><span class="nt">.</span><span class="c">b </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0 for output</span>
+;Pointers used by program:
+EQ     dat PROGRAM-1      , PROGRAM
+PTR    dat PROGRAM        , PROGRAM+1
+RESETV dat PROGRAM-SUBSTR , PROGRAM-SUBSTR ;reset values
+NEXTV  dat #3             , #3
 
-<span class="c">;Reset to absolute values:</span>
-<span class="c">NEXT   add</span><span class="nt">.</span><span class="c">f NEXTV        </span><span class="nt">,</span><span class="c"> PTR</span>
-<span class="c">RESET  mov</span><span class="nt">.</span><span class="c">f RESETV       </span><span class="nt">,</span><span class="c"> SUBSTR</span>
+;Print to command line:
+PRINT  mov.ab *SUBSTR     , #0
+       mov.b  -1          , &lt;1000 ;sts.b -1,0 for output
 
-<span class="c">;Main logic:</span>
-<span class="c">START  add</span><span class="nt">.</span><span class="c">a  *PTR        </span><span class="nt">,</span><span class="c"> SUBSTR</span>
-<span class="c">       add</span><span class="nt">.</span><span class="c">ab </span><span class="nv">&gt;</span><span class="c">PTR        </span><span class="nt">,</span><span class="c"> SUBSTR</span>
-<span class="c">       mov</span><span class="nt">.</span><span class="c">a  @PTR        </span><span class="nt">,</span><span class="c"> NEWPTR</span>
+;Reset to absolute values:
+NEXT   add.f NEXTV        , PTR
+RESET  mov.f RESETV       , SUBSTR
 
-<span class="c">;Check if output is OUT</span><span class="nt">,</span><span class="c"> print and go to next instruction:</span>
-<span class="c">       mov</span><span class="nt">.</span><span class="c">a  </span><span class="nv">&lt;</span><span class="c">PTR        </span><span class="nt">,</span><span class="c"> 1</span>
-<span class="c">       sne</span><span class="nt">.</span><span class="c">ab #0          </span><span class="nt">,</span><span class="c"> #OUT</span>
-<span class="c">       jmp    PRINT</span>
+;Main logic:
+START  add.a  *PTR        , SUBSTR
+       add.ab &gt;PTR        , SUBSTR
+       mov.a  @PTR        , NEWPTR
 
-<span class="c">;Substract and determine if the value </span><span class="nv">&lt;</span><span class="c">= 0</span>
-<span class="c">SUBSTR sub</span><span class="nt">.</span><span class="c">a  PROGRAM     </span><span class="nt">,</span><span class="c"> PROGRAM</span>
-<span class="c">       slt</span><span class="nt">.</span><span class="c">a  #CORESIZE/2 </span><span class="nt">,</span><span class="c"> @</span><span class="nb">-</span><span class="c">1</span>
-<span class="c">       jmn</span><span class="nt">.</span><span class="c">ba NEXT        </span><span class="nt">,</span><span class="c"> @</span><span class="nb">-</span><span class="c">2</span>
+;Check if output is OUT, print and go to next instruction:
+       mov.a</code></pre></figure>
 
-<span class="c">;Jump to new address:</span>
-<span class="c">NEWPTR mov</span><span class="nt">.</span><span class="c">ab #0          </span><span class="nt">,</span><span class="c"> #0</span>
-<span class="c">       mov</span><span class="nt">.</span><span class="c">f  NEWPTR      </span><span class="nt">,</span><span class="c"> PTR</span>
-<span class="c">       add</span><span class="nt">.</span><span class="c">f  EQ          </span><span class="nt">,</span><span class="c"> PTR</span>
-<span class="c">       seq</span><span class="nt">.</span><span class="c">ab NEWPTR      </span><span class="nt">,</span><span class="c"> #HALT</span>
-
-<span class="c">;Check for HALT (jump to DAT</span><span class="nb">-</span><span class="c">PROGRAM)</span>
-<span class="c">       jmp RESET</span>
-
-<span class="c">LABEL</span>
-<span class="c">PROGRAM</span>
-
-<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span>
-<span class="c">;Translated version of the Hello World program from:</span>
-<span class="c">;http://mozaika</span><span class="nt">.</span><span class="c">com</span><span class="nt">.</span><span class="c">au/oleg/subleq/</span>
-
-
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 3</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 6</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 9</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">A dat PROGRAM </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat OUT </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 15</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat m1</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 18</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 21</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat E</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 24</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 27</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 30</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 33</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 36</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 39</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 42</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat E</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat b</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 48</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 51</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
-
-<span class="c">dat p</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat A</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 54</span><span class="nt">,</span><span class="c">0 ;?</span><span class="nb">+</span><span class="c">3</span>
-
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat Z</span><span class="nb">-</span><span class="c">LABEL </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 0</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">dat 0 </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat 0 </span><span class="nt">,</span><span class="c">0</span>
-<span class="c">dat </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">;data</span>
-<span class="c">p dat H</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">Z dat 0</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">m1 dat </span><span class="nb">-</span><span class="c">1</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">b dat 0</span><span class="nt">,</span><span class="c">0</span>
-<span class="c">H dat 72</span><span class="nt">,</span><span class="c">0 ;:H</span>
-<span class="c">dat 101</span><span class="nt">,</span><span class="c">0 ; e</span>
-<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
-<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
-<span class="c">dat 111</span><span class="nt">,</span><span class="c">0 ; o</span>
-<span class="c">dat 32</span><span class="nt">,</span><span class="c">0 ; space</span>
-<span class="c">dat 87</span><span class="nt">,</span><span class="c">0 ; W</span>
-<span class="c">dat 111</span><span class="nt">,</span><span class="c">0 ; o</span>
-<span class="c">dat 114</span><span class="nt">,</span><span class="c">0 ; r</span>
-<span class="c">dat 108</span><span class="nt">,</span><span class="c">0 ; l</span>
-<span class="c">dat 100</span><span class="nt">,</span><span class="c">0 ; d</span>
-<span class="c">E dat E</span><span class="nb">-</span><span class="c">LABEL</span><span class="nt">,</span><span class="c">0</span>
-
-<span class="c">end START</span>
-<span class="c">;</span><span class="nb">-----------------------------------------------</span><span class="c"></span></code></pre></div>
 
   </article>
 

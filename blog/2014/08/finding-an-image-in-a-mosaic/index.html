@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Finding an image in a mosaic</title>
-  <meta name="description" content="Browsing the Ludum Dare (see previous post) website I found this post from a friend Will. He made the following mosaic:Pretty interesting to see, I've alread...">
+  <meta name="description" content="Browsing the Ludum Dare (see previous post) website I found this post from a friend Will. He made the following mosaic:Pretty interesting to see, I’ve alread...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,26 +93,37 @@
   </header>
 
   <article class="post-content">
-    <p>Browsing the Ludum Dare (see <a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
-<p><a href="/images/mosaic.jpg"><img class="aligncenter wp-image-1829" src="/images/mosaic.jpg" alt="mosaic" width="954" height="487" /></a></p>
-<p>Pretty interesting to see, I've already worked with him on improving the algorithm to generate these mosaics <a href="/blog/2014/04/mosaic-algorithm/">in the past</a>. But next he set me a challenge: <em>Find your own game thumbnail, it is in there somewhere!</em></p>
+    <p>Browsing the Ludum Dare (see <a href="/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
+
+<p><a href="/images/mosaic.jpg"><img src="/images/mosaic.jpg" alt="mosaic" class="aligncenter" /></a></p>
+
+<p>Pretty interesting to see, I’ve already worked with him on improving the algorithm to generate these mosaics <a href="/2014/04/mosaic-algorithm/">in the past</a>. But next he set me a challenge: <em>Find your own game thumbnail, it is in there somewhere!</em></p>
+
 <p>This is the screenshot of my game, used as thumbnail:</p>
-<p><a href="/images/target.png"><img class="aligncenter wp-image-1833 size-medium" src="/images/target-300x187.png" alt="target" width="300" height="187" /></a></p>
-<p>So I went though the thumbnails, one time.. and a second time... then I decided to solve it like a real programmer:</p>
-<p><img class="aligncenter wp-image-1830 " src="/images/mosaic.gif" alt="mosaic" width="495" height="246" /></p>
-<p>&nbsp;</p>
+
+<p><a href="/images/target.png"><img src="/images/target-300x187.png" alt="target" class="aligncenter" /></a></p>
+
+<p>So I went though the thumbnails, one time.. and a second time… then I decided to solve it like a real programmer:</p>
+
+<p><img src="/images/mosaic.gif" alt="mosaic" class="aligncenter" /></p>
+
+<p> </p>
+
 <p>How does it work? Well it is pretty simple:</p>
+
 <ol>
-<li>Input #1: mosaic.jpg</li>
-<li>Input #2: Amount of thumbnails width and height</li>
-<li>Input #3: screenshot.png</li>
-<li>The program resizes my game screenshot to the thumbnail size.</li>
-<li>Next it loops over all sub-images of the mosaic.</li>
-<li>For every sub-thumbnail: Calculate the error  (+=<em>Math.abs(mosaicPixelValue - screenshotPixelValue)</em> for each color, for each pixel)</li>
-<li>Store the location of the thumbnail with the smallest error!</li>
+  <li>Input #1: mosaic.jpg</li>
+  <li>Input #2: Amount of thumbnails width and height</li>
+  <li>Input #3: screenshot.png</li>
+  <li>The program resizes my game screenshot to the thumbnail size.</li>
+  <li>Next it loops over all sub-images of the mosaic.</li>
+  <li>For every sub-thumbnail: Calculate the error  (+=<em>Math.abs(mosaicPixelValue - screenshotPixelValue)</em> for each color, for each pixel)</li>
+  <li>Store the location of the thumbnail with the smallest error!</li>
 </ol>
+
 <p><strong>That is it</strong>, solved it in 10 minutes of coding!<br />
 (and another 10 minutes to make the visual conformation and make the animated gif).</p>
+
 
   </article>
 

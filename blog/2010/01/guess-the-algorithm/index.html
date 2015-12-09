@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Guess the algorithm</title>
-  <meta name="description" content="Yesterday I found and programmed a nice little algorithm. I'm not going to tell you (yet) what it does and how its called, but I'll just show the code:	priva...">
+  <meta name="description" content="Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:privat...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,24 +93,28 @@
   </header>
 
   <article class="post-content">
-    <p>Yesterday I found and programmed a nice little algorithm. I'm not going to tell you (yet) what it does and how its called, but I'll just show the code:</p>
-<pre class="brush:java">
-	private int function(int x, int y) {
-		int r = 0;
-		while(x!=0) {
-			if((x&1)==1) {
-				r+=y;
-			}
-			x&gt;&gt;&gt;=1;
-			y&lt;&lt;=1;
-		}
-		return r;
-	}
-</pre>
+    <p>Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">function</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">while</span><span class="o">(</span><span class="n">x</span><span class="o">!=</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">((</span><span class="n">x</span><span class="o">&amp;</span><span class="mi">1</span><span class="o">)==</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">r</span><span class="o">+=</span><span class="n">y</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">x</span><span class="o">&gt;&gt;&gt;=</span><span class="mi">1</span><span class="o">;</span>
+		<span class="n">y</span><span class="o">&lt;&lt;=</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>So tell me, what does this do, and what is the algorithm called?</p>
+
 <p><strong>Edit:</strong></p>
+
 <p>And indeed (it was a simple one) the correct solution is multiplication, and to be specific, Ethiopian or <a href="http://mathworld.wolfram.com/RussianMultiplication.html">Russian Multiplication</a>.</p>
-<p>I'll probably do more, harder ones, in the future..!</p>
+
+<p>I’ll probably do more, harder ones, in the future..!</p>
+
 
   </article>
 

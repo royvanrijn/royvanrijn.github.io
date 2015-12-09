@@ -93,62 +93,88 @@
   </header>
 
   <article class="post-content">
-    <p>Yesterday we (at <a href="http://www.jpoint.nl/" alt="JPoint, the company I work for.">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/" alt="Stefan Tilkov's blog">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
-<p>One of the things he mentioned was: If you don't use caching, you are an idiot.</p>
-<h2>Where do websites cache?</h2>
+    <p>Yesterday we (at <a href="http://www.jpoint.nl/">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
+
+<p>One of the things he mentioned was: If you don’t use caching, you are an idiot.</p>
+
+<h1 id="where-do-websites-cache">Where do websites cache?</h1>
+
 <p>There are multiple tiers where caching of websites is done, and is useful.</p>
-<h3>Browser cache</h3>
+
+<h2 id="browser-cache">Browser cache</h2>
+
 <p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There is absolutely no reason to go online.</p>
-<h3>Proxy cache</h3>
-<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn't changed it can provide the page instantly.</p>
-<h3>Reversed proxy cache</h3>
-<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a "reverse" proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
-<h2>Making pages cacheable</h2>
-<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan's rant, I'm completely convinced about that. If you don't do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn't work, and shouldn't be used (!). So what could we do?</p>
-<h3>Expires header</h3>
-<p>When sending a page back to the user you are able to set some HTTP headers. And "expires" is one of them.<br />
+
+<h2 id="proxy-cache">Proxy cache</h2>
+
+<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn’t changed it can provide the page instantly.</p>
+
+<h2 id="reversed-proxy-cache">Reversed proxy cache</h2>
+
+<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a “reverse” proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
+
+<h1 id="making-pages-cacheable">Making pages cacheable</h1>
+
+<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan’s rant, I’m completely convinced about that. If you don’t do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn’t work, and shouldn’t be used (!). So what could we do?</p>
+
+<h2 id="expires-header">Expires header</h2>
+
+<p>When sending a page back to the user you are able to set some HTTP headers. And “expires” is one of them.<br />
 An example:</p>
-<pre class="brush:plain">
-Expires: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>This indicates that the current page is valid until the timestamp. Then it 'Expires'. Easy!</p>
-<p>The only problem is generating the timestamp, it can be a bit tricky. Also you'll have to be sure you've set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
-<h3>Cache-Control headers</h3>
-<p>With HTTP 1.1 there is a new class of headers called "Cache-Control". These headers are more powerful than the Expires header.<br />
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Expires: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>This indicates that the current page is valid until the timestamp. Then it ‘Expires’. Easy!</p>
+
+<p>The only problem is generating the timestamp, it can be a bit tricky. Also you’ll have to be sure you’ve set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
+
+<h2 id="cache-control-headers">Cache-Control headers</h2>
+
+<p>With HTTP 1.1 there is a new class of headers called “Cache-Control”. These headers are more powerful than the Expires header.<br />
 To enable caching using Cache Control headers you can set:</p>
-<pre class="brush:plain">
-Cache-Control: max-age=3600, must-revalidate
-</pre>
-<p>The "max-age" is time in ms that the current page is valid. And by adding "must-revalidate" we tell the cache it should obey our max-age. If you don't want an object to be cached you can use:</p>
-<pre class="brush:plain">
-Cache-Control: no-cache
-</pre>
-<h2>Refreshing cached data</h2>
-<p>The two methods described above will tell the cache <b>if</b> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
-<h3>Last-Modified</h3>
-<p>Websites should always set the response header called "Last-Modified". This is a timestamp of the moment a webpage last changed.</p>
-<pre class="brush:plain">
-Last-Modified: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header "If-Modified-Since" and include the timestamp.</p>
-<pre class="brush:plain">
-If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT
-</pre>
-<p>If the content on the server hasn't been changed it'll reply "304 Not Modified". The cache can now keep the cached version.</p>
-<h3>ETag</h3>
-<p>With HTTP 1.1 there is also an improved method of doing the "Last-Modified". Instead of using a timestamp (which is error prone), they've introduced the "ETag". This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
-<pre class="brush:plain">
-ETag: "686897696a7c876b7e"
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: max-age=3600, must-revalidate</code></pre></figure>
+
+<p>The “max-age” is time in ms that the current page is valid. And by adding “must-revalidate” we tell the cache it should obey our max-age. If you don’t want an object to be cached you can use:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: no-cache</code></pre></figure>
+
+<h1 id="refreshing-cached-data">Refreshing cached data</h1>
+
+<p>The two methods described above will tell the cache <strong>if</strong> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
+
+<h2 id="last-modified">Last-Modified</h2>
+
+<p>Websites should always set the response header called “Last-Modified”. This is a timestamp of the moment a webpage last changed.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Last-Modified: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header “If-Modified-Since” and include the timestamp.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>If the content on the server hasn’t been changed it’ll reply “304 Not Modified”. The cache can now keep the cached version.</p>
+
+<h2 id="etag">ETag</h2>
+
+<p>With HTTP 1.1 there is also an improved method of doing the “Last-Modified”. Instead of using a timestamp (which is error prone), they’ve introduced the “ETag”. This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ETag: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+
 <p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
-<pre class="brush:plain">
-If-None-Match: "686897696a7c876b7e"
-</pre>
-<p>The term "If-None-Match" isn't very clear, but is means "if-etag-changed-since" and works the same way as "If-Modified-Since". When the ETag is the same the server will reply "304 Not Modified", it won't send the content back.</p>
-<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don't have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed...! But sometimes you'll know in advance if the content has been changed.</p>
-<h2>Improving royvanrijn.com</h2>
-<p>I'm using WordPress and I've found the excellent plugin "WP Total Cache".</p>
-<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you'll probably be reading this from the browser cache.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">If-None-Match: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+
+<p>The term “If-None-Match” isn’t very clear, but is means “if-etag-changed-since” and works the same way as “If-Modified-Since”. When the ETag is the same the server will reply “304 Not Modified”, it won’t send the content back.</p>
+
+<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don’t have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed…! But sometimes you’ll know in advance if the content has been changed.</p>
+
+<h1 id="improving-royvanrijncom">Improving royvanrijn.com</h1>
+
+<p>I’m using WordPress and I’ve found the excellent plugin “WP Total Cache”.</p>
+
+<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you’ll probably be reading this from the browser cache.</p>
+
 
   </article>
 

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Quine - McCluskey</title>
-  <meta name="description" content="About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:personHasInsurence (A)personNe...">
+  <meta name="description" content="About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:  personHasInsurence (A)  pers...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -94,42 +94,57 @@
 
   <article class="post-content">
     <p>About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:</p>
+
 <ol>
-<li>personHasInsurence (A)</li>
-<li>personNeedsInsurence (B)</li>
-<li>personIsKnownAtThisAgency (C)</li>
+  <li>personHasInsurence (A)</li>
+  <li>personNeedsInsurence (B)</li>
+  <li>personIsKnownAtThisAgency (C)</li>
 </ol>
+
 <p>We also had two particulair cases for an insurance page:</p>
+
 <p>Case 1:<br />
-Person has insurence and isn't yet known at this agency</p>
+Person has insurence and isn’t yet known at this agency</p>
+
 <p>Case 2:<br />
-Person doesn't have insurence, needs insurence and is known at this agency</p>
+Person doesn’t have insurence, needs insurence and is known at this agency</p>
+
 <p>Case 3:<br />
-Person doesn't have insurence, doesn't need insurence and is known at this agency</p>
+Person doesn’t have insurence, doesn’t need insurence and is known at this agency</p>
+
 <p>So the view-logic was a bit complex:</p>
-<pre class="brush:java">
-if( (A && !C) || (!A && B && C) || (!A && !B && C ) ) {
-    showPage();
-}
-</pre>
-<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I've completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called "<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>"-algorithm, and I decided to implement it (just to learn how it works).</p>
-<h2>Quine - McCluskey algorithm</h2>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="n">showPage</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I’ve completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called “<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>“-algorithm, and I decided to implement it (just to learn how it works).</p>
+
+<h1 id="quine---mccluskey-algorithm">Quine - McCluskey algorithm</h1>
+
 <p>First of, lets go through a couple of terms.</p>
-<p><!--more--><br />
-Minterm: A small boolean function which has all the different input variables, <b>once</b>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A'BC (not A and B and C).</p>
-<p>The first thing you do using this algorithm is that you find so called "prime implicants". An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can't be combined with other implicants (for more details, read the wikipage with examples)!</p>
-<p>After combining all the minterm of your case(s), you'll end up with a "prime implicant chart". This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot "essential prime implicants".  That is, implicants which are unique in covering a field. You <u>have</u> to use these implicants in the final logic.</p>
-<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick's Method</a> to select the best/smallest option.</p>
-<p>Using the above example, if you minimize, you'll come down to:</p>
-<pre class="brush:java">
-if((!A && C) || (A && !C)) {
-    showPage();
-}
-</pre>
-<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I've seen lately!</p>
+
+<p>Minterm: A small boolean function which has all the different input variables, <strong>once</strong>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A’BC (not A and B and C).</p>
+
+<p>The first thing you do using this algorithm is that you find so called “prime implicants”. An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can’t be combined with other implicants (for more details, read the wikipage with examples)!</p>
+
+<p>After combining all the minterm of your case(s), you’ll end up with a “prime implicant chart”. This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot “essential prime implicants”. That is, implicants which are unique in covering a field. You have to use these implicants in the final logic.</p>
+
+<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick’s Method</a> to select the best/smallest option.</p>
+
+<p>Using the above example, if you minimize, you’ll come down to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">((!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">showPage</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I’ve seen lately!</p>
+
 <p>And if you need something even faster, try out <a href="http://en.wikipedia.org/wiki/Espresso_heuristic_logic_minimizer">Espresso</a>!</p>
+
 <p>ps. I love browsing this page: <a href="http://en.wikipedia.org/wiki/List_of_algorithms">List of algorithms</a><br />
 But OTOH, its kind of depressing I still have soo much to learn.</p>
+
 
   </article>
 

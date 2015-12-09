@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Testing a chess engine</title>
-  <meta name="description" content="About a week ago I decided to try and write a chess engine. I've encountered bitboards before, and I really liked working with them. Most references I found ...">
+  <meta name="description" content="About a week ago I decided to try and write a chess engine. I’ve encountered bitboards before, and I really liked working with them. Most references I found ...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,158 +93,112 @@
   </header>
 
   <article class="post-content">
-    <p>About a week ago I decided to try and write a chess engine. I've encountered <a href="http://en.wikipedia.org/wiki/Bitboard">bitboards</a> before, and I really liked working with them. Most references I found had to do with chess engines, so I decided to have a go.</p>
-<p><!--more--><br />
-The single most important and time consuming aspect of building a chess engine is legal <a href="http://chessprogramming.wikispaces.com/Move+Generation">move generation</a>. In all situations, be able to generate all legal moves that can be made on the board. At first this seems pretty straight forward, all pieces can move and attack in certain ways. But when you get to specific rules like castling and en-passant things get really tricky.</p>
-<p>But how do you know for sure your engine works and gets the right results? The many chess engine developers around the world found a great solution for this problem. Something I can only describe as universal integration-tests! They call it "perft" (from performance test). The first thing they do it create a particulair situation on the chess board. This can be described like in <a href="http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">FEN notation</a>.<br />
+    <p>About a week ago I decided to try and write a chess engine. I’ve encountered <a href="http://en.wikipedia.org/wiki/Bitboard">bitboards</a> before, and I really liked working with them. Most references I found had to do with chess engines, so I decided to have a go.</p>
+
+<p>The single most important and time consuming aspect of building a chess engine is legal <a href="http://chessprogramming.wikispaces.com/Move+Generation">move generation</a>. In all situations, be able to generate all legal moves that can be made on the board. At first this seems pretty straight forward, all pieces can move and attack in certain ways. But when you get to specific rules like castling and en-passant things get really tricky.</p>
+
+<p>But how do you know for sure your engine works and gets the right results? The many chess engine developers around the world found a great solution for this problem. Something I can only describe as universal integration-tests! They call it “perft” (from performance test). The first thing they do it create a particulair situation on the chess board. This can be described like in <a href="http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">FEN notation</a>.<br />
 For example:</p>
-<pre class="brush:plain"> 
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-(initial chess starting position)
-</pre>
-<p>All chess engines use this small language and understand how to set up their internal board. The next step is to generate all possible moves. From the example FEN above all possible moves are just 20 moves. But why stop here? From these 20 moves calculate all legal moves the opponent can make (also 20) which results in 400 moves. Continue doing this and you'll end up with a table like this:</p>
-<table>
-<tr>
-<td style="text-align: right;"><strong>Depth</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Nodes</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Captures</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>E.p.</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Castles</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Promotions</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Checks</strong><br /> 
-</td>
-<td style="text-align: right;"><strong>Checkmates</strong><br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">1<br /> 
-</td>
-<td style="text-align: right;">20<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">2<br /> 
-</td>
-<td style="text-align: right;">400<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">3<br /> 
-</td>
-<td style="text-align: right;">8902<br /> 
-</td>
-<td style="text-align: right;">34<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">12<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">4<br /> 
-</td>
-<td style="text-align: right;">197281<br /> 
-</td>
-<td style="text-align: right;">1576<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">469<br /> 
-</td>
-<td style="text-align: right;">8<br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">5<br /> 
-</td>
-<td style="text-align: right;">4865609<br /> 
-</td>
-<td style="text-align: right;">82719<br /> 
-</td>
-<td style="text-align: right;">258<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">27351<br /> 
-</td>
-<td style="text-align: right;">347<br /> 
-</td>
-</tr>
-<tr>
-<td style="text-align: right;">6<br /> 
-</td>
-<td style="text-align: right;">119060324<br /> 
-</td>
-<td style="text-align: right;">2812008<br /> 
-</td>
-<td style="text-align: right;">5248<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">0<br /> 
-</td>
-<td style="text-align: right;">809099<br /> 
-</td>
-<td style="text-align: right;">10828<br /> 
-</td>
-</tr>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+    (initial chess starting position)</code></pre></figure>
+
+<p>All chess engines use this small language and understand how to set up their internal board. The next step is to generate all possible moves. From the example FEN above all possible moves are just 20 moves. But why stop here? From these 20 moves calculate all legal moves the opponent can make (also 20) which results in 400 moves. Continue doing this and you’ll end up with a table like this:</p>
+
+<table> 
+ <tbody>
+  <tr> 
+   <td style="text-align: right;"><strong>Depth</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Nodes</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Captures</strong><br /> </td> 
+   <td style="text-align: right;"><strong>E.p.</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Castles</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Promotions</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Checks</strong><br /> </td> 
+   <td style="text-align: right;"><strong>Checkmates</strong><br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">1<br /> </td> 
+   <td style="text-align: right;">20<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">2<br /> </td> 
+   <td style="text-align: right;">400<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">3<br /> </td> 
+   <td style="text-align: right;">8902<br /> </td> 
+   <td style="text-align: right;">34<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">12<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">4<br /> </td> 
+   <td style="text-align: right;">197281<br /> </td> 
+   <td style="text-align: right;">1576<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">469<br /> </td> 
+   <td style="text-align: right;">8<br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">5<br /> </td> 
+   <td style="text-align: right;">4865609<br /> </td> 
+   <td style="text-align: right;">82719<br /> </td> 
+   <td style="text-align: right;">258<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">27351<br /> </td> 
+   <td style="text-align: right;">347<br /> </td> 
+  </tr> 
+  <tr> 
+   <td style="text-align: right;">6<br /> </td> 
+   <td style="text-align: right;">119060324<br /> </td> 
+   <td style="text-align: right;">2812008<br /> </td> 
+   <td style="text-align: right;">5248<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">0<br /> </td> 
+   <td style="text-align: right;">809099<br /> </td> 
+   <td style="text-align: right;">10828<br /> </td> 
+  </tr> 
+ </tbody>
 </table>
+
 <p>As you can see, the numbers in these tables quickly become huge. This will ensure that a lot of situations are tested. Using these tables you can check if your program outputs the same values, and thus complies to all the rules. There are a lot of these tables online, using a FEN for starting position, and a table with all nodes that can be generated.</p>
-<p>The next problem is, when your numbers don't add up, how do you find the move 6 levels deep that goes wrong? Well, some engines can help you with that. Personally I used <a href="http://www.rocechess.ch/rocee.html">ROCE</a> (Roman's Own Chess Engine). His engine has a "divide" function. First you set the board in a certain position using the FEN, and then you call the divide function, for example "divide 6". Now it shows a table like this:</p>
-<pre class="brush:plain"> 
-move : nodes
-e2e4 1249
-e2e3 2356
-f2f3 5356
-f2f4 6436
-(etc)
-</pre>
-<p>This lists each node at level 1, and after that each number of nodes it results in at depth 6. If you also have this function in your own chess engine you can compare the numbers. Now you can pinpoint which of the first nodes contains the error. Do this move and try divide 5. This will guide you all the way to the specific move that is (or isn't) created! This was a huge help, and I love the way chess engine developers devised a way to have a kind of universal integration-tests which will point out the most commonly made bugs. You can take these tables, load them in a automatic test and keep running them every nights to see if things are still working like it should.</p>
+
+<p>The next problem is, when your numbers don’t add up, how do you find the move 6 levels deep that goes wrong? Well, some engines can help you with that. Personally I used <a href="http://www.rocechess.ch/rocee.html">ROCE</a> (Roman’s Own Chess Engine). His engine has a “divide” function. First you set the board in a certain position using the FEN, and then you call the divide function, for example “divide 6”. Now it shows a table like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">move : nodes
+    e2e4 1249
+    e2e3 2356
+    f2f3 5356
+    f2f4 6436
+    (etc)</code></pre></figure>
+
+<p>This lists each node at level 1, and after that each number of nodes it results in at depth 6. If you also have this function in your own chess engine you can compare the numbers. Now you can pinpoint which of the first nodes contains the error. Do this move and try divide 5. This will guide you all the way to the specific move that is (or isn’t) created! This was a huge help, and I love the way chess engine developers devised a way to have a kind of universal integration-tests which will point out the most commonly made bugs. You can take these tables, load them in a automatic test and keep running them every nights to see if things are still working like it should.</p>
+
 <p>How did my engine end up? Well, it worked perfect in the sense that it could generate all the good legal moves. Then I added a simple evaluation function and it could play chess. After that I implemented a simple search algorithm (<a href="http://en.wikipedia.org/wiki/Alpha-beta_pruning">alpha-beta</a> using <a href="http://en.wikipedia.org/wiki/Negamax">negamax</a>) and it could beat two simple other chess engines and myself. And of course, after a week, I lost interest again and writing a blogpost about it is usually the nail to the coffin of most of my projects.</p>
-<p>So, what should I tackle next? I'm looking forward to having a new <a href="http://azspcs.net/">AZsPCs</a> competition, but I think this might take a while...</p>
-<p><b>Update:</b> A couple of readers have pointed out that these tests are obviously not <i>unit tests</i>, but rather integration or acceptance tests. You are completely right. I've called them Unit tests because I used JUnit and they run in the automatic build. But they do test integration..!</p>
+
+<p>So, what should I tackle next? I’m looking forward to having a new <a href="http://azspcs.net/">AZsPCs</a> competition, but I think this might take a while…</p>
+
+<p><strong>Update:</strong> A couple of readers have pointed out that these tests are obviously not <em>unit tests</em>, but rather integration or acceptance tests. You are completely right. I’ve called them Unit tests because I used JUnit and they run in the automatic build. But they do test integration..!</p>
+
 
   </article>
 

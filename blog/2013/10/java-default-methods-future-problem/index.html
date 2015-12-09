@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Java 'default' methods, future problem?</title>
-  <meta name="description" content="In Java there is one golden rule, we don't break backwards compatibility. Not in the JVM interpreter/compiler and not in the JDK classes.Extending interfaces...">
+  <meta name="description" content="In Java there is one golden rule, we don’t break backwards compatibility. Not in the JVM interpreter/compiler and not in the JDK classes.Extending interfaces...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,33 +93,40 @@
   </header>
 
   <article class="post-content">
-    <p>In Java there is one golden rule, we <b>don't break backwards compatibility</b>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
-<h2>Extending interfaces</h2>
-<p>With the introduction of Lambda's in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <i>List.forEach</i> all custom implementations of the List interface won't compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
-<h2>default</h2>
-<p>To counter this the '<i>default</i>' keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn't have to be). For example, see the following new 'default' method from the Iterable interface:</p>
-<pre class="brush:java">
-    default void forEach(Consumer&lt;? super T&gt; action) {
-    	Objects.requireNonNull(action);
-    	for (T t : this) {
-        	action.accept(t);
-    	}
-    }
-</pre>
-<p>There are some important rules; the added code will operate on static data, it can't and should never manipulate state!<br />
+    <p>In Java there is one golden rule, we <strong>don’t break backwards compatibility</strong>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
+
+<h1 id="extending-interfaces">Extending interfaces</h1>
+
+<p>With the introduction of Lambda’s in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <em>List.forEach</em> all custom implementations of the List interface won’t compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
+
+<h1 id="default">default</h1>
+
+<p>To counter this the ‘<em>default</em>’ keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn’t have to be). For example, see the following new ‘default’ method from the Iterable interface:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
+	<span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>There are some important rules; the added code will operate on static data, it can’t and should never manipulate state!<br />
 Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
-<h2>Possible future problems...</h2>
+
+<h1 id="possible-future-problems">Possible future problems…</h1>
+
 <p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
-<pre class="brush:java">
-default Spliterator&lt;E&gt; spliterator()
-</pre>
-<p>Now (crazy example) I've made something called <b>MyListSet</b> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <i>spilerator()</i> on the same level and will thus collide with the following exception:</p>
-<pre class="brush:plain">
-class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
+
+<p>Now (crazy example) I’ve made something called <strong>MyListSet</strong> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <em>spilerator()</em> on the same level and will thus collide with the following exception:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
   where T is a type-variable:
-    T extends Object declared in class MyListSet
-</pre>
-<p>The more these 'default' methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I'm not yet convinced about the default methods.</p>
+    T extends Object declared in class MyListSet</code></pre></figure>
+
+<p>The more these ‘default’ methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I’m not yet convinced about the default methods.</p>
+
 
   </article>
 

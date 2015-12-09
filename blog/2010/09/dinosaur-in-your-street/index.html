@@ -93,102 +93,27 @@
   </header>
 
   <article class="post-content">
-    <p>
-After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
-<p><!--more--></p>
-<p>
-It is nothing like The Wilderness Downtown, but still I'd like to share it ;-)</p>
-<p><br />
-    <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAA8DVlelElV7FnS-D75PKhsRTVeKiT8v9wE1qw6xBJCJfVMErizxSdjrF57Jc2gFGbdeVBfnEKZAfZ9w" type="text/javascript"></script><script type="text/javascript"><br />
-    var map;<br />
-    var panoClient;<br />
-    var nextPanoId;<br />
-    var geo;<br />
-    var urlPrefix = "http://cbk0.google.com/cbk?output=tile&panoid=";<br />
-    var urlPostfix1 = "&zoom=3&x=2&y=1";<br />
-    var urlPostfix2 = "&zoom=3&x=3&y=1";<br />
-    var urlPostfix3 = "&zoom=3&x=4&y=1";<br />
-    function initialize() {<br />
-      geo = new GClientGeocoder();<br />
-      panoClient = new GStreetviewClient();<br />
-    }<br />
-    function showPanoData(panoData) {<br />
-     if(panoData.links.length>1) {<br />
-      nextPanoId = panoData.links[1].panoId;<br />
-      document.getElementById('imagi1').src = urlPrefix+nextPanoId+urlPostfix1;<br />
-      document.getElementById('imagi2').src = urlPrefix+nextPanoId+urlPostfix2;<br />
-      document.getElementById('imagi3').src = urlPrefix+nextPanoId+urlPostfix3;<br />
-	if(!done) {<br />
-            setTimeout('next()',200);<br />
-        }<br />
-     }<br />
-    }<br />
-    var beforeLastPanoId = '';<br />
-    var lastPanoId = '';<br />
-    var done = false;<br />
-    function next() {<br />
-          if(beforeLastPanoId == nextPanoId) {<br />
-            done = true;<br />
-          } else {<br />
-             // Get the next panoId<br />
-             // Note that this is not sophisticated. At the end of the block, it will get stuck<br />
-             panoClient.getPanoramaById(nextPanoId, showPanoData);<br />
-             beforeLastPanoId = lastPanoId;<br />
-             lastPanoId = nextPanoId;<br />
-          }<br />
-    }<br />
-    var loc;<br />
-    function startDino() {<br />
-		done = false;<br />
-                panoClient.getNearestPanorama(loc, showPanoData);<br />
-    }<br />
-    function getAddress(form) {<br />
-        done = true;<br />
-        geo.getLocations(form.strnaam.value, function (result)<br />
-          {<br />
-            // If that was successful<br />
-            if (result.Status.code == G_GEO_SUCCESS) {<br />
-              geoResult = result;<br />
-              if(result.Placemark.length > 0) {<br />
-                var p = result.Placemark[0].Point.coordinates;<br />
-                var lng=p[0];<br />
-                var lat=p[1];<br />
-                loc = new GLatLng(lat,lng)<br />
-                setTimeout('startDino()', 500);<br />
-              }<br />
-            }<br />
-          }<br />
-        );<br />
-      }<br />
-    </script></p>
-<form name="drive">
-            Enter streetname, town and country:<br />
-            <input type="straatnaam" name="strnaam" value="A27, Zederik, Nederland" size="100" /><br />
-            <input type="button" id="hammerTime" name="button" value="Dinosaurize your street" onclick="getAddress(this.form)" /><br />
-        </form>
-<p></p>
-<div style="position: absolute;" id="google">
-	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi1" src="/images/" height="200" width="200" /><br />
-	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi2" src="/images/" height="200" width="200" /><br />
-	<img style="padding:0px; margin:0px; border:0px; float: left;" id="imagi3" src="/images/" height="200" width="200" />
-        </div>
-<div style="position: relative;left: 213px; top:65px;">
-<img style="padding:0px; margin:0px; border:0px; background-color:transparent;" src="/images/walking.gif" alt="" title="walking" />
-</div>
-<div style="height:200px;"></div>
-<p>    <script><br />
-      initialize();<br />
-      document.getElementById('hammerTime').click();<br />
-    </script><br />
-</p>
-<p>
-Yes, there are a LOT of bugs... And no, I'm not going to fix them, so there is no need to notify me.<br />
+    <p>After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
+
+<p>It is nothing like The Wilderness Downtown, but still I’d like to share it ;-)</p>
+
+<p>Enter streetname, town and country:  </p>
+
+<p><img src="/images/" alt="Image 1" /><br />
+<img src="/images/" alt="Image 1" /><br />
+<img src="/images/" alt="Image 1" /></p>
+
+<p><img src="/images/walking.gif" alt="walking" /></p>
+
+<p>Yes, there are a LOT of bugs… And no, I’m not going to fix them, so there is no need to notify me.<br />
 Some known bugs:</p>
+
 <ul>
-<li>Sometimes the dinosaur moonwalks (images go backwards)</li>
-<li>Locations aren't always found, it depends on Google Street View</li>
-<li>It can only walk from the startingpoint to the next junction, no complete routes.</li>
+  <li>Sometimes the dinosaur moonwalks (images go backwards)</li>
+  <li>Locations aren’t always found, it depends on Google Street View</li>
+  <li>It can only walk from the startingpoint to the next junction, no complete routes.</li>
 </ul>
+
 
   </article>
 

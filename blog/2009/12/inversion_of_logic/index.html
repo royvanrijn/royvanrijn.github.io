@@ -93,94 +93,105 @@
   </header>
 
   <article class="post-content">
-    <h5>Design patterns</h5>
-<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_(computer_science)">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
+    <h1 id="design-patterns">Design patterns</h1>
+
+<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_%28computer_science%29">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
+
 <p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p>
+
 <p>These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.</p>
-<p><!--more--></p>
-<h5>Inversion of logic</h5>
+
+<h1 id="inversion-of-logic">Inversion of logic</h1>
+
 <p>The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.</p>
+
 <p>Let me give an example, lets take the following code:</p>
-<pre class="brush:java">
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
-			if(rentalRequest.isFormFilledCorrectly()) {
-				Tenant tenant = rentalRequest.getTenant();
-				if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
-					//Approve the request
-					//Process the request in database
-					//Send email to HQ
-					//Etc...
-				}				
-			}
-		}
-	}
-</pre>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+				<span class="c1">//Approve the request</span>
+				<span class="c1">//Process the request in database</span>
+				<span class="c1">//Send email to HQ</span>
+				<span class="c1">//Etc...</span>
+			<span class="o">}</span>				
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
-<pre class="brush:java">
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
 
-			if(validateRequest(rentalRequest)) {
-				//Approve the request
-				//Process the request in database
-				//Send email to HQ
-				//Etc...
-			}
-		}
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	private boolean validateRequest(RentalRequest rentalRequest) {
-		if(rentalRequest.isFormFilledCorrectly()) {
-			Tenant tenant = rentalRequest.getTenant();
-			if(tenant.getAge() &gt;= 25 && checkLicenceStillValid(tenant)) {
-				return true;
-			}
-		}
-		return false;
-	}
-</pre>
-<p>Some programmers don't like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don't mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a 'requestIsValid' boolean and fill that instead.</p>
-<p>Anyway, the next step in refactoring this code is using what I call "Inversion of Logic". The idea is that you don't continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you'll lose a lot of nesting, making the code more readable. I'm going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method. </p>
-<pre class="brush:java">
-	public void processRequests(List&lt;RentalRequest&gt; requests) {
-		
-		for (RentalRequest rentalRequest : requests) {
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+    
+		<span class="k">if</span><span class="o">(</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
+			<span class="c1">//Approve the request</span>
+			<span class="c1">//Process the request in database</span>
+			<span class="c1">//Send email to HQ</span>
+			<span class="c1">//Etc...</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
 
-			if(!validateRequest(rentalRequest)) {
-				continue;
-			}
-			
-			//Approve the request
-			//Process the request in database
-			//Send email to HQ
-			//Etc...
-		}
-	}
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+		<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Some programmers don’t like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don’t mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a ‘requestIsValid’ boolean and fill that instead.</p>
+
+<p>Anyway, the next step in refactoring this code is using what I call “Inversion of Logic”. The idea is that you don’t continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you’ll lose a lot of nesting, making the code more readable. I’m going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	private boolean validateRequest(RentalRequest rentalRequest) {
-		if(!rentalRequest.isFormFilledCorrectly()) {
-			return false;
-		}
-		Tenant tenant = rentalRequest.getTenant();
-		if(tenant.getAge() &lt; 25 || !tenant.checkLicenceStillValid(tenant)) {
-			return false;
-		}
-		return true;
-	}
-</pre>
+	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+    
+		<span class="k">if</span><span class="o">(!</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">continue</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="c1">//Approve the request</span>
+		<span class="c1">//Process the request in database</span>
+		<span class="c1">//Send email to HQ</span>
+		<span class="c1">//Etc...</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(!</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">||</span> <span class="o">!</span><span class="n">tenant</span><span class="o">.</span><span class="na">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:</p>
+
 <p><em>IF form is correct<br />
 AND tenant age correct<br />
 AND tenant licence is valid<br />
-THEN proceed</em> </p>
+THEN proceed</em></p>
+
 <p>We now eliminate the bad cases first:</p>
+
 <p><em>IF form is incorrect: deny rental<br />
-IF tenant's age or licence is invalid: deny rental<br />
+IF tenant’s age or licence is invalid: deny rental<br />
 ELSE proceed</em></p>
-<p>I'm trying to do this everywhere I can, it realy helps the readability.</p>
+
+<p>I’m trying to do this everywhere I can, it realy helps the readability.</p>
+
 
   </article>
 

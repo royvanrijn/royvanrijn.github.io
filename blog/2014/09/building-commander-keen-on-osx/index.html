@@ -94,39 +94,62 @@
 
   <article class="post-content">
     <p>Below is a build-log on how to build <a href="https://github.com/keendreams/keen">Commander Keen: Keen Dreams</a> (which was recently released on Github) on OS/X using DOSBox and a shareware version found online.</p>
+
 <p>Step 1:</p>
+
 <p>Download and install DOSBox</p>
+
 <p>Step 2:</p>
+
 <p>Download: <a href="http://monkey-hole.co.uk/esa/dos/">Borland C++ 3.0</a><br />
 Download: <a href="https://github.com/keendreams/keen">Commander Keen - Keen Dreams</a> source code<br />
 Download: <a href="http://www.phatcode.net/downloads.php?id=280">tasm5.zip</a></p>
+
 <p>Step 3:</p>
+
 <p>Create a new folder, this will be your DOSBox mount-point.</p>
+
 <p>Step 4:</p>
+
 <p>Install TASM:<br />
-Copy all the contents of the directories DISK1/DISK2/DISK3 from tasm5.zip to <mount_folder>\TEMP</p>
+Copy all the contents of the directories DISK1/DISK2/DISK3 from tasm5.zip to \TEMP</p>
+
 <p>Step 5:</p>
+
 <p>Install Borland C++ 3:<br />
-Copy all the contents to <mount_folder>\BORLANDC.</p>
+Copy all the contents to \BORLANDC.</p>
+
 <p>Step 6:</p>
-<p>Copy all the source files from Commander Keen to <mount_folder>\KEEN.</p>
-<p>Step 7: </p>
+
+<p>Copy all the source files from Commander Keen to \KEEN.</p>
+
+<p>Step 7:</p>
+
 <p>Fire up DOSBox, mount the mount folder to C.<br />
 Put the following paths to PATH:<br />
 SET PATH=C:\BORLANDC\BIN;C:\TASM\BIN;C:\;Z:\</p>
+
 <p>Go into C:\TEMP and run the installer to install TASM.</p>
-<p>Go into directory C:\KEEN\STATIC and run 'make.bat'<br />
-In the directory C:\KEEN and run 'BC' to start Borland C++.</p>
-<p>To change the Borland directories to the correct path go to: Options > Directories and change the paths to C:\BORLANDC\*.</p>
+
+<p>Go into directory C:\KEEN\STATIC and run ‘make.bat’<br />
+In the directory C:\KEEN and run ‘BC’ to start Borland C++.</p>
+
+<p>To change the Borland directories to the correct path go to: Options &gt; Directories and change the paths to C:\BORLANDC\*.</p>
+
 <p>Step 8:</p>
+
 <p>Compile and run! It creates the binary for me KDREAMS.EXE.</p>
-<p>But sadly, when I run the executable it says "Can't open KDREAMS.MAP!" :-(<br />
-It turns out you'll need to own the game's actual content before you can run this source code.<br />
+
+<p>But sadly, when I run the executable it says “Can’t open KDREAMS.MAP!” :-(<br />
+It turns out you’ll need to own the game’s actual content before you can run this source code.<br />
 Thankfully a shareware version can be downloaded here: <a href="ftp://ftp.3drealms.com/share/keendm.zip">keendm.zip</a>. This corresponds with the 1.01S version of the released source code, which is also released <a href="https://github.com/keendreams/keen/tree/44773ae2502192ca553ab6518b644ee75e42dd8b">here</a>.</p>
+
 <p>Copy the missing files (SHL, MAP, AUD, etc) from the shareware version and play your own compiled Commander Keen!</p>
+
 <p>Screenshot:</p>
-<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" width="300" height="198" class="aligncenter size-medium wp-image-1844" /></a><br />
-</mount_folder></mount_folder></mount_folder></p>
+
+<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" class="aligncenter" /></a>  </p>
+
 
   </article>
 

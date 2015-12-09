@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>God's Dice</title>
-  <meta name="description" content="Yay! There is a new Virtual Source Programming Contest: "God's Dice"After a bit of a messy start of the contest, within hours three people had a 100% score (...">
+  <meta name="description" content="Yay! There is a new Virtual Source Programming Contest: “God’s Dice”After a bit of a messy start of the contest, within hours three people had a 100% score (...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,20 +93,27 @@
   </header>
 
   <article class="post-content">
-    <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">"God's Dice"</a></p>
-<p><!--more--></p>
-<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="" title="godsdice" width="300" height="300" class="alignright size-full wp-image-809" /></a></p>
+    <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">“God’s Dice”</a></p>
+
+<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="godsdice" class="alignright" /></a></p>
+
 <p>After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.</p>
+
 <p>The goal of the contest is this:</p>
+
 <ol>
-<li>Take a cube, with all sides length 1</li>
-<li>Place N (9 to 88) points anywhere on the surface of the cube</li>
-<li>Now calculate the surface area of all triangles between your points</li>
-<li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
+  <li>Take a cube, with all sides length 1</li>
+  <li>Place N (9 to 88) points anywhere on the surface of the cube</li>
+  <li>Now calculate the surface area of all triangles between your points</li>
+  <li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
 </ol>
+
 <p>So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.</p>
-<p>Up to now I've only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I'll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
-<p>And I've got some other idea's, which I won't share obviously for the contest sake!</p>
+
+<p>Up to now I’ve only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I’ll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
+
+<p>And I’ve got some other idea’s, which I won’t share obviously for the contest sake!</p>
+
 
   </article>
 

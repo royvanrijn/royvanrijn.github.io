@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Test Swing applications in Fitnesse (Nonkey)</title>
-  <meta name="description" content="FitnesseFitnesse is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into 'f...">
+  <meta name="description" content="FitnesseFitnesse is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into ‘f...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,264 +93,274 @@
   </header>
 
   <article class="post-content">
-    <h2>Fitnesse</h2>
-<p><a href="http://fitnesse.org/">Fitnesse</a> is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into 'fixtures', code that is called that, in turn, can call your application. An example of a fixture we use:</p>
-<pre class="brush:plain">
-|when the user logs in with username|roy               |and password   |test123   |
+    <h1 id="fitnesse">Fitnesse</h1>
+
+<p><a href="http://fitnesse.org/">Fitnesse</a> is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into ‘fixtures’, code that is called that, in turn, can call your application. An example of a fixture we use:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">|when the user logs in with username|roy               |and password   |test123   |
 |and asks for the account details                                                 |
 |ensure                             |displayed fullname|Roy van Rijn              |
 |ensure                             |websites contains |http://www.royvanrijn.com/|
-|ensure                             |websites contains |http://www.redcode.nl/    |
-</pre>
+|ensure                             |websites contains |http://www.redcode.nl/    |</code></pre></figure>
+
 <p>The corresponding Java code could be something like:</p>
-<pre class="brush:java">
 
-private Credentials credentials;
-private AccountDetails accountDetails;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Credentials</span> <span class="n">credentials</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">AccountDetails</span> <span class="n">accountDetails</span><span class="o">;</span>
 
-public void whenTheUserLogsInWithUsernameAndPassword(String username, String password) {
-    credentials = new Credentials(username, password);
-}
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenTheUserLogsInWithUsernameAndPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Credentials</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+<span class="o">}</span>
 
-public void andAsksFotTheAccountDetails() {
-    accountDetails = mySystem.getAccountDetails(credentials);
-}
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">andAsksFotTheAccountDetails</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">accountDetails</span> <span class="o">=</span> <span class="n">mySystem</span><span class="o">.</span><span class="na">getAccountDetails</span><span class="o">(</span><span class="n">credentials</span><span class="o">);</span>
+<span class="o">}</span>
 
-public boolean displayedFullname(String fullname) {
-    return fullname.equals(accountDetails.getFullename());
-}
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">displayedFullname</span><span class="o">(</span><span class="n">String</span> <span class="n">fullname</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">fullname</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getFullename</span><span class="o">());</span>
+<span class="o">}</span>
 
-public boolean websitesContains(String url) {
-    for(String website:accountDetails.getWebsites()) {
-        if(url.equals(website)) {
-            return true;
-        }
-    }
-    return false;
-}
-</pre>
-<p>This is a very simplified example on how you could use Fitnesse to test your application. But the idea is very powerful, there are implementations for Java (initially) and now .NET, Groovy etc. Also, most of the time the system you're testing doesn't have a Java API but instead you'd like to test the user interface. With most Java applications being web applications there are numerous plugins to connect Fitnesse with for example Selenium to ease web application testing. The fixtures fill webpages and analyze the resulting HTML response.</p>
-<p>At my current client (Port of Rotterdam) we're building a very rich, partially offline, Swing application. This application has a backend and numerous clients running the Swing application. We've used Fitnesse to test the backend code from the start, and the last year we've put in some effort to also use Fitnesse for the Swing application. We've called this "Nonkey", being an automated version of our Monkey integration testing we'd been doing up to that moment.</p>
-<h2>UISpec4J</h2>
-<p>The first ingredient we need to test Swing GUI's in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
-<pre class="brush:java">
-    private Window mainWindow;
-    private JFrame mainFrame;
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">websitesContains</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="nl">website:</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getWebsites</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">website</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
 
-    //Called from the Suite Set Up page:
-    public void launchNonkey() {
-        mainWindow = WindowInterceptor.run(new Trigger() {
-            @Override
-            public void run() throws Exception {
-                new OurApplication().launch();
-                // Get the main JFrame from Spring, used directly in some cases instead of UISpec4J
-                mainFrame = BeanFactory.getBean("mainFrame", MainFrame.class);
-            }
-        });
-    }
-</pre>
+<p>This is a very simplified example on how you could use Fitnesse to test your application. But the idea is very powerful, there are implementations for Java (initially) and now .NET, Groovy etc. Also, most of the time the system you’re testing doesn’t have a Java API but instead you’d like to test the user interface. With most Java applications being web applications there are numerous plugins to connect Fitnesse with for example Selenium to ease web application testing. The fixtures fill webpages and analyze the resulting HTML response.</p>
+
+<p>At my current client (Port of Rotterdam) we’re building a very rich, partially offline, Swing application. This application has a backend and numerous clients running the Swing application. We’ve used Fitnesse to test the backend code from the start, and the last year we’ve put in some effort to also use Fitnesse for the Swing application. We’ve called this “Nonkey”, being an automated version of our Monkey integration testing we’d been doing up to that moment.</p>
+
+<h1 id="uispec4j">UISpec4J</h1>
+
+<p>The first ingredient we need to test Swing GUI’s in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Window</span> <span class="n">mainWindow</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">JFrame</span> <span class="n">mainFrame</span><span class="o">;</span>
+    
+<span class="c1">//Called from the Suite Set Up page:</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">launchNonkey</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">mainWindow</span> <span class="o">=</span> <span class="n">WindowInterceptor</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="nf">Trigger</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="k">new</span> <span class="nf">OurApplication</span><span class="o">().</span><span class="na">launch</span><span class="o">();</span>
+            <span class="c1">// Get the main JFrame from Spring, used directly in some cases instead of UISpec4J</span>
+            <span class="n">mainFrame</span> <span class="o">=</span> <span class="n">BeanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&quot;mainFrame&quot;</span><span class="o">,</span> <span class="n">MainFrame</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>The WindowInterceptor captures the Swing application and allows for manipulation in a later stage. For example:</p>
-<pre class="brush:java">
-    //In some fixture:
-    public void loginWithUsernameAndPassword(String username, String password) {
-        //UISpec4J uses JComponent.setName() for lookup:
-        Panel loginPanel = nonKey.mainWindow.getPanel("loginPanel"); 
-        final TextBox usernameTextbox = loginPanel.getTextBox("usernameTextbox");
-        usernameTextbox.setText(username);
-        final TextBox passwordTextbox = loginPanel.getTextBox("passwordTextbox");
-        passwordTextbox.setText(password);
-        
-        loginPanel.getButton("loginButton").click();
-    }
-</pre>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//In some fixture:</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">loginWithUsernameAndPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//UISpec4J uses JComponent.setName() for lookup:</span>
+    <span class="n">Panel</span> <span class="n">loginPanel</span> <span class="o">=</span> <span class="n">nonKey</span><span class="o">.</span><span class="na">mainWindow</span><span class="o">.</span><span class="na">getPanel</span><span class="o">(</span><span class="s">&quot;loginPanel&quot;</span><span class="o">);</span> 
+    <span class="kd">final</span> <span class="n">TextBox</span> <span class="n">usernameTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">&quot;usernameTextbox&quot;</span><span class="o">);</span>
+    <span class="n">usernameTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">TextBox</span> <span class="n">passwordTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">&quot;passwordTextbox&quot;</span><span class="o">);</span>
+    <span class="n">passwordTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
+    
+    <span class="n">loginPanel</span><span class="o">.</span><span class="na">getButton</span><span class="o">(</span><span class="s">&quot;loginButton&quot;</span><span class="o">).</span><span class="na">click</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>This fixture causes the Swing application to fill in the username, password and press the login button. It is easy to read and can be launched from Fitnesse with a single line:</p>
-<pre class="brush:plain">
-|login with username|roy   |and password   |test123   |
-</pre>
-<p>Nice! We are done, we can test Swing GUI's in Fitnesse now! Well no... not really, unfortunately there are a couple more problem we ran into, regaring the Event Dispatch Thread (EDT).</p>
-<h2>Event Dispatch Thread (EDT)</h2>
-<p>The EDT, sometimes called Swing Thread, is a special thread. Everything you do in Swing should always happen on this thread. Setting components to visible, pressing buttons etc, all need to be done in the EDT. If you don't do this correctly the application gets into a lot of race conditions and it can even cause the application to hang.</p>
-<p>When we combined Fitnesse with UISpec4J and started making a lot of tests we noticed that sometimes mysteriously a test would fail without changes. It turned out to be a problem with the EDT. UISpec4J doesn't worry too much about the EDT, and when we click a button or setText (like the examples above) it does this in the current thread. In Fitnesse this thread is the thread that called the fixture, obviously not the EDT.</p>
-<p>We brainstormed a lot about how we could fix this, maybe change UISpec4Js code? This turned out to be a hellish task. How about setting SwingUtilities.invokeAndWait() in every fixture? That could work but is also a massive undertaking. We decided to take a look at how Fitnesse calls the fixtures. This is always done from a 'StatementExecutor'. So we decided to build a custom StatementExecutor which causes the fixtures to all run in the EDT.</p>
-<p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn't work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
-<pre class="brush:java">
-public class SwingSlimService extends SocketService {
 
-    public static SwingSlimService instance = null;
-    public static boolean verbose;
-    public static int port;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">|login with username|roy   |and password   |test123   |</code></pre></figure>
 
-    public static void main(final String[] args) throws Exception {
-        if (parseCommandLine(args)) {
-            startWithFactory(args, new SwingJavaSlimFactory()); //<-- custom SwingJavaSlimFactory!
-        } else {
-            parseCommandLineFailed(args);
-        }
-    }
+<p>Nice! We are done, we can test Swing GUI’s in Fitnesse now! Well no… not really, unfortunately there are a couple more problem we ran into, regaring the Event Dispatch Thread (EDT).</p>
 
-    protected static void parseCommandLineFailed(final String[] args) {
-        System.err.println("Invalid command line arguments:" + Arrays.asList(args));
-    }
+<h1 id="event-dispatch-thread-edt">Event Dispatch Thread (EDT)</h1>
 
-    protected static void startWithFactory(final String[] args, 
-            final SlimFactory slimFactory) throws Exception {
-        new SwingSlimService(port, slimFactory.getSlimServer(verbose));
-    }
+<p>The EDT, sometimes called Swing Thread, is a special thread. Everything you do in Swing should always happen on this thread. Setting components to visible, pressing buttons etc, all need to be done in the EDT. If you don’t do this correctly the application gets into a lot of race conditions and it can even cause the application to hang.</p>
 
-    protected static boolean parseCommandLine(final String[] args) {
-        final CommandLine commandLine = new CommandLine("[-v] port");
-        if (commandLine.parse(args)) {
-            verbose = commandLine.hasOption("v");
-            final String portString = commandLine.getArgument("port");
-            port = Integer.parseInt(portString);
-            return true;
-        }
-        return false;
-    }
+<p>When we combined Fitnesse with UISpec4J and started making a lot of tests we noticed that sometimes mysteriously a test would fail without changes. It turned out to be a problem with the EDT. UISpec4J doesn’t worry too much about the EDT, and when we click a button or setText (like the examples above) it does this in the current thread. In Fitnesse this thread is the thread that called the fixture, obviously not the EDT.</p>
 
-    public SwingSlimService(final int port, final SlimServer slimServer) throws Exception {
-        super(port, slimServer);
-        instance = this;
-    }
-}
-</pre>
+<p>We brainstormed a lot about how we could fix this, maybe change UISpec4Js code? This turned out to be a hellish task. How about setting SwingUtilities.invokeAndWait() in every fixture? That could work but is also a massive undertaking. We decided to take a look at how Fitnesse calls the fixtures. This is always done from a ‘StatementExecutor’. So we decided to build a custom StatementExecutor which causes the fixtures to all run in the EDT.</p>
+
+<p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn’t work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingSlimService</span> <span class="kd">extends</span> <span class="n">SocketService</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">SwingSlimService</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">verbose</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">parseCommandLine</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">startWithFactory</span><span class="o">(</span><span class="n">args</span><span class="o">,</span> <span class="k">new</span> <span class="nf">SwingJavaSlimFactory</span><span class="o">());</span> <span class="c1">//&lt;-- custom SwingJavaSlimFactory!</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">parseCommandLineFailed</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parseCommandLineFailed</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invalid command line arguments:&quot;</span> <span class="o">+</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">startWithFactory</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="n">SlimFactory</span> <span class="n">slimFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimFactory</span><span class="o">.</span><span class="na">getSlimServer</span><span class="o">(</span><span class="n">verbose</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">parseCommandLine</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">CommandLine</span><span class="o">(</span><span class="s">&quot;[-v] port&quot;</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">commandLine</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">verbose</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">hasOption</span><span class="o">(</span><span class="s">&quot;v&quot;</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">portString</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">getArgument</span><span class="o">(</span><span class="s">&quot;port&quot;</span><span class="o">);</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">portString</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">port</span><span class="o">,</span> <span class="kd">final</span> <span class="n">SlimServer</span> <span class="n">slimServer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimServer</span><span class="o">);</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Next we needed a custom JavaSlimFactory:</p>
-<pre class="brush:java">
-public class SwingJavaSlimFactory extends JavaSlimFactory {
 
-    @Override
-    public StatementExecutorInterface getStatementExecutor() {
-        return new SwingStatementExecutor(); //<-- custom SwingStatementExecutor!
-    }
-}
-</pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingJavaSlimFactory</span> <span class="kd">extends</span> <span class="n">JavaSlimFactory</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">StatementExecutorInterface</span> <span class="nf">getStatementExecutor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">SwingStatementExecutor</span><span class="o">();</span> <span class="c1">//&lt;-- custom SwingStatementExecutor!</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>And last but not least our custom StatementExecutor which forces all calls into the EDT thread:</p>
-<pre class="brush:java">
-package com.portofrotterdam.hamis;
 
-import fitnesse.slim.StatementExecutor;
-import fitnesse.slim.StatementExecutorInterface;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">;</span>
 
-/**
- * HaMIS custom StatementExecutor, to call and create in the EDT thread
- */
-public class SwingStatementExecutor implements StatementExecutorInterface {
+<span class="kn">import</span> <span class="nn">fitnesse.slim.StatementExecutor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">fitnesse.slim.StatementExecutorInterface</span><span class="o">;</span>
 
-    private final StatementExecutor wrapped = new StatementExecutor();
+<span class="cm">/**</span>
+<span class="cm"> * HaMIS custom StatementExecutor, to call and create in the EDT thread</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingStatementExecutor</span> <span class="kd">implements</span> <span class="n">StatementExecutorInterface</span> <span class="o">{</span>
 
-    private abstract class EDTRunnable implements Runnable {
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">StatementExecutor</span> <span class="n">wrapped</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StatementExecutor</span><span class="o">();</span>
 
-        private Object returnValue;
+    <span class="kd">private</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">EDTRunnable</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
 
-        @Override
-        public abstract void run();
+        <span class="kd">private</span> <span class="n">Object</span> <span class="n">returnValue</span><span class="o">;</span>
 
-        public void setReturnValue(final Object returnValue) {
-            this.returnValue = returnValue;
-        }
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
 
-        public Object getReturnValue() {
-            return returnValue;
-        }
-    }
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setReturnValue</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">returnValue</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">returnValue</span> <span class="o">=</span> <span class="n">returnValue</span><span class="o">;</span>
+        <span class="o">}</span>
 
-    @Override
-    public Object call(final String instanceName, final String methodName, final Object... args) {
+        <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getReturnValue</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">returnValue</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
 
-        final EDTRunnable caller = new EDTRunnable() {
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">call</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-            @Override
-            public void run() {
-                setReturnValue(wrapped.call(instanceName, methodName, args));
-            }
-        };
-        EDTRunner.run(caller);
-        return caller.getReturnValue();
-    }
+        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">caller</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
-    @Override
-    public Object callAndAssign(final String variable,
-            final String instanceName,
-            final String methodName,
-            final Object[] args) {
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">caller</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
+    <span class="o">}</span>
 
-        final EDTRunnable callAndAssigner = new EDTRunnable() {
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">callAndAssign</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">variable</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">methodName</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-            @Override
-            public void run() {
-                setReturnValue(wrapped.callAndAssign(variable, instanceName, methodName, args));
-            }
-        };
-        EDTRunner.run(callAndAssigner);
-        return callAndAssigner.getReturnValue();
-    }
+        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">callAndAssigner</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
-    @Override
-    public Object create(final String instanceName, final String className, final Object[] args) {
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">callAndAssign</span><span class="o">(</span><span class="n">variable</span><span class="o">,</span> <span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">callAndAssigner</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">callAndAssigner</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
+    <span class="o">}</span>
 
-        final EDTRunnable creater = new EDTRunnable() {
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-            @Override
-            public void run() {
-                setReturnValue(wrapped.create(instanceName, className, args));
-            }
-        };
-        EDTRunner.run(creater);
-        return creater.getReturnValue();
-    }
+        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">creater</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
-    @Override
-    public Object addPath(final String path) {
-        return wrapped.addPath(path);
-    }
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">creater</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">creater</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
+    <span class="o">}</span>
 
-    @Override
-    public Object getInstance(final String instanceName) {
-        return wrapped.getInstance(instanceName);
-    }
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">addPath</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">addPath</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+    <span class="o">}</span>
 
-    @Override
-    public void reset() {
-        wrapped.reset();
-    }
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getInstance</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">instanceName</span><span class="o">);</span>
+    <span class="o">}</span>
 
-    @Override
-    public void setVariable(final String name, final Object value) {
-        wrapped.setVariable(name, value);
-    }
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">wrapped</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+    <span class="o">}</span>
 
-    @Override
-    public boolean stopHasBeenRequested() {
-        return wrapped.stopHasBeenRequested();
-    }
-}
-</pre>
-<p>This uses a small static class we've used in our code before to safely run a Runnable on the EDT and invokeAndWait (without waiting IN the EDT):</p>
-<pre class="brush:java">
-public class EDTRunner {
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVariable</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">wrapped</span><span class="o">.</span><span class="na">setVariable</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
 
-    public static void run(final Runnable r) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            r.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(r);
-            } catch (final InterruptedException e1) {
-                throw new RuntimeException(e1);
-            } catch (final InvocationTargetException e1) {
-                throw new RuntimeException(e1);
-            }
-        }
-    }
-}
-</pre>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">stopHasBeenRequested</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">stopHasBeenRequested</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This uses a small static class we’ve used in our code before to safely run a Runnable on the EDT and invokeAndWait (without waiting IN the EDT):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EDTRunner</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="kd">final</span> <span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">SwingUtilities</span><span class="o">.</span><span class="na">isEventDispatchThread</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">r</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">EventQueue</span><span class="o">.</span><span class="na">invokeAndWait</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">InterruptedException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">InvocationTargetException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>The only thing left to do is to instruct Fitnesse to use our SlimService instead of the default implementation. This is done using the following parameter in our main page:</p>
-<pre class="brush:java">
-!define TEST_SYSTEM {slim}
-!define TEST_RUNNER {com.portofrotterdam.hamis.SwingSlimService}
-</pre>
-<p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you're done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">!</span><span class="n">define</span> <span class="n">TEST_SYSTEM</span> <span class="o">{</span><span class="n">slim</span><span class="o">}</span>
+<span class="o">!</span><span class="n">define</span> <span class="n">TEST_RUNNER</span> <span class="o">{</span><span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">.</span><span class="na">SwingSlimService</span><span class="o">}</span></code></pre></figure>
+
+<p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you’re done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
+
 <p>Good luck testing with Fitnesse in the near future, if you have any problems/improvements/ideas please let me know (in the comments below).</p>
+
 
   </article>
 

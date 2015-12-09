@@ -94,383 +94,410 @@
 
   <article class="post-content">
     <p>Recently I placed a comment on <a href="http://blog.objectmentor.com/articles/2010/01/17/dependency-injection-inversion">this</a> interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.</p>
-<p>Now, by popular demand (one person requested it over Twitter), I'll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.</p>
-<p><!--more--></p>
-<h2>Ordering Milk</h2>
+
+<p>Now, by popular demand (one person requested it over Twitter), I’ll guide you through the method and examples I use in this blogpost. It explains why people should use frameworks like Spring and/or Google Guice, and how.</p>
+
+<h1 id="ordering-milk">Ordering Milk</h1>
+
 <p>Lets take a look at the application we have. We have a service:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-public interface MilkRequestService {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	/**
-	 * Process a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void processOrder(String customer, Integer amountOfBottles);
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-}
-</pre>
+	<span class="cm">/**</span>
+<span class="cm">	 * Process a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+
+<span class="o">}</span></code></pre></figure>
+
 <p>And we have a DAO (data access object) which will take care of persisting our order:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-public interface MilkDAO {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	/**
-	 * Save a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void saveOrder(String customer, Integer amountOfBottles);
-}
-</pre>
-<p>The implementation of this DAO isn't really interesting, lets just pretent it goes to the database:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
-public class MilkDAODatabaseImpl implements MilkDAO {
+	<span class="cm">/**</span>
+<span class="cm">	 * Save a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
-	public void saveOrder(String customer, Integer amountOfBottles) {
-		//Puts order in database
-	}
+<p>The implementation of this DAO isn’t really interesting, lets just pretent it goes to the database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="n">MilkDAO</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Puts order in database</span>
+	<span class="o">}</span>
 	
-}
-</pre>
+<span class="o">}</span></code></pre></figure>
+
 <p>And finally we have our service implementation:</p>
-<pre class="brush:java">package nl.redcode.examples.milkman;
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	private MilkDAO milkDAO;
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
 	
-	/**
-	 * Create a new service:
-	 */
-	public MilkRequestServiceImpl() {
-		milkDAO = new MilkDAODatabaseImpl(
-				//With SQLConnection or something
-				);
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * Create a new service:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">(</span>
+				<span class="c1">//With SQLConnection or something</span>
+				<span class="o">);</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
-		//Save the order:
-		milkDAO.saveOrder(customer, amountOfBottles);
-	}
-}</pre>
-<p>Lets pretent that we are good obeying programmers, although we didn't write our unit test up front, we are going to do it right away.</p>
-<p>So... we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
+		<span class="c1">//Save the order:</span>
+		<span class="n">milkDAO</span><span class="o">.</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-public class MilkRequestServiceTest {
+<p>Lets pretent that we are good obeying programmers, although we didn’t write our unit test up front, we are going to do it right away.</p>
 
-	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+<p>So… we want to test the service, how are we going to do this? Well, lets just create the service, call it, and then check if it does what we want it to do!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
+
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">();</span>
 	
-	@Test
-	/**
-	 * Test our milk request service.
-	 * Pre:
-	 * - We have a customer that wants to order 5 bottles of milk
-	 * Post:
-	 * - The milk DAO got a request to save 5 bottles of milk
-	 */
-	public void testProcessOrder() {
+	<span class="nd">@Test</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Test our milk request service.</span>
+<span class="cm">	 * Pre:</span>
+<span class="cm">	 * - We have a customer that wants to order 5 bottles of milk</span>
+<span class="cm">	 * Post:</span>
+<span class="cm">	 * - The milk DAO got a request to save 5 bottles of milk</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
+		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
-		milkRequestService.processOrder(customer, amountOfBottles);
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 		
-		//Eeehh.... how do we check the call to the DAO?
+		<span class="c1">//Eeehh.... how do we check the call to the DAO?</span>
 		
-		//HELP!!
-	}
-}
-</pre>
-<p>We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check... </p>
-<p>NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain't one of them.</p>
-<p>We need to refactor our code...!</p>
-<h2>The Factory</h2>
-<p>One possible solution to this problem is using a factory method. A factory creates objects so you don't have to. Its best shown using an example:</p>
-<pre class="brush:java">package nl.redcode.examples.milkman;
+		<span class="c1">//HELP!!</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-import java.util.HashMap;
-import java.util.Map;
+<p>We run into a problem rather quickly. Now this code makes a connection to the database and it might or might not save our order. But how do we check this? We could go to the database and check…</p>
 
-public class MilkFactory { //no pun intended
-	
-	/**
-	 * Here we save the mapping:
-	 */
-	private static Map&lt;Class, Object&gt; mapping;
-	
-	/**
-	 * Create the mapping
-	 */
-	static {
-		mapping = new HashMap&lt;Class, Object&gt;();
-		mapping.put(MilkDAO.class, new MilkDAODatabaseImpl());
-		mapping.put(MilkRequestService.class, new MilkDAODatabaseImpl());
-	}
-	
-	/**
-	 * Set a mapping by hand.
-	 * Should only be used when unit testing.
-	 * 
-	 * @param &lt;T&gt;
-	 * @param clazz
-	 * @param impl
-	 */
-	public static&lt;T&gt; void replaceMapping(Class&lt;T&gt; clazz, T impl) {
-		mapping.put(clazz, impl);
-	}
+<p>NO! Never go to the database in a unit test. We only want to test a single unit of work, and the database ain’t one of them.</p>
 
-	/**
-	 * Not threadsafe ugly code-monkey code.
-	 * @param &lt;T&gt;
-	 * @param requestedClass
-	 * @return
-	 */
-	public static&lt;T&gt; T get(Class&lt;T&gt; requestedClass) {
-		if(mapping.containsKey(requestedClass)) {
-			return (T)mapping.get(requestedClass);
-		} else {
-			throw new IllegalArgumentException("Doesn't exist");
-		}
-	}
-}
-</pre>
+<p>We need to refactor our code…!</p>
+
+<h1 id="the-factory">The Factory</h1>
+
+<p>One possible solution to this problem is using a factory method. A factory creates objects so you don’t have to. Its best shown using an example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkFactory</span> <span class="o">{</span> <span class="c1">//no pun intended</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Here we save the mapping:</span>
+<span class="cm">	 */</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Create the mapping</span>
+<span class="cm">	 */</span>
+	<span class="kd">static</span> <span class="o">{</span>
+		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">());</span>
+	<span class="o">}</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Set a mapping by hand.</span>
+<span class="cm">	 * Should only be used when unit testing.</span>
+<span class="cm">	 * </span>
+<span class="cm">	 * @param &lt;T&gt;</span>
+<span class="cm">	 * @param clazz</span>
+<span class="cm">	 * @param impl</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">clazz</span><span class="o">,</span> <span class="n">impl</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Not threadsafe ugly code-monkey code.</span>
+<span class="cm">	 * @param &lt;T&gt;</span>
+<span class="cm">	 * @param requestedClass</span>
+<span class="cm">	 * @return</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">get</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">mapping</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Doesn&#39;t exist&quot;</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>So, lets dissect this.</p>
+
 <p>The method get(class, object) will return an implementation for a given Class. It uses a Map to get the mapping. The map is created during the static initialization (yuk!) and contains the default mapping, but we can also provide our own mapping using replaceMapping(class, object).</p>
+
 <p>Now how do we use it? Lets see our new MilkRequestServiceImpl:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
 		
-		//Save the order:
-		MilkFactory.get(MilkDAO.class).saveOrder(customer, amountOfBottles);
-	}
-}
-</pre>
+		<span class="c1">//Save the order:</span>
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>As you can see we no longer need the constructor, we get the required DAO from the factory when we need it.</p>
+
 <p>Now we can test it using the replaceMapping method:</p>
-<pre class="brush:java">package nl.redcode.examples.milkman;
 
-public class MilkRequestServiceTest {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	MilkRequestService milkRequestService = new MilkRequestServiceImpl();
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
+
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">();</span>
 	
-	//@Test
-	/**
-	 * Test our milk request service.
-	 * Pre:
-	 * - We have a customer that wants to order 5 bottles of milk
-	 * Post:
-	 * - The milk DAO got a request to save 5 bottles of milk
-	 */
-	public void testProcessOrder() {
+	<span class="c1">//@Test</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Test our milk request service.</span>
+<span class="cm">	 * Pre:</span>
+<span class="cm">	 * - We have a customer that wants to order 5 bottles of milk</span>
+<span class="cm">	 * Post:</span>
+<span class="cm">	 * - The milk DAO got a request to save 5 bottles of milk</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
+		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
-		//Better use a mock here, for example using Mockito or EasyMock.
-		MilkFactory.replaceMapping(MilkDAO.class, new MilkDAO() {
-			public void saveOrder(String customer, Integer amountOfBottles) {
-				//Check if the customer = testUser
-				//Check if the amountOfBottles = 5;
-			}
-		});
+		<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.</span>
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nf">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+				<span class="c1">//Check if the customer = testUser</span>
+				<span class="c1">//Check if the amountOfBottles = 5;</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
 		
-		MilkFactory.get(MilkRequestService.class)
-			.processOrder(customer, amountOfBottles);
-	}
-}</pre>
+		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+			<span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>As the comment says, you are probably much better of here using a mocking framework like EasyMock or Mockito. But the point is, we can test our class now without going to the database! We got our control back.</p>
-<h2>Dependency Injection</h2>
-<p>Instead of writing a factory, there is a better way to do this. It is the Hollywood principle "Don't call us, we'll call you".</p>
+
+<h1 id="dependency-injection">Dependency Injection</h1>
+
+<p>Instead of writing a factory, there is a better way to do this. It is the Hollywood principle “Don’t call us, we’ll call you”.</p>
+
 <p>All the dependencies of the objects are injected into them instead of created (initial example) or retrieved (factory example). So our service will look like this:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-public class MilkRequestServiceImpl implements MilkRequestService {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	private MilkDAO milkDao;
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
 	
-	/**
-	 * The milkDao is given to us by our creator.
-	 * 
-	 * @param milkDao
-	 */
-	public MilkRequestServiceImpl(MilkDAO milkDao) {
-		this.milkDao = milkDao;
-	}
+	<span class="cm">/**</span>
+<span class="cm">	 * The milkDao is given to us by our creator.</span>
+<span class="cm">	 * </span>
+<span class="cm">	 * @param milkDao</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Place a new order for milk.
-	 */
-	public void processOrder(String customer, Integer amountOfBottles) {
-		//Log the order:
-		System.out.println("LOG: Customer " + customer + " wants "
-				+ amountOfBottles + " bottle"
-				+ ((amountOfBottles &gt; 1) ? "s" : ""));
+	<span class="cm">/**</span>
+<span class="cm">	 * Place a new order for milk.</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Log the order:</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LOG: Customer &quot;</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">&quot; wants &quot;</span>
+				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">&quot; bottle&quot;</span>
+				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">&quot;s&quot;</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="o">));</span>
 		
-		//We just use the milkDao we got:
-		milkDao.saveOrder(customer, amountOfBottles);
-	}
-}
-</pre>
+		<span class="c1">//We just use the milkDao we got:</span>
+		<span class="n">milkDao</span><span class="o">.</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Now lets take a look at our test-code, it now looks like this:</p>
-<pre class="brush:java">
-	public void testProcessOrder() {
-		
-		final String customer = "testUser";
-		final Integer amountOfBottles = 5;
-		
-		//Better use a mock here, for example using Mockito or EasyMock.
-		MilkDAO testMilkDao = new MilkDAO() {
-			public void saveOrder(String customer, Integer amountOfBottles) {
-				//Check if the customer = testUser
-				//Check if the amountOfBottles = 5;
-			}
-		};
-		
-		MilkRequestService milkRequestService = new MilkRequestServiceImpl(testMilkDao);
-		
-		milkRequestService.processOrder(customer, amountOfBottles);
-	}
-</pre>
-<p>We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That's all. Instead of the hidden creation in the service itself or in the factory we are in full control.</p>
-<p>But if you want to use this application you'll need "something else" to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-public class MilkApplication {
-
-	public static void main(String[] args) {
-		MilkApplication app = new MilkApplication();
-		app.run();
-	}
-
-	public MilkApplication() {
-		//-----   Provide wiring:  -----
-		MilkDAO milkDao = new MilkDAODatabaseImpl();
-		milkRequestService = new MilkRequestServiceImpl(milkDao);
-		//------------------------------
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 	
-	private MilkRequestService milkRequestService;
+	<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">&quot;testUser&quot;</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 	
-	/**
-	 * Do stuff:
-	 */
-	public void run() {
-		milkRequestService.processOrder("Roy van Rijn", 1);
-	}
-}
-</pre>
-<h2>Using Spring</h2>
-<p>The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you'll write something like this:</p>
-<pre class="brush:xml">
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"&gt;
+	<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.</span>
+	<span class="n">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">//Check if the customer = testUser</span>
+			<span class="c1">//Check if the amountOfBottles = 5;</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
+	
+	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
+	
+	<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
-	&lt;bean id="milkDao" class="nl.redcode.examples.milkman.MilkDAODatabaseImpl" /&gt;
+<p>We now have full control over the wiring. First we create our own little testMilkDao (use a mock here!) and we place it into our service. That’s all. Instead of the hidden creation in the service itself or in the factory we are in full control.</p>
 
-	&lt;bean id="milkRequestService" class="nl.redcode.examples.milkman.MilkRequestServiceImpl"&gt;
-		&lt;property name="milkDao" ref="milkDao" /&gt;
-	&lt;/bean&gt;
-&lt;/beans&gt;
-</pre>
-<p>Now you'll still need to retrieve these "beans" from Spring, this can be done using our old-friend the Factory!<br />
-It'll look something like this:</p>
-<pre class="brush:java">
-	ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
-		new String[] {"applicationContext.xml"});
-	MilkRequestService milkRequestService = appContext.getBean("milkRequestService");
-</pre>
+<p>But if you want to use this application you’ll need “something else” to create all the objects and do the actual wiring. Lets create our own Spring or Google Guice..!!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkApplication</span><span class="o">();</span>
+		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="nf">MilkApplication</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c1">//-----   Provide wiring:  -----</span>
+		<span class="n">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkDAODatabaseImpl</span><span class="o">();</span>
+		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
+		<span class="c1">//------------------------------</span>
+	<span class="o">}</span>
+	
+	<span class="kd">private</span> <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Do stuff:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">&quot;Roy van Rijn&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="using-spring">Using Spring</h1>
+
+<p>The wiring we do in the constructor is what Spring and Google Guice would do for us. In the case of Spring you’ll write something like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.springframework.org/schema/beans&quot;</span>
+       <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">&quot;</span>
+<span class="s">http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd&quot;</span><span class="nt">&gt;</span>
+
+	<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;milkDao&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.examples.milkman.MilkDAODatabaseImpl&quot;</span> <span class="nt">/&gt;</span>
+
+	<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;milkRequestService&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.examples.milkman.MilkRequestServiceImpl&quot;</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;milkDao&quot;</span> <span class="na">ref=</span><span class="s">&quot;milkDao&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></figure>
+
+<p>Now you’ll still need to retrieve these “beans” from Spring, this can be done using our old-friend the Factory!<br />
+It’ll look something like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ClassPathXmlApplicationContext</span><span class="o">(</span>
+	<span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">&quot;applicationContext.xml&quot;</span><span class="o">});</span>
+<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&quot;milkRequestService&quot;</span><span class="o">);</span></code></pre></figure>
+
 <p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
-<h2>Using Guice</h2>
+
+<h1 id="using-guice">Using Guice</h1>
+
 <p>Google Guice works exacly the same, only instead of using XML to define the mapping it only uses Java code and annotations.</p>
+
 <p>First we tell Guice which implementations are the default implementations, for example:</p>
-<pre class="brush:java">
-package nl.redcode.examples.milkman;
 
-@ImplementedBy(MilkDAODatabaseImpl.class)
-public interface MilkDAO {
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-	/**
-	 * Save a new order.
-	 * @param customer
-	 * @param amountOfBottles
-	 */
-	public void saveOrder(String customer, Integer amountOfBottles);
-}
-</pre>
-<p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using 'Constructor Injection':</p>
-<pre class="brush:java">
-	/**
-	 * The milkDao is injected by Guice.
-	 * 
-	 * @param milkDao
-	 */
-	@Inject
-	public MilkRequestServiceImpl(MilkDAO milkDao) {
-		this.milkDao = milkDao;
-	}
-</pre>
+<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="n">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Save a new order.</span>
+<span class="cm">	 * @param customer</span>
+<span class="cm">	 * @param amountOfBottles</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using ‘Constructor Injection’:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
+<span class="cm"> * The milkDao is injected by Guice.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param milkDao</span>
+<span class="cm"> */</span>
+<span class="nd">@Inject</span>
+<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Now if we want to use it, we retrieve it from Guice like so:</p>
-<pre class="brush:java">
-public class MilkApplication {
 
-	public static void main(String[] args) {
-		MilkApplication app = new MilkApplication();
-		app.run();
-	}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MilkApplication</span><span class="o">();</span>
+		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+	<span class="o">}</span>
 	
-	/**
-	 * Do stuff:
-	 */
-	public void run() {
+	<span class="cm">/**</span>
+<span class="cm">	 * Do stuff:</span>
+<span class="cm">	 */</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 		
-	    Injector injector = Guice.createInjector();
-	    MilkRequestService milkRequestService = 
-	        injector.getInstance(MilkRequestService.class);
+	    <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
+	    <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
+	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-		milkRequestService.processOrder("Roy van Rijn", 1);
-	}
-}
-</pre>
-<p>Thats about it, you've seen:</p>
+		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">&quot;Roy van Rijn&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Thats about it, you’ve seen:</p>
+
 <ul>
-<li>Why you should use these patterns</li>
-<li>How you would program them yourself (ugly monkey-code-style)</li>
-<li>How using Spring (with XML)</li>
-<li>How using Google Guice!</li>
+  <li>Why you should use these patterns</li>
+  <li>How you would program them yourself (ugly monkey-code-style)</li>
+  <li>How using Spring (with XML)</li>
+  <li>How using Google Guice!</li>
 </ul>
+
 <p>Good luck and happy programming!</p>
-<p>ps. The code examples are just examples...!!</p>
+
+<p>ps. The code examples are just examples…!!</p>
+
 
   </article>
 

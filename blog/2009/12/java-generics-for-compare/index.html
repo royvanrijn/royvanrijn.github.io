@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Java Generics for Compare</title>
-  <meta name="description" content="I've been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4... some even with 1.3! But my clien...">
+  <meta name="description" content="I’ve been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4… some even with 1.3! But my clients...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,50 +93,65 @@
   </header>
 
   <article class="post-content">
-    <p>I've been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4... some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
-<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List&lt;Integer&gt; instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</p>
-<p>For example the piece of code below:</p>
-<p><!--more--></p>
-<pre class="brush:java">
-public class LabelPlaceholderComparator implements Comparator { 
+    <p>I’ve been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4… some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
 
-    /**{@inheritDoc */
-    public int compare(Object o1, Object o2) {
-        LabelPlaceholder p1 = (LabelPlaceholder) o1;
-        LabelPlaceholder p2 = (LabelPlaceholder) o2;
-        return p1.getLabel().compareTo(p2.getLabel());
-    }
-}</pre>
-<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey... the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
-<pre class="brush:java">
-List holders = fillList();
-Collections.sort(holders, new LabelPlaceholderComparator());
-</pre>
+<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List<integer> instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</integer></p>
+
+<p>For example the piece of code below:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span> <span class="o">{</span> 
+
+    <span class="cm">/**{@inheritDoc */</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
+        <span class="n">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
+<span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nf">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
+
 <p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
 For example Eclipse says:</p>
-<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
-<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
-<em>@SuppressWarnings("unchecked")</em></p>
-<p>What a shame... Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn't know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
-<p><em>I've got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I'd rather have a specific Comparator for this job. Do you have one for me?</em></p>
-<p>The solution to this problem is very simple, but most neglect to use it:</p>
-<pre class="brush:java">public class LabelPlaceholderComparator implements Comparator&lt;LabelPlaceholder&gt; { 
 
-    /**{@inheritDoc */
-    public int compare(LabelPlaceholder p1, LabelPlaceholder p2) {
-        return p1.getLabel().compareTo(p2.getLabel());
-    }
-}</pre>
-<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don't have to cast anymore, because of the generics you can't put anything else in there.</p>
+<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
+
+<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
+<em>@SuppressWarnings(“unchecked”)</em></p>
+
+<p>What a shame… Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn’t know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
+
+<p><em>I’ve got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I’d rather have a specific Comparator for this job. Do you have one for me?</em></p>
+
+<p>The solution to this problem is very simple, but most neglect to use it:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
+
+    <span class="cm">/**{@inheritDoc */</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="n">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don’t have to cast anymore, because of the generics you can’t put anything else in there.</p>
+
 <p>So, lets go to the conclusion: Why is the latter code better code?</p>
+
 <ol>
-<li>As you can see, the code is smaller!</li>
-<li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
-<li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don't have to read the Javadoc or the code to see what it does.</li>
+  <li>As you can see, the code is smaller!</li>
+  <li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
+  <li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don’t have to read the Javadoc or the code to see what it does.</li>
 </ol>
-<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren't perfect, please use them where/when you can, it'll always add clarity to the code, and most of the time it'll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
-<p>Don't ever let me see public int compare(Object o1, Object o2); again!</p>
+
+<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren’t perfect, please use them where/when you can, it’ll always add clarity to the code, and most of the time it’ll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
+
+<p>Don’t ever let me see public int compare(Object o1, Object o2); again!</p>
+
 <p>(You see, it is possible for me to have a discussion about Java generics without mentioning <a href="http://gafter.blogspot.com/2006/11/reified-generics-for-java.html">reified generics</a>!)</p>
+
 
   </article>
 

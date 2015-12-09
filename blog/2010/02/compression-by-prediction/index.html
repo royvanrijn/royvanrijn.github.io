@@ -94,61 +94,91 @@
 
   <article class="post-content">
     <p>The last couple of weeks I have been playing around with compression/decompression algorithms. This is a field that has always intrigued me. It gives me a magical feeling, like a magician you wave some algorithm around and suddenly the files shrink and bytes dissapear. With the same motion you can undo all your actions and re-generate the original files from thin air!</p>
-<p><!--more--></p>
-<h1>Arithmetic Coding</h1>
-<p>Arithmetic coding is a different method to encode bytes. On itself it doesn't compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: "ABACB"</p>
+
+<h1 id="arithmetic-coding">Arithmetic Coding</h1>
+
+<p>Arithmetic coding is a different method to encode bytes. On itself it doesn’t compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: “ABACB”</p>
+
 <p>First we assign a probability to each symbol:</p>
+
 <ul>
-<li>A: 45%</li>
-<li>B: 40%</li>
-<li>C: 15%</li>
+  <li>A: 45%</li>
+  <li>B: 40%</li>
+  <li>C: 15%</li>
 </ul>
+
 <p>Lets change these probabilities into ranges from 0.0 to 1.0:</p>
+
 <ul>
-<li>A: 0.00 to 0.45</li>
-<li>B: 0.45 to 0.85</li>
-<li>C: 0.85 to 1.00</li>
+  <li>A: 0.00 to 0.45</li>
+  <li>B: 0.45 to 0.85</li>
+  <li>C: 0.85 to 1.00</li>
 </ul>
-<p>Now we start reading our input (ABACB). The first character we find is 'A'. First we do a lookup in the table, what range does 'A' have: 0.00 to 0.45. Lets remember these values as 'low' and 'high'.</p>
-<p>Time to encode the second character 'B'. The first thing we need to do is reset our ranges to be between low and high:</p>
+
+<p>Now we start reading our input (ABACB). The first character we find is ‘A’. First we do a lookup in the table, what range does ‘A’ have: 0.00 to 0.45. Lets remember these values as ‘low’ and ‘high’.</p>
+
+<p>Time to encode the second character ‘B’. The first thing we need to do is reset our ranges to be between low and high:</p>
+
 <ul>
-<li>A: 0.0000 to 0.2025</li>
-<li>B: 0.2025 to 0.3805</li>
-<li>C: 0.3805 to 0.4500</li>
+  <li>A: 0.0000 to 0.2025</li>
+  <li>B: 0.2025 to 0.3805</li>
+  <li>C: 0.3805 to 0.4500</li>
 </ul>
-<p>We want to encode 'B', so we'll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
+
+<p>We want to encode ‘B’, so we’ll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
+
 <ul>
-<li>A: 0.2025 to 0.2826</li>
-<li>B: 0.2826 to 0.3538</li>
-<li>C: 0.3538 to 0.3805</li>
+  <li>A: 0.2025 to 0.2826</li>
+  <li>B: 0.2826 to 0.3538</li>
+  <li>C: 0.3538 to 0.3805</li>
 </ul>
-<p>Encode 'A', we get low=0.2025 and high=0.2826. And adjust the table again:</p>
+
+<p>Encode ‘A’, we get low=0.2025 and high=0.2826. And adjust the table again:</p>
+
 <ul>
-<li>A: 0.202500 to 0.238545</li>
-<li>B: 0.238545 to 0.270585</li>
-<li>C: 0.270585 to 0.282600</li>
+  <li>A: 0.202500 to 0.238545</li>
+  <li>B: 0.238545 to 0.270585</li>
+  <li>C: 0.270585 to 0.282600</li>
 </ul>
-<p>Encode 'C', we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
+
+<p>Encode ‘C’, we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
+
 <ul>
-<li>A: 0.27058500 to 0.27599175</li>
-<li>B: 0.27599175 to 0.28079775</li>
-<li>C: 0.28079775 to 0.28260000</li>
+  <li>A: 0.27058500 to 0.27599175</li>
+  <li>B: 0.27599175 to 0.28079775</li>
+  <li>C: 0.28079775 to 0.28260000</li>
 </ul>
-<p>So, lets encode the final symbol 'B' and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
-<p>Now I we want to decode our message "0.28" we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is 'A' (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted 'A' we know our encoder encoded 'A', so we can follow the same steps as the encoder did and update the ranges in the same way, so we'll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range 'B', so we output 'B' and adjust again.</p>
-<p>As you can see this number "0.28" describes our whole message "ABACB"! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
-<h1>Prediction</h1>
-<p>The previous example works great, but there is a problem... if we assign equal probabilities to each possible symbol (each byte) we won't compress anything! The example above works because I took bigger probabilities for A and B then for C... So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
-<h2>Read and save table</h2>
+
+<p>So, lets encode the final symbol ‘B’ and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
+
+<p>Now I we want to decode our message “0.28” we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is ‘A’ (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted ‘A’ we know our encoder encoded ‘A’, so we can follow the same steps as the encoder did and update the ranges in the same way, so we’ll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range ‘B’, so we output ‘B’ and adjust again.</p>
+
+<p>As you can see this number “0.28” describes our whole message “ABACB”! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
+
+<h1 id="prediction">Prediction</h1>
+
+<p>The previous example works great, but there is a problem… if we assign equal probabilities to each possible symbol (each byte) we won’t compress anything! The example above works because I took bigger probabilities for A and B then for C… So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
+
+<h2 id="read-and-save-table">Read and save table</h2>
+
 <p>One thing you can do is to first read the whole file and save the amount you see each character. Then you can scale these amounts into probabilities between 0.0 and 1.0 and save these probabilities to a file. Next we can use these probabilities to encode (and decode) our message! This will take quite a bit of overhead because you have to save the table..</p>
-<h2>Runtime adjustment</h2>
+
+<h2 id="runtime-adjustment">Runtime adjustment</h2>
+
 <p>Another thing we can do is to just start with equal probabilities for each symbol and adjust the probabilities during the encoding. If we use the same method in encoding and decoding our probability table will remain the same.</p>
-<h2>Prediction by Partial Matching (PPM)</h2>
-<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter 'E' will probably have the highest count/probabilty. But if we encouter the symbols: "COMPRESSI" we know the next character will likely be an "O", not an "E"! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
-<h2>Context Mixing (CM)</h2>
+
+<h2 id="prediction-by-partial-matching-ppm">Prediction by Partial Matching (PPM)</h2>
+
+<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter ‘E’ will probably have the highest count/probabilty. But if we encouter the symbols: “COMPRESSI” we know the next character will likely be an “O”, not an “E”! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
+
+<h2 id="context-mixing-cm">Context Mixing (CM)</h2>
+
 <p>With PPM you have one model which predicts the probability of the next symbol by looking at its past statistics. But why stop there? With Context Mixing (CM) you can have multiple models predicting the next symbol work together. When you do this right you and predict the next symbol even better and thus get better compression ratios! This is how the best current compression algorithms work.</p>
-<h1>Other methods</h1>
-<p>This is just one family of compression algorithms, there are a lot more which I won't describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p></p>
+
+<h1 id="other-methods">Other methods</h1>
+
+<p>This is just one family of compression algorithms, there are a lot more which I won’t describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p>
+
 
   </article>
 

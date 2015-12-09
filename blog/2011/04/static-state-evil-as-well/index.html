@@ -94,29 +94,45 @@
 
   <article class="post-content">
     <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
-<h3>The scare</h3>
+
+<h1 id="the-scare">The scare</h1>
+
 <p>Quickly I looked around and went into overdrive mode:<br />
 <em>I need to fix this bug before somebody sees it!<br />
-I'm always yelling at people who break the build, and now it has happend to me...!</em><br />
-<!--more--></p>
-<p>Looking at the SVN comment it only said: "cleaned up some code" (or something)<br />
-That isn't very helpfull of myself...</p>
-<h3>The second scare</h3>
+I’m always yelling at people who break the build, and now it has happend to me…!</em>  </p>
+
+<p>Looking at the SVN comment it only said: “cleaned up some code” (or something)<br />
+That isn’t very helpfull of myself…</p>
+
+<h1 id="the-second-scare">The second scare</h1>
+
 <p>Then I noticed I changed only one file. The change should be contained and easy to fix. But then I had a moment of relief and scare at the same time:</p>
+
 <ul>
-<li>Phew, it isn't my fault... removing empty lines should not break builds...</li>
-<li>But... why the heck does removing an empty line break the build!?</li>
+  <li>Phew, it isn’t my fault… removing empty lines should not break builds…</li>
+  <li>But… why the heck does removing an empty line break the build!?</li>
 </ul>
-<h3>The culprit</h3>
+
+<h1 id="the-culprit">The culprit</h1>
+
 <p>After looking around in the code, and the failing tests a collegue and me found the culprit: statefull static.</p>
-<p>In our application we've introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState's into the GlobalContext.</p>
-<p>Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE's and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.</p>
-<h3>The fix</h3>
-<p>The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything...</p>
+
+<p>In our application we’ve introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState’s into the GlobalContext.</p>
+
+<p>Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE’s and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.</p>
+
+<h1 id="the-fix">The fix</h1>
+
+<p>The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything…</p>
+
 <p>Even better, get rid of the GlobalContext at all. It contained a couple of instances that could easily be injected into the other objects. This makes it much clearer to see which objects depend on which other objects and makes the code a heck of a lot easier to test.</p>
-<h3>Lessons learned...</h3>
-<p>This got me thinking, in which cases should you use static? Obviously "public static final"-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I've been thinking about this for a day now, but I can't come up with any good usecase. Do you know any? Mail me, comment below!</p>
-<p>So for now, my new rule: Don't use static unless you have a very good reason, and never ever have static (mutable) state!</p>
+
+<h1 id="lessons-learned">Lessons learned…</h1>
+
+<p>This got me thinking, in which cases should you use static? Obviously “public static final”-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I’ve been thinking about this for a day now, but I can’t come up with any good usecase. Do you know any? Mail me, comment below!</p>
+
+<p>So for now, my new rule: Don’t use static unless you have a very good reason, and never ever have static (mutable) state!</p>
+
 <p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
 
   </article>

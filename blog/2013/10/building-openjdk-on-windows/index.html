@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Building OpenJDK on Windows</title>
-  <meta name="description" content="Tomorrow I'll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the A...">
+  <meta name="description" content="Tomorrow I’ll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the A...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,103 +93,137 @@
   </header>
 
   <article class="post-content">
-    <p>Tomorrow I'll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK build instructions</a>.</p>
-<p>Most <i>cool</i> developers today seem to be using OS/X, but some of us are stuck on Windows laptops. I actually choose to stick with Windows 7 because every single client I've worked for has Windows workstations and only require the application to run on Windows. But anyway Martijn said: <i>"Getting OpenJDK to build on Linux/Mac would be easy, Windows can be dicey"</i></p>
-<p>With a bit of Googling and some small problems I've got it working just fine on my Windows 7 (64 bit). Most information I got was from <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">this</a> write-up, but I encountered some problems and could skip some steps I didn't need.</p>
-<p>All the tools mentioned are <b>free</b>, but you <i>will</i> have to install some Microsoft Visual C++ packages to compile (which most Java programmers try to avoid).</p>
-<h2>Windows SDK for Windows 7.1</h2>
+    <p>Tomorrow I’ll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK build instructions</a>.</p>
+
+<p>Most <em>cool</em> developers today seem to be using OS/X, but some of us are stuck on Windows laptops. I actually choose to stick with Windows 7 because every single client I’ve worked for has Windows workstations and only require the application to run on Windows. But anyway Martijn said: <em>“Getting OpenJDK to build on Linux/Mac would be easy, Windows can be dicey”</em></p>
+
+<p>With a bit of Googling and some small problems I’ve got it working just fine on my Windows 7 (64 bit). Most information I got was from <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">this</a> write-up, but I encountered some problems and could skip some steps I didn’t need.</p>
+
+<p>All the tools mentioned are <strong>free</strong>, but you <em>will</em> have to install some Microsoft Visual C++ packages to compile (which most Java programmers try to avoid).</p>
+
+<h1 id="windows-sdk-for-windows-71">Windows SDK for Windows 7.1</h1>
+
 <p>Instead of the blogpost above mentioning this step second, I recommend doing it first. If you install VisualC++ 2010 Express first this step might fail with some weird error. The solution? Uninstall VisualC++ 2010 Express and first install Windows SDK for Windows 7.1.</p>
+
 <p>So go here and install: <a href="http://www.microsoft.com/download/en/details.aspx?id=8279">http://www.microsoft.com/download/en/details.aspx?id=8279</a></p>
-<h2>Microsoft VisualC++ 2010 Express</h2>
+
+<h1 id="microsoft-visualc-2010-express">Microsoft VisualC++ 2010 Express</h1>
+
 <p>Next install VisualC++ 2010 Express (beware, Microsoft tries to install another version, pick 2010 Express):<br />
 <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express</a><br />
 And next Windows Imaging Component (64-bit):<br />
-<a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=1385">http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=1385</a></p>
-<h2>Cygwin (64 bit)</h2>
+<a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=1385">http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=1385</a></p>
+
+<h1 id="cygwin-64-bit">Cygwin (64 bit)</h1>
+
 <p>For some reason I ran into problems early on using the 64 bit Cygwin, so I decided to install the 64 bit version as well. This worked, so I recommend doing this.<br />
-During the installation you'll need to add some development packages:</p>
+During the installation you’ll need to add some development packages:</p>
+
 <ul>
-<li>binutils</li>
-<li>cpio</li>
-<li>diffutils</li>
-<li>file</li>
-<li>gawk</li>
-<li>gcc-core</li>
-<li>m4</li>
-<li>unzip</li>
-<li>zip</li>
+  <li>binutils</li>
+  <li>cpio</li>
+  <li>diffutils</li>
+  <li>file</li>
+  <li>gawk</li>
+  <li>gcc-core</li>
+  <li>m4</li>
+  <li>unzip</li>
+  <li>zip</li>
 </ul>
-<p>I might have forgotten one or two, this will probably popup during the 'configure' step below. If you find a missing package, please tell me and I'll update the post.</p>
-<h2>make</h2>
-<p>The version of 'make' that is packaged with Cygwin doesn't work with OpenJDK. Instead we need to download the source from <a href="http://ftp.gnu.org/gnu/make/">http://ftp.gnu.org/gnu/make/</a>. I picked version 3.82 (this one is mentioned on the OpenJDK page). I downloaded and unzipped the source code here: <b>C:\Projects\OpenJDK\make-3-82</b></p>
+
+<p>I might have forgotten one or two, this will probably popup during the ‘configure’ step below. If you find a missing package, please tell me and I’ll update the post.</p>
+
+<h1 id="make">make</h1>
+
+<p>The version of ‘make’ that is packaged with Cygwin doesn’t work with OpenJDK. Instead we need to download the source from <a href="http://ftp.gnu.org/gnu/make/">http://ftp.gnu.org/gnu/make/</a>. I picked version 3.82 (this one is mentioned on the OpenJDK page). I downloaded and unzipped the source code here: <strong>C:\Projects\OpenJDK\make-3-82</strong></p>
+
 <p>To compile, fire up Cygwin and type:</p>
-<pre class="brush:plain">
-$ cd /cygdrive/c/Projects/OpenJDK/make-3.82
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/c/Projects/OpenJDK/make-3.82
 $ ./configure
-$ make
-</pre>
-<p>Now you could take the generated 'make.exe' and place it into the Cygwin bin directory, but this isn't needed.</p>
-<h2>freetype</h2>
-<p>Next we need to have Freetype, this step is done exacly like descriped <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">here</a>. Only do the 'Freetype' chapter generating the lib and dll.</p>
-<p>Once you've generated the lib+dll, make a new directory (I used <b>C:\Projects\OpenJDK\freetype</b>). Add the 'include' directory from the freetype source code used in the step before. Also create a 'lib' directory and place the generated lib and dll in it.</p>
-<h2>Hg/Ant/JDK7</h2>
-<p>The other article mentions you'll need to install TortoiseHg, Apache Ant and a current JDK 7 (as bootstrap). I didn't have to do this because I already had all three installed. But please go ahead, they are probably needed:</p>
+$ make</code></pre></figure>
+
+<p>Now you could take the generated ‘make.exe’ and place it into the Cygwin bin directory, but this isn’t needed.</p>
+
+<h1 id="freetype">freetype</h1>
+
+<p>Next we need to have Freetype, this step is done exacly like descriped <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">here</a>. Only do the ‘Freetype’ chapter generating the lib and dll.</p>
+
+<p>Once you’ve generated the lib+dll, make a new directory (I used <strong>C:\Projects\OpenJDK\freetype</strong>). Add the ‘include’ directory from the freetype source code used in the step before. Also create a ‘lib’ directory and place the generated lib and dll in it.</p>
+
+<h1 id="hgantjdk7">Hg/Ant/JDK7</h1>
+
+<p>The other article mentions you’ll need to install TortoiseHg, Apache Ant and a current JDK 7 (as bootstrap). I didn’t have to do this because I already had all three installed. But please go ahead, they are probably needed:</p>
+
 <ul>
-<li><a href="http://tortoisehg.bitbucket.org/download">TortoiseHg</a></li>
-<li><a href="http://ant.apache.org/bindownload.cgi">Apache Ant</a></li>
-<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7</a> (make sure this JDK 7, 64 bit, is set as JAVA_HOME)</li>
+  <li><a href="http://tortoisehg.bitbucket.org/download">TortoiseHg</a></li>
+  <li><a href="http://ant.apache.org/bindownload.cgi">Apache Ant</a></li>
+  <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7</a> (make sure this JDK 7, 64 bit, is set as JAVA_HOME)</li>
 </ul>
-<h2>Getting OpenJDK sources</h2>
-<p>The other article mentions a lot of PATH requirements that need to be set. I didn't encounter this at all because I configured my build in another way. First we'll need to get the OpenJDK source code.</p>
-<pre class="brush:plain">
-$ cd /cygdrive/C/Projects/OpenJDK/
+
+<h1 id="getting-openjdk-sources">Getting OpenJDK sources</h1>
+
+<p>The other article mentions a lot of PATH requirements that need to be set. I didn’t encounter this at all because I configured my build in another way. First we’ll need to get the OpenJDK source code.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/
 $ mkdir jdk8_tl
 $ hg clone http://hg.openjdk.java.net/jdk8/tl jdk8_tl
 $ cd jdk8_tl
-$ ./get_source.sh
-</pre>
+$ ./get_source.sh</code></pre></figure>
+
 <p>This will create a new directory: /cygdrive/C/Projects/OpenJDK/jdk8_tl with all the sources!</p>
-<h2>Configure</h2>
-<p>Now we need to configure a build for OpenJDK. Instead of just calling './configure' we'll need to add a few extra options, we'll need to point it to the correct MAKE directory and we need to include our custom build freetype.</p>
-<pre class="brush:plain">
-./configure MAKE=/cygdrive/C/Projects/OpenJDK/make-3.82/make.exe with_freetype=/cygdrive/C/Projects/OpenJDK/freetype
-</pre>
+
+<h1 id="configure">Configure</h1>
+
+<p>Now we need to configure a build for OpenJDK. Instead of just calling ‘./configure’ we’ll need to add a few extra options, we’ll need to point it to the correct MAKE directory and we need to include our custom build freetype.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">./configure MAKE=/cygdrive/C/Projects/OpenJDK/make-3.82/make.exe with_freetype=/cygdrive/C/Projects/OpenJDK/freetype</code></pre></figure>
+
 <p>This will throw a lot of warnings, but in the end it should print something like this:</p>
-<pre class="brush:plain">
-* OpenJDK target: OS: windows, CPU architecture: x86, address length: 64
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">* OpenJDK target: OS: windows, CPU architecture: x86, address length: 64
 
 Tools summary:
 * Environment:    cygwin version 1.7.25(0.270/5/3) (root at /cygdrive/c/Development/cygwin64)
-* Boot JDK:       java version "1.7.0_40"  Java(TM) SE Runtime Environment (build 1.7.0_40-b43)  Java HotSpot(TM) 64-Bit Server VM (build 24.0-b56, mixed mode)  (at /cygdrive/c/progra~1/java/jdk17~1.0_4)
+* Boot JDK:       java version &quot;1.7.0_40&quot;  Java(TM) SE Runtime Environment (build 1.7.0_40-b43)  Java HotSpot(TM) 64-Bit Server VM (build 24.0-b56, mixed mode)  (at /cygdrive/c/progra~1/java/jdk17~1.0_4)
 * C Compiler:     Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
 * C++ Compiler:   Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
 
 Build performance summary:
 * Cores to use:   7
 * Memory limit:   16373 MB
-* ccache status:  not available for your system
-</pre>
+* ccache status:  not available for your system</code></pre></figure>
+
 <p>After the configure step you should have a new build directory added.<br />
-Mine was located at: <b>/cygdrive/C/Projects/OpenJDK/jdk8_tl/build/windows-x86_64-normal-server-release</b></p>
-<h2>Build it</h2>
+Mine was located at: <strong>/cygdrive/C/Projects/OpenJDK/jdk8_tl/build/windows-x86_64-normal-server-release</strong></p>
+
+<h1 id="build-it">Build it</h1>
+
 <p>The next thing I did was to build everything, this can take anywhere from 10 to 40 minutes, my build took 20 minutes.</p>
-<pre class="brush:plain">
-$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
-$ /cygdrive/C/Projects/OpenJDK/make-3.82/make.exe clean images
-</pre>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+$ /cygdrive/C/Projects/OpenJDK/make-3.82/make.exe clean images</code></pre></figure>
+
 <p>After a long wait and a lot of warnings and messages it says it created your very own JDK 8 build. Time to give it a try:</p>
-<pre class="brush:plain">
-$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
 $ cd build/windows-x86_64-normal-server-release/images/j2sdk-image
-$ bin/java -version
-</pre>
-<p><img src="/images/814989381.jpg" alt="OpenJDK build completed" width="600" height="449" class="alignnone size-full wp-image-1494" /></p>
-<p><b>It worked!</b></p>
-<p>Like I said before, I encountered some problems and errors along the way. Most involved the wrong Cygwin (32 bit), this caused bash to crash (STATUS_ACCESS_VIOLATION) during the configure phase. Also I ran into a problem installing 'Microsoft SDK for Windows 7.1' which required me to first uninstall Microsoft VisualC++ 2010. Another problem was not installing 'diff' in Cygwin (diffutils) so the build found some other diff.exe (from Git?) which gave differences during the actual build causing it to stop.</p>
+$ bin/java -version</code></pre></figure>
+
+<p><img src="/images/814989381.jpg" alt="OpenJDK build completed" /></p>
+
+<p><strong>It worked!</strong></p>
+
+<p>Like I said before, I encountered some problems and errors along the way. Most involved the wrong Cygwin (32 bit), this caused bash to crash (STATUS_ACCESS_VIOLATION) during the configure phase. Also I ran into a problem installing ‘Microsoft SDK for Windows 7.1’ which required me to first uninstall Microsoft VisualC++ 2010. Another problem was not installing ‘diff’ in Cygwin (diffutils) so the build found some other diff.exe (from Git?) which gave differences during the actual build causing it to stop.</p>
+
 <p>I might have forgotten to write down some step, if you encounter any problem (and solve them) please tell me so I can update this post!</p>
-<h2>Todo</h2>
-<p>One thing I should add is '<b>ccache</b>'. This tool greatly improves the build speed because it caches all unchanged classes/files. It was in Cygwin (32 bit) but it is missing in Cygwin (64 bit)... I'll have to compile and install it myself. This is one thing I haven't tried yet, but I probably should do!</p>
-<p><b>Update:</b> I've tried compiling and using ccache-3.1.9, but this broke the build. I might try different versions but for now I'll just skip 'clean'-ing altogether :-)</p>
+
+<h1 id="todo">Todo</h1>
+
+<p>One thing I should add is ‘<strong>ccache</strong>’. This tool greatly improves the build speed because it caches all unchanged classes/files. It was in Cygwin (32 bit) but it is missing in Cygwin (64 bit)… I’ll have to compile and install it myself. This is one thing I haven’t tried yet, but I probably should do!</p>
+
+<p><strong>Update:</strong> I’ve tried compiling and using ccache-3.1.9, but this broke the build. I might try different versions but for now I’ll just skip ‘clean’-ing altogether :-)</p>
+
 
   </article>
 

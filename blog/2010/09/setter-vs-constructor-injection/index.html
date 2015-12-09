@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Setter vs Constructor injection</title>
-  <meta name="description" content="Recently I've had a discussion with a collegue about Setter vs Constructor injection. For those who don't know what I'm talking about a quick example:Setter ...">
+  <meta name="description" content="Recently I’ve had a discussion with a collegue about Setter vs Constructor injection. For those who don’t know what I’m talking about a quick example:Setter ...">
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -93,46 +93,58 @@
   </header>
 
   <article class="post-content">
-    <p>Recently I've had a discussion with a collegue about Setter vs Constructor injection. For those who don't know what I'm talking about a quick example:</p>
-<p>Setter injection:</p>
-<pre class="brush:java">
-public class SomeClass {
-	
-	private SomeDependency someDependency;
-	
-	public SomeClass() {
-		//Empty constructor
-	}
+    <p>Recently I’ve had a discussion with a collegue about Setter vs Constructor injection. For those who don’t know what I’m talking about a quick example:</p>
 
-	public void setSomeDependency(SomeDependency someDependency) {
-		this.someDependency = someDependency;
-	}
-}
-</pre>
+<p>Setter injection:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
+	
+	<span class="kd">private</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c1">//Empty constructor</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setSomeDependency</span><span class="o">(</span><span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
 <p>Constructor injection:</p>
-<pre class="brush:java">
-public class SomeClass {
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
 	
-	private final SomeDependency someDependency;
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
 	
-	public SomeClass(final SomeDependency someDependency) {
-		this.someDependency = someDependency;
-	}
-}
-</pre>
-<p>Ever since I've used constructor injection, I've never wanted to go back. For a good reason I might add. Constructor injection is just better, no discussion. Please allow me to explain.</p>
-<p><!--more--></p>
-<h1>Safe construction</h1>
-<p>First of all there is safety. In the case of setter injection it is perfectly possible to create the object without calling the setter(s). This would leave SomeClass in an uninitialized state. With constructor injection this could never happen, you just can't create the object without at least deliberately ignoring (null-ing) the arguments.</p>
-<p>Also, if you add a new dependency and forget to add the dependency in the XML... you'll end up with weird behaviour and NPE's while running your code. If you use constructor injection is would fail on startup because the correct constructor couldn't be found. Failing early.</p>
-<h1>Finalization</h1>
-<p>In the case of constructor injection you can make the dependencies final, this is something you just can't do with setter injection. This will further ensure the atomicity of SomeClass, it just can't exist without its dependency. And there are many many more reasons using 'final' is a good idea (google it).</p>
-<h1>But... isn't constructor injection less readable?</h1>
-<p>The only argument I've heard made against constructor injection is the fact that it becomes unreadable if you have too much incoming dependencies. But that argument is completely invalid!</p>
-<p>The problem isn't the constructor injection, it is a code smell. If your class has too much incoming dependencies you should reconsider this class. There is a good chance it is doing too much or having too much responsibilities. </p>
+	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">(</span><span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Ever since I’ve used constructor injection, I’ve never wanted to go back. For a good reason I might add. Constructor injection is just better, no discussion. Please allow me to explain.</p>
+
+<h1 id="safe-construction">Safe construction</h1>
+
+<p>First of all there is safety. In the case of setter injection it is perfectly possible to create the object without calling the setter(s). This would leave SomeClass in an uninitialized state. With constructor injection this could never happen, you just can’t create the object without at least deliberately ignoring (null-ing) the arguments.</p>
+
+<p>Also, if you add a new dependency and forget to add the dependency in the XML… you’ll end up with weird behaviour and NPE’s while running your code. If you use constructor injection is would fail on startup because the correct constructor couldn’t be found. Failing early.</p>
+
+<h1 id="finalization">Finalization</h1>
+
+<p>In the case of constructor injection you can make the dependencies final, this is something you just can’t do with setter injection. This will further ensure the atomicity of SomeClass, it just can’t exist without its dependency. And there are many many more reasons using ‘final’ is a good idea (google it).</p>
+
+<h1 id="but-isnt-constructor-injection-less-readable">But… isn’t constructor injection less readable?</h1>
+
+<p>The only argument I’ve heard made against constructor injection is the fact that it becomes unreadable if you have too much incoming dependencies. But that argument is completely invalid!</p>
+
+<p>The problem isn’t the constructor injection, it is a code smell. If your class has too much incoming dependencies you should reconsider this class. There is a good chance it is doing too much or having too much responsibilities.</p>
+
 <p>So, it is actualy a good thing that constructor injection becomes aweful with too much dependencies, it is a code-smell! If the list of incoming dependencies grows too large you need to refactor, not blame constructor injection.</p>
-<p>With setter injection it wouldn't be almost invisible, a bad thing.</p>
-<h1>Conclusion...</h1>
+
+<p>With setter injection it wouldn’t be almost invisible, a bad thing.</p>
+
+<h1 id="conclusion">Conclusion…</h1>
+
 <p>In every single way constructor injection beats setter injection, so please only use constructor injection from now, k? bye!</p>
 
   </article>
