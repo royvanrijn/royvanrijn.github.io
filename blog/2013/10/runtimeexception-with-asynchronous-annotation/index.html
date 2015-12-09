@@ -86,18 +86,26 @@
       </div> 
       <div class="clear"></div> 
     </div> 
-
-    <p class="post-meta">
-       Written by Roy van Rijn on 
-       <span class="date">
-         Oct 21, 2013 22:09:10
-       </span>
-       : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread">0 comments</a>
-    </p>
-    <h1 class="post-title">RuntimeExceptions within @Asynchronous methods</h1>
   </header>
 
   <article class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by Roy van Rijn on 
+        <span class="date">
+          Oct 21, 2013 22:09:10
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread">0 comments</a>
+      </p>
+      <h1 class="post-title">RuntimeExceptions within @Asynchronous methods</h1>
+    </div>
+
     <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
 
 <p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<t>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<t>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</t></t></p>
@@ -132,6 +140,7 @@
 <p>But calling get() basically makes the call synchronous again instead of the fire-and-forget I wanted to have. So instead I’ve now ended up with a big try/catch block around the entire @Asynchronous method. It feels a bit wrong… did I miss something? Is there a better method to log the RuntimeException from @Asynchronous methods?</p>
 
 
+    
   </article>
 
   <div id="disqus_thread"></div>

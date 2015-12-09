@@ -86,18 +86,26 @@
       </div> 
       <div class="clear"></div> 
     </div> 
-
-    <p class="post-meta">
-       Written by Roy van Rijn on 
-       <span class="date">
-         Jul 15, 2012 11:17:02
-       </span>
-       : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/java-speed-of-math/#disqus_thread">0 comments</a>
-    </p>
-    <h1 class="post-title">Java vs Javascript: Speed of Math</h1>
   </header>
 
   <article class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by Roy van Rijn on 
+        <span class="date">
+          Jul 15, 2012 11:17:02
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/java-speed-of-math/#disqus_thread">0 comments</a>
+      </p>
+      <h1 class="post-title">Java vs Javascript: Speed of Math</h1>
+    </div>
+
     <p>Last week I’ve created a <a href="/blog/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/blog/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
 
 <p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn’t have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
@@ -149,6 +157,7 @@
 <p>2) All the Math libraries have to work in <em>all</em> situations, with negative numbers, small numbers, large numbers, zero, null etc. They tend to have a lot of checks to cope with all those scenario’s. But most of the time you’ll know more about the numbers you put in… For example, my fastPower method will only work with positive integers larger than zero. Maybe you know that the power will always have even numbers…? This all means that the implementation can be improved. The problem is, this <em>can’t</em> be easily achieved in a generic (math) library.</p>
 
 
+    
   </article>
 
   <div id="disqus_thread"></div>

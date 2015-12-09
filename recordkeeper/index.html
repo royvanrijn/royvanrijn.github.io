@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)http://www.redcode.nl/recordkeeper/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<script src="jszip.min.js"></script>
+<script src="latlon.js"></script>
+</head>
+<body>
+
+<h1>RecordKeeperJS</h1>
+<p>Extract your records from the RunKeeper export data.</p>
+
+<p>
+	Fastest times:
+</p>
+<p>
+	5000  meter record: </p><div id="time5k">--:--:--</div>
+	10000 meter record: <div id="time10k">--:--:--</div>
+	half marathon record: <div id="time21k">--:--:--</div>
+	marathon record: <div id="time42k">--:--:--</div>
+<p></p>
+
+<style>
+#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
+#holder.hover { border: 10px dashed #333; }
+</style>
+  
+<div id="holder"></div>
+
+<script>
+
+var holder = document.getElementById('holder'),
+    state = document.getElementById('status');
+    
+if (typeof Number.prototype.toRad == 'undefined') {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
+}
+
+holder.ondragover = function () { this.className = 'hover'; return false; };
+holder.ondragend = function () { this.className = ''; return false; };
+holder.ondrop = function (e) {
+  this.className = '';
+  e.preventDefault();
+
+  var file = e.dataTransfer.files[0];
+  var reader = new FileReader();
+  reader.readAsBinaryString(file);
+ 
+  reader.onload = (function(e) {
+        unzip(reader.result);
+      });
+ 
+  return false;
+};
+
+function unzip(zipFile) {
+  var zip = new JSZip();
+  zip.load(zipFile);
+  
+  //Filter all GPX files:
+  var suffix = '.gpx';
+  var gpxFiles = zip.filter(function (relativePath, file){
+    return relativePath.indexOf(suffix, relativePath.length - suffix.length) !== -1;  
+  });
+  
+  var analyzers = [
+		new DistanceAnalyzer(5000, document.getElementById('time5k')),
+		new DistanceAnalyzer(10000, document.getElementById('time10k')),
+		new DistanceAnalyzer(21097, document.getElementById('time21k')),
+		new DistanceAnalyzer(42195, document.getElementById('time42k')),
+		];
+  
+  //Extract data:
+  gpxFiles.forEach(function(entry) {
+    var legs = extractLegs(entry.asText());
+    analyzers.forEach(function(analyzer) {
+      analyzer.analyze(legs);
+    });
+  });
+}
+
+function extractLegs(gpxFile) {
+  var xmlDoc=new DOMParser().parseFromString(gpxFile,"text/xml");
+  var waypoints = xmlDoc.getElementsByTagName('trkpt');
+  var legs = [];
+  var previousWaypoint = null;
+  Array.prototype.forEach.call(waypoints, function( waypoint ){
+    var lat = new Number(waypoint.getAttribute('lat'));
+    var lon = new Number(waypoint.getAttribute('lon'));
+    var time = new Date(waypoint.getElementsByTagName('time')[0].textContent);
+    var currentWaypoint = new Waypoint(lat, lon, time);
+    
+    if(previousWaypoint != null) {
+    	var distance = distVincenty(currentWaypoint.lat, currentWaypoint.lon, previousWaypoint.lat, previousWaypoint.lon); 
+    	var timeElapsed = currentWaypoint.time.getTime() - previousWaypoint.time.getTime();
+        legs.push(new Leg(distance, timeElapsed));
+    }
+    previousWaypoint = currentWaypoint;
+  });
+  
+  return legs;
+}
+
+function Leg(distance, time) {
+  this.time = time;
+  this.distance = distance;
+}
+
+function Waypoint(lat, lon, time) {
+  this.lat = lat;
+  this.lon = lon;
+  this.time = time;
+}
+
+function DistanceAnalyzer(targetDistance, displayNode) {
+  this.targetDistance = targetDistance;
+  this.displayNode = displayNode;
+  this.fastestTime;
+  
+  function format(time) {
+        var seconds = time;
+        var hours = 0;
+		while(seconds >= 3600) {
+			seconds -= 3600;
+			hours++;
+		}
+		var minutes = 0;
+		while(seconds >= 60) {
+			seconds -= 60;
+			minutes++;
+		}
+		return ("0" + hours).slice(-2) + ':' + ("0" + minutes).slice(-2) + ':' + ("0" + seconds).slice(-2);
+  }
+  
+  var self = this;
+  
+  this.analyze = function(legs) {
+    var cache = [];
+    var runningDistance = 0.0;
+    legs.forEach(function(leg) {
+		cache.push(leg);
+		runningDistance += new Number(leg.distance);
+		while((runningDistance-cache[0].distance)>targetDistance) {
+		  runningDistance -= new Number(cache[0].distance);
+		  cache.splice(0,1);
+		}
+		if(runningDistance > targetDistance) {
+		  var elapsedTime = 0;
+		  cache.forEach(function(leg){
+		    elapsedTime += new Number(leg.time);
+		  });
+		  // To seconds:
+		  elapsedTime = elapsedTime/1000;
+		  if(self.fastestTime == null || elapsedTime < self.fastestTime) {
+		    self.fastestTime = elapsedTime;
+            displayNode.innerHTML = format(elapsedTime);
+		  }
+		}
+    });		
+  }
+}
+
+
+</script>
+
+
+</body></html>

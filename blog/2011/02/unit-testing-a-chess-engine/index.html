@@ -86,18 +86,26 @@
       </div> 
       <div class="clear"></div> 
     </div> 
-
-    <p class="post-meta">
-       Written by Roy van Rijn on 
-       <span class="date">
-         Feb 7, 2011 10:02:46
-       </span>
-       : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
-    </p>
-    <h1 class="post-title">Testing a chess engine</h1>
   </header>
 
   <article class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by Roy van Rijn on 
+        <span class="date">
+          Feb 7, 2011 10:02:46
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
+      </p>
+      <h1 class="post-title">Testing a chess engine</h1>
+    </div>
+
     <p>About a week ago I decided to try and write a chess engine. I’ve encountered <a href="http://en.wikipedia.org/wiki/Bitboard">bitboards</a> before, and I really liked working with them. Most references I found had to do with chess engines, so I decided to have a go.</p>
 
 <p>The single most important and time consuming aspect of building a chess engine is legal <a href="http://chessprogramming.wikispaces.com/Move+Generation">move generation</a>. In all situations, be able to generate all legal moves that can be made on the board. At first this seems pretty straight forward, all pieces can move and attack in certain ways. But when you get to specific rules like castling and en-passant things get really tricky.</p>
@@ -205,6 +213,7 @@ For example:</p>
 <p><strong>Update:</strong> A couple of readers have pointed out that these tests are obviously not <em>unit tests</em>, but rather integration or acceptance tests. You are completely right. I’ve called them Unit tests because I used JUnit and they run in the automatic build. But they do test integration..!</p>
 
 
+    
   </article>
 
   <div id="disqus_thread"></div>
