@@ -95,12 +95,12 @@
   </header>
 
   <article class="post-content">
-    <p>A couple of days ago a our <a href="http://www.jpoint.nl">JPoint</a> hackathon we discussed building (Adopt) OpenJDK. After finding out a better way to build OpenJDK on Windows (<a href="/2013/10/building-openjdk-on-windows/">read it here</a>), I’ve made my first improvement to OpenJDK.</p>
+    <p>A couple of days ago a our <a href="http://www.jpoint.nl">JPoint</a> hackathon we discussed building (Adopt) OpenJDK. After finding out a better way to build OpenJDK on Windows (<a href="/blog/2013/10/building-openjdk-on-windows/">read it here</a>), I’ve made my first improvement to OpenJDK.</p>
 
 <p>This is a famous XKCD cartoon I wanted to implement:<br />
 <a href="http://xkcd.com/221/"><img src="/images/random_number.png" alt="getRandomNumber() { return 4; } // chosen by fair dice roll, guaranteed to be random" /></a></p>
 
-<p>Where do we get started? Actually it turned out it is fairly easy to make this ‘improvement’. We just need to find the correct source file and do a build as described <a href="/2013/10/building-openjdk-on-windows/">here</a>.</p>
+<p>Where do we get started? Actually it turned out it is fairly easy to make this ‘improvement’. We just need to find the correct source file and do a build as described <a href="/blog/2013/10/building-openjdk-on-windows/">here</a>.</p>
 
 <p>Instead of the HotSpot core (which is all written in C) the JDK libraries are just classes/Java files. If you want to look at these Java files you’ll need to browse to <strong>[openjdk]/jdk/src/share/classes</strong>. There you’ll find familiar directories/packages like “java.*”, “javax.*” and even “sun.*”.</p>
 

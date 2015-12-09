@@ -131,7 +131,7 @@
 
 <h1 id="inversion-of-logic">Inversion of logic</h1>
 
-<p>The first strategy we can follow is based on <a href="/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
+<p>The first strategy we can follow is based on <a href="/blog/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>

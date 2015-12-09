@@ -95,7 +95,7 @@
   </header>
 
   <article class="post-content">
-    <p>Last week I’ve created a <a href="/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
+    <p>Last week I’ve created a <a href="/blog/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/blog/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
 
 <p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn’t have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
 
