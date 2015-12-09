@@ -57,6 +57,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -73,6 +75,591 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2010/02/compression-by-prediction/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/02/compression-by-prediction/">Compression by prediction</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Feb 17, 2010 10:39:23
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/compression-by-prediction/#disqus_thread">0 comments</a>
+    	</p>
+        <p>The last couple of weeks I have been playing around with compression/decompression algorithms. This is a field that has always intrigued me. It gives me a magical feeling, like a magician you wave some algorithm around and suddenly the files shrink and bytes dissapear. With the same motion you can undo all your actions and re-generate the original files from thin air!</p>
+
+<h1 id="arithmetic-coding">Arithmetic Coding</h1>
+
+<p>Arithmetic coding is a different method to encode bytes. On itself it doesn’t compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: “ABACB”</p>
+
+<p>First we assign a probability to each symbol:</p>
+
+<ul>
+  <li>A: 45%</li>
+  <li>B: 40%</li>
+  <li>C: 15%</li>
+</ul>
+
+<p>Lets change these probabilities into ranges from 0.0 to 1.0:</p>
+
+<ul>
+  <li>A: 0.00 to 0.45</li>
+  <li>B: 0.45 to 0.85</li>
+  <li>C: 0.85 to 1.00</li>
+</ul>
+
+<p>Now we start reading our input (ABACB). The first character we find is ‘A’. First we do a lookup in the table, what range does ‘A’ have: 0.00 to 0.45. Lets remember these values as ‘low’ and ‘high’.</p>
+
+<p>Time to encode the second character ‘B’. The first thing we need to do is reset our ranges to be between low and high:</p>
+
+<ul>
+  <li>A: 0.0000 to 0.2025</li>
+  <li>B: 0.2025 to 0.3805</li>
+  <li>C: 0.3805 to 0.4500</li>
+</ul>
+
+<p>We want to encode ‘B’, so we’ll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
+
+<ul>
+  <li>A: 0.2025 to 0.2826</li>
+  <li>B: 0.2826 to 0.3538</li>
+  <li>C: 0.3538 to 0.3805</li>
+</ul>
+
+<p>Encode ‘A’, we get low=0.2025 and high=0.2826. And adjust the table again:</p>
+
+<ul>
+  <li>A: 0.202500 to 0.238545</li>
+  <li>B: 0.238545 to 0.270585</li>
+  <li>C: 0.270585 to 0.282600</li>
+</ul>
+
+<p>Encode ‘C’, we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
+
+<ul>
+  <li>A: 0.27058500 to 0.27599175</li>
+  <li>B: 0.27599175 to 0.28079775</li>
+  <li>C: 0.28079775 to 0.28260000</li>
+</ul>
+
+<p>So, lets encode the final symbol ‘B’ and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
+
+<p>Now I we want to decode our message “0.28” we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is ‘A’ (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted ‘A’ we know our encoder encoded ‘A’, so we can follow the same steps as the encoder did and update the ranges in the same way, so we’ll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range ‘B’, so we output ‘B’ and adjust again.</p>
+
+<p>As you can see this number “0.28” describes our whole message “ABACB”! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
+
+<h1 id="prediction">Prediction</h1>
+
+<p>The previous example works great, but there is a problem… if we assign equal probabilities to each possible symbol (each byte) we won’t compress anything! The example above works because I took bigger probabilities for A and B then for C… So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
+
+<h2 id="read-and-save-table">Read and save table</h2>
+
+<p>One thing you can do is to first read the whole file and save the amount you see each character. Then you can scale these amounts into probabilities between 0.0 and 1.0 and save these probabilities to a file. Next we can use these probabilities to encode (and decode) our message! This will take quite a bit of overhead because you have to save the table..</p>
+
+<h2 id="runtime-adjustment">Runtime adjustment</h2>
+
+<p>Another thing we can do is to just start with equal probabilities for each symbol and adjust the probabilities during the encoding. If we use the same method in encoding and decoding our probability table will remain the same.</p>
+
+<h2 id="prediction-by-partial-matching-ppm">Prediction by Partial Matching (PPM)</h2>
+
+<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter ‘E’ will probably have the highest count/probabilty. But if we encouter the symbols: “COMPRESSI” we know the next character will likely be an “O”, not an “E”! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
+
+<h2 id="context-mixing-cm">Context Mixing (CM)</h2>
+
+<p>With PPM you have one model which predicts the probability of the next symbol by looking at its past statistics. But why stop there? With Context Mixing (CM) you can have multiple models predicting the next symbol work together. When you do this right you and predict the next symbol even better and thus get better compression ratios! This is how the best current compression algorithms work.</p>
+
+<h1 id="other-methods">Other methods</h1>
+
+<p>This is just one family of compression algorithms, there are a lot more which I won’t describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/02/compression-by-prediction/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/02/handling-null-in-java/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/02/handling-null-in-java/">Handling null in Java</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Feb 1, 2010 11:46:13
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Its a problem I encouter in most JEE projects I’ve worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I’m trying to find out in this post.</p>
+
+<p>Lets start with a piece of business logic, in a world where we don’t have null-values:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This looks good and understandable! But this isn’t what I see in most projects. Usually I see code like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+	    <span class="k">if</span><span class="o">(</span><span class="n">accounts</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+	    		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+	    		<span class="o">}</span>
+	    	<span class="o">}</span>
+	    <span class="o">}</span>
+	    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Wow, that is not a pretty sight, not at all! What can we do about it and how did it happen?</p>
+
+<h1 id="inversion-of-logic">Inversion of logic</h1>
+
+<p>The first strategy we can follow is based on <a href="/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+   	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+   	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+   		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+   			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+   		<span class="o">}</span>
+   	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This is somewhat better, a bit shorter, but we still have all the ‘!= null’ and ‘== null’ checks we don’t want.</p>
+
+<h1 id="code-by-contract">Code by contract</h1>
+
+<p>The best way to get rid of null-checks is to get rid of nulls in your applicaties. Just don’t return a null in all of the methods…! This sounds very easy and straight forward, but it is a bit harder then it sounds because it has become such a habbit.</p>
+
+<p>The good thing is that current IDE’s are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
+<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPerson</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="n">something</span><span class="o">.</span><span class="na">retrievePerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+    
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! </span>
+<span class="o">}</span></code></pre></figure>
+
+<p>It also helps you to clearly state your assumed preconditions:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+	<span class="c1">//Very good, we know we won&#39;t get a NPE here! </span>
+<span class="o">}</span>
+    
+    
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeThis</span><span class="o">()</span> <span class="o">{</span>
+	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="n">printPersonName</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
+	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!</span>
+	<span class="c1">//Code analysis tools and/or IDE will warn you about this.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>It will also help you correct possible coding errors:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
+<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">//Use JPQL</span>
+	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;SELECT p FROM Person p WHERE p.id = :value&quot;</span><span class="o">);</span>
+	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
+	<span class="c1">//The IDE will complain about this. </span>
+	<span class="c1">//The database might return null, we don&#39;t allow returning null in this method.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Using this method you have some more certainties. But it isn’t a silver-bullet on its own. We have to stop and think, where do the null-values come from?</p>
+
+<p>Actually, when you stop returning null (which is entirely up to you and your team) there are still situations which are ‘unchecked’. Namely external API’s, frameworks, the ORM-mapper you are using. So everywhere where you execute methods that you haven’t written, you still have to do manual checks. But make sure you do this right away. Then further on in the code, you don’t have to check anything because of your @NotNull-contracts.<br />
+If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
+<span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In my experience this works very well, I’ve done this a couple of times, even before the @NotNull and @Nullable existed. Before this we would just add the information in our Javadoc. But with the IDE checking for it this has become a lot easier to use.</p>
+
+<h1 id="null-object-pattern">Null object pattern</h1>
+
+<p>A whole different approach then coding-by-contract is the use of a null-object. The idea behind this pattern is that you don’t return null, but instead you return a real object. In our example we would do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Person</span> <span class="o">{</span>
+
+	<span class="n">String</span> <span class="nf">getName</span><span class="o">();</span>
+	<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
+	
+	<span class="c1">//..etc..</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The huge advantage is that you can always safely call “person.getName()” and “person.getAccounts()” because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+                <span class="c1">//NullPerson returns empty list, no more NPE!</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now you can return much more information then just a meaningless “null”!</p>
+
+<p>There is just one problem with this pattern. It also doesn’t just solve your problems. Why do we want to calculate the total balance of a NullPerson? The moment you retrieve a person and it is an instance of NullPerson, catch it and handle the situation appropiatly, don’t just continue.</p>
+
+<h1 id="safe-null-operator">Safe null operator</h1>
+
+<p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you’ve programmed in Groovy you might have seen it before:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()?.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The idea is that you use “?.” instead of “.”. The questionmark means: “If the variable we’re calling is null, the result is null, else, call the next method”.</p>
+
+<p>So in this case:</p>
+
+<ul>
+  <li>If person is null: return null, else:</li>
+  <li>If getName() is null: return null, else:</li>
+  <li>Return result of substring(0, 1)</li>
+</ul>
+
+<p>If you would now write this code it would be:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>You could also give a default value:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">&quot;Anonymous&quot;</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If person or getName() produce a null the “?:” operator will return the default String.</p>
+
+<p>Sounds pretty good eh? The only problem is that this new operator didn’t make the final list of changes for Java 7.</p>
+
+<p>Fun fact: Do you know why the “?:”-operator is called the “Elvis”-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/01/placement-of-circle-over-points/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/01/placement-of-circle-over-points/">Placement of circle over points</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 27, 2010 15:02:57
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/placement-of-circle-over-points/#disqus_thread">0 comments</a>
+    	</p>
+        <p>For the Queue ICPC programming game <a href="http://queue.acm.org/icpc/index.cfm">Capture</a> I ran into a geometrical problem.<br />
+While programming my little robot I wanted to have an algorithm calculate this for me:</p>
+
+<ol>
+  <li>I have a field with 122 points</li>
+  <li>I have a circle of fixed size</li>
+</ol>
+
+<p>How do I calculate where to put the circle so it encapsulates the most points?</p>
+
+<p>This is what I came up with, three algorithms:  </p>
+
+<h1 id="algorithm-1-centerpoint">Algorithm #1: Centerpoint</h1>
+
+<p>The first algorithm was created as a test. It doesn’t find the perfect solution, but gives a decent solution.<br />
+First I loop over all the points, and I check if there are points located at <strong>CIRCLE_RADIUS</strong> length from our point. This returns a score. The best point has a lot of other points nearby.</p>
+
+<p>This algorithm is very quick, but it has a huge disadvantage, the circle will always have one of our points as center.</p>
+
+<p>It will never yield the perfect solution… In the following picture this algorithm produces the green circle:</p>
+
+<p><a href="/images/clusterCalculations.png"><img src="/images/clusterCalculations.png" alt="Picture of points and three calculated circles" /></a></p>
+
+<h1 id="algorithm-2-heatmap">Algorithm #2: Heatmap</h1>
+
+<p>The next idea I got was based on a heatmap. It is very computer heavy, but it will generate the best solution.</p>
+
+<p>It works like this (psuedocode):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
+	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
+		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
+		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
+				<span class="n">pixelScore</span><span class="o">++;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The pixel with the best score is used in most circles. Thus, this would need to be the center of our circle!</p>
+
+<p>In the image above you can see the resulting heatmap, and the cyan circle is placed on the best possible pixel.</p>
+
+<p>(In most cases, there are more then one ‘best pixels’, which one you choose doesn’t matter)</p>
+
+<h1 id="algorithm-3-bron-kerbosch-myself">Algorithm #3: Bron-Kerbosch-myself</h1>
+
+<p>The heatmap algorithm, mentioned above, takes a LOT of processing time and is far from the most efficient algorithm. For the Queue ICPC contest there is a time limit for each calculation, and I need it to speed up!</p>
+
+<p>So I started to wonder:</p>
+
+<p>- What do all the points in the perfect circle have in common?</p>
+
+<p>Well, they all have a maximum distance to each other of <strong>CIRCLE_RADIUS * 2</strong>.</p>
+
+<p>So I started to play with graph algorithms.</p>
+
+<p>The lines you see in the image above are all the points that can be connected with a maximum length of <strong>CIRCLE_RADIUS * 2</strong>. All the lines show points that could possibly be in the same circle together.<br />
+Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki/Clique_%28graph_theory%29">clique</a>’. A clique is a group of points that all point to each other, just what we want with the graph shown in the picture!</p>
+
+<p>When I searched a little further I came across the <a href="http://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm">Bron-Kerbosch algorithm</a>. It finds the perfect maximum clique for a given undirected graph! Again, just what we want!</p>
+
+<p>Here is the pseudocode (from Wikipedia):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
+        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="n">X</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
+
+<p>But I ran into a little problem, I’d made a false assumption… If you have a triangle of three points, with all legs size N, and then draw a circle from the center… none of the points fall into the circle.</p>
+
+<p><img src="/images/triangleFailure.png" alt="Picture of a circle inside a triangle, where the legs of the triangle are the circle's diameter. This causes all the corners to fall outside the circle." /></p>
+
+<p>Now I tried two ways to solve this, the first one is to use a smaller distance in the graph. If you only select points that are located <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong> every point will eventually fall into our circle. But this could eliminate the perfect circle obviously if two points in the perfect solution are further apart then <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong>.</p>
+
+<p>Then I desected the Bron-Kerbosch algorithm, and decided to change it a bit. This is what I ended up with:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerboschVanRijn</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
+        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span><span class="o">),</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">X</span><span class="o">))</span>
+        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        
+<span class="n">InCircle</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">):</span>
+    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="n">A</span>
+    <span class="k">return</span> <span class="n">all</span> <span class="n">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="n">A</span></code></pre></figure>
+
+<p>This returns all the maximal cliques that fall into our circle, and we are always sure they fall into our circle..! I think this will always generate the perfect solution, just as the heat map. In this the above picture, this algorithm produces the red circle.</p>
+
+<p>It already is light years faster then the heat map algorithm, but I still need a bit more speed. I’m still struggling to improve my implementation, like trying to use a pivot as bronKerbosch2 (see wikipedia again) does.</p>
+
+<h1 id="algorithm-4-">Algorithm #4: ???</h1>
+
+<p>For some reason I still fail to believe I’m the first person in the world to tackle this problem. But I haven’t been able to find an algorithm for this. Some people recommended using a <a href="http://en.wikipedia.org/wiki/Sweep_line_algorithm">sweeping algorithm</a> but I don’t understand how this is used to find the circle’s location. Others pointed me to Voronoi maps…</p>
+
+<p>So if you have any suggestions, or know the algorithm I’m looking for, please add a comment :-)</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/placement-of-circle-over-points/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/01/i-hate-printers/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/01/i-hate-printers/">I hate printers</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 27, 2010 12:54:58
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/i-hate-printers/#disqus_thread">0 comments</a>
+    	</p>
+        <ol>
+  <li>Why, when one color has run out of ink, you can’t print anything!?</li>
+  <li>Why does a pencil cost $0,50 and does an ink-cartridge cost $30,-?</li>
+  <li>Why does a pencil still work after 5 years and is an ink-cartridge completely dried up?</li>
+  <li>Why is a new printer (including ink cartridge) sometimes cheaper then a seperate ink-cartridge (crazy!)</li>
+  <li>Why do printers eat paper for lunch?</li>
+  <li>Why is printer-software so invasive? What happened to a simple ‘driver’</li>
+  <li>Why does most hardware run perfectly under Linux, except printers?</li>
+</ol>
+
+<p>Screw this, I’ll just mail my report instead of printing it…</p>
+
+<p>Printer-bashing comic: <a href="http://theoatmeal.com/comics/printers">Why I believe printers were sent from Hell</a></p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/i-hate-printers/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/01/guess-the-algorithm/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/01/guess-the-algorithm/">Guess the algorithm</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 23, 2010 21:54:24
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">function</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">while</span><span class="o">(</span><span class="n">x</span><span class="o">!=</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">((</span><span class="n">x</span><span class="o">&amp;</span><span class="mi">1</span><span class="o">)==</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">r</span><span class="o">+=</span><span class="n">y</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">x</span><span class="o">&gt;&gt;&gt;=</span><span class="mi">1</span><span class="o">;</span>
+		<span class="n">y</span><span class="o">&lt;&lt;=</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>So tell me, what does this do, and what is the algorithm called?</p>
+
+<p><strong>Edit:</strong></p>
+
+<p>And indeed (it was a simple one) the correct solution is multiplication, and to be specific, Ethiopian or <a href="http://mathworld.wolfram.com/RussianMultiplication.html">Russian Multiplication</a>.</p>
+
+<p>I’ll probably do more, harder ones, in the future..!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2010/01/dependency-injection-dissection/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
@@ -86,7 +673,7 @@
 			<span class="date">
 			  Jan 18, 2010 17:43:08
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread">0 comments</a>
     	</p>
         <p>Recently I placed a comment on <a href="http://blog.objectmentor.com/articles/2010/01/17/dependency-injection-inversion">this</a> interesting blog from Uncle Bob Martin (Robert C. Martin). It contains a brief description on how I teach people how to use the Spring Framework.</p>
 
@@ -495,7 +1082,7 @@ It’ll look something like this:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/01/dependency-injection-dissection/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -517,7 +1104,7 @@ It’ll look something like this:</p>
 			<span class="date">
 			  Jan 15, 2010 15:45:57
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
     	</p>
         <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
 
@@ -559,7 +1146,7 @@ It’ll look something like this:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/01/movies-as-porn/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -581,7 +1168,7 @@ It’ll look something like this:</p>
 			<span class="date">
 			  Jan 12, 2010 00:04:21
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/does-my-car-hate-me/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/does-my-car-hate-me/#disqus_thread">0 comments</a>
     	</p>
         <p>Why does my car do this to me? It bugs me everyday. When I drive with the snow outside I have to use my windscreen washer quite a lot. When I pull the little lever behind my steering wheel it spurts a jet of antifreeze/washer fluid onto my screen and it starts to wipe for about 10 times. Then it stops… my window is clean again!</p>
 
@@ -598,7 +1185,7 @@ A collegue adviced me this: If the car has just finished wiping, quickly switch 
 
 
 	    <p>
-    		<a href="/blog/2010/01/does-my-car-hate-me/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/does-my-car-hate-me/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -620,7 +1207,7 @@ A collegue adviced me this: If the car has just finished wiping, quickly switch 
 			<span class="date">
 			  Jan 5, 2010 16:04:53
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
     	</p>
         <h1 id="md5-quines">MD5 quines</h1>
 
@@ -672,7 +1259,7 @@ A collegue adviced me this: If the car has just finished wiping, quickly switch 
 
 
 	    <p>
-    		<a href="/blog/2010/01/md5-fixed-point/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -694,7 +1281,7 @@ A collegue adviced me this: If the car has just finished wiping, quickly switch 
 			<span class="date">
 			  Dec 15, 2009 15:25:15
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
     	</p>
         <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
 
@@ -875,7 +1462,7 @@ etc…</p>
 
 
 	    <p>
-    		<a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -897,7 +1484,7 @@ etc…</p>
 			<span class="date">
 			  Dec 11, 2009 10:14:10
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
     	</p>
         <h1 id="design-patterns">Design patterns</h1>
 
@@ -1000,7 +1587,7 @@ ELSE proceed</em></p>
 
 
 	    <p>
-    		<a href="/blog/2009/12/inversion_of_logic/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1022,7 +1609,7 @@ ELSE proceed</em></p>
 			<span class="date">
 			  Dec 10, 2009 22:43:13
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
     	</p>
         <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
 
@@ -1070,7 +1657,7 @@ ELSE proceed</em></p>
 
 
 	    <p>
-    		<a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1092,7 +1679,7 @@ ELSE proceed</em></p>
 			<span class="date">
 			  Dec 10, 2009 15:28:57
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
     	</p>
         <p>Every once in a while head hunters call me. They call you at home, at work, they work out your email adress and mail you… This will probably sound very familiar to most IT professionals.</p>
 
@@ -1104,7 +1691,7 @@ ELSE proceed</em></p>
 
 
 	    <p>
-    		<a href="/blog/2009/12/steve-oakley-the-head-hunter/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1126,7 +1713,7 @@ ELSE proceed</em></p>
 			<span class="date">
 			  Dec 8, 2009 23:49:31
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
     	</p>
         <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I’ll describe these terms and show examples on how to create tests using JUnit and Spring’s Test library.</p>
 
@@ -1266,7 +1853,7 @@ ELSE proceed</em></p>
 <p>Hopefully I’ll find the time to write another post on mocking, including EasyMock and Mockito.</p>
 
 	    <p>
-    		<a href="/blog/2009/12/testing-with-spring/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1288,7 +1875,7 @@ ELSE proceed</em></p>
 			<span class="date">
 			  Dec 8, 2009 18:21:54
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
     	</p>
         <p><em><strong>Curiosity</strong> is an emotion related to natural inquisitive behaviour such as exploration, investigation, and learning, evident by observation in human and many animal species.</em></p>
 
@@ -1404,461 +1991,7 @@ ELSE proceed</em></p>
 
 
 	    <p>
-    		<a href="/blog/2009/12/feed-your-curiosity/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/atheist-look-on-christmas/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2009/12/atheist-look-on-christmas/">Atheist look on Christmas</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 7, 2009 20:10:59
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread"></a>
-    	</p>
-        <p>Something other then the usual technical posts…<br />
-As you might already know, I am an atheist. Yes, in my opinion there is no God, there never was and <em>(probably)</em> never will be.</p>
-
-<h1 id="atheistic-christmas">Atheistic Christmas?</h1>
-
-<p>Being an Atheist with Christian friends I get a lot of questions. Recently a friend of mine asked: <em>“Why do you celebrate Christmas when you are an Atheist?”</em>.</p>
-
-<p>This question, to me, is quite simple. First of all, because it is a tradition. I think its a wonderful holiday. Ask around, what do people think about when you ask them about Christmas?</p>
-
-<p>People think about:</p>
-
-<ul>
-  <li>Christmas trees</li>
-  <li>Snow!</li>
-  <li>Santa Claus</li>
-  <li>Toys, candy and gifts</li>
-  <li>Decorations, lights</li>
-  <li>Christmas dinner with relatives</li>
-  <li>The poor, and less fortunate</li>
-  <li>Christmas songs</li>
-  <li>The Grinch</li>
-  <li>Mistletoe</li>
-  <li>Christmas cards</li>
-  <li>Charles Dickens, A Christmas Carol</li>
-</ul>
-
-<p>All of these things have no connection to the Christian Christmas, except the name “Christ-“.</p>
-
-<h1 id="the-birth-of-jesus">The birth of Jesus</h1>
-
-<p>The date on which we celebrate Christmas is sometimes said to be the birthdate of Christ. But in fact this isn’t true. The date has been borrowed from other holiday’s. Originally people celebrated the Roman <a href="http://en.wikipedia.org/wiki/Winter_solstice">winter solstice</a> on the 25th of December. It was probably just convenient to borrow this date.</p>
-
-<p>So instead of saying I celebrate Christmas, I could just say I celebrate midwinter.</p>
-
-<h1 id="santa-claus">Santa Claus</h1>
-
-<p>Okay, how about Santa Claus, there is nothing more Christmas then Santa Claus. But again this figure has nothing to do with Christianity. The only thing God and Santa Claus have in common is the beard.</p>
-
-<p>I’m from the Netherlands, and on the 5th of december the old Saint Nicolaas (or <a href="/images/sinterklaas.jpg">Sinterklaas</a>) visits our country. At night he visits all the houses and he brings gifts for all the kids! Does this sound familiar? It should be, he and Santa are the same guy..!</p>
-
-<p><img src="/images/sinterklaas.jpg" alt="sinterklaas" /></p>
-
-<p>When New York City was still called <a href="http://en.wikipedia.org/wiki/New_Amsterdam">New Amsterdam</a> the Dutch tradition took off in America. Slowly evolving (yes, holidays evolve too!) into the Santa Claus we all know today.</p>
-
-<p>And being Dutch I have a huge advantage, we celebrate Sinterklaas AND Santa Claus, getting gifts and candy twice!</p>
-
-<p>But again, a good reason to celebrate Christmas, it is based on a old Dutch tradition, and Santa Claus has nothing to do with Christianity.</p>
-
-<h1 id="family-friends-and-relatives">Family, friends and relatives</h1>
-
-<p>For me, the single most important reason I celebrate Christmas as an Atheist are my family, relatives and friends. Its the time of year, with its long dark days and cold nights, that is perfectly suited for spending time with friends and family.</p>
-
-<p>Its also the perfect time of year to think about your own situation, about the people you know and love, about people who don’t have it as good as you have. Its the time of year of giving and sharing.</p>
-
-<p>That is <strong>the</strong> most important reason to celebrate Christmas midwinter, winter solstice, late Sinterklaas.</p>
-
-<p><img src="/images/GodExits.jpg" alt="god exits" /></p>
-
-<h1 id="evolution">Evolution…</h1>
-
-<p>Finally, I have to get something out of my system about evolution:</p>
-
-<p>Please get over it, evolution exists, there is enough prove. Just because it is called a theory it doesn’t mean you can just throw it out of the Christmas decorated window. For example, did you know gravity is still a theory? It is, first it was known as <a href="http://en.wikipedia.org/wiki/Gravitation#Newton.27s_theory_of_gravitation">Newton’s Theory of Gravitation</a>, and after that a guy named Albert Einstein wrote a better version, the <a href="http://en.wikipedia.org/wiki/General_relativity">General Theory of Relativity</a>. It is accepted that gravity exists and nobody doubts that. Just like gravity, evolution is <a href="http://www.notjustatheory.com/">not just a theory</a>.</p>
-
-
-	    <p>
-    		<a href="/blog/2009/12/atheist-look-on-christmas/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/vmware-on-your-phone/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2009/12/vmware-on-your-phone/">VMWare on your phone?</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 7, 2009 11:47:56
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread"></a>
-    	</p>
-        <p>Recently VMWare, known from its computer virtualization software, has announced they are developing a dual-boot mobile version. This would allow you to run both Windows Mobile and Android on your phone.</p>
-
-<p>But it isn’t going to be a dual-boot you know from your computer, they are planning on running the OS’es at the same time. This would allow you to switch between OS on-the-fly.</p>
-
-<ul>
-  <li>You want to use a Windows Mobile app? <em>*click*</em></li>
-  <li>Oh, you want to use something on the Andriod platform? <em>*click*.</em></li>
-</ul>
-
-<p>I’m very curious how this will work out performance-wise, but the idea itself is great!</p>
-
-<p>Via: <a href="http://www.computerworld.com.au/article/328811/vmware_developing_dual_os_smartphone_virtualisation">computerworld.com.au</a></p>
-
-
-	    <p>
-    		<a href="/blog/2009/12/vmware-on-your-phone/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/eureqa/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2009/12/eureqa/">Eureqa</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 4, 2009 21:14:48
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread"></a>
-    	</p>
-        <p>I’ve just stumbled across a new program: <a href="http://ccsl.mae.cornell.edu/eureqa">Eureqa</a></p>
-
-<p>Its a program, developed by the Cornell Computational Synthesis Laboratory, that can detect equations in sets of data. Its primary goal is to identify the simplest mathematical formulas which could describe the underlying mechanisms that produced the data.</p>
-
-<p>Its best described using their instructional video:</p>
-
-<p>I’ve been playing around with it, for example trying to find a good prediction equation for the Son of Darts competition I blogged about earlier.</p>
-
-<p>The algorithm(s) used in this program are based around “<a href="http://en.wikipedia.org/wiki/Symbolic_Regression">symbolic regression</a>”. It is a form of Genetic Programming (GA) where the computer processes a tree of possibilities recursively searching for the best suited building-blocks.</p>
-
-
-	    <p>
-    		<a href="/blog/2009/12/eureqa/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/songsincode/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2009/12/songsincode/">#songsincode</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 4, 2009 19:09:29
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread"></a>
-    	</p>
-        <p><img src="/images/8.jpg" alt="songsincode" /></p>
-
-<h1 id="what-is-songsincode-">What is #songsincode ?</h1>
-
-<p>Last week I discovered a new hype on Twitter. The so-called “#songsincode”. It’s a huge hype under programmers and technical users. The best way to explain is probably by showing an example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="n">door</span> <span class="o">==</span> <span class="n">red</span> <span class="o">)</span> <span class="o">{</span>
-   <span class="n">door</span><span class="o">.</span><span class="na">paint</span><span class="o">(</span><span class="n">black</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This obviously is Paint It Black by the Rolling Stones (if the door is red, paint it black)</p>
-
-<h1 id="my-own-songsincode">My own #songsincode:</h1>
-
-<p>Here is a collection of the #songsincode I created and tweeted:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="n">silhouetto</span> <span class="o">==</span> <span class="n">man</span> <span class="o">&amp;&amp;</span> <span class="n">i</span><span class="o">.</span><span class="na">see</span><span class="o">(</span><span class="n">silhouetto</span><span class="o">))</span> <span class="o">{</span>
-   <span class="n">scaramouche</span><span class="o">.</span><span class="na">doFandango</span><span class="o">();</span>
-   <span class="k">if</span><span class="o">(</span><span class="n">thunderbolt</span> <span class="o">&amp;&amp;</span> <span class="n">lightning</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">me</span><span class="o">.</span><span class="na">frightened</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">ableToCheckout</span><span class="o">();</span>
-<span class="o">}</span>
-<span class="c1">//Unreachable code:</span>
-<span class="n">leave</span><span class="o">();</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">switch</span><span class="o">(</span><span class="n">random</span><span class="o">(</span><span class="mi">2</span><span class="o">))</span> <span class="o">{</span>
-   <span class="k">case</span> <span class="mi">0</span><span class="o">:</span> <span class="n">feel</span><span class="o">.</span><span class="na">partner</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-      <span class="k">break</span><span class="o">;</span>
-   <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="n">feel</span><span class="o">.</span><span class="na">onlyFriend</span> <span class="o">=</span> <span class="n">city</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">angel</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">mydaddy</span> <span class="o">:</span> <span class="n">oh</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">whack</span><span class="o">();</span>
-<span class="o">}</span>
-<span class="n">jar</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">whisky</span><span class="o">);</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">man</span><span class="o">.</span><span class="na">amount</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-<span class="n">man</span><span class="o">.</span><span class="na">come</span><span class="o">(</span><span class="n">love</span><span class="o">.</span><span class="na">name</span><span class="o">());</span>
-<span class="n">man</span><span class="o">.</span><span class="na">come</span><span class="o">();</span>
-<span class="n">man</span><span class="o">.</span><span class="na">go</span><span class="o">();</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">life</span><span class="o">++;</span>
-<span class="k">if</span><span class="o">(</span><span class="n">life</span> <span class="o">&gt;</span> <span class="n">you</span> <span class="o">&amp;&amp;</span> <span class="n">you</span> <span class="o">!=</span> <span class="n">me</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">me</span><span class="o">.</span><span class="na">goto</span><span class="o">(</span><span class="n">lengths</span><span class="o">);</span>
-   <span class="n">distance</span><span class="o">(</span><span class="n">you</span><span class="o">.</span><span class="na">eyes</span><span class="o">);</span>
-   <span class="k">if</span><span class="o">(</span><span class="n">me</span><span class="o">.</span><span class="na">saidTooMuch</span><span class="o">())</span> <span class="o">{</span>
-      <span class="n">me</span><span class="o">.</span><span class="na">setUp</span><span class="o">(</span><span class="n">it</span><span class="o">);</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">people</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">p</span><span class="o">.</span><span class="na">imagine</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLover</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">if</span><span class="o">(</span><span class="s">&quot;Billy Jean&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
-      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-   <span class="o">}</span>
-   <span class="o">...</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="o">;</span> <span class="n">i</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
-   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;MMmmmMMmmm&quot;</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;test dummy&quot;</span><span class="o">);</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">bird</span><span class="o">;</span>
-<span class="n">bird</span> <span class="o">=</span> <span class="s">&quot;word&quot;</span><span class="o">;</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">she</span> <span class="o">!=</span> <span class="n">lovely</span> <span class="o">&amp;&amp;</span> <span class="n">she</span> <span class="o">!=</span> <span class="n">wonderfull</span> <span class="o">&amp;&amp;</span> <span class="n">she</span> <span class="o">!=</span> <span class="n">precious</span> <span class="o">&amp;&amp;</span> <span class="n">she</span><span class="o">.</span><span class="na">age</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">...</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Submarine</span> <span class="n">submarine</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Submarine</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">255</span><span class="o">,</span><span class="mi">255</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
-<span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">all</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">submarine</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span> <span class="o">!</span><span class="n">me</span><span class="o">.</span><span class="na">like</span><span class="o">(</span><span class="n">mondays</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
-   <span class="n">tellWhy</span><span class="o">(</span><span class="n">me</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(</span><span class="n">young</span><span class="o">)</span> <span class="o">{}</span>
-<span class="c1">//loops forever</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">time</span> <span class="o">==</span> <span class="n">hammer</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">!</span><span class="n">women</span> <span class="o">)</span> <span class="o">{</span>
-   <span class="n">cry</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-     <span class="k">this</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">religion</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span><span class="o">(!</span><span class="n">hasFound</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">lookFor</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">grass</span><span class="o">==</span><span class="s">&quot;green&quot;</span> <span class="o">&amp;&amp;</span> <span class="n">girls</span> <span class="o">==</span> <span class="s">&quot;pretty&quot;</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">takeMe</span><span class="o">(</span><span class="n">paradiseCity</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Leaf</span> <span class="nl">leaf:</span><span class="n">leafs</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">leaf</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">139</span><span class="o">,</span><span class="mi">69</span><span class="o">,</span><span class="mi">19</span><span class="o">));</span>
-<span class="o">}</span>
-<span class="n">sky</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="n">Color</span><span class="o">.</span><span class="na">GRAY</span><span class="o">);</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Thing</span> <span class="nl">thing:</span><span class="n">stuff</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">aintGotNo</span><span class="o">(</span><span class="n">thing</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="n">complainAboutGod</span><span class="o">();</span>
-<span class="k">for</span><span class="o">(</span><span class="n">Part</span> <span class="nl">part:</span><span class="n">bodyparts</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">gotMy</span><span class="o">(</span><span class="n">part</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="n">gotMy</span><span class="o">(</span><span class="n">life</span><span class="o">);</span>
-<span class="n">gotMy</span><span class="o">(</span><span class="n">freedom</span><span class="o">);</span>
-<span class="n">gotMy</span><span class="o">(</span><span class="n">life</span><span class="o">);</span></code></pre></figure>
-
-<hr />
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">{</span>
-     <span class="kd">final</span> <span class="n">countdown</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="my-favourite">My favourite:</h1>
-
-<p>And here is my all-time favourite (in CSS!!) created by <a href="http://twitter.com/Codepo8">@codepo8</a>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span><span class="na">clowns</span><span class="o">{</span><span class="kt">float</span><span class="o">:</span><span class="n">left</span><span class="o">;}</span>
-<span class="o">.</span><span class="na">jokers</span><span class="o">{</span><span class="kt">float</span><span class="o">:</span><span class="n">right</span><span class="o">};</span>
-<span class="err">#</span><span class="n">me_you</span><span class="o">{</span><span class="nl">position:</span><span class="n">fixed</span><span class="o">;</span><span class="nl">margin:</span><span class="mi">0</span> <span class="n">auto</span><span class="o">;</span><span class="nl">width:</span><span class="mi">100</span><span class="o">%}</span></code></pre></figure>
-
-<p>I hope you liked them!</p>
-
-
-	    <p>
-    		<a href="/blog/2009/12/songsincode/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/java-generics-for-compare/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2009/12/java-generics-for-compare/">Java Generics for Compare</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 4, 2009 16:35:15
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread"></a>
-    	</p>
-        <p>I’ve been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4… some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
-
-<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List<integer> instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</integer></p>
-
-<p>For example the piece of code below:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span> <span class="o">{</span> 
-
-    <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
-        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
-<span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nf">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
-
-<p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
-For example Eclipse says:</p>
-
-<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
-
-<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
-<em>@SuppressWarnings(“unchecked”)</em></p>
-
-<p>What a shame… Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn’t know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
-
-<p><em>I’ve got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I’d rather have a specific Comparator for this job. Do you have one for me?</em></p>
-
-<p>The solution to this problem is very simple, but most neglect to use it:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
-
-    <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="n">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don’t have to cast anymore, because of the generics you can’t put anything else in there.</p>
-
-<p>So, lets go to the conclusion: Why is the latter code better code?</p>
-
-<ol>
-  <li>As you can see, the code is smaller!</li>
-  <li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
-  <li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don’t have to read the Javadoc or the code to see what it does.</li>
-</ol>
-
-<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren’t perfect, please use them where/when you can, it’ll always add clarity to the code, and most of the time it’ll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
-
-<p>Don’t ever let me see public int compare(Object o1, Object o2); again!</p>
-
-<p>(You see, it is possible for me to have a discussion about Java generics without mentioning <a href="http://gafter.blogspot.com/2006/11/reified-generics-for-java.html">reified generics</a>!)</p>
-
-
-	    <p>
-    		<a href="/blog/2009/12/java-generics-for-compare/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>

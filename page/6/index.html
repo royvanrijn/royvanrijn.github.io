@@ -57,6 +57,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -73,6 +75,230 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2011/08/meet-me-at-devoxx-2011/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/08/meet-me-at-devoxx-2011/">Meet me at Devoxx 2011</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Aug 5, 2011 15:53:21
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/08/meet-me-at-devoxx-2011/#disqus_thread">0 comments</a>
+    	</p>
+        <p>This year I’ll be presenting at <a href="http://www.devoxx.com">Devoxx</a> in Antwerp, Belgium. In my opinion it currently is the best Java conference in the world. It’ll be my first talk in English.</p>
+
+<p><img src="/images/LogoDevoxx150dpi.jpg" alt="Devoxx" /></p>
+
+<p>The titel of the talk is: <em>What Shazam doesn’t want you to know</em>.</p>
+
+<p>During the talk I’ll be explaining how Shazam works and how you can recreate this in Java yourself. But that’s not all.. I’m also including the grand challenge of teaching everybody how the Fourier Transformation works, without going into math (I’m math-illiterate).</p>
+
+<p>Wish me luck, I’m really looking forward to it!</p>
+
+<p>Are you coming to Devoxx? Or do you have hints/tips for me, let me know!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/08/meet-me-at-devoxx-2011/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/bitcoin-mining/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/bitcoin-mining/">Bitcoin mining</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 30, 2011 20:07:09
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread">0 comments</a>
+    	</p>
+        <p>A couple of months ago I’ve started using and mining bitcoins. If you don’t know what bitcoin is yet, please watch the following video:<br />
+&lt;iframe id="ytplayer" type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="http://www.youtube.com/embed/Um63OQz3bjo"&gt;&lt;/iframe&gt;</p>
+
+<p>Mining for bitcoins has become harder and harder. But as a pro, the price of the bitcoin has also increased quite a lot. Since I’ve started mining I’ve mined about 40 bitcoins (in pools). This is now worth about 9 dollars per bitcoin: 360 dollars!</p>
+
+<p>Mostly I’ve used my GPU for mining, this gives me the greatest speed. I found the Diablo Miner works best in my case, I even <a href="https://github.com/Diablo-D3/DiabloMiner/archives/master">pushed</a> some improvements into the codebase to let it work through proxies. But since a couple of days I’ve had a bitcoin miner in Java applet form running on this website! This is currently giving me about the same amount of bitcoins. Still, it is only about 0.01 bitcoin per day. Which comes down to 10 dollar cents a day. But still this is more then I earn for ads!</p>
+
+<p>I’ve removed the bitcoin applet from my main page (it can scare visitors if the CPU runs to 100%). But you can still use it on this website:</p>
+
+<p><strong>SCRIPT DISABELED</strong></p>
+
+<p>So, don’t hesitate to hang around here for a while, with this page open :-) Lets see how much bitcoins my visitors can generate!</p>
+
+<p>Oh, to see the current ‘exchange rate’ of the Bitcoin, you can always view it on <a href="https://mtgox.com/trade/megaChart">Mt Gox</a>.</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/android-application-1/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/android-application-1/">Android application #1</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 29, 2011 18:22:14
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
+    	</p>
+        <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a>  </p>
+
+<p>The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
+
+<ul>
+  <li>“I love it when”</li>
+  <li>“I hate it when”</li>
+</ul>
+
+<p>The application now displays some user information (username/profile picture) and shows parts of the tweet. The words “love” and “hate” are removed and the user has to guess which of the two words was in the original tweet.  </p>
+
+<h1 id="backend">Backend</h1>
+
+<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I’ve used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.  </p>
+
+<h1 id="frontend">Frontend</h1>
+
+<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don’t have one… But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don’t have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
+
+<p>The next discovery was: Android isn’t at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.  </p>
+
+<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I’ve released my application in English (default), Dutch and French.  </p>
+
+<h1 id="releasing-to-the-market">Releasing to the Market</h1>
+
+<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on “Export as signed Android application” and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.  </p>
+
+<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don’t think I’ll even see that return on investment, I’ve decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).  </p>
+
+<h1 id="adding-ads-from-admoblogoheaderadmoblogoheader">Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="ad_mob_logo_header" /></h1>
+
+<p>Now that I’ve invested 25 euro’s, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.  </p>
+
+<h1 id="results">Results</h1>
+
+<p>After one day I’m pretty surprised: Already 350 people have downloaded the application and I’ve already earned &gt; 50 cents from AdMob (2% ROI).  </p>
+
+<p>I’ve really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
+
+<p>(p.s. No, I’m not going to port my <a href="/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/2010/07/patent-infringement/">sued</a>)</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/wedding-video/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 23, 2011 10:52:16
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
+    	</p>
+        <p>This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I’ve filmed something. I decided to edit everything together with some music. Here is the result:</p>
+
+<iframe src="http://player.vimeo.com/video/24091005?title=0&amp;byline=0&amp;portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard…</p>
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/05/gods-dice/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/05/gods-dice/">God's Dice</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  May 9, 2011 09:07:36
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/gods-dice/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">“God’s Dice”</a></p>
+
+<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="godsdice" class="alignright" /></a></p>
+
+<p>After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.</p>
+
+<p>The goal of the contest is this:</p>
+
+<ol>
+  <li>Take a cube, with all sides length 1</li>
+  <li>Place N (9 to 88) points anywhere on the surface of the cube</li>
+  <li>Now calculate the surface area of all triangles between your points</li>
+  <li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
+</ol>
+
+<p>So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.</p>
+
+<p>Up to now I’ve only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I’ll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
+
+<p>And I’ve got some other idea’s, which I won’t share obviously for the contest sake!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/gods-dice/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2011/05/website-theme/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
@@ -86,7 +312,7 @@
 			<span class="date">
 			  May 7, 2011 01:52:14
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/website-theme/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/website-theme/#disqus_thread">0 comments</a>
     	</p>
         <p>When browsing through the posts on <a href="http://www.dzone.com">DZone</a> I noticed a couple of new Wordpress plugins. When I tried them (on my live website of course) everything failed and produced errors. And of course I didn’t do a proper backup before I started… sigh.</p>
 
@@ -152,7 +378,7 @@ A lot of people have asked me why I’m using that avatar instead of a normal ph
 
 
 	    <p>
-    		<a href="/blog/2011/05/website-theme/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/website-theme/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -174,7 +400,7 @@ A lot of people have asked me why I’m using that avatar instead of a normal ph
 			<span class="date">
 			  May 1, 2011 18:03:55
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/crowdflow-needs-you/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/crowdflow-needs-you/#disqus_thread">0 comments</a>
     	</p>
         <p><a href="http://crowdflow.net/">Crowdflow</a> wants to have your iPhone data, to generate pretty heatmaps!</p>
 
@@ -186,7 +412,7 @@ A lot of people have asked me why I’m using that avatar instead of a normal ph
 
 
 	    <p>
-    		<a href="/blog/2011/05/crowdflow-needs-you/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/05/crowdflow-needs-you/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -208,7 +434,7 @@ A lot of people have asked me why I’m using that avatar instead of a normal ph
 			<span class="date">
 			  Apr 26, 2011 14:34:27
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
     	</p>
         <p>Wow, great news!</p>
 
@@ -225,7 +451,7 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 
 
 	    <p>
-    		<a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -247,7 +473,7 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 			<span class="date">
 			  Apr 21, 2011 01:06:24
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread">0 comments</a>
     	</p>
         <p>Today I noticed the following post on Slashdot: <a href="http://apple.slashdot.org/story/11/04/20/1357248/Apple-Logging-Locations-of-All-iPhone-Users">Apple Logging Locations of All iPhone Users</a></p>
 
@@ -301,7 +527,7 @@ java -jar iPhoneTracker.jar &quot;C:\Users\roy\AppData\Roaming\Apple Computer\Mo
 
 
 	    <p>
-    		<a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -323,7 +549,7 @@ java -jar iPhoneTracker.jar &quot;C:\Users\roy\AppData\Roaming\Apple Computer\Mo
 			<span class="date">
 			  Apr 19, 2011 19:23:26
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread">0 comments</a>
     	</p>
         <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
 
@@ -368,7 +594,7 @@ That isn’t very helpfull of myself…</p>
 <p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
 
 	    <p>
-    		<a href="/blog/2011/04/static-state-evil-as-well/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -390,7 +616,7 @@ That isn’t very helpfull of myself…</p>
 			<span class="date">
 			  Apr 19, 2011 18:13:55
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread">0 comments</a>
     	</p>
         <p>Today somebody posted a comment:</p>
 
@@ -410,7 +636,7 @@ checked exceptions are “the embodiment of evil”?’</p>
 
 
 	    <p>
-    		<a href="/blog/2011/04/checked-exceptions-evil/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -432,7 +658,7 @@ checked exceptions are “the embodiment of evil”?’</p>
 			<span class="date">
 			  Feb 24, 2011 22:29:29
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
     	</p>
         <p>Follow up on the previous blogpost.</p>
 
@@ -475,7 +701,7 @@ generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
 
 
 	    <p>
-    		<a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -497,7 +723,7 @@ generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
 			<span class="date">
 			  Feb 24, 2011 10:32:52
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
     	</p>
         <p>Not so long ago I encountered something called the <a href="http://en.wikipedia.org/wiki/De_Bruijn_sequence">de Bruijn sequence</a>. For now I’ll only use this for an alphabet of (0,1), binary. But everything said here could also be applied to other alphabets. In this post I’ll describe what this sequence is, and how you can generate them, using <a href="http://en.wikipedia.org/wiki/Lyndon_word">Lyndon words</a>.</p>
 
@@ -620,7 +846,7 @@ It loops over all rotations (using some bit-masking):</p>
 
 
 	    <p>
-    		<a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -642,7 +868,7 @@ It loops over all rotations (using some bit-masking):</p>
 			<span class="date">
 			  Feb 7, 2011 10:02:46
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
     	</p>
         <p>About a week ago I decided to try and write a chess engine. I’ve encountered <a href="http://en.wikipedia.org/wiki/Bitboard">bitboards</a> before, and I really liked working with them. Most references I found had to do with chess engines, so I decided to have a go.</p>
 
@@ -752,7 +978,7 @@ For example:</p>
 
 
 	    <p>
-    		<a href="/blog/2011/02/unit-testing-a-chess-engine/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -774,7 +1000,7 @@ For example:</p>
 			<span class="date">
 			  Jan 6, 2011 00:36:51
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
     	</p>
         <p>A couple of weeks ago our Scrum team was thinking about exception handling. We don’t use checked exceptions, since they are the embodiment of evil. So everything is translated into runtime exceptions whenever possible. But this is where the problems start: What do you do with the uncatched runtime exceptions?</p>
 
@@ -882,422 +1108,7 @@ For example:</p>
 
 
 	    <p>
-    		<a href="/blog/2011/01/exception-mailing/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/01/rainbow-tables/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Jan 1, 2011 17:17:25
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread"></a>
-    	</p>
-        <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!  </p>
-
-<h1 id="hashing">Hashing</h1>
-
-<p>First off, lets talk about ‘hashing’, what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example… passwords:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;test&quot;     -&gt; &quot;098f6bcd4621d373cade4e832627b4f6&quot;
-&quot;password&quot; -&gt; &quot;5f4dcc3b5aa765d61d8327deb882cf99&quot;</code></pre></figure>
-
-<p>Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don’t have anything, because the hash-function is only one-way.</p>
-
-<h1 id="attacking-a-hash">Attacking a hash</h1>
-
-<p>Where there is security there will be crackers trying to break it. How would you go about attacking, reversing, a hash? The earliest form was just to create huge tables of:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">PLAIN_TEXT -&gt; HASH</code></pre></figure>
-
-<p>And then check if the hash is your hash. If you have a match, you’ll get into the system!</p>
-
-<p>The problem is that these tables take a very long time to compute and you’ll end up with so much data you won’t be able to store it. This made hashing pretty safe.</p>
-
-<h1 id="rainbow-tables">Rainbow tables</h1>
-
-<p>A couple of generations further down the line, crackers now use rainbow tables. It takes the best of both worlds having a small(-ish) table on disk, and doing minimal computations. So how do they work..?</p>
-
-<h2 id="the-reduce-function">The reduce function</h2>
-
-<p>Lets assume we start with a random piece of text. For example we want to crack all passwords of length 5 and consisting of [ABC…XYZ0123456789]. We can now calculate the hash value. Instead of storing this single pair, we do a little trick. We use something that is called a ‘reduce function’. This is a selfmade one-way function that turns a hash back into a password! But not the original password (it isn’t a reverse hash-function) but just into some other password.</p>
-
-<p>Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We’ll end up with:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   &quot;random&quot;                           -&gt; &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot;
-Reduce: &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot; -&gt; &quot;ienw3&quot;
-Hash:   &quot;ienw3&quot;                            -&gt; &quot;b9322e367ad002d5adf7ca60b8b61e86&quot;
-        ... (1000 times) ...
-Hash:   &quot;o1gti&quot;                            -&gt; &quot;27aa4cbd3653a4617e0aec76ba3af9a4&quot;</code></pre></figure>
-
-<p>The trick is, we throw away everything except the first input “random” and the final hash “27aa4cbd3653a4617e0aec76ba3af9a4”! This is the only part we need to store.</p>
-
-<h2 id="using-a-rainbow-table">Using a rainbow table</h2>
-
-<p>How can we use the data above to reverse hashes you might ask? To use this table we need the input hash. For example “b9322e367ad002d5adf7ca60b8b61e86”. First we check if this hash is in the database. If it is, we are very lucky, we can just re-generate that particulair chain and we know the plain text input!</p>
-
-<p>If we don’t find anything (which is very likely) we apply our reduce function to the input-hash and then hash that result. Now we check the hashes again, regenerate the chain and find out the answer. This can be repeated until we hit our set limit (1000) in that case, if no match has been found, we can’t reverse it.</p>
-
-<h2 id="false-alarms">False alarms</h2>
-
-<p>There is one problem in this algorithm. If you take a input-hash and then do a couple of reduce/hashes, and then you find a match… it might be a false alarm! The problem is that there might be input strings that result in the same hash. If this happens two chains will end up into one chain.</p>
-
-<p>If we would have done a couple of reduce/hashes from our input and find a match for endpoint “52cafa6b5e4a6509e6ed2b8e6976d780”, the original chain might not have contained our input value. When we construct the complete chain it is possible that our input-hash isn’t in the chain…!</p>
-
-<h2 id="the-rainbow-of-the-rainbow-table">The ‘rainbow’ of the rainbow table</h2>
-
-<p>The reason they call it a rainbow table has something to do with reducing the amount of false alarms. Until now we’ve talked about having one reduce-function. What if we would have multiple reduce functions? Then we could create multiple small tables, which would help reduce a little bit.</p>
-
-<p>Philippe Oechslin had a great idea. He used a different reduce algorithm for each step in the chain. So his tables are build using:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">input chain 1 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
-input chain 2 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
-input chain 3 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash</code></pre></figure>
-
-<p>(If you color the reduce functions you’ll end up with a pretty rainbow pattern).</p>
-
-<p>How would you reverse a hash using this method? Well, the first step is the same, check if your input-hash is present in the stored hashes.<br />
-Next we apply:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">reduce1000 -&gt; hash -&gt; check
-reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check
-reduce998 -&gt; hash -&gt; reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check</code></pre></figure>
-
-<p>(etc)</p>
-
-<p>The big advantage is that similair hashes (collisions) will most likely use different reduce algorithms so they won’t end up in the same chain.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>Using rainbow tables you greatly decrease the amount of stored values. It isn’t log(O), there is a bit of computation needed to do the lookups, but that as well is kept to a minimum. This results in a very fast method to crack passwords. But I think it can be used in other fields of computer science as well. There are a lot of situations where you’d like to have a very big hash-lookup table, and when it becomes too big, this can be used to reduce storage but maintain fairly good lookup times.</p>
-
-<h1 id="salting">Salting</h1>
-
-<p>Almost every article about hashing and rainbow tables end with a short alinea about salting. You can do salting in a couple of different ways, but the idea is usually the same. The easiest form of salting is having on ‘salt’ for a complete database.</p>
-
-<h2 id="one-salt-per-database">One salt per database</h2>
-
-<p>How does this work? Well, lets just generate a completely random piece of text: “thisisoursaltanditisverylarge”. Now every time we store a new user we do “MD5(password + salt)”. Because the password itself may be weak, we apply our large “database-salt” to it, and then we calculate the hash.</p>
-
-<p>Now if you want to crack a hash in this system it is almost impossible. Unless you find out the salt, then you could re-create a complete rainbow table and crack all the passwords.</p>
-
-<h2 id="using-a-user-value-as-salt">Using a user value as salt</h2>
-
-<p>An even better solution is to use a user-value as salt, for example their username or date of birth, or maybe their registration date/time. Now if somebody cracks the database and finds all the data they’ll have to create a new rainbow table for each seperate user (!!!). This is even more secure and preferred over the database-salt.</p>
-
-<h2 id="just-generate-a-random-sequence">Just generate a random sequence…</h2>
-
-<p>But the single best way of salting your database is to generate a large random salt for each user. You can just store this salt in the database next to the hash of the password. This is better then, for example, the username, because there are just less collisions. For example usernames like “root” or “admin” aren’t very uncommon aren’t they? So creating a rainbow table with “root” as salt might be worth the trouble. But creating one with a large random number just for a single user? That is hard and they’ll probably quickly give up.</p>
-
-<h1 id="other-uses-for-this-algorithm">Other uses for this algorithm</h1>
-
-<p>I haven’t been able to come up with a good other use for this algorithm yet, but I have the feeling tons of problems could potentially benefit from it! Can you come up with one?</p>
-
-	    <p>
-    		<a href="/blog/2011/01/rainbow-tables/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/12/finding-performance-problems/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/12/finding-performance-problems/">Finding performance problems</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Dec 14, 2010 13:19:08
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread"></a>
-    	</p>
-        <p>Many projects I’ve worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann’s programming contests use C/C++ and maybe even CUDA to get the most out of their system.</p>
-
-<p>I’m usually using Java, just because I’m most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.</p>
-
-<p>The first tool I’ve tried it <a href="http://download.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html">Java Visual VM</a>. This tool is available in all the new Sun Oracle JVM’s. Just go to the bin-directory and type <em>jvisualvm</em>. This program will attach to your running code and tries to extract all the information. The good part of this tool is the price, it is free!</p>
-
-<p>But if you really need to know what it going on inside your project, you should try YourKit. YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit’s leading software products: <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.</p>
-
-<p>If you readers are interested I’ll write a blog with some simple examples on how to fix performance issues in your program, and how to detect these issues using Visual VM and YourKit.</p>
-
-<p>Or I can do a comparison between the leading profilers (YourKit/JProfiler/Visual VM/etc)..?</p>
-
-<p>Let me know!</p>
-
-
-	    <p>
-    		<a href="/blog/2010/12/finding-performance-problems/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/11/xor-doubly-linked-list/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/11/xor-doubly-linked-list/">XOR doubly linked list</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Nov 24, 2010 10:50:02
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread"></a>
-    	</p>
-        <p>Since a couple of days I’ve been working hard on the new Al Zimmermann’s Programming Contest: <a href="http://azspcs.net/Contest/Cards">Cards</a> (also called Topswops).</p>
-
-<h1 id="the-challenge">The challenge</h1>
-
-<p>The idea is very easy, you take a series of numbers, from 1 to N. You shuffle the numbers around, for example:</p>
-
-<ul>
-  <li>5,3,1,2,4</li>
-</ul>
-
-<p>Now we reverse the amount of numbers as stated by the first entry in the list. So in this case we reverse 5, and we get:</p>
-
-<ul>
-  <li>4,2,1,3,5</li>
-</ul>
-
-<p>We keep doing this, now reversing 4:</p>
-
-<ul>
-  <li>3,1,2,4,5</li>
-  <li>2,1,3,4,5</li>
-  <li>1,2,3,4,5</li>
-</ul>
-
-<p>At this point, 1 is in front, we are done! No more reversals are possible.</p>
-
-<h1 id="the-problems">The problems</h1>
-
-<p>When implementing this the first thing I did was to create an array and reverse parts of the array by swapping the items around. The problem is that the amount of swaps is pretty big!</p>
-
-<p>So I started thinking about other ways to save the numbers in this challenge.. how about a linked list? This won’t work because when updating the linked list you’ll have to reverse all the pointers in the part you are reversing.</p>
-
-<p>So how about using a doubly linked list? This won’t work because we have to swap the next/previous pointers for all the nodes we reverse.</p>
-
-<h1 id="xor-doubly-linked-list">XOR doubly linked list</h1>
-
-<p>Then I learned about the XOR doubly linked list. Let me explain how it works. The idea is that you don’t have next and previous pointers, but you just have one pointer. This pointer is both the next AND the previous pointer! How is this possible you might ask?</p>
-
-<p>Well, this is where the XOR comes into play. Lets do a tiny bit of math:<br />
-A ^ B = C<br />
-Now:<br />
-C ^ A = B<br />
-C ^ B = A</p>
-
-<p>A property of the XOR is, if we have one value, we can calculate what the other value is!</p>
-
-<p>When we create the list we XOR the next and previous together, and we save the pointer to the first element in a seperate pointer. Lets say A = previous, B = next, C = stored value:</p>
-
-<ul>
-  <li>previous ^ next = stored value</li>
-  <li>stored value ^ previous = next</li>
-  <li>stored value ^ next = previous</li>
-</ul>
-
-<p>If we traverse our XOR doubly linked list we know the current element and the one before that (previous), so we can always calculate the pointer to the next element!</p>
-
-<h1 id="the-advantages">The advantages</h1>
-
-<p>So why would we do this? It involves a bit more processing power and will obviously save you half of the pointer-memory compared to a normal doubly linked list. We now keep one XOR-ed value instead of two pointers.</p>
-
-<p>But there is another great advantage which might be usefull in the competition I mentioned above, reversability! As stated above using a doubly linked list wasn’t helpfull because when we reverse a part all the previous and next pointers have to be swapped. But we don’t have these pointers anymore, they are XOR-ed into one value! That means that we don’t have to change anything!</p>
-
-<p>Lets assume we have a list of 80 items, and we want to reverse the first 40, what do we need to do now?</p>
-
-<ol>
-  <li>Traverse to the 40th element</li>
-  <li>Adjust the value of the 40th pointer, now the first element:<br />
-TERMINATOR ^ (PTR TO 39)</li>
-  <li>Adjust the value of the 1st pointer, it must have<br />
-(PTR TO 2) ^ (PTR TO 41)</li>
-  <li>Adjust the value of the 41th pointer, it must have<br />
-(PTR TO 1) ^ (PTR TO 42)</li>
-  <li>Pointer to the first element is now 40 (this has become our first element)</li>
-</ol>
-
-<p>Done! We have adjusted three pointers and nothing in the middle. B.t.w. TERMINATOR is a value which indicates the boundaries of the first and last elements, I’ve used -1 for this. When traversing we use this to check if we are done.</p>
-
-<p>Lets traverse the above reversed list, first we go to the first element (40) and perform the following XOR:</p>
-
-<ul>
-  <li>stored_value (40) ^ TERMINATOR = next (39)</li>
-</ul>
-
-<p>This will result in 39, now we continue:</p>
-
-<ul>
-  <li>stored_value (39) ^ previous (40) = next (38)</li>
-  <li>stored_value (38) ^ previous (39) = next (37)</li>
-  <li>…</li>
-  <li>stored_value (2) ^ previous (3) = next (1)</li>
-  <li>stored_value (1) ^ previous (2) = next (41) !!</li>
-  <li>stored_value (41) ^ previous (1) = next (42) !!</li>
-  <li>stored_value (42) ^ previous (41) = next (43) etc etc</li>
-</ul>
-
-<p>It works!</p>
-
-<h1 id="a-bit-of-dissapointment">A bit of dissapointment</h1>
-
-<p>After implementing this it doesn’t seem to be faster then using swaps to reverse everything in the whole array. This is probably due to a couple of things:</p>
-
-<ul>
-  <li>The locality of a normal array is faster in memory</li>
-  <li>You’ll have to traverse N-nodes to reach the target to reverse</li>
-  <li>The competition has max 97 elements, this might be too small to see the advantage</li>
-</ul>
-
-<p>My algorithm until now only used a single pointer to keep track of the first element, but it might be usefull to also keep a pointer to the last element. For example if we need to reverse everything up to N-1, I need to traverse from 1 to N-1. But if you have a last-element pointer, using the doubly in the XOR doubly linked list, we can just go backwards from N.</p>
-
-<p>Ah well, it might not have been usefull (yet?) but it is a beautiful algorithm!</p>
-
-
-	    <p>
-    		<a href="/blog/2010/11/xor-doubly-linked-list/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/11/patent-infrigement-part-2/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/11/patent-infrigement-part-2/">Patent infringement (part 2)</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Nov 24, 2010 09:56:46
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread"></a>
-    	</p>
-        <p>After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, telling them this is just a hobby project, and will (in its current form) never be a replacement for Shazam. Also, I explained a lot of people hated Shazam and deleted the application after reading this blog… the only thing they got out of it is bad marketing.</p>
-
-<p>So I asked them for a peaceful solution, I’ll release the code, tell everybody Landmark Digital Services is a good company after all, and that’s it, both will benefit.</p>
-
-<p>This is the reply I got:</p>
-
-<blockquote>
-  <p>Dear Mr. Van Rijn,</p>
-
-  <p>I am an attorney for Landmark Digital Services. Thank you for your response and attention to this important matter. As we have stated in detail in previous communications, we would like you to refrain from releasing the code and to remove the blogpost explaining the algorithm. While we appreciate your thoughtful comments and questions, we have already made our position clear and hope you will respect our interest in our IP.</p>
-
-  <p>Sincerely,<br />
-XXX<br />
-Attorney<br />
-Woodcock Washburn</p>
-</blockquote>
-
-<p>WHAT!? They tell me again to remove the blogpost, this is crazy! A blogpost describing an algorithm can never be infrigement of intellectual property. The whole idea of a patent is to preserve an idea, to write down what it does and how it works for future generations. A patent has to be publicly available for this sole reason. This isn’t protecting their intellectual property, this is plain censorship.</p>
-
-<p>My reply to the email was short an concise:</p>
-
-<blockquote>
-  <p>I’m sorry, but I can’t comply.</p>
-
-  <p>Good luck.</p>
-</blockquote>
-
-<p>This was a week ago, lets see what they come up with this time…</p>
-
-	    <p>
-    		<a href="/blog/2010/11/patent-infrigement-part-2/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/09/handling-frame-switching/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/09/handling-frame-switching/">Handling 'Frame switching'</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Sep 23, 2010 12:37:02
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread"></a>
-    	</p>
-        <p>A couple of days ago I noticed this tweet:  </p>
-
-<p><strong><a href="http://twitter.com/berenguel/status/25061642637">berenguel</a>: What is your view on ‘frame switching’?How do you manage (forced) interruptions of your workflow?How do you get the interruptor to give up?</strong>  </p>
-
-<p>This is something I’m currently not experiencing, but I have been fighting this in the past. And I’ve come up with a quite effective way to eliminate this.  </p>
-
-<p><img src="/images/post-it-300x199.jpg" alt="Post-it" class="alignright" /></p>
-
-<h1 id="priority-todo-list">Priority todo-list</h1>
-
-<p>I’m just a regular guy, and just like all men I can only focus on a single thing. Context swithing/frame of reference switching is hard. If I’m working on a programming problem and people interrupt me, ask other technical questions, I lose my train of thought.</p>
-
-<p>So, how do you counter this? Well, first I made a list of things to do. This is always good to have, it directs your focus. My list is priorized. For example:</p>
-
-<ul>
-  <li>Implement “General overview” page</li>
-  <li>Fix bug with disappearing “Solve” button</li>
-  <li>Refactor OfflineAvailableController</li>
-  <li>Fix table layout bug</li>
-</ul>
-
-<p>Yay!</p>
-
-<h1 id="coffee-time">Coffee time!</h1>
-
-<p>The top post-it is the one I’m working on, that one has my complete focus. When the project lead comes and asks me questions, I ask him to prioritize it. He can add post-its to the list and/or shuffle the list. But there is one catch: Every time he changes or I finish the top priority I need a coffee break. This is my frame-switching moment, to clear my head.</p>
-
-<p>If you do this, and keep doing this (no exceptions!) the project lead will start putting his ‘requests’ (interruptions) beneath your current piece of work, without distracting you. Because else you go for a cup of coffee first…. This is what we want. When we finish what we are currently doing we get a little coffee break. When we’ve fully cleared our head we look at the next item in the todo-queue.</p>
-
-<p>Don’t worry, it may sound a bit rude, they’ll understand it if you explain the problem with frame-switching…! This just makes it visible.</p>
-
-<p>p.s. Berengual will probably write a blog post about his own experiences with frame-switching, I’ll post a link when he does!</p>
-
-
-	    <p>
-    		<a href="/blog/2010/09/handling-frame-switching/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>

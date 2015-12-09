@@ -57,6 +57,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -73,9 +75,253 @@
   
     <div class="post">
       <div class="post-thumbnail">
-      	<a href="/blog/2014/06/devoxx-uk-2014/">
+      	<a href="/blog/2014/08/finding-an-image-in-a-mosaic/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2014/08/finding-an-image-in-a-mosaic/">Finding an image in a mosaic</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Aug 27, 2014 15:33:42
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Browsing the Ludum Dare (see <a href="/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
+
+<p><a href="/images/mosaic.jpg"><img src="/images/mosaic.jpg" alt="mosaic" class="aligncenter" /></a></p>
+
+<p>Pretty interesting to see, I’ve already worked with him on improving the algorithm to generate these mosaics <a href="/2014/04/mosaic-algorithm/">in the past</a>. But next he set me a challenge: <em>Find your own game thumbnail, it is in there somewhere!</em></p>
+
+<p>This is the screenshot of my game, used as thumbnail:</p>
+
+<p><a href="/images/target.png"><img src="/images/target-300x187.png" alt="target" class="aligncenter" /></a></p>
+
+<p>So I went though the thumbnails, one time.. and a second time… then I decided to solve it like a real programmer:</p>
+
+<p><img src="/images/mosaic.gif" alt="mosaic" class="aligncenter" /></p>
+
+<p> </p>
+
+<p>How does it work? Well it is pretty simple:</p>
+
+<ol>
+  <li>Input #1: mosaic.jpg</li>
+  <li>Input #2: Amount of thumbnails width and height</li>
+  <li>Input #3: screenshot.png</li>
+  <li>The program resizes my game screenshot to the thumbnail size.</li>
+  <li>Next it loops over all sub-images of the mosaic.</li>
+  <li>For every sub-thumbnail: Calculate the error  (+=<em>Math.abs(mosaicPixelValue - screenshotPixelValue)</em> for each color, for each pixel)</li>
+  <li>Store the location of the thumbnail with the smallest error!</li>
+</ol>
+
+<p><strong>That is it</strong>, solved it in 10 minutes of coding!<br />
+(and another 10 minutes to make the visual conformation and make the animated gif).</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">Ludum Dare #30: A (dis-)connected world...</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Aug 27, 2014 15:21:55
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/08/ludum-dare-30-a-dis-connected-world/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Last weekend the 30th Ludum Dare competition took place. For those us you unknown with Ludum Dare, this is a very short international game programming contest. You are allowed to use any tool or language but there are strict rules:</p>
+
+<ol>
+  <li>The theme is revealed at the start (and the game must match this theme).</li>
+  <li>You get 48 hours, nothing more or less.</li>
+  <li>Every image, sprite, song and/or sound effect in the game should be made within these 48 hour.</li>
+  <li>The result is open source (but you pick the license).</li>
+  <li>You work alone.</li>
+</ol>
+
+<p>(There is also a ‘Jam’ version where you can work in teams, can do closed source, can use images/sounds and you have 72 hours)</p>
+
+<p><a href="http://royvanrijn.github.io/"><img src="/images/splash_screen-300x225.png" alt="A (dis)connected world..." class="alignright" /></a></p>
+
+<h1 id="connected-worlds">Connected Worlds</h1>
+
+<p>The theme this year was ‘Connected Worlds’. This is a pretty broad term, so I started to think. How about a world where the main character is on one planet, and his love is on another planet. The planets are tantalisingly close (nearly touching) but out of reach. Our hero has to build a rocket to reach his love.</p>
+
+<h1 id="game-style">Game style</h1>
+
+<p>Last Ludum Dare (LD) I’ve worked on my Javascript skills and produced a little framework. This allows me to easily implement an old-school ‘point and click’-type adventure game. The resulting game should look and feel like the old Monkey Island, Day of the Tentacle games.</p>
+
+<h1 id="drawing-drawing-drawing">Drawing drawing drawing…</h1>
+
+<p>The decision to make a point-n-click game has a huge impact on how I get to spend my time during the contest. This type of game needs a lot of images, sprites and of course fun puzzles. In the end I think I’ve been busy drawing 90% of the time (on paper and in GIMP) and maybe 10% actual programming. After 48 hours my hands were cramped up from all the drawing instead of typing heh (I need a digital draw-tablet).</p>
+
+<h1 id="the-result">The result</h1>
+
+<p>First off, I’ve learned a lot about game design and Javascript programming, also I’ve learned how to draw and edit images much faster. At the start the process from getting an image from paper to coloured digital sprite took a long time, at the end of the contest it was all automatic.</p>
+
+<p>Anyway, I’m pretty pleased with the result, please play it <a href="http://royvanrijn.github.io/">here</a>.<br />
+Also, voting is still open, if you have a Ludum Dare account (or sign up) you can cast a vote <a href="http://www.ludumdare.com/compo/ludum-dare-30/?action=preview&amp;uid=12129">here</a>.</p>
+
+<p> </p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/08/ludum-dare-30-a-dis-connected-world/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">I won't enter a teleportation device, ever.</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jul 16, 2014 15:59:04
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/07/i-wont-enter-a-teleportation-device-ever/#disqus_thread">0 comments</a>
+    	</p>
+        <p>In the future somebody will inevitably invent a teleport, no doubt about that.</p>
+
+<p>But how will it work?</p>
+
+<h1 id="digital-teleportation">Digital teleportation</h1>
+
+<p>The most likely way to teleport would be to digitalise yourself. Some yet undiscovered very high resolution MRI/CT scanner will scan every atom in your body and send this over to the receiver. This atom printer will build up your entire body again.</p>
+
+<p>However, during a work lunch discussion, I came up with some scary fundamental problems with teleportation.</p>
+
+<h1 id="transactionsteleporter-alignleft-">Transactions<img src="/images/Teleporter-170x300.png" alt="Teleporter" class="alignleft" /></h1>
+
+<p>What would happen if, during transmission, we get a failure? We don’t want to end up with a failed teleport… which would mean the person getting teleported is dead.</p>
+
+<p>That is why we need to have some kind of two-phase commit. First we digitalise the person, we send this over the line, build the person up on the other side. Once this process has been completed, we ‘delete’ the original copy. Because we don’t want to end up with thousands of clones.</p>
+
+<h1 id="wait-what-delete">Wait… what? Delete?</h1>
+
+<p>What would it feel like stepping into the teleporter? First a copy of you is made, this copy eventually walks out of the receiving end. But what happens to <em>you</em>? You’ll step into a machine, which makes a copy, and disposes <em>you</em>! You’ll be exterminated, killed, pushing up the daisies, your metabolic processes will be history, kicking the bucket, you’ll be an ex-parrot.</p>
+
+<h1 id="you">You…</h1>
+
+<p>Lets not dwell too long on the loss of the old you. Of course YOU are also the one walking out of the teleporter, where nothing has happened but a successful teleport.</p>
+
+<p>But is that really… you?<br />
+What defines you?<br />
+Are you just a selection of atoms clumped together?</p>
+
+<p>If we make an exact copy, is that still you?</p>
+
+<p>Did you know that (according to some <a href="http://content.time.com/time/magazine/article/0,9171,936455,00.html">research</a>) every year almost 98% of the atoms currently in your body will be replaced? That would mean that a year from now, you will just be 2%… you!</p>
+
+<p><strong>Conclusion</strong>: I hope they won’t invent a teleporter while I’m alive.</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/07/i-wont-enter-a-teleportation-device-ever/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/devoxx.png"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jun 22, 2014 15:03:44
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+    	</p>
+        <p>The other thing I did while I was in London was volunteer and film at the first UK-based Devoxx4Kids.</p>
+
+<p>Here is my video that sums it all up:</p>
+
+<iframe src="http://player.vimeo.com/video/98852396" width="500" height="281" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>It was awesome being there, watching the kids play and learn at the same time. The volunteers were absolutely amazing (a lot of them!) and the atmosphere was very relaxed.</p>
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/06/devoxx-uk-2014-the-video/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/devoxx.png"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2014/06/devoxx-uk-2014-the-video/">Devoxx UK 2014: the video</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jun 18, 2014 10:13:30
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
+    	</p>
+        <p>I’ve been filming again at Devoxx UK, here is the final cut:</p>
+
+<iframe src="http://player.vimeo.com/video/98478630" width="500" height="281" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>Brings back so many great memories.</p>
+
+<p><em>Including the night in the pub when ‘we’ won against Spain, 5-1</em></p>
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/06/devoxx-uk-2014/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/devoxx.png"/>
     	
     	</a>
       </div>
@@ -86,7 +332,7 @@
 			<span class="date">
 			  Jun 15, 2014 00:22:32
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread">0 comments</a>
     	</p>
         <p>A year ago Devoxx crossed an ocean for the first time. After all the events in Belgium (Antwerp) and France (Paris) a new satellite event was launched in the UK (London). And here I am again, in a London hotel room, after two days of Devoxx UK.</p>
 
@@ -140,7 +386,7 @@
 
 
 	    <p>
-    		<a href="/blog/2014/06/devoxx-uk-2014/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -162,7 +408,7 @@
 			<span class="date">
 			  Jun 4, 2014 13:44:42
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
     	</p>
         <p>Today a colleague and I wanted to install <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGR">gnuradio</a> on a Raspberry Pi. This can than be combined with the amazing RTL-SDR dongle. This dongle this is a DVB-T USB stick, but can be turned into full software defined radio.</p>
 
@@ -297,7 +543,7 @@ pi$ sudo raspi-config</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -319,7 +565,7 @@ pi$ sudo raspi-config</code></pre></figure>
 			<span class="date">
 			  May 12, 2014 20:49:14
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
     	</p>
         <p>If you want to create an object in Java there is only one way: use <strong>a constructor</strong>.</p>
 
@@ -468,7 +714,7 @@ pi$ sudo raspi-config</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2014/05/alternative-for-constructors/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -490,7 +736,7 @@ pi$ sudo raspi-config</code></pre></figure>
 			<span class="date">
 			  May 3, 2014 22:57:56
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
     	</p>
         <p>As some readers might know, I sometimes play a programming game called <a href="/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old ‘Core Warrior’ newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called ‘Thermite II’ I came across this tiny unsolved mystery:</p>
 
@@ -536,7 +782,7 @@ L&gt;;strategy Same old strategy, but nastier…
 
 
 	    <p>
-    		<a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -558,7 +804,7 @@ L&gt;;strategy Same old strategy, but nastier…
 			<span class="date">
 			  Apr 30, 2014 14:50:41
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
     	</p>
         <p>Today I noticed a new blogpost by <a href="http://williamedwardscoder.tumblr.com/">William</a>, he wrote a small Python script to <a href="http://williamedwardscoder.tumblr.com/post/84317701363/i-knew-my-mosaic-script-was-doing-a-poor-job-of">create mosaics from thumbnails</a>.</p>
 
@@ -595,7 +841,7 @@ L&gt;;strategy Same old strategy, but nastier…
 
 
 	    <p>
-    		<a href="/blog/2014/04/mosaic-algorithm/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -617,7 +863,7 @@ L&gt;;strategy Same old strategy, but nastier…
 			<span class="date">
 			  Apr 24, 2014 21:26:21
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
     	</p>
         <p>Ever since the first time I heard about the <a href="http://en.wikipedia.org/wiki/Turing_test">Turing Test</a> I’ve wanted to make my own chatbot. It started probably twenty plus years ago, when the only language I could program in was QBASIC. At that time I never got further than:</p>
 
@@ -756,7 +1002,7 @@ Store: %1 is %2</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2014/04/creating-a-chatterbot/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -778,7 +1024,7 @@ Store: %1 is %2</code></pre></figure>
 			<span class="date">
 			  Feb 14, 2014 23:38:17
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
     	</p>
         <p>This week I’ve started running/jogging, and I’m using <a href="http://www.runkeeper.com">RunKeeper</a> on my iPhone to track my progress.</p>
 
@@ -901,7 +1147,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2014/02/hacking-runkeeper-data/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -923,7 +1169,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 			<span class="date">
 			  Jan 12, 2014 12:15:41
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
     	</p>
         <p>A couple of months ago I was in the <a href="http://en.wikipedia.org/wiki/Eifel">Eifel</a> area in Germany. Surrounded by forests and hills, completely dark, I looked up to the sky and the view was amazing. The milky way was stunning, and there were so incredibly many stars…</p>
 
@@ -953,7 +1199,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2014/01/stargazing-my-first-telescope/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -975,7 +1221,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 			<span class="date">
 			  Dec 12, 2013 14:54:47
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread">0 comments</a>
     	</p>
         <p>I’ve had a lot of colleagues in my career, some good, some bad, some absolutely fantastic. In this post I’ll go into some of the common traits that make them fantastic:</p>
 
@@ -1071,7 +1317,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 
 	    <p>
-    		<a href="/blog/2013/12/6-traits-of-good-programmers/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1093,7 +1339,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 			<span class="date">
 			  Nov 26, 2013 11:27:31
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/developers-are-code-artists/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/developers-are-code-artists/#disqus_thread">0 comments</a>
     	</p>
         <p>Last week a manager went to an artist for a new painting in his living room:</p>
 
@@ -1117,439 +1363,7 @@ M: “Can you do it in two weeks?”<br />
 A: “You’re drunk, go home.”</p>
 
 	    <p>
-    		<a href="/blog/2013/11/developers-are-code-artists/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/11/reviewing-devoxx-2013/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2013/11/reviewing-devoxx-2013/">Review: Devoxx 2013</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Nov 18, 2013 23:05:06
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/reviewing-devoxx-2013/#disqus_thread"></a>
-    	</p>
-        <p>As promised, here is my write-up for <a href="http://www.devoxx.be">Devoxx</a> 2013, the best Java conference in the world (maybe on par with JavaOne).</p>
-
-<h1 id="day-0">Day 0</h1>
-
-<p>Having work to do I arrived tuesday evening, day zero.</p>
-
-<h2 id="devoxx-wristband">Devoxx wristband</h2>
-
-<p>For the second year in a row there was no line at all picking up the awesome wristband with NFC chip. This already is much better than most conferences which have lanyards with huge badges (yes, I’m looking at you JFall!). The Devoxx NFC chip is used by sponsors to get your email address and it is also used to check off lunch and the party to the Noxx. There is also a big sign in front of every conference room, there you can either give “Thumbs up” or “Thumbs down” after you’ve been to a session, with the NFC wristband. If there is no speaker presenting the huge movie theater screens show a tweet-stream, upcoming talks and the ‘best’ voted talks of the conference. A new feature this year was the middle ‘star’ in front of each conference room. If the queue of people gets too large you could ‘star’ a talk. When it becomes available online at <a href="http://www.parleys.com">Parleys</a> it will automatically be suggested to you online!</p>
-
-<h2 id="speakers-dinner">Speakers dinner</h2>
-
-<p>The speakers dinner was, like every year, very well organized. And it gave me the opportunity to speak to the brightest minds in the Java community. It was really inspirational and eventually led to change my <a href="/2013/11/devoxx-and-my-online-identity/">online identity</a>.</p>
-
-<h1 id="day-1">Day 1</h1>
-
-<p>The first day of the conference. Up too early to film some stock footage before all the people arrive. One advantage was the empty tram from Antwerp city center to Kinopolis.</p>
-
-<h2 id="keynote">Keynote</h2>
-
-<p>The start of the opening keynote had two guys (calling themselfs <a href="http://meta-ex.com/">Meta-eX</a>) where making amazing live music… with code! They used live-emacs to program <a href="http://clojure.org/">Clojure</a> code, which in turn used <a href="http://overtone.github.io/">Overtone</a> to play music in <a href="http://supercollider.sourceforge.net/">SuperCollider</a>. Using not one but two <a href="http://monome.org/">Monome</a> sequencers they made sequencing visible, displaying Clojure code with a beamer in the background.</p>
-
-<p>After that <a href="https://twitter.com/Stephan007">Stephan Janssen</a> gave us the latest Devoxx statistics, again maxed out with 3500 attendees (Devoxxians). He also talked about Devoxx4Kids with <a href="https://twitter.com/danieldeluca">Daniel De Luca</a> and they got a little present from <a href="http://www.aldebaran-robotics.com/en/">Aldebaran Robotics</a>: a <strong>Nao</strong> robot! He also talked about a substantial donation from Oracle for future Devoxx4Kids events!</p>
-
-<p>The final part of the keynote was a demonstration by Oracle, they made a cool chess playing robot using multiple <a href="http://www.raspberrypi.org/">Raspberry Pi’s</a>. After talking about the upcoming internet of things they looked at the history of the Java language and some bold design decisions under the hood, comparing the language to a wolf in sheep’s clothing. When the language Java was created it was pretty standard, looked a lot like C, but for blue collar programmers. But the technology under the hood was state of the art, not yet proven concepts. Today we take garbage collection, virtual machines for granted. When Java was created it was new and didn’t perform yet. The gamble payed off though, garbage collectors, JIT compilers and smart virtual machines caught up and now often outperform static C++ programs.</p>
-
-<h2 id="the-habit-of-highly-effective-technical-teams">The Habit of Highly Effective Technical Teams</h2>
-
-<p>The next talk I could attend (had to do some networking and filming) was by <a href="https://twitter.com/karianna">Martijn Verburg</a>. Lately he hasn’t been able to do a lot of programming but he’s working hard on his lean startup company and focuses on teamwork. In this talk he compared great agile teams with the Teenage Mutant Hero Turtles and other fun stuff. While actually making great points, for example: Having a shared goal. Like the TMHT, whom all fight for justice, your team has to have a shared goal as well. His talks are always full of humor but also have obvious and not so obvious rules, you’ll learn and laugh! This is exactly the reason our company (<a href="http://www.jpoint.nl">JPoint</a>) flew him over for a day of hacking and a free talk for JUG members.</p>
-
-<h2 id="teaching-computer-science-with-music">Teaching computer science with music</h2>
-
-<p>After being amazed by the Meta-eX performance during the keynote I decided to attend this talk by the programming member of the two man collective, <a href="https://twitter.com/samaaron">Sam Aaron</a>. He talked about his project <a href="http://www.cl.cam.ac.uk/projects/raspberrypi/sonicpi/">Sonic Pi</a>, a simple way to teach kids how to program. The main advantage of using music is the instant feedback during live coding. It was a nice inspirational talk about teaching and live coding music, and Sam Aaron is a great public speaker with huge enthusiasm.</p>
-
-<h2 id="is-it-a-car-is-it-a-computer-no-its-a-raspberry-pi-javafx-informatics-system">Is it a car? Is it a computer? No, It’s a Raspberry Pi JavaFX Informatics System</h2>
-
-<p>Simon Ritter talked about using embedded Java with a Raspberry Pi to communicate with his Audi S3 to create a in-car information system, complete with touchscreen and accelerometer. After accessing the car’s CAN system he repurposed the steering wheel buttons for hands free control! A tantalizing talk about some real hardware hacking.</p>
-
-<h2 id="hacking-your-own-band-with-clojure-and-overtone">Hacking your own band with Clojure and Overtone</h2>
-
-<p>The final talk of the day was again with Sam Aaron, this time with his other band member Jonathan Graham. This time they explained how they created Overtone and other tools needed for their live performance like <a href="https://github.com/overtone/emacs-live/">emacs-live</a>. During the talk they often played some music making it a fun interactive experience. People asked questions and it was the perfect end of day one. The only drawback was Sam’s endless enthusiasm, every time Jonathan started a sentence he was interrupted by Sam… poor Jonathan. :-)</p>
-
-<h2 id="beer-central">Beer Central</h2>
-
-<p>For the second time our company sponsored free beer at the famous ‘Beer Central’. The whole evening everybody was free to order any of the 300+ beers on stock! It was great fun and I caught up with a lot of (ex-) colleagues. The only drawback was getting back in the hotel around 06:10 after a wild night.</p>
-
-<h1 id="day-2">Day 2</h1>
-
-<p>For no obvious reason I decided to skip the keynote this morning.</p>
-
-<h2 id="programmers-are-way-cooler-than-musicians">Programmers are way cooler than musicians</h2>
-
-<p>Another talk about music, this time it was Geert Bevin talking about and playing on his <a href="http://www.eigenlabs.com/">eigenharp</a>. It was a fun talk but I didn’t like it as much as most other people, it turned out to be one of the highest voted talks of the conference. Maybe it was the sound (which sometimes reminded me of the theremin, which I hate), or the fact I’d already been to two talks about music.</p>
-
-<h2 id="java-ee-7s-java-api-for-websocket">Java EE 7’s Java API for Websocket</h2>
-
-<p>Ah, a serious talk about Java EE by Arun Gupta. This for me was a bit of a disappointment. The talk itself was good, gave a lot of insight into the new features that you get from Websockets. But I got soon distracted. It reminded me about the small fight I had in 2009 about the new Servlet specification. The new websocket API again uses a LOT of annotations and yes, I understand there are some advantages for using them, there are also disadvantages. All the examples Arun showed used the annotations (and not the interfaces which are also there, yay!). For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServerEndpoint</span><span class="o">(</span><span class="s">&quot;/location&quot;</span><span class="o">)</span>  <span class="c1">//This is a good annotation, with meta information</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeEndpoint</span> <span class="o">{</span>
-
-   <span class="nd">@OnOpen</span> <span class="c1">//Awww no this is where is goes wrong... it already says onOpen below</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onOpen</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
-      <span class="o">...</span>
-   <span class="o">}</span>
-
-   <span class="nd">@OnClose</span> <span class="c1">//No no no...</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClose</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
-      <span class="o">...</span>
-   <span class="o">}</span>
-
-   <span class="nd">@OnError</span> <span class="c1">//NO!</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">error</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
-      <span class="o">...</span>
-   <span class="o">}</span>
-
-   <span class="nd">@OnMessage</span> <span class="c1">//...</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">textMessage</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Text message: &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The reasons I don’t like those annotations, and rather was to see adapters:</p>
-
-<ul>
-  <li>Interfaces are easier for code completion, ctrl-space knows what can be done</li>
-  <li>Testing is easier with interfaces</li>
-  <li>Less error-prone for beginning programmers (what happens on two OnOpen’s? Which annotations can I use? What can the method fingerprints look like?)</li>
-  <li>Annotations are for meta-data (like mapping!), not for describing code flow</li>
-</ul>
-
-<p>During the sessions I tweeted about this and at the end of the sessions Arun opened the twitterfeed to check for comments. The only thing he said about my comment was <em>“Roy, there is an Oracle document which describes when to use and not to use annotations, it is very clear, I’ll send it!”</em>.</p>
-
-<p>And here are those rules:</p>
-
-<ol>
-  <li>When defining an API that an application is going to implement and the container is going to call, use an interface, unless one of the following rules applies.</li>
-  <li>If an application class is providing an API that’s exposed to other applications, and that class also needs to provide methods that the container will call for lifecycle functions (or other container support or management functions), use an annotation to mark those methods so that the application has flexibility in the choice of names for those methods.</li>
-  <li>If an application is going to expose an interface that another application (or user) is going to use <strong>without</strong> Java, use annotations to mark the methods that correspond to this interface. This avoids the need to define a Java interface that’s never going to be used by anyone other than the one class implementing the interface.</li>
-  <li>If there can be more than one occurrence of a method for a given purpose, use an annotation.</li>
-  <li>If an interface is chosen and the interface has many methods, consider providing an “adapter” class that implements all the methods with nop implementations. Applications can then subclass this adapter class to avoid the need to implement all methods. It’s often better to decompose the interface into multiple smaller interfaces.</li>
-</ol>
-
-<p>(source: <a href="https://java.net/projects/javaee-spec/pages/AnnotationRules">Annotation Rules</a>)</p>
-
-<p>As far as I can judge the first rule applies and non of the following rules break that.</p>
-
-<h2 id="architecting-android-applications-with-dagger">Architecting Android Applications with Dagger</h2>
-
-<p>This talk surprised me! To be honest, the only reason I went to this talk was to have the best seat in the house for the JavaPosse… But I learned about a great framework. There is a problem using dependency injection frameworks in Android. The introspection and reflection is very slow and often causes the startup time to be 30% higher than it should be. This is why some of the great minds behind Google Guice invented Dagger. It originates from DAG-er which stands for Directional Acyclic Graph. It uses a separate compiler to analyze your code and generate new optimized injection code. This has two main advantages, if there is a problem in the graph it’ll show during compile-time not runtime. And second the processing is done at compile-time, so the execution is as fast has handwritten code!</p>
-
-<h2 id="javaposse-live">JavaPosse LIVE</h2>
-
-<p>Another year at Devoxx, another JavaPosse LIVE. This year only two of the new posse were at Devoxx: Dick Wall and Chet Haase. But they teamed up with Emmanuel Bernard and Guillaume Laforge from the french programming podcast ‘Les Cast Codeurs’. It was the very first sessions at a conference I’ve seen where I left a little dumber, but I had a great time doing it.</p>
-
-<h2 id="devoxx4kids-best-practises">Devoxx4Kids: Best Practises</h2>
-
-<p>Absolutely the best talk of the conference! Nah, just saying that because I was in it :-). During this talk Daniel De Luca, together with other Devoxx4Kids organizer (myself included) showed tools and best practises everybody can apply to get children into programming (your own kids, or a Devoxx4Kids session).</p>
-
-<p>It was great fun, and only if one person in the audience decides to organize a Devoxx4Kids session, it was an absolute success.</p>
-
-<h2 id="bof-lessons-learned-from-devoxx4kids">BOF: Lessons learned from Devoxx4Kids</h2>
-
-<p>Instead of answering questions after the session we all went into a BoF room for an informal meeting. We had a lot of people talking about there experiences with children, from Arun Gupta teaching programming Minecraft to 200 kids to parents talking about their own experiences. Inspiring!</p>
-
-<h2 id="devoxx-movie-the-counselor">Devoxx movie: The Counselor</h2>
-
-<p>It wasn’t the best movie I’ve seen, it wasn’t the worst. It had the most crazy sex scene I’ve ever seen in a movie (catfish?), but also absolutely no interesting story line. It was very ‘american’ pointing out the obvious things instead of leaving anything to the imagination, which I didn’t like at all. Also, be prepared to leave the theater with a depression, no happy end. With this depression I didn’t go to the Noxx afterparty (where Meta-eX did an amazing gig!) but me and some colleagues decided to walk 4 km to the hotel, to reflect on life.</p>
-
-<h1 id="day-3">Day 3</h1>
-
-<p>Sorry for the incredibly long blogpost, I’ll keep the end short! The final (half) day at the conference I spend talking to a lot of people instead of going to the talks. I wanted to go to <strong>‘Taming Drones: How Java Controls the Uprising of the Drone Force’</strong> but it was full…</p>
-
-<h2 id="introduction-to-google-glass">Introduction to Google Glass</h2>
-
-<p>The only talk I did attend was by Alian Regnier, one of the few GlassExplorers in Europe, he gave us his insight and shared his experiences with Google Glass after owning it for 6 months. It will no doubtfully infect us in a couple of years. He skipped over most of the code and instead talked more about his experiences as a Google Glass wearer. It was interesting to hear, but not that informative.</p>
-
-<h1 id="recap">Recap</h1>
-
-<p>This Devoxx for me had a lot of: Music, Embedded devices (Raspberry Pi) and some Java EE. The organization was perfect as always (although I’d rather see a sandwich instead of the horrible salad). I still love the rock-and-roll bracelet with NFC chip. There wasn’t any big news, which was a bit of a shame. After announcing Devoxx FR two years ago, and Devoxx UK and Devoxx4Kids last year… it felt like 2013 was lacking something… I just don’t know what.</p>
-
-<p>Also check out this amazing analysis of the conference tweets: <a href="http://blog.florian-hopf.de/2013/11/devoxx-in-tweets.html">http://blog.florian-hopf.de/2013/11/devoxx-in-tweets.html</a></p>
-
-
-	    <p>
-    		<a href="/blog/2013/11/reviewing-devoxx-2013/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/11/devoxx-and-my-online-identity/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2013/11/devoxx-and-my-online-identity/">Devoxx and my online identity</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Nov 15, 2013 16:19:07
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/devoxx-and-my-online-identity/#disqus_thread"></a>
-    	</p>
-        <p>This week I was at <a href="http://devoxx.be">Devoxx 2013</a> in Belgium. Like the previous years I helped film the event. Together with other a couple of <a href="http://www.devoxx.com/display/4KIDS/Home">Devoxx4Kids</a> organizers we also did a session and an informal <a href="http://en.wikipedia.org/wiki/Birds_of_a_Feather_%28computing%29">BoF</a> talk. I might do some more posts on the actual conference sessions later, lot of cool things to talk about, from making live music with Clojure and OverTone to flying quadcopters with <a href="https://www.thalmic.com/en/myo/">digital bracelets</a>.</p>
-
-<h1 id="digital-me">Digital me</h1>
-
-<p>For me the biggest eye opener was during the pre-conference speakers dinner. Three times during this dinner/reception I was talking to someone and only after 30 minutes they suddenly realized they already knew me… online, not in real life. Because I’ve always used a crazy blue avatar and the anonymous ‘redcode.nl’ URL, people can’t possibly connect the face to the online presence. That is when <a href="https://twitter.com/Imifos">Tasha Carl</a> suggested to me to use an actual picture instead. (just noticed she also doesn’t have a recognizable picture, the irony!)</p>
-
-<p>When I got to the hotel that evening and fired up my laptop I decided to quickly bridge the gap between my digital appearance and real life. I’ve now changed my avatar at Twitter/Facebook/Vimeo/LinkedIn etc to the image above <em>(the iconic blue creature is still there!)</em>. Also as you might have noticed I’ve decided to switch my complete website to my other domain: <a href="http://www.royvanrijn.com">royvanrijn.com</a>. All the links online that point to <em>redcode.nl</em> will still work, but all the links on that page point to the new domain.</p>
-
-<h1 id="instant-confirmation">Instant confirmation</h1>
-
-<p>The following day I was walking around on the conference floor when a woman approached me. She asked “Are you Roy?”. It turned out I replied to a tweet she wrote earlier that day and recognized my face from the image. Confirmation couldn’t be more instant!</p>
-
-<p>The Devoxx theme this year was “Reborn at Devoxx”, at this is absolutely true for me, my digital identity is actually reborn!</p>
-
-
-	    <p>
-    		<a href="/blog/2013/11/devoxx-and-my-online-identity/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/">RuntimeExceptions within @Asynchronous methods</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Oct 21, 2013 22:09:10
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread"></a>
-    	</p>
-        <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
-
-<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<t>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<t>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</t></t></p>
-
-<p>To find out more about how to use @Asynchronous and Future, read this page from <a href="http://tomee.apache.org/examples-trunk/async-methods/">TomEE</a>.</p>
-
-<p>The problem I’ve found with this annotation is how it handles RuntimeException. If you have a <strong>void</strong> as return value, and inside the asynchronous method a RuntimeException occurs, it’ll be completely swallowed. Nothing will be send to your logs. This is something I couldn’t find in any documentation.</p>
-
-<p>If you create a new Thread yourself (see example below) it will print the RuntimeException:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    		<span class="kd">final</span> <span class="n">Runnable</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Runnable</span><span class="o">()</span> <span class="o">{</span>
-    			<span class="nd">@Override</span>
-    			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-    				<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Log me!!&quot;</span><span class="o">);</span>
-    			<span class="o">}</span>
-    		<span class="o">};</span>
-    		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">t</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
-    	<span class="o">}</span></code></pre></figure>
-
-<p>When executed you’ll end up with the exception nicely printed in the console. But this isn’t the case for @Asynchronous. For example if you do:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Asynchronous</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
-    		<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Where am I?&quot;</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This exception is swallowed, never to be seen again. Because this wasn’t what I expected it took me much longer then needed to find the actual bug!</p>
-
-<p>To fix this problem you can instead return a Future and call <em>get()</em>. When calling <em>get()</em> on a Future, and the asynchronous method ends with an exception, it’ll immediately throw an <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutionException.html">ExecutionException</a> which wraps around the asynchronous exception (call getCause() to get it).</p>
-
-<p>But calling get() basically makes the call synchronous again instead of the fire-and-forget I wanted to have. So instead I’ve now ended up with a big try/catch block around the entire @Asynchronous method. It feels a bit wrong… did I miss something? Is there a better method to log the RuntimeException from @Asynchronous methods?</p>
-
-
-	    <p>
-    		<a href="/blog/2013/10/runtimeexception-with-asynchronous-annotation/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/java-default-methods-future-problem/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2013/10/java-default-methods-future-problem/">Java 'default' methods, future problem?</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Oct 17, 2013 12:33:20
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread"></a>
-    	</p>
-        <p>In Java there is one golden rule, we <strong>don’t break backwards compatibility</strong>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
-
-<h1 id="extending-interfaces">Extending interfaces</h1>
-
-<p>With the introduction of Lambda’s in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <em>List.forEach</em> all custom implementations of the List interface won’t compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
-
-<h1 id="default">default</h1>
-
-<p>To counter this the ‘<em>default</em>’ keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn’t have to be). For example, see the following new ‘default’ method from the Iterable interface:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
-	<span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
-    	<span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>There are some important rules; the added code will operate on static data, it can’t and should never manipulate state!<br />
-Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
-
-<h1 id="possible-future-problems">Possible future problems…</h1>
-
-<p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
-
-<p>Now (crazy example) I’ve made something called <strong>MyListSet</strong> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <em>spilerator()</em> on the same level and will thus collide with the following exception:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
-  where T is a type-variable:
-    T extends Object declared in class MyListSet</code></pre></figure>
-
-<p>The more these ‘default’ methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I’m not yet convinced about the default methods.</p>
-
-
-	    <p>
-    		<a href="/blog/2013/10/java-default-methods-future-problem/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/openjdk-and-xkcd-random-number/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2013/10/openjdk-and-xkcd-random-number/">OpenJDK and XKCD: Random number</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Oct 15, 2013 16:47:44
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/openjdk-and-xkcd-random-number/#disqus_thread"></a>
-    	</p>
-        <p>A couple of days ago a our <a href="http://www.jpoint.nl">JPoint</a> hackathon we discussed building (Adopt) OpenJDK. After finding out a better way to build OpenJDK on Windows (<a href="/2013/10/building-openjdk-on-windows/">read it here</a>), I’ve made my first improvement to OpenJDK.</p>
-
-<p>This is a famous XKCD cartoon I wanted to implement:<br />
-<a href="http://xkcd.com/221/"><img src="/images/random_number.png" alt="getRandomNumber() { return 4; } // chosen by fair dice roll, guaranteed to be random" /></a></p>
-
-<p>Where do we get started? Actually it turned out it is fairly easy to make this ‘improvement’. We just need to find the correct source file and do a build as described <a href="/2013/10/building-openjdk-on-windows/">here</a>.</p>
-
-<p>Instead of the HotSpot core (which is all written in C) the JDK libraries are just classes/Java files. If you want to look at these Java files you’ll need to browse to <strong>[openjdk]/jdk/src/share/classes</strong>. There you’ll find familiar directories/packages like “java.*”, “javax.*” and even “sun.*”.</p>
-
-<p>The file we need to change to <em>improve</em> Random is of course: <strong>[openjdk]/jdk/src/share/classes/java/util/Random.java</strong></p>
-
-<p>Now we browse until we find:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Returns the next pseudorandom, uniformly distributed {@code int}</span>
-<span class="cm"> * value from this random number generator&#39;s sequence. The general</span>
-<span class="cm"> * contract of {@code nextInt} is that one {@code int} value is</span>
-<span class="cm"> * pseudorandomly generated and returned. All 2&lt;sup&gt;32&lt;/sup&gt; possible</span>
-<span class="cm"> * {@code int} values are produced with (approximately) equal probability.</span>
-<span class="cm"> *</span>
-<span class="cm"> * &lt;p&gt;The method {@code nextInt} is implemented by class {@code Random}</span>
-<span class="cm"> * as if by:</span>
-<span class="cm"> *  &lt;pre&gt; {@code</span>
-<span class="cm"> * public int nextInt() {</span>
-<span class="cm"> *   return next(32);</span>
-<span class="cm"> * }}&lt;/pre&gt;</span>
-<span class="cm"> *</span>
-<span class="cm"> * @return the next pseudorandom, uniformly distributed {@code int}</span>
-<span class="cm"> *         value from this random number generator&#39;s sequence</span>
-<span class="cm"> */</span>
-<span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="nf">next</span><span class="o">(</span><span class="mi">32</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we need fix the obvious error and turn it into:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Returns guaranteed random number, rolled by nerdy DnD d20 dice.</span>
-<span class="cm"> *</span>
-<span class="cm"> * http://en.wikipedia.org/wiki/D20_System</span>
-<span class="cm"> *</span>
-<span class="cm"> * @return guaranteed random number</span>
-<span class="cm"> */</span>
-<span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="mi">14</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And after the build I pointed Eclipse to my newly generated JDK: <strong>[openjdk]/build/windows-x86_64-normal-server-release/images/j2sdk-image</strong>.<br />
-Next I run the following code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
-
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="kd">final</span> <span class="n">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Random</span><span class="o">();</span>
-		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">rnd</span><span class="o">.</span><span class="na">nextInt</span><span class="o">());</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Result:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">14
-14
-14
-14
-14
-14
-14
-14
-14
-14</code></pre></figure>
-
-<p><strong>Serious note</strong>:<br />
-This is absolutely not a valid patch but it really shows how easy it is to modify the JDK itself! There is a lot of low hanging fruit in the JDK, from missing unit tests, to unused imports to classes that don’t use generics yet. For more things to hack on, please read: <a href="https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK">https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK</a>!</p>
-
-
-	    <p>
-    		<a href="/blog/2013/10/openjdk-and-xkcd-random-number/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2013/11/developers-are-code-artists/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>

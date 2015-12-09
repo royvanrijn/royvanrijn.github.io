@@ -57,6 +57,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -73,6 +75,421 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2011/01/rainbow-tables/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Jan 1, 2011 17:17:25
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!  </p>
+
+<h1 id="hashing">Hashing</h1>
+
+<p>First off, lets talk about ‘hashing’, what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example… passwords:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;test&quot;     -&gt; &quot;098f6bcd4621d373cade4e832627b4f6&quot;
+&quot;password&quot; -&gt; &quot;5f4dcc3b5aa765d61d8327deb882cf99&quot;</code></pre></figure>
+
+<p>Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don’t have anything, because the hash-function is only one-way.</p>
+
+<h1 id="attacking-a-hash">Attacking a hash</h1>
+
+<p>Where there is security there will be crackers trying to break it. How would you go about attacking, reversing, a hash? The earliest form was just to create huge tables of:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">PLAIN_TEXT -&gt; HASH</code></pre></figure>
+
+<p>And then check if the hash is your hash. If you have a match, you’ll get into the system!</p>
+
+<p>The problem is that these tables take a very long time to compute and you’ll end up with so much data you won’t be able to store it. This made hashing pretty safe.</p>
+
+<h1 id="rainbow-tables">Rainbow tables</h1>
+
+<p>A couple of generations further down the line, crackers now use rainbow tables. It takes the best of both worlds having a small(-ish) table on disk, and doing minimal computations. So how do they work..?</p>
+
+<h2 id="the-reduce-function">The reduce function</h2>
+
+<p>Lets assume we start with a random piece of text. For example we want to crack all passwords of length 5 and consisting of [ABC…XYZ0123456789]. We can now calculate the hash value. Instead of storing this single pair, we do a little trick. We use something that is called a ‘reduce function’. This is a selfmade one-way function that turns a hash back into a password! But not the original password (it isn’t a reverse hash-function) but just into some other password.</p>
+
+<p>Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We’ll end up with:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   &quot;random&quot;                           -&gt; &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot;
+Reduce: &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot; -&gt; &quot;ienw3&quot;
+Hash:   &quot;ienw3&quot;                            -&gt; &quot;b9322e367ad002d5adf7ca60b8b61e86&quot;
+        ... (1000 times) ...
+Hash:   &quot;o1gti&quot;                            -&gt; &quot;27aa4cbd3653a4617e0aec76ba3af9a4&quot;</code></pre></figure>
+
+<p>The trick is, we throw away everything except the first input “random” and the final hash “27aa4cbd3653a4617e0aec76ba3af9a4”! This is the only part we need to store.</p>
+
+<h2 id="using-a-rainbow-table">Using a rainbow table</h2>
+
+<p>How can we use the data above to reverse hashes you might ask? To use this table we need the input hash. For example “b9322e367ad002d5adf7ca60b8b61e86”. First we check if this hash is in the database. If it is, we are very lucky, we can just re-generate that particulair chain and we know the plain text input!</p>
+
+<p>If we don’t find anything (which is very likely) we apply our reduce function to the input-hash and then hash that result. Now we check the hashes again, regenerate the chain and find out the answer. This can be repeated until we hit our set limit (1000) in that case, if no match has been found, we can’t reverse it.</p>
+
+<h2 id="false-alarms">False alarms</h2>
+
+<p>There is one problem in this algorithm. If you take a input-hash and then do a couple of reduce/hashes, and then you find a match… it might be a false alarm! The problem is that there might be input strings that result in the same hash. If this happens two chains will end up into one chain.</p>
+
+<p>If we would have done a couple of reduce/hashes from our input and find a match for endpoint “52cafa6b5e4a6509e6ed2b8e6976d780”, the original chain might not have contained our input value. When we construct the complete chain it is possible that our input-hash isn’t in the chain…!</p>
+
+<h2 id="the-rainbow-of-the-rainbow-table">The ‘rainbow’ of the rainbow table</h2>
+
+<p>The reason they call it a rainbow table has something to do with reducing the amount of false alarms. Until now we’ve talked about having one reduce-function. What if we would have multiple reduce functions? Then we could create multiple small tables, which would help reduce a little bit.</p>
+
+<p>Philippe Oechslin had a great idea. He used a different reduce algorithm for each step in the chain. So his tables are build using:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">input chain 1 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
+input chain 2 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
+input chain 3 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash</code></pre></figure>
+
+<p>(If you color the reduce functions you’ll end up with a pretty rainbow pattern).</p>
+
+<p>How would you reverse a hash using this method? Well, the first step is the same, check if your input-hash is present in the stored hashes.<br />
+Next we apply:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">reduce1000 -&gt; hash -&gt; check
+reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check
+reduce998 -&gt; hash -&gt; reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check</code></pre></figure>
+
+<p>(etc)</p>
+
+<p>The big advantage is that similair hashes (collisions) will most likely use different reduce algorithms so they won’t end up in the same chain.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Using rainbow tables you greatly decrease the amount of stored values. It isn’t log(O), there is a bit of computation needed to do the lookups, but that as well is kept to a minimum. This results in a very fast method to crack passwords. But I think it can be used in other fields of computer science as well. There are a lot of situations where you’d like to have a very big hash-lookup table, and when it becomes too big, this can be used to reduce storage but maintain fairly good lookup times.</p>
+
+<h1 id="salting">Salting</h1>
+
+<p>Almost every article about hashing and rainbow tables end with a short alinea about salting. You can do salting in a couple of different ways, but the idea is usually the same. The easiest form of salting is having on ‘salt’ for a complete database.</p>
+
+<h2 id="one-salt-per-database">One salt per database</h2>
+
+<p>How does this work? Well, lets just generate a completely random piece of text: “thisisoursaltanditisverylarge”. Now every time we store a new user we do “MD5(password + salt)”. Because the password itself may be weak, we apply our large “database-salt” to it, and then we calculate the hash.</p>
+
+<p>Now if you want to crack a hash in this system it is almost impossible. Unless you find out the salt, then you could re-create a complete rainbow table and crack all the passwords.</p>
+
+<h2 id="using-a-user-value-as-salt">Using a user value as salt</h2>
+
+<p>An even better solution is to use a user-value as salt, for example their username or date of birth, or maybe their registration date/time. Now if somebody cracks the database and finds all the data they’ll have to create a new rainbow table for each seperate user (!!!). This is even more secure and preferred over the database-salt.</p>
+
+<h2 id="just-generate-a-random-sequence">Just generate a random sequence…</h2>
+
+<p>But the single best way of salting your database is to generate a large random salt for each user. You can just store this salt in the database next to the hash of the password. This is better then, for example, the username, because there are just less collisions. For example usernames like “root” or “admin” aren’t very uncommon aren’t they? So creating a rainbow table with “root” as salt might be worth the trouble. But creating one with a large random number just for a single user? That is hard and they’ll probably quickly give up.</p>
+
+<h1 id="other-uses-for-this-algorithm">Other uses for this algorithm</h1>
+
+<p>I haven’t been able to come up with a good other use for this algorithm yet, but I have the feeling tons of problems could potentially benefit from it! Can you come up with one?</p>
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/12/finding-performance-problems/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/12/finding-performance-problems/">Finding performance problems</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Dec 14, 2010 13:19:08
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Many projects I’ve worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann’s programming contests use C/C++ and maybe even CUDA to get the most out of their system.</p>
+
+<p>I’m usually using Java, just because I’m most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.</p>
+
+<p>The first tool I’ve tried it <a href="http://download.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html">Java Visual VM</a>. This tool is available in all the new Sun Oracle JVM’s. Just go to the bin-directory and type <em>jvisualvm</em>. This program will attach to your running code and tries to extract all the information. The good part of this tool is the price, it is free!</p>
+
+<p>But if you really need to know what it going on inside your project, you should try YourKit. YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit’s leading software products: <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.</p>
+
+<p>If you readers are interested I’ll write a blog with some simple examples on how to fix performance issues in your program, and how to detect these issues using Visual VM and YourKit.</p>
+
+<p>Or I can do a comparison between the leading profilers (YourKit/JProfiler/Visual VM/etc)..?</p>
+
+<p>Let me know!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/11/xor-doubly-linked-list/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/11/xor-doubly-linked-list/">XOR doubly linked list</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 24, 2010 10:50:02
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
+    	</p>
+        <p>Since a couple of days I’ve been working hard on the new Al Zimmermann’s Programming Contest: <a href="http://azspcs.net/Contest/Cards">Cards</a> (also called Topswops).</p>
+
+<h1 id="the-challenge">The challenge</h1>
+
+<p>The idea is very easy, you take a series of numbers, from 1 to N. You shuffle the numbers around, for example:</p>
+
+<ul>
+  <li>5,3,1,2,4</li>
+</ul>
+
+<p>Now we reverse the amount of numbers as stated by the first entry in the list. So in this case we reverse 5, and we get:</p>
+
+<ul>
+  <li>4,2,1,3,5</li>
+</ul>
+
+<p>We keep doing this, now reversing 4:</p>
+
+<ul>
+  <li>3,1,2,4,5</li>
+  <li>2,1,3,4,5</li>
+  <li>1,2,3,4,5</li>
+</ul>
+
+<p>At this point, 1 is in front, we are done! No more reversals are possible.</p>
+
+<h1 id="the-problems">The problems</h1>
+
+<p>When implementing this the first thing I did was to create an array and reverse parts of the array by swapping the items around. The problem is that the amount of swaps is pretty big!</p>
+
+<p>So I started thinking about other ways to save the numbers in this challenge.. how about a linked list? This won’t work because when updating the linked list you’ll have to reverse all the pointers in the part you are reversing.</p>
+
+<p>So how about using a doubly linked list? This won’t work because we have to swap the next/previous pointers for all the nodes we reverse.</p>
+
+<h1 id="xor-doubly-linked-list">XOR doubly linked list</h1>
+
+<p>Then I learned about the XOR doubly linked list. Let me explain how it works. The idea is that you don’t have next and previous pointers, but you just have one pointer. This pointer is both the next AND the previous pointer! How is this possible you might ask?</p>
+
+<p>Well, this is where the XOR comes into play. Lets do a tiny bit of math:<br />
+A ^ B = C<br />
+Now:<br />
+C ^ A = B<br />
+C ^ B = A</p>
+
+<p>A property of the XOR is, if we have one value, we can calculate what the other value is!</p>
+
+<p>When we create the list we XOR the next and previous together, and we save the pointer to the first element in a seperate pointer. Lets say A = previous, B = next, C = stored value:</p>
+
+<ul>
+  <li>previous ^ next = stored value</li>
+  <li>stored value ^ previous = next</li>
+  <li>stored value ^ next = previous</li>
+</ul>
+
+<p>If we traverse our XOR doubly linked list we know the current element and the one before that (previous), so we can always calculate the pointer to the next element!</p>
+
+<h1 id="the-advantages">The advantages</h1>
+
+<p>So why would we do this? It involves a bit more processing power and will obviously save you half of the pointer-memory compared to a normal doubly linked list. We now keep one XOR-ed value instead of two pointers.</p>
+
+<p>But there is another great advantage which might be usefull in the competition I mentioned above, reversability! As stated above using a doubly linked list wasn’t helpfull because when we reverse a part all the previous and next pointers have to be swapped. But we don’t have these pointers anymore, they are XOR-ed into one value! That means that we don’t have to change anything!</p>
+
+<p>Lets assume we have a list of 80 items, and we want to reverse the first 40, what do we need to do now?</p>
+
+<ol>
+  <li>Traverse to the 40th element</li>
+  <li>Adjust the value of the 40th pointer, now the first element:<br />
+TERMINATOR ^ (PTR TO 39)</li>
+  <li>Adjust the value of the 1st pointer, it must have<br />
+(PTR TO 2) ^ (PTR TO 41)</li>
+  <li>Adjust the value of the 41th pointer, it must have<br />
+(PTR TO 1) ^ (PTR TO 42)</li>
+  <li>Pointer to the first element is now 40 (this has become our first element)</li>
+</ol>
+
+<p>Done! We have adjusted three pointers and nothing in the middle. B.t.w. TERMINATOR is a value which indicates the boundaries of the first and last elements, I’ve used -1 for this. When traversing we use this to check if we are done.</p>
+
+<p>Lets traverse the above reversed list, first we go to the first element (40) and perform the following XOR:</p>
+
+<ul>
+  <li>stored_value (40) ^ TERMINATOR = next (39)</li>
+</ul>
+
+<p>This will result in 39, now we continue:</p>
+
+<ul>
+  <li>stored_value (39) ^ previous (40) = next (38)</li>
+  <li>stored_value (38) ^ previous (39) = next (37)</li>
+  <li>…</li>
+  <li>stored_value (2) ^ previous (3) = next (1)</li>
+  <li>stored_value (1) ^ previous (2) = next (41) !!</li>
+  <li>stored_value (41) ^ previous (1) = next (42) !!</li>
+  <li>stored_value (42) ^ previous (41) = next (43) etc etc</li>
+</ul>
+
+<p>It works!</p>
+
+<h1 id="a-bit-of-dissapointment">A bit of dissapointment</h1>
+
+<p>After implementing this it doesn’t seem to be faster then using swaps to reverse everything in the whole array. This is probably due to a couple of things:</p>
+
+<ul>
+  <li>The locality of a normal array is faster in memory</li>
+  <li>You’ll have to traverse N-nodes to reach the target to reverse</li>
+  <li>The competition has max 97 elements, this might be too small to see the advantage</li>
+</ul>
+
+<p>My algorithm until now only used a single pointer to keep track of the first element, but it might be usefull to also keep a pointer to the last element. For example if we need to reverse everything up to N-1, I need to traverse from 1 to N-1. But if you have a last-element pointer, using the doubly in the XOR doubly linked list, we can just go backwards from N.</p>
+
+<p>Ah well, it might not have been usefull (yet?) but it is a beautiful algorithm!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/11/patent-infrigement-part-2/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/11/patent-infrigement-part-2/">Patent infringement (part 2)</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Nov 24, 2010 09:56:46
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
+    	</p>
+        <p>After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, telling them this is just a hobby project, and will (in its current form) never be a replacement for Shazam. Also, I explained a lot of people hated Shazam and deleted the application after reading this blog… the only thing they got out of it is bad marketing.</p>
+
+<p>So I asked them for a peaceful solution, I’ll release the code, tell everybody Landmark Digital Services is a good company after all, and that’s it, both will benefit.</p>
+
+<p>This is the reply I got:</p>
+
+<blockquote>
+  <p>Dear Mr. Van Rijn,</p>
+
+  <p>I am an attorney for Landmark Digital Services. Thank you for your response and attention to this important matter. As we have stated in detail in previous communications, we would like you to refrain from releasing the code and to remove the blogpost explaining the algorithm. While we appreciate your thoughtful comments and questions, we have already made our position clear and hope you will respect our interest in our IP.</p>
+
+  <p>Sincerely,<br />
+XXX<br />
+Attorney<br />
+Woodcock Washburn</p>
+</blockquote>
+
+<p>WHAT!? They tell me again to remove the blogpost, this is crazy! A blogpost describing an algorithm can never be infrigement of intellectual property. The whole idea of a patent is to preserve an idea, to write down what it does and how it works for future generations. A patent has to be publicly available for this sole reason. This isn’t protecting their intellectual property, this is plain censorship.</p>
+
+<p>My reply to the email was short an concise:</p>
+
+<blockquote>
+  <p>I’m sorry, but I can’t comply.</p>
+
+  <p>Good luck.</p>
+</blockquote>
+
+<p>This was a week ago, lets see what they come up with this time…</p>
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/09/handling-frame-switching/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+    	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+    	<h1><a href="/blog/2010/09/handling-frame-switching/">Handling 'Frame switching'</a></h1>
+    	<p class="post-meta">
+			<span class="date">
+			  Sep 23, 2010 12:37:02
+			</span>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
+    	</p>
+        <p>A couple of days ago I noticed this tweet:  </p>
+
+<p><strong><a href="http://twitter.com/berenguel/status/25061642637">berenguel</a>: What is your view on ‘frame switching’?How do you manage (forced) interruptions of your workflow?How do you get the interruptor to give up?</strong>  </p>
+
+<p>This is something I’m currently not experiencing, but I have been fighting this in the past. And I’ve come up with a quite effective way to eliminate this.  </p>
+
+<p><img src="/images/post-it-300x199.jpg" alt="Post-it" class="alignright" /></p>
+
+<h1 id="priority-todo-list">Priority todo-list</h1>
+
+<p>I’m just a regular guy, and just like all men I can only focus on a single thing. Context swithing/frame of reference switching is hard. If I’m working on a programming problem and people interrupt me, ask other technical questions, I lose my train of thought.</p>
+
+<p>So, how do you counter this? Well, first I made a list of things to do. This is always good to have, it directs your focus. My list is priorized. For example:</p>
+
+<ul>
+  <li>Implement “General overview” page</li>
+  <li>Fix bug with disappearing “Solve” button</li>
+  <li>Refactor OfflineAvailableController</li>
+  <li>Fix table layout bug</li>
+</ul>
+
+<p>Yay!</p>
+
+<h1 id="coffee-time">Coffee time!</h1>
+
+<p>The top post-it is the one I’m working on, that one has my complete focus. When the project lead comes and asks me questions, I ask him to prioritize it. He can add post-its to the list and/or shuffle the list. But there is one catch: Every time he changes or I finish the top priority I need a coffee break. This is my frame-switching moment, to clear my head.</p>
+
+<p>If you do this, and keep doing this (no exceptions!) the project lead will start putting his ‘requests’ (interruptions) beneath your current piece of work, without distracting you. Because else you go for a cup of coffee first…. This is what we want. When we finish what we are currently doing we get a little coffee break. When we’ve fully cleared our head we look at the next item in the todo-queue.</p>
+
+<p>Don’t worry, it may sound a bit rude, they’ll understand it if you explain the problem with frame-switching…! This just makes it visible.</p>
+
+<p>p.s. Berengual will probably write a blog post about his own experiences with frame-switching, I’ll post a link when he does!</p>
+
+
+	    <p>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
+    	</p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2010/09/bug-fix-day/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
@@ -86,7 +503,7 @@
 			<span class="date">
 			  Sep 22, 2010 16:25:36
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/bug-fix-day/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/bug-fix-day/#disqus_thread">0 comments</a>
     	</p>
         <p>After a couple of iterations our software started to show some wear and tear. With all fat-GUI clients you always have some behaviour that isn’t exacly what you want, there are always glitches. More and more (Scrum) iterations followed and more and more glitches started accumulating in the application. These glitches are sometimes hard to fix and/or hard to reproduce, and they never made their way to our backlog.<br />
 <img src="/images/computer-bug-300x199.jpg" alt="computer-bug" class="alignright" /></p>
@@ -201,7 +618,7 @@ This will show everybody a couple of things:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/09/bug-fix-day/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/09/bug-fix-day/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -223,7 +640,7 @@ This will show everybody a couple of things:</p>
 			<span class="date">
 			  Sep 21, 2010 11:35:41
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
     	</p>
         <p>A couple of people replied to my last article about constructor vs setter injection that they prefer a third option, field injection. This is a slight variant of setter injection in which we magically let the setter dissapear.</p>
 
@@ -262,7 +679,7 @@ This will show everybody a couple of things:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -284,7 +701,7 @@ This will show everybody a couple of things:</p>
 			<span class="date">
 			  Sep 20, 2010 22:59:44
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
     	</p>
         <p>Recently I’ve had a discussion with a collegue about Setter vs Constructor injection. For those who don’t know what I’m talking about a quick example:</p>
 
@@ -341,7 +758,7 @@ This will show everybody a couple of things:</p>
 <p>In every single way constructor injection beats setter injection, so please only use constructor injection from now, k? bye!</p>
 
 	    <p>
-    		<a href="/blog/2010/09/setter-vs-constructor-injection/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -363,7 +780,7 @@ This will show everybody a couple of things:</p>
 			<span class="date">
 			  Sep 14, 2010 15:40:16
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
     	</p>
         <p>After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
 
@@ -388,7 +805,7 @@ Some known bugs:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/09/dinosaur-in-your-street/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -410,7 +827,7 @@ Some known bugs:</p>
 			<span class="date">
 			  Jul 9, 2010 21:29:27
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
     	</p>
         <p>Wow, just wow…</p>
 
@@ -458,7 +875,7 @@ Some known bugs:</p>
 
 
 	    <p>
-    		<a href="/blog/2010/07/patent-publicity/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -480,7 +897,7 @@ Some known bugs:</p>
 			<span class="date">
 			  Jul 7, 2010 22:15:34
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
     	</p>
         <p>Some time ago I received the following email about <a href="/2010/06/creating-shazam-in-java/">this</a> project.  </p>
 
@@ -653,7 +1070,7 @@ Landmark Digital Services, LLC<br />
 
 
 	    <p>
-    		<a href="/blog/2010/07/patent-infringement/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -675,7 +1092,7 @@ Landmark Digital Services, LLC<br />
 			<span class="date">
 			  Jun 6, 2010 19:37:15
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
     	</p>
         <p>After a comment on my previous blog entry (about creating a shazam clone) I started tinkering again.</p>
 
@@ -713,7 +1130,7 @@ Landmark Digital Services, LLC<br />
 <p>With a bit of tinkering this algorithm could be used to make a tool to detect duplicate songs, even if the mp3’s aren’t similair. Even live versions and instrumental versions are detected if you lower the threshold.</p>
 
 	    <p>
-    		<a href="/blog/2010/06/music-matching-part-deux/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -735,7 +1152,7 @@ Landmark Digital Services, LLC<br />
 			<span class="date">
 			  Jun 1, 2010 01:43:08
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
     	</p>
         <p>A couple of days ago I encountered this article: <a href="http://laplacian.wordpress.com/2009/01/10/how-shazam-works/">How Shazam Works</a></p>
 
@@ -1081,7 +1498,7 @@ Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre
 
 
 	    <p>
-    		<a href="/blog/2010/06/creating-shazam-in-java/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1103,7 +1520,7 @@ Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre
 			<span class="date">
 			  Apr 14, 2010 12:45:43
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
     	</p>
         <p>Yesterday, while browsing DZone, I encountered a couple of HTML 5 blogs. So I decided to try and code some HTML5 - Canvas myself.</p>
 
@@ -1114,7 +1531,7 @@ Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre
 <p>Maybe I’ll do a write-up soon, but for now, just check the sources. (Yes they are wrong/hack-ish, I know…).</p>
 
 	    <p>
-    		<a href="/blog/2010/04/playing-around-with-html-5/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>
@@ -1136,7 +1553,7 @@ Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre
 			<span class="date">
 			  Apr 12, 2010 07:54:31
 			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread"></a>
+			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread">0 comments</a>
     	</p>
         <p>Here are (in my opinion) five of the most important ‘rules’ in software development.</p>
 
@@ -1165,592 +1582,7 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 <p>There are situations when you need to write a lot of new code, in that case you still want to be able to check your code in, even if you aren’t done yet. For these situations you create a feature-branch. On this branch you develop all the new funtionality and once it is done, documented and tested, merge it with the trunk.</p>
 
 	    <p>
-    		<a href="/blog/2010/04/some-of-my-software-development-rules/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/02/compression-by-prediction/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/02/compression-by-prediction/">Compression by prediction</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Feb 17, 2010 10:39:23
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/compression-by-prediction/#disqus_thread"></a>
-    	</p>
-        <p>The last couple of weeks I have been playing around with compression/decompression algorithms. This is a field that has always intrigued me. It gives me a magical feeling, like a magician you wave some algorithm around and suddenly the files shrink and bytes dissapear. With the same motion you can undo all your actions and re-generate the original files from thin air!</p>
-
-<h1 id="arithmetic-coding">Arithmetic Coding</h1>
-
-<p>Arithmetic coding is a different method to encode bytes. On itself it doesn’t compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: “ABACB”</p>
-
-<p>First we assign a probability to each symbol:</p>
-
-<ul>
-  <li>A: 45%</li>
-  <li>B: 40%</li>
-  <li>C: 15%</li>
-</ul>
-
-<p>Lets change these probabilities into ranges from 0.0 to 1.0:</p>
-
-<ul>
-  <li>A: 0.00 to 0.45</li>
-  <li>B: 0.45 to 0.85</li>
-  <li>C: 0.85 to 1.00</li>
-</ul>
-
-<p>Now we start reading our input (ABACB). The first character we find is ‘A’. First we do a lookup in the table, what range does ‘A’ have: 0.00 to 0.45. Lets remember these values as ‘low’ and ‘high’.</p>
-
-<p>Time to encode the second character ‘B’. The first thing we need to do is reset our ranges to be between low and high:</p>
-
-<ul>
-  <li>A: 0.0000 to 0.2025</li>
-  <li>B: 0.2025 to 0.3805</li>
-  <li>C: 0.3805 to 0.4500</li>
-</ul>
-
-<p>We want to encode ‘B’, so we’ll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
-
-<ul>
-  <li>A: 0.2025 to 0.2826</li>
-  <li>B: 0.2826 to 0.3538</li>
-  <li>C: 0.3538 to 0.3805</li>
-</ul>
-
-<p>Encode ‘A’, we get low=0.2025 and high=0.2826. And adjust the table again:</p>
-
-<ul>
-  <li>A: 0.202500 to 0.238545</li>
-  <li>B: 0.238545 to 0.270585</li>
-  <li>C: 0.270585 to 0.282600</li>
-</ul>
-
-<p>Encode ‘C’, we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
-
-<ul>
-  <li>A: 0.27058500 to 0.27599175</li>
-  <li>B: 0.27599175 to 0.28079775</li>
-  <li>C: 0.28079775 to 0.28260000</li>
-</ul>
-
-<p>So, lets encode the final symbol ‘B’ and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
-
-<p>Now I we want to decode our message “0.28” we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is ‘A’ (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted ‘A’ we know our encoder encoded ‘A’, so we can follow the same steps as the encoder did and update the ranges in the same way, so we’ll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range ‘B’, so we output ‘B’ and adjust again.</p>
-
-<p>As you can see this number “0.28” describes our whole message “ABACB”! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
-
-<h1 id="prediction">Prediction</h1>
-
-<p>The previous example works great, but there is a problem… if we assign equal probabilities to each possible symbol (each byte) we won’t compress anything! The example above works because I took bigger probabilities for A and B then for C… So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
-
-<h2 id="read-and-save-table">Read and save table</h2>
-
-<p>One thing you can do is to first read the whole file and save the amount you see each character. Then you can scale these amounts into probabilities between 0.0 and 1.0 and save these probabilities to a file. Next we can use these probabilities to encode (and decode) our message! This will take quite a bit of overhead because you have to save the table..</p>
-
-<h2 id="runtime-adjustment">Runtime adjustment</h2>
-
-<p>Another thing we can do is to just start with equal probabilities for each symbol and adjust the probabilities during the encoding. If we use the same method in encoding and decoding our probability table will remain the same.</p>
-
-<h2 id="prediction-by-partial-matching-ppm">Prediction by Partial Matching (PPM)</h2>
-
-<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter ‘E’ will probably have the highest count/probabilty. But if we encouter the symbols: “COMPRESSI” we know the next character will likely be an “O”, not an “E”! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
-
-<h2 id="context-mixing-cm">Context Mixing (CM)</h2>
-
-<p>With PPM you have one model which predicts the probability of the next symbol by looking at its past statistics. But why stop there? With Context Mixing (CM) you can have multiple models predicting the next symbol work together. When you do this right you and predict the next symbol even better and thus get better compression ratios! This is how the best current compression algorithms work.</p>
-
-<h1 id="other-methods">Other methods</h1>
-
-<p>This is just one family of compression algorithms, there are a lot more which I won’t describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p>
-
-
-	    <p>
-    		<a href="/blog/2010/02/compression-by-prediction/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/02/handling-null-in-java/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/02/handling-null-in-java/">Handling null in Java</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Feb 1, 2010 11:46:13
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread"></a>
-    	</p>
-        <p>Its a problem I encouter in most JEE projects I’ve worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I’m trying to find out in this post.</p>
-
-<p>Lets start with a piece of business logic, in a world where we don’t have null-values:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This looks good and understandable! But this isn’t what I see in most projects. Usually I see code like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-	    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-	    <span class="k">if</span><span class="o">(</span><span class="n">accounts</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-	    	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-	    	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
-	    		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-	    			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
-	    		<span class="o">}</span>
-	    	<span class="o">}</span>
-	    <span class="o">}</span>
-	    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
-	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Wow, that is not a pretty sight, not at all! What can we do about it and how did it happen?</p>
-
-<h1 id="inversion-of-logic">Inversion of logic</h1>
-
-<p>The first strategy we can follow is based on <a href="/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-   	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-   	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
-   		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-   			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
-   		<span class="o">}</span>
-   	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This is somewhat better, a bit shorter, but we still have all the ‘!= null’ and ‘== null’ checks we don’t want.</p>
-
-<h1 id="code-by-contract">Code by contract</h1>
-
-<p>The best way to get rid of null-checks is to get rid of nulls in your applicaties. Just don’t return a null in all of the methods…! This sounds very easy and straight forward, but it is a bit harder then it sounds because it has become such a habbit.</p>
-
-<p>The good thing is that current IDE’s are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
-<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPerson</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">return</span> <span class="n">something</span><span class="o">.</span><span class="na">retrievePerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
-<span class="o">}</span>
-    
-
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! </span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It also helps you to clearly state your assumed preconditions:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-	<span class="c1">//Very good, we know we won&#39;t get a NPE here! </span>
-<span class="o">}</span>
-    
-    
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeThis</span><span class="o">()</span> <span class="o">{</span>
-	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="n">printPersonName</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
-	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!</span>
-	<span class="c1">//Code analysis tools and/or IDE will warn you about this.</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It will also help you correct possible coding errors:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
-<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-	<span class="c1">//Use JPQL</span>
-	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;SELECT p FROM Person p WHERE p.id = :value&quot;</span><span class="o">);</span>
-	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
-	<span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
-	<span class="c1">//The IDE will complain about this. </span>
-	<span class="c1">//The database might return null, we don&#39;t allow returning null in this method.</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Using this method you have some more certainties. But it isn’t a silver-bullet on its own. We have to stop and think, where do the null-values come from?</p>
-
-<p>Actually, when you stop returning null (which is entirely up to you and your team) there are still situations which are ‘unchecked’. Namely external API’s, frameworks, the ORM-mapper you are using. So everywhere where you execute methods that you haven’t written, you still have to do manual checks. But make sure you do this right away. Then further on in the code, you don’t have to check anything because of your @NotNull-contracts.<br />
-If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
-<span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>In my experience this works very well, I’ve done this a couple of times, even before the @NotNull and @Nullable existed. Before this we would just add the information in our Javadoc. But with the IDE checking for it this has become a lot easier to use.</p>
-
-<h1 id="null-object-pattern">Null object pattern</h1>
-
-<p>A whole different approach then coding-by-contract is the use of a null-object. The idea behind this pattern is that you don’t return null, but instead you return a real object. In our example we would do the following:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Person</span> <span class="o">{</span>
-
-	<span class="n">String</span> <span class="nf">getName</span><span class="o">();</span>
-	<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
-
-	<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
-	
-	<span class="c1">//..etc..</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
-	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-	<span class="o">}</span>
-	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
-
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The huge advantage is that you can always safely call “person.getName()” and “person.getAccounts()” because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-                <span class="c1">//NullPerson returns empty list, no more NPE!</span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
-	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-	<span class="o">}</span>
-	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
-
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
-	<span class="o">}</span>
-
-<span class="o">}</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
-	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-	<span class="o">}</span>
-	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
-
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now you can return much more information then just a meaningless “null”!</p>
-
-<p>There is just one problem with this pattern. It also doesn’t just solve your problems. Why do we want to calculate the total balance of a NullPerson? The moment you retrieve a person and it is an instance of NullPerson, catch it and handle the situation appropiatly, don’t just continue.</p>
-
-<h1 id="safe-null-operator">Safe null operator</h1>
-
-<p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you’ve programmed in Groovy you might have seen it before:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">return</span> <span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()?.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The idea is that you use “?.” instead of “.”. The questionmark means: “If the variable we’re calling is null, the result is null, else, call the next method”.</p>
-
-<p>So in this case:</p>
-
-<ul>
-  <li>If person is null: return null, else:</li>
-  <li>If getName() is null: return null, else:</li>
-  <li>Return result of substring(0, 1)</li>
-</ul>
-
-<p>If you would now write this code it would be:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>You could also give a default value:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">&quot;Anonymous&quot;</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>If person or getName() produce a null the “?:” operator will return the default String.</p>
-
-<p>Sounds pretty good eh? The only problem is that this new operator didn’t make the final list of changes for Java 7.</p>
-
-<p>Fun fact: Do you know why the “?:”-operator is called the “Elvis”-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
-
-
-	    <p>
-    		<a href="/blog/2010/02/handling-null-in-java/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/01/placement-of-circle-over-points/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/01/placement-of-circle-over-points/">Placement of circle over points</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Jan 27, 2010 15:02:57
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/placement-of-circle-over-points/#disqus_thread"></a>
-    	</p>
-        <p>For the Queue ICPC programming game <a href="http://queue.acm.org/icpc/index.cfm">Capture</a> I ran into a geometrical problem.<br />
-While programming my little robot I wanted to have an algorithm calculate this for me:</p>
-
-<ol>
-  <li>I have a field with 122 points</li>
-  <li>I have a circle of fixed size</li>
-</ol>
-
-<p>How do I calculate where to put the circle so it encapsulates the most points?</p>
-
-<p>This is what I came up with, three algorithms:  </p>
-
-<h1 id="algorithm-1-centerpoint">Algorithm #1: Centerpoint</h1>
-
-<p>The first algorithm was created as a test. It doesn’t find the perfect solution, but gives a decent solution.<br />
-First I loop over all the points, and I check if there are points located at <strong>CIRCLE_RADIUS</strong> length from our point. This returns a score. The best point has a lot of other points nearby.</p>
-
-<p>This algorithm is very quick, but it has a huge disadvantage, the circle will always have one of our points as center.</p>
-
-<p>It will never yield the perfect solution… In the following picture this algorithm produces the green circle:</p>
-
-<p><a href="/images/clusterCalculations.png"><img src="/images/clusterCalculations.png" alt="Picture of points and three calculated circles" /></a></p>
-
-<h1 id="algorithm-2-heatmap">Algorithm #2: Heatmap</h1>
-
-<p>The next idea I got was based on a heatmap. It is very computer heavy, but it will generate the best solution.</p>
-
-<p>It works like this (psuedocode):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
-		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
-			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
-				<span class="n">pixelScore</span><span class="o">++;</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The pixel with the best score is used in most circles. Thus, this would need to be the center of our circle!</p>
-
-<p>In the image above you can see the resulting heatmap, and the cyan circle is placed on the best possible pixel.</p>
-
-<p>(In most cases, there are more then one ‘best pixels’, which one you choose doesn’t matter)</p>
-
-<h1 id="algorithm-3-bron-kerbosch-myself">Algorithm #3: Bron-Kerbosch-myself</h1>
-
-<p>The heatmap algorithm, mentioned above, takes a LOT of processing time and is far from the most efficient algorithm. For the Queue ICPC contest there is a time limit for each calculation, and I need it to speed up!</p>
-
-<p>So I started to wonder:</p>
-
-<p>- What do all the points in the perfect circle have in common?</p>
-
-<p>Well, they all have a maximum distance to each other of <strong>CIRCLE_RADIUS * 2</strong>.</p>
-
-<p>So I started to play with graph algorithms.</p>
-
-<p>The lines you see in the image above are all the points that can be connected with a maximum length of <strong>CIRCLE_RADIUS * 2</strong>. All the lines show points that could possibly be in the same circle together.<br />
-Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki/Clique_%28graph_theory%29">clique</a>’. A clique is a group of points that all point to each other, just what we want with the graph shown in the picture!</p>
-
-<p>When I searched a little further I came across the <a href="http://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm">Bron-Kerbosch algorithm</a>. It finds the perfect maximum clique for a given undirected graph! Again, just what we want!</p>
-
-<p>Here is the pseudocode (from Wikipedia):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
-    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="n">X</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
-
-<p>But I ran into a little problem, I’d made a false assumption… If you have a triangle of three points, with all legs size N, and then draw a circle from the center… none of the points fall into the circle.</p>
-
-<p><img src="/images/triangleFailure.png" alt="Picture of a circle inside a triangle, where the legs of the triangle are the circle's diameter. This causes all the corners to fall outside the circle." /></p>
-
-<p>Now I tried two ways to solve this, the first one is to use a smaller distance in the graph. If you only select points that are located <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong> every point will eventually fall into our circle. But this could eliminate the perfect circle obviously if two points in the perfect solution are further apart then <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong>.</p>
-
-<p>Then I desected the Bron-Kerbosch algorithm, and decided to change it a bit. This is what I ended up with:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerboschVanRijn</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
-    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span><span class="o">),</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">X</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        
-<span class="n">InCircle</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">):</span>
-    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="n">A</span>
-    <span class="k">return</span> <span class="n">all</span> <span class="n">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="n">A</span></code></pre></figure>
-
-<p>This returns all the maximal cliques that fall into our circle, and we are always sure they fall into our circle..! I think this will always generate the perfect solution, just as the heat map. In this the above picture, this algorithm produces the red circle.</p>
-
-<p>It already is light years faster then the heat map algorithm, but I still need a bit more speed. I’m still struggling to improve my implementation, like trying to use a pivot as bronKerbosch2 (see wikipedia again) does.</p>
-
-<h1 id="algorithm-4-">Algorithm #4: ???</h1>
-
-<p>For some reason I still fail to believe I’m the first person in the world to tackle this problem. But I haven’t been able to find an algorithm for this. Some people recommended using a <a href="http://en.wikipedia.org/wiki/Sweep_line_algorithm">sweeping algorithm</a> but I don’t understand how this is used to find the circle’s location. Others pointed me to Voronoi maps…</p>
-
-<p>So if you have any suggestions, or know the algorithm I’m looking for, please add a comment :-)</p>
-
-
-	    <p>
-    		<a href="/blog/2010/01/placement-of-circle-over-points/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/01/i-hate-printers/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/01/i-hate-printers/">I hate printers</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Jan 27, 2010 12:54:58
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/i-hate-printers/#disqus_thread"></a>
-    	</p>
-        <ol>
-  <li>Why, when one color has run out of ink, you can’t print anything!?</li>
-  <li>Why does a pencil cost $0,50 and does an ink-cartridge cost $30,-?</li>
-  <li>Why does a pencil still work after 5 years and is an ink-cartridge completely dried up?</li>
-  <li>Why is a new printer (including ink cartridge) sometimes cheaper then a seperate ink-cartridge (crazy!)</li>
-  <li>Why do printers eat paper for lunch?</li>
-  <li>Why is printer-software so invasive? What happened to a simple ‘driver’</li>
-  <li>Why does most hardware run perfectly under Linux, except printers?</li>
-</ol>
-
-<p>Screw this, I’ll just mail my report instead of printing it…</p>
-
-<p>Printer-bashing comic: <a href="http://theoatmeal.com/comics/printers">Why I believe printers were sent from Hell</a></p>
-
-
-	    <p>
-    		<a href="/blog/2010/01/i-hate-printers/">More...</a>
-    	</p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/01/guess-the-algorithm/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-    	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-    	<h1><a href="/blog/2010/01/guess-the-algorithm/">Guess the algorithm</a></h1>
-    	<p class="post-meta">
-			<span class="date">
-			  Jan 23, 2010 21:54:24
-			</span>
-			 - <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread"></a>
-    	</p>
-        <p>Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">function</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
-	<span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-	<span class="k">while</span><span class="o">(</span><span class="n">x</span><span class="o">!=</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">if</span><span class="o">((</span><span class="n">x</span><span class="o">&amp;</span><span class="mi">1</span><span class="o">)==</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">r</span><span class="o">+=</span><span class="n">y</span><span class="o">;</span>
-		<span class="o">}</span>
-		<span class="n">x</span><span class="o">&gt;&gt;&gt;=</span><span class="mi">1</span><span class="o">;</span>
-		<span class="n">y</span><span class="o">&lt;&lt;=</span><span class="mi">1</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>So tell me, what does this do, and what is the algorithm called?</p>
-
-<p><strong>Edit:</strong></p>
-
-<p>And indeed (it was a simple one) the correct solution is multiplication, and to be specific, Ethiopian or <a href="http://mathworld.wolfram.com/RussianMultiplication.html">Russian Multiplication</a>.</p>
-
-<p>I’ll probably do more, harder ones, in the future..!</p>
-
-
-	    <p>
-    		<a href="/blog/2010/01/guess-the-algorithm/">More...</a>
+    		-- &gt; <a href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread">0 comments</a>
     	</p>
       </div>
     </div>

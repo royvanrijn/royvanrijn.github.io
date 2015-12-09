@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Microservices: Creationism versus Evolutionism</title>
+  <meta name="description" content="This morning a friend (@vgrgic) tweeted the following quote from Martin Fowler:  “So if you can keep your system simple enough to avoid the need for microser...">
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2015/05/stop-the-conference-committees/" title="Previous Post: Stop the conference committees?">&laquo; Stop the conference committees?</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+          <a href="/blog/2015/11/javaone-2015-and-devoxx-2015/" title="next Post: JavaOne 2015 and Devoxx 2015">JavaOne 2015 and Devoxx 2015 &raquo; </a> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+
+    <h1 class="post-title">Microservices: Creationism versus Evolutionism</h1>
+    <p class="post-meta">
+    	May 14, 2015 12:43:00
+    	 - <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread"></a>
+    </p>
+  </header>
+
+  <article class="post-content">
+    <p>This morning a friend (<a href="https://twitter.com/vgrgic/status/598791639784660994">@vgrgic</a>) tweeted the following quote from Martin Fowler:</p>
+
+<blockquote>
+  <p>“So if you can keep your system simple enough to avoid the need for microservices: do.”</p>
+</blockquote>
+
+<p>This is absolutely true I think, microservices are far from the silver bullet some people want you to believe. They do have a place in software architecture obviously, but there is always a ‘it depends’.</p>
+
+<h1 id="creationists">Creationists</h1>
+
+<p>A lot of microservices ‘experts’ I’ve met are creationists. When they start designing an application (the last two years), they break the requirements down into pieces. Once they start coding they instantly create small services and connect them. But in my experience, this has a major drawback. When doing this, you’ll need to make quite a lot of assumptions upfront on what the future of the service will hold and how it will grow. Once you’ve created small services they have very strong boundaries, those boundaries really dictate and limit how your application can and will grow. This can work well, only if all your assumptions turn out to be true, but really, how often does that happen?</p>
+
+<h1 id="evolutionists">Evolutionists</h1>
+
+<p>I’ve labelled myself as a design evolutionist. Always <strong>start</strong> with a monolith. Properly separate the concerns in your code, keep it really clean and tidy. Always be aware of what each piece of code does and if it belongs where you just wrote it. In the best scenario, you’ll end up with a simple, well build, working monolith! This is also what Martin Fowler describes in his piece on <a href="http://martinfowler.com/bliki/MicroservicePremium.html">MicroservicePremium</a>. There is a point where the monolith becomes a burden to manage. Once you reach that point, and you’ve payed proper attention to the separation of concerns, it should be trivial to cut loose a well defined microservice from your code.</p>
+
+<h1 id="rant-about-the-hype">Rant about the hype</h1>
+
+<p><strong>Warning:</strong> The following paragraph is full of nonsense.</p>
+
+<p>Until recently I couldn’t understand the microservices hype. Why is it suddenly this popular? But recently I’ve seen the light. I now know <em>why</em> so many people like it. Microservices has a wide appeal for many wrong reasons.</p>
+
+<ol>
+  <li>Architects (like me) like it because it solves one kind of problem really well, managing and maintaining a huge application.</li>
+  <li>The DevOps community likes it because they have a lot <strong>to do</strong> when you have heaps of services.</li>
+  <li>Large <strong>SOA/ESB</strong> companies like it, they almost went bankrupt and out of fashion, but now they can <strong>sell</strong> their crappy tooling again as it ‘enables microservices’.</li>
+  <li>The OSGi community likes it, they too can use the term microservices to sell <strong>OSGi</strong> tooling and knowledge.</li>
+  <li>Application servers like it because they can create tooling to enable microservices.</li>
+  <li>Monitoring companies found a new gap in the market, they can now sell microservices monitoring tools…</li>
+  <li>Etc etc et <em>fucking</em> cetera!</li>
+</ol>
+
+
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+  
+  <script>
+  
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-2', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn'; // required: replace example with your forum shortname
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+
+</footer>
+
+
+  </body>
+
+</html>
