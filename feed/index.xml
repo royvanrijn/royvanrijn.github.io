@@ -5,9 +5,118 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 10 Dec 2015 09:42:57 +0100</pubDate>
-    <lastBuildDate>Thu, 10 Dec 2015 09:42:57 +0100</lastBuildDate>
+    <pubDate>Sat, 12 Dec 2015 12:37:26 +0100</pubDate>
+    <lastBuildDate>Sat, 12 Dec 2015 12:37:26 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Hacking a broken Roomba</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/images/roomba-googledag.jpg&quot; alt=&quot;roomba-googledag&quot; class=&quot;alignright&quot; /&gt;
+Every couple of weeks we organize a hack-day at work. Being a (Java) software consulting company we usually work on exploring new Java frameworks or we contribute to open source projects. But more and more we step out of just software and bring Raspberry Pi’s and other hardware. Another example where we hacked on hardware is playing with Software Defined Radio (SDR), my colleague Bert Jan did a talk about this at &lt;a href=&quot;https://www.youtube.com/watch?v=fOlz0OcZPjc&quot;&gt;Devoxx 2015&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;broken-roomba&quot;&gt;Broken Roomba&lt;/h1&gt;
+
+&lt;p&gt;A couple of days before our last hack-day my wife was carrying our old ‘broken’ Roomba vacuuming robot. Most vacuuming parts were worn down and the front wheel keeps dropping out of its socket. She was going to throw a robot away! I can’t let this happen, I have to safe the poor bastard.&lt;/p&gt;
+
+&lt;p&gt;So I started to do a little research. I’d heard about the &lt;a href=&quot;http://www.irobot.com/About-iRobot/STEM/Create-2.aspx&quot;&gt;Roomba Create&lt;/a&gt; before. It is a STEM-version of their vacuuming robot, for hacking purposes. It doesn’t have the cleaning parts, instead of has more connectors, made especially to be hacked/improved, it is the perfect base for your own little robot! I was very pleased to find that even my 500-series Roomba has a hidden mini-DIN connector that allows serial communication. iRobot provides a &lt;a href=&quot;http://irobot.lv/uploaded_files/File/iRobot_Roomba_500_Open_Interface_Spec.pdf&quot;&gt;full listing&lt;/a&gt; of all the possible commands and outputs, which is a great thing!&lt;/p&gt;
+
+&lt;h1 id=&quot;connecting-a-raspberry-pi&quot;&gt;Connecting a Raspberry Pi&lt;/h1&gt;
+
+&lt;p&gt;Here is what my idea was: Take a mini-DIN cable, connect it to a Raspberry Pi and drive the Roomba myself! But I quickly run into two problems:
+- How do I connect the Raspberry Pi to a DIN cable?
+- How do I power the Raspberry Pi?&lt;/p&gt;
+
+&lt;p&gt;After some research I was able to solve both of the problems.&lt;/p&gt;
+
+&lt;h2 id=&quot;mini-din-to-raspberry-pi&quot;&gt;Mini-DIN to Raspberry Pi&lt;/h2&gt;
+
+&lt;p&gt;After some research I found out some good and some bad news. First the good news, the Raspberry Pi has an UART TX and RX pin. These can be used to communicate with the Roomba without any effort.&lt;/p&gt;
+
+&lt;p&gt;The bad news? The Roomba has logic pins that have 0-5v and the Raspberry Pi has 0-3.3v. You can’t directly combine the two together or you’ll risk blowing a fuse on the Raspberry Pi. There is however a pretty simple solution, that is to use a &lt;a href=&quot;https://www.sparkfun.com/products/12009&quot;&gt;Logic Level Converter&lt;/a&gt;. This is a small board that you give 3.3v + GND on one end, 5v + GND on the other end. Now it has four logic pins left that can be used to connect 3.3v logic to 5v logic bi-directionally.&lt;/p&gt;
+
+&lt;p&gt;So with a bit of creative freeform-soldering I ended up with the following extension to my Raspberry Pi:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/freeform-soldering.jpg&quot; alt=&quot;freeform-soldering&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The only thing left to do next is to connect the right DIN-wires to the Raspberry Pi. But luckely the &lt;a href=&quot;http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf&quot;&gt;documentation&lt;/a&gt; provided by iRobot had very clear images showing all the mini-DIN pins and what they do.&lt;/p&gt;
+
+&lt;h2 id=&quot;powering-the-raspberry-pi&quot;&gt;Powering the Raspberry Pi&lt;/h2&gt;
+
+&lt;p&gt;The next challenge was actually power the Raspberry Pi. The Roomba has a battery pack, 16-17v, so that would be perfect. This seemed to be an easy challenge initially because the DIN-cable also provides access to the battery pack. But just before I hooked the Raspberry Pi to the (unregulated) battery wires of the DIN cable I found that there are actually some fuses between the DIN connector and the battery pack. The Raspberry Pi would draw too much current for these fuses!&lt;/p&gt;
+
+&lt;p&gt;Next I opened up the Roomba completely. Just below the ‘Dock’ button are two big pads directly connected to the battery pack. I soldered two wires to these pads. This gave me 16v (without the fuses) to power the Raspberry Pi. But how do I step this down to the 5v needed by the Raspberry Pi? I connected the wires to a UBEC and soldered a mini-USB cable to the output. Connected to the Raspberry Pi and… it worked like a charm!&lt;/p&gt;
+
+&lt;h1 id=&quot;programming-the-roomba&quot;&gt;Programming the Roomba&lt;/h1&gt;
+
+&lt;p&gt;When we connect the Raspberry Pi to the Roomba using the DIN cable, it starts to play weird error-beeps. This is because by default the Raspberry Pi writes all console output to the serial connections (!). Please read this link to &lt;a href=&quot;http://www.hobbytronics.co.uk/raspberry-pi-serial-port&quot;&gt;disable&lt;/a&gt; it.&lt;/p&gt;
+
+&lt;p&gt;Like I said, the serial commands needed to drive the Roomba are perfectly documented. Using the GNU RXTX library (RXTXcomm.jar) we can write the following Java code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// On the Raspberry Pi the Serial communication pins are connected to /dev/ttyAMA0&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;CommPortIdentifier&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;portIdentifier&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CommPortIdentifier&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getPortIdentifier&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/dev/ttyAMA0&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;portIdentifier&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isCurrentlyOwned&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Error: Port is currently in use&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;CommPort&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;commPort&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;portIdentifier&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;commPort&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serialPort&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;commPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;serialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setSerialPortParams&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+                    &lt;span class=&quot;mi&quot;&gt;115200&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DATABITS_8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;STOPBITS_1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;SerialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;PARITY_NONE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;InputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;OutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serialPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getOutputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+            &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SerialReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SerialWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we can send commands to the OutputStream, like documented. Using this I was able to drive the Roomba through SSH to the Raspberry Pi from my laptop!&lt;/p&gt;
+
+&lt;p&gt;For example, we can do the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    
+    &lt;span class=&quot;c1&quot;&gt;// Write imperial march as song &amp;#39;0&amp;#39;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;140&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;57&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;57&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;57&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;53&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;57&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;53&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;57&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;45&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Play song &amp;#39;0&amp;#39;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;141&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;snip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Sigh, unsigned Java:&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&amp;amp;&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0xFF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;If you remove the DIN cable, it’ll still function perfectly as cleaning robot. So now I have a Star Wars bot to program during the day, and a cleaning robot at night.&lt;/p&gt;
+
+&lt;p&gt;Happy hacking!&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 12 Dec 2015 11:01:44 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2015/12/Hacking-a-broken-Roomba/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/Hacking-a-broken-Roomba/</guid>
+        
+        <category>roomba</category>
+        
+        <category>tinkering</category>
+        
+        <category>raspberry pi</category>
+        
+        <category>hacking</category>
+        
+        
+        <category>Hacking</category>
+        
+      </item>
     
       <item>
         <title>If you want to build software...</title>
@@ -609,74 +718,6 @@ A10	26  mm × 37  mm ratio: 1.423&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         
         <category>Other</category>
-        
-      </item>
-    
-      <item>
-        <title>Stop the Rot, the Rules of Refactoring</title>
-        <description>&lt;p&gt;A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.&lt;/p&gt;
-
-&lt;p&gt;Let’s do a quick check:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Are there pieces of code you’d rather not change?&lt;/li&gt;
-  &lt;li&gt;Are (parts of) the application sometimes scrapped and rebuild from scratch (over and over)?&lt;/li&gt;
-  &lt;li&gt;Do pieces of code exist that turned out much more complex than you had initially imagined?&lt;/li&gt;
-  &lt;li&gt;Do you have pieces of code that feel out of place?&lt;/li&gt;
-  &lt;li&gt;Is it hard to break up some large classes and/or methods?&lt;/li&gt;
-  &lt;li&gt;Do you have a hard time coming up with names for certain classes?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;If you’ve answered yes to one or more questions, you are probably suffering from code smells and maybe even advanced code rot.&lt;/p&gt;
-
-&lt;h1 id=&quot;what-is-a-code-smell&quot;&gt;What is a code smell?&lt;/h1&gt;
-
-&lt;p&gt;Most of the time a piece of code has a smell when the design underneath is wrong. Often this is not visible at first, but slowly appears when the component gets larger. Classes get too large, methods are hard to break up, some classes or methods feel out of place. Even simple things as struggling with naming a new class is a sign there is something wrong. All of this are code smells and experienced programmers have developed a nose for this. Most of the time this is a sign there is a larger problem. It isn’t something a bit of code can fix, there is probably something wrong in the design. Is this component doing the right thing? Does it have the right responsibilities? Take a step back and look at the complete picture. What problem are these classes/methods trying to solve?&lt;/p&gt;
-
-&lt;h1 id=&quot;what-is-code-rot&quot;&gt;What is code rot?&lt;/h1&gt;
-
-&lt;p&gt;When code smells, more often than not, people will continue working on it, adding functionality. Maybe they don’t notice the smell or they don’t take the much needed step back to investigate the problem. This leads to faster code rot. So what exactly is code rot you might ask? Every piece of code starts to ‘rot’ the moment it is written. Eventually the code needs to be replaced and becomes too difficult to maintain. Hopefully this happens in the far future, 20-30 years from now. Unfortunately this is often not the case, there are parts being rebuild and scrapped while the application is being developed.&lt;/p&gt;
-
-&lt;p&gt;Each time new code is written, added or changed, the new code starts out as rotten as the code that it depends on. This can cause, with a tiny bit of rotten/smelly code, for an entire application to be trashed! It is highly infectious.&lt;/p&gt;
-
-&lt;h1 id=&quot;and-the-answer-is-refactoring&quot;&gt;And the answer is… refactoring!&lt;/h1&gt;
-
-&lt;p&gt;Refactoring is the magic word here, but… it sounds easier than it actually is. At first people will deny there is a problem, sometimes they don’t see it, they don’t share your disgust. Eventually it’ll continue to rot and more people will notice the smell. And once this smell has become unbearable drastic measures seem to be needed. This brings us to rule #1 about code smell:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;1. Refactor early, refactor often.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The sooner you refactor and remove some rotten code, the less likely it is to spread and the easier it is to remove. Don’t seek for approval, do something about it. But remember, take a step back first. Sometimes you are rewriting a piece of code, and the result is just as bad as before. The reason is that a design flaw is lurking in the shadows. If the responsibilities between two components is wrong you can scrap a piece of code and rebuild it, but the same problems will keep surfacing. So lets make this rule #2:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;2. Before refactoring, take a step back, eliminate possible design flaws.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;You’ve taken a step back, looked at the complete picture, fixed the responsibilities, time to do the refactoring! No!! There is a third *very* important rule. Refactoring means changing a piece of code without changing its behavior. How do we do this? We write tests! Only if you have proper testing in place you can start thinking about refactoring. How else will you be certain that a piece of code still has the same behavior as before?&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;3. Only refactor when you have proper tests.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;If you follow these three simple rules, nothing can go wrong. You’re detecting and fixing code smells early and often, you’ll stop the rot as soon as possible to make sure it doesn’t spread, keeping the application healthy. There isn’t a possible design flaw hiding in the shadows, we’ve taken a step back and eliminated that. And finally: We have tests in place that ensure we don’t change any behavior that was painstakingly added to the rotting code.&lt;/p&gt;
-
-&lt;p&gt;If you follow these rules you’ll end up with code that is readable, easier to maintain, easy to change (agile code!).&lt;/p&gt;
-
-&lt;p&gt;In short: &lt;strong&gt;Healthy code!&lt;/strong&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 09 Dec 2014 13:31:22 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/</guid>
-        
-        <category>code rot</category>
-        
-        <category>code smell</category>
-        
-        <category>design</category>
-        
-        <category>refactoring</category>
-        
-        <category>testing</category>
-        
-        
-        <category>Java Programming</category>
-        
-        <category>Programming</category>
         
       </item>
     

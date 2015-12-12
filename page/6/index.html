@@ -98,6 +98,56 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Oct 17, 2011 12:52:55
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/">Contacts lost after update to IOS5 (iPhone)</a></h1>
+
+
+        <p>Yesterday I decided to (finally) upgrade to IOS 5. This new firmware for the iPhone/iPod Touch and iPad adds a lot of new features, including iCloud, iMessage and more.</p>
+
+<p><img src="/images/icloud.png" alt="icloud" class="aligncenter" /></p>
+
+<p>At first the upgrade seemed to be a huge success, everything worked and I loved the fact that all my apps were being updated runtime, all at once. But then I realized that all my contacts were gone! I could see all the names in the ‘missed calls’ section, but it said “No contacts” when calling/texting. I tried the “Recovery” option, but nothing seemed to help…</p>
+
+<p>Until I tried this:</p>
+
+<ul>
+  <li>Go to Settings</li>
+  <li>iCloud</li>
+  <li>Disable ‘Contacts’ (slide)</li>
+  <li><strong>At this moment, all the contacts on my phone appeared again!</strong></li>
+  <li>Re-enable ‘Contacts’</li>
+  <li>Now iCloud asks if you want to combine the results, yes we do!</li>
+</ul>
+
+<p>This restored all my contacts and synchronized them with iCloud. It seems that (for some reason) the initial merge with iCloud failed or something.<br />
+If you have this problem too, please let me know if this fix helps.</p>
+
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/contacts-lost-after-update-to-ios5-iphone/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2011/08/meet-me-at-devoxx-2011/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
@@ -1058,140 +1108,6 @@ For example:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/01/exception-mailing/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Jan 6, 2011 00:36:51
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2011/01/exception-mailing/">Exception mailing</a></h1>
-
-
-        <p>A couple of weeks ago our Scrum team was thinking about exception handling. We don’t use checked exceptions, since they are the embodiment of evil. So everything is translated into runtime exceptions whenever possible. But this is where the problems start: What do you do with the uncatched runtime exceptions?</p>
-
-<h1 id="taking-it-one-step-further">Taking it one step further</h1>
-
-<p>Most projects will decide to just write the exceptions to the console, maybe to a log file. In some cases there is specialized software which will analyze log files, detect stacktraces and act on them. We decided to create a fast specialized solution. We want to have a mailbox where all the runtime exceptions end up, including stacktrace, system properties, program properties and even a screenshot.</p>
-
-<h2 id="catching-the-uncaught-exception">Catching the uncaught exception</h2>
-
-<p>In Java you can set a exception handlers on Threads. You can set a handler on a Thread, but it is also possible to set a default exception handler. It is very easy:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomUncaughtExceptionHandler</span> <span class="kd">implements</span> <span class="n">UncaughtExceptionHandler</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="nf">CustomUncaughtExceptionHandler</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Thread</span><span class="o">.</span><span class="na">setDefaultUncaughtExceptionHandler</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="kd">final</span> <span class="n">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">//do something here!    </span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>If an exception occurs, the uncaughtException method will be called. Then you can do anything you want with the throwable. As said before, we decided it is best for us that the application phones home and sends us an email with as much information as we can get.</p>
-
-<h1 id="what-to-send">What to send?</h1>
-
-<p>Our application is launched by JNLP and will run on several clients. We don’t have complete contol over these clients, so we want to include as much information as possible to solve possible bugs in the application. The more information we have about the runtime, the easier it might be to find the problem. We grab all (relevant) system properties and program properties we can get. Including usernames, machine details.</p>
-
-<h2 id="creating-a-screenshot">Creating a screenshot</h2>
-
-<p>In Java there are actually two methods of creating a screenshot. The first method is the easiest, using the Java Robot:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Robot</span> <span class="n">robot</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Robot</span><span class="o">();</span>
- 
-<span class="n">BufferedImage</span> <span class="n">screenShot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="na">createScreenCapture</span><span class="o">(</span><span class="k">new</span> <span class="nf">Rectangle</span><span class="o">(</span><span class="n">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getScreenSize</span><span class="o">()));</span></code></pre></figure>
-
-<p>Very easy, but this can contain a LOT of information about the moment the exception occurs. It may provide valuable information. But we encountered a major security problem with the above method. Java will create an actual screenshot, the size of your application. But it doesn’t know if your application is currently the active window..! When we did tests we saw screenshots with Skype messages in screen and browsers being active… We can’t invade the lives of our users and send this information over the mail!</p>
-
-<p>So I decided to search for something less invasive. The main frame of our application has a paint method, and most of the time this method can still be called if we have an exception. It is possible to create our own Graphics object and let the main frame paint itself into memory. So eventually I settled on the code below:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">BufferedImage</span> <span class="nf">createScreenshot</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">try</span> <span class="o">{</span>
-        <span class="c1">// Try to repaint the main frame of our application:</span>
-        <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getWidth</span><span class="o">();</span>
-        <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getHeight</span><span class="o">();</span>
-        <span class="n">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BufferedImage</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">BufferedImage</span><span class="o">.</span><span class="na">TYPE_INT_RGB</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">paintAll</span><span class="o">(</span><span class="n">image</span><span class="o">.</span><span class="na">getGraphics</span><span class="o">());</span>
-        <span class="c1">// We can&#39;t use Robot, it might capture a bit too much information</span>
-        <span class="k">return</span> <span class="n">image</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Screen can&#39;t be captured, don&#39;t throw exception, else we&#39;ll end up in a loop :-)</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<h2 id="mailing-the-exception">Mailing the exception</h2>
-
-<p>The next step in our solution is sending an email with all the information. This is done using Java Mail, an API to send emails. More about sending emails from Java <a href="http://www.javaworld.com/jw-06-1999/jw-06-javamail.html?page=4">here</a>. In our case we create a pretty HTML email with all relevant information and three attachements:</p>
-
-<ul>
-  <li>Text file with all system properties</li>
-  <li>Text file with the complete exception</li>
-  <li>The image/screenshot</li>
-</ul>
-
-<p>To create the email it is easy to create MimeBodyParts which contain the text, the only part a bit more complicated it to add the screenshot inside the email, this can be done using:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">MimeBodyPart</span> <span class="nf">createImagePart</span><span class="o">(</span><span class="kd">final</span> <span class="n">BufferedImage</span> <span class="n">screenshot</span><span class="o">)</span>
-		<span class="kd">throws</span> <span class="n">MessagingException</span> <span class="o">{</span>
-    
-	<span class="k">if</span> <span class="o">(</span><span class="n">screenshot</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-    
-	<span class="n">MimeBodyPart</span> <span class="n">imagePart</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MimeBodyPart</span><span class="o">();</span>
-	<span class="n">ByteArrayOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
-	<span class="k">try</span> <span class="o">{</span>
-		<span class="n">ImageIO</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">screenshot</span><span class="o">,</span> <span class="s">&quot;jpg&quot;</span><span class="o">,</span> <span class="n">outputStream</span><span class="o">);</span>
-	<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ioException</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">// Impossible to get the screenshot, return null and continue without it</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-    
-	<span class="n">DataSource</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayDataSource</span><span class="o">(</span><span class="n">outputStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">&quot;image/jpeg&quot;</span><span class="o">);</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setDataHandler</span><span class="o">(</span><span class="k">new</span> <span class="nf">DataHandler</span><span class="o">(</span><span class="n">source</span><span class="o">));</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setFileName</span><span class="o">(</span><span class="s">&quot;screenshot.jpg&quot;</span><span class="o">);</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setContentID</span><span class="o">(</span><span class="s">&quot;&lt;screenshot&gt;&quot;</span><span class="o">);</span>
-	<span class="k">return</span> <span class="n">imagePart</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The only non-obvious line in the code above is setting the ContentID, this can be used to refer to the image-data in case of an HTML email. In the main email content I added the following line:</p>
-
-<figure class="highlight"><pre><code class="language-html" data-lang="html">Screenshot: <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;/images/cid:screenshot&quot;</span> <span class="na">alt=</span><span class="s">&quot;Screenshot of the moment the exception occured.&quot;</span> <span class="nt">/&gt;</span></code></pre></figure>
-
-<p>The <em>src=”cid:screenshot”</em> will cause the email to show the screenshot embedded inside the email. This makes the exception-email look very pretty.</p>
-
-<h1 id="even-more-in-the-future">Even more in the future…?</h1>
-
-<p>With our current implementation we’ll be able to detect exceptions instantly (on every new email). Also we’ll have more information then just a stacktrace, we have a screenshot and some parameters/system properties which can help us re-create the situation.</p>
-
-<p>To improve this even more I’m planning on adding a simple bounded FIFO queue. This queue will contain a list of actions performed by the user. These user-actions can be added automatically by using aspect oriented programming. For example annotating all the service methods. Everytime a service method is called we can add it to the bounded queue, which has a maximum of N elements, for example 20. If an exception occurs we print our the current queue, we can read the last N actions leading up to the exception. This too can be very helpful in re-creating the situation.</p>
-
-<p>What more information could be useful in an debug email like this? How do you guys solve exception handling?</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
