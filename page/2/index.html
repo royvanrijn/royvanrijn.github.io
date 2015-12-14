@@ -8,6 +8,9 @@
 
   <title>royvanrijn  | Java, algorithms, math, science and more!</title>
   <meta name="description" content="Java, algorithms, math, science and more!">
+  
+  <meta name="keywords" content="royvanrijn, programming, java, blog, devoxx, conference, speaker, technology, science, math, azspcs, tips, tricks" />
+  
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
@@ -95,6 +98,115 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <div class="post">
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/11/kill-all-mutants/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Nov 18, 2014 11:52:35
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2014/11/kill-all-mutants/">Kill all mutants</a></h1>
+
+
+        <p>The post below is the content from my 2014 <a href="http://www.nljug.org/jfall/schedule/2014/">J-Fall</a> and <a href="http://www.devoxx.be/ignite-2014/">Devoxx Ignite</a> presentations. You can check you the slides here:<br />
+<a href="http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests">http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests</a></p>
+
+<h1 id="we-all-do-testing">We all do testing</h1>
+
+<p>In this day and age you aren’t considered a real Java developer if you are not writing proper unit tests.<br />
+We all know why this is important:</p>
+
+<ul>
+  <li>Instant verification our code works.</li>
+  <li>Automatic future regressions tests.</li>
+</ul>
+
+<p>But how do we know we are writing proper tests? Well most people use code coverage to measure this. If the percentage of coverage is high enough you are doing a good job.</p>
+
+<h1 id="what-is-a-test">What is a test?</h1>
+
+<p>First let’s look at what a test actually is:</p>
+
+<ol>
+  <li>Instantiate classes, setup mocks.</li>
+  <li>Invoke something.</li>
+  <li>Assert and verify the outcome.</li>
+</ol>
+
+<p>Which steps are measured with code coverage? Only steps 1 and 2. And what is the most important thing for a test? It is the third and final step, the assertion, the place where you actually check if the code is working. This is completely ignored by code coverage!</p>
+
+<p>I’ve seen companies where management looks at code coverage reports, they demand the programmers to write 80+ or 90+% coverage because this proves the quality is good enough. What else is a common thing in these organisations? Tests without any real assertion. Tests written purely to boost coverage and please management.</p>
+
+<p>So code coverage says absolutely nothing about the quality of our tests? Well, it does tell you one thing. If you have 0% coverage, you have no tests at all, if you have 100% coverage you might have some very bad tests.</p>
+
+<h1 id="mutation-testing">Mutation testing</h1>
+
+<p>Luckily there is help around the corner, in the form of mutation testing. In mutation testing you create thousands of ‘mutants’ of your codebase. So what is this mutant you might ask? A mutation is a tiny singular change in your codebase.</p>
+
+<p>For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:</span>
+<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// .. do something ..</span>
+<span class="o">}</span>
+
+<span class="c1">// After:</span>
+<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// .. do something ..</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For each mutant the unit tests are run and there are a couple of possible outcomes:<img src="/images/mutant_killed-300x225.png" alt="mutant_killed" class="alignright" /></p>
+
+<h1 id="killed">Killed</h1>
+
+<p> </p>
+
+<p>If you are lucky a test will fail. This means we have ‘killed’ our mutant. This is a positive thing, we’ve actually checked that the mutated line of code is correctly asserted by a test. Now we immediately see the advantage of using mutation testing, we actually verify the assertions in our tests.</p>
+
+<h1 id="survivedmutantlivedmutantlived-alignright-">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
+
+<p>Another possible outcome is that our mutant has survived, meaning no test fails. This is scary, it means the logic we’ve changed isn’t verified by a test. If someone would (accidentally) make this change in your codebase, the automatic build won’t break.</p>
+
+<p> </p>
+
+<h1 id="tooling">Tooling</h1>
+
+<p>In Java (and other languages as well) there are frameworks for doing mutation testing. One of the most complete and modern frameworks for doing mutation testing in Java is called <a href="http://pitest.org/">PIT</a>. The generation of mutants and the process running the tests is fully automated and easy to use, just as easy as code coverage. There are Maven, Ant, Gradle, Sonarqube, Eclipse and IntelliJ plugins available!</p>
+
+<h1 id="what-about-performance">What about performance?</h1>
+
+<p>Using mutation testing isn’t a silver bullet and it doesn’t come without any drawbacks. The major disadvantage is performance. This is the reason it never took off in the 1980s. At that time it would take an entire evening to run all your unit tests, so people could only dream of creating thousands of mutants and running the tests again. Luckily CPU’s have become a <em>lot</em> faster, and PIT has other tricks to speed up the process.</p>
+
+<p>One thing PIT does is that it uses code coverage! Not as a measurement of the quality of your tests but as a tool. Before creating the mutants PIT calculates the code coverage of all unit tests. Now when PIT creates a mutant of a particular line of code it looks at the tests covering that line. If a line is only covered by three unit tests, it only runs those three tests. This greatly decreases the amount of tests needed to run for each mutation.</p>
+
+<p>There are other tricks as well, for example PIT can track the changes in your codebase. It doesn’t need to create mutants if the code isn’t edited.</p>
+
+<h1 id="summary">Summary</h1>
+
+<p>Code coverage is a horrible way of measuring the quality of your tests. It only says something about the invocations but nothing about the actual assertions. Mutation testing is much better, it gives an accurate report on the quality and you can’t ‘game’ the statistics. The only way to fake mutation coverage is to write real tests with good assertions.</p>
+
+<p>Check it out now: <a href="http://pitest.org/">http://pitest.org</a></p>
+
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
   
     <div class="post">
       <div class="post-thumbnail">
@@ -1362,128 +1474,6 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/12/6-traits-of-good-programmers/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Dec 12, 2013 14:54:47
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2013/12/6-traits-of-good-programmers/">6 common traits of good programmers</a></h1>
-
-
-        <p>I’ve had a lot of colleagues in my career, some good, some bad, some absolutely fantastic. In this post I’ll go into some of the common traits that make them fantastic:</p>
-
-<ol>
-  <li>Be inquisitive</li>
-  <li>Share answers</li>
-  <li>Community awareness</li>
-  <li>Programmers pride</li>
-  <li>Embrace laziness</li>
-  <li>Spatial visualization</li>
-</ol>
-
-<h1 id="be-inquisitive">1: Be inquisitive</h1>
-
-<p>Always be inquisitive, if you encounter a problem the first thing all the great programmers do:</p>
-
-<p><img src="/images/google-300x105.png" alt="Google is your friend" /></p>
-
-<p>This will bring you to <a href="http://stackoverflow.com/">StackOverflow</a> questions, news groups, mailing lists, online documentation and more. This sounds very obvious but I’ve had a lot of colleagues that first asked a colleague instead of Googling. This is a bad habit in my opinion. Google has a <strong>lot</strong> more information than all your co-workers combined, there is no need to force a costly context switch upon your colleagues if you’ve got access to do greatest collective knowledge base.</p>
-
-<p>Most of the time the first hit on Google doesn’t provide you with an answer, don’t give up…! Keep on looking, try different search queries, dive into the source code. If non of the resources listed above yield an answer, ask the community, post a question on StackOverflow, ask on the mailing list or newsgroup.</p>
-
-<h1 id="share-answers">2: Share answers</h1>
-
-<p>Once you’ve found the answer you’ve been looking for, done! Right?</p>
-
-<p><strong>WRONG!</strong> This is where you can distinguish yourself from the average programmer. You’ve got something important left to do.</p>
-
-<p><img src="/images/share-300x214.jpg" alt="share" /></p>
-
-<p>The longer it took you to find the answer, it’ll also take other people the same time to find the answer. Backtrack how you came to the solution, write it down if necessary. Have you encountered your problem/question on StackOverflow? Forum posts? Newsgroups? If so, go back there and tell them about your answer. If there wasn’t any question but you just used the wrong search queries to find something, write a blog post about your solution in your own words. Other people might find it easier thanks to you.</p>
-
-<p>I’ve even had cases where I asked a StackOverflow question, found the answer myself, and answered the question myself. This sound silly, but helps other programmers! <a href="http://stackoverflow.com/questions/11323415/is-eclipse-juno-wrong-with-this-ambiguous-method-error">[example]</a></p>
-
-<h1 id="community-awareness">3: Community awareness</h1>
-
-<p>It turns out there is a bug in Open Source framework N… what does a good programmer do?</p>
-
-<p>Two possible answers:</p>
-
-<ol>
-  <li>Complain, find another alternative framework</li>
-  <li>Download the source, patch it</li>
-</ol>
-
-<p>It turns out both are wrong. Open Source is only possible because there is a community willing to fix problems. So answer number one is an obvious mistake. You picked the framework with care (presumably), encountering a bug is rare and a great possibility to help the community.</p>
-
-<p>So what is wrong with the second answer? Instead of directly downloading the source and creating a path, first get in contact with the people behind the framework. One famous story is that Linus Torvalds (from Linux) rejected a beautifully crafted piece of code (which would greatly improve the speed of the Linux kernel) just because the author worked on it all alone for 6 months. First discuss your possible fix with the community, work together!</p>
-
-<p><img src="/images/needya-248x300.png" alt="needya" /></p>
-
-<p>Also, an open source project isn’t <em>dead</em> because nobody has fixed your bug; it is dead because <strong>you</strong> didn’t fix the bug.<br />
-<strong>You are the community!</strong></p>
-
-<h1 id="programmer-pride">4: Programmer pride</h1>
-
-<p>Programmers should be proud. Once you’ve made something you can’t wait to show the result to the clients and test your take on their ideas. If there a possible bug in a piece of code you wrote, touched or reviewed? Jump in there and help your colleagues!</p>
-
-<p><img src="/images/lion-pride-300x193.jpg" alt="Remember: Lion pride is also a team" /></p>
-
-<p>But beware, there is good pride and bad pride. Bad pride is when you think a code review isn’t needed because <strong>you</strong>‘ve made it. Bad pride is thinking you’ll solve it <em>alone</em> instead of pair programming. Good pride is being proud of what you’ve made and feeling the shared ownership and responsibility. Be proud of your team, your product. Be passionate, but don’t be proud of <em>yourself</em>. Embrace feedback, code reviews and pair programming!</p>
-
-<h1 id="embrace-laziness">5: Embrace laziness</h1>
-
-<p>In almost all professions the best employees are diligent and hard working. Except programmers, the best and most celebrated programmers are lazy. It is probably the only profession where it is considered a good trait (except maybe mattress and pillow testers).</p>
-
-<p>Perhaps the best-known lazy contribution to computing was the invention of the compiler by Grace Hopper in 1952. She did this, she said, because she <em>“was lazy”</em> and hoped that <em>“the programmer may return to being a mathematician”</em>.</p>
-
-<p>If a programmer is asked to do something on a regular basis he/she will instantly try to come up with a way to avoid it. Script once, run many times. This is also true for our clients, if a client is talking about repetitive work it starts to itch, we programmers instantly feel the urge to eliminate this and automate the tasks.</p>
-
-<p>Bill Gates once said: <em>“I choose a lazy person to do a hard job. Because a lazy person will find an easy way to do it.”</em></p>
-
-<p>Embrace the laziness, automate repetitive work, <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">don’t repeat yourself</a>.</p>
-
-<p>Also: Lazy people will quickly learn keyboard shortcuts, like every good programmer should (!!)</p>
-
-<h1 id="spatial-visualization">6: Spatial visualization</h1>
-
-<p>To navigate an entire code base you’ll need a mental model in your head. To do this you need <a href="http://en.wikipedia.org/wiki/Spatial_visualization_ability">spatial visualization ability</a>. Mental models in programming are usually called ‘codespace’.</p>
-
-<p><img src="/images/spatial-skills-199x300.jpg" alt="spatial-skills" class="alignleft" /></p>
-
-<p>Using spatial skill as a programmer works in two ways, first is knowing the entire code base. When you have to make a change or addition to some code you’ll need to know where to look. Where do things happen, how does the flow between objects/instances go through the application. Which parts interact with each other.</p>
-
-<p>Second, you have to recognise the code you are working with (on source/text level). Most of the time you switch between multiple files and the best programmers I know are always aware of their location inside the file they are working on. Just by looking at the text outline/structure they can quickly navigate inside source files. This also requires great spatial visualization ability.</p>
-
-<p>There is also research being done about the link between programming, spatial skill and sex differences. It’s been known that men and woman do have different spatial visualization in the brain. Maybe the current method of teaching programming or navigating in IDE’s is better suited for males than females?</p>
-
-<p>More sources on spatial skills and programming:<br />
-- <a href="http://dl.acm.org/citation.cfm?id=1268852">Spatial skills and navigation of source code</a><br />
-- <a href="http://www.humantechnology.jyu.fi/articles/volume4/2008/jones-burnett.pdf">Spatial ability and learning to program</a><br />
-- <a href="http://pdf.aminer.org/000/364/952/using_sex_differences_to_link_spatial_cognition_and_program_comprehension.pdf">Using Sex Differences to Link Spatial Cognition and Program Comprehension</a> (interesting but provocative idea)</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
