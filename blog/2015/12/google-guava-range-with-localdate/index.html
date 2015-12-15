@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Google Guava: Range with LocalDate</title>
+  <meta name="description" content="This afternoon I was working on implementing a user story with (JodaTime) LocalDate ranges. The problem? I needed to represent a lot of periods, in days. The...">
+  
+  <meta name="keywords" content="royvanrijn, programming, java, java,Google Guava,guava,range,localdate,interval,days,joda,jodatime,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" />
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2015/12/makeblock-robots-for-kids-an-adults/" title="Previous Post: Makeblock, robots for kids (and adults)">&laquo; Makeblock, robots for kids (and adults)</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img class="post-thumbnail-img" src="/thumbnails/guava.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by Roy van Rijn on 
+        <span class="date">
+          Dec 15, 2015 15:00:41
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/#disqus_thread">0 comments</a>
+      </p>
+      <h1 class="post-title">Google Guava: Range with LocalDate</h1>
+    </div>
+
+    <p>This afternoon I was working on implementing a user story with (<a href="http://www.joda.org/joda-time/">JodaTime</a>) <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> contained in this period.</p>
+
+<p>First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>s, and <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> is a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html">ReadablePartial</a>, not a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>! So to make my code work I had to do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Interval (the JodaTime way)</span>
+    <span class="kd">private</span> <span class="n">Interval</span> <span class="nf">createInterval</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">DateTime</span> <span class="n">fromDateTime</span> <span class="o">=</span> <span class="n">fromDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+        <span class="n">DateTime</span> <span class="n">toDateTime</span> <span class="o">=</span> <span class="n">toDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Interval</span><span class="o">(</span><span class="n">fromDateTime</span><span class="o">,</span> <span class="n">toDateTime</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Now to check an interval I needed to call:</span>
+    <span class="n">createdInterval</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">inputDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">());</span></code></pre></figure>
+
+<p>It works, sure, but the conversion to <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a> with toDateTimeAtStartOfDay kind of bugged me. But luckely <a href="https://github.com/google/guava">Google Guava</a> has something to make the code much cleaner: <a href="https://github.com/google/guava/wiki/RangesExplained">Ranges</a></p>
+
+<p>Using Range made the code much smaller and easier to read:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Range (the Google Guava way)</span>
+    <span class="kd">private</span> <span class="n">Range</span><span class="o">&lt;</span><span class="n">LocalDate</span><span class="o">&gt;</span> <span class="nf">createRange</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Range</span><span class="o">.</span><span class="na">closedOpen</span><span class="o">(</span><span class="n">fromDate</span><span class="o">,</span> <span class="n">toDate</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// To check:</span>
+    <span class="n">createRange</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">inputDate</span><span class="o">);</span></code></pre></figure>
+
+<p>I really love using Google Guava, it provides solutions for a lot of common programming challenges. Not only that, their API is very <em>very</em> clean and skillfully designed. The use of open/closed in <em>Range.java</em> is very handy and makes it easy to think about corner cases.</p>
+
+
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <i class="svg-icon linkedin"></i>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <i class="svg-icon stackoverflow"></i>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <i class="svg-icon github"></i>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <i class="svg-icon twitter"></i>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <i class="svg-icon rss"></i>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

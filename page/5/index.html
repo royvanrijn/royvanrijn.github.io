@@ -101,6 +101,118 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2012/05/we-are-now-cached/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            May 9, 2012 16:16:22
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2012/05/we-are-now-cached/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2012/05/we-are-now-cached/">We are now cached</a></h1>
+
+
+        <p>Yesterday we (at <a href="http://www.jpoint.nl/">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
+
+<p>One of the things he mentioned was: If you don’t use caching, you are an idiot.</p>
+
+<h1 id="where-do-websites-cache">Where do websites cache?</h1>
+
+<p>There are multiple tiers where caching of websites is done, and is useful.</p>
+
+<h2 id="browser-cache">Browser cache</h2>
+
+<p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There is absolutely no reason to go online.</p>
+
+<h2 id="proxy-cache">Proxy cache</h2>
+
+<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn’t changed it can provide the page instantly.</p>
+
+<h2 id="reversed-proxy-cache">Reversed proxy cache</h2>
+
+<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a “reverse” proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
+
+<h1 id="making-pages-cacheable">Making pages cacheable</h1>
+
+<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan’s rant, I’m completely convinced about that. If you don’t do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn’t work, and shouldn’t be used (!). So what could we do?</p>
+
+<h2 id="expires-header">Expires header</h2>
+
+<p>When sending a page back to the user you are able to set some HTTP headers. And “expires” is one of them.<br />
+An example:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Expires: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>This indicates that the current page is valid until the timestamp. Then it ‘Expires’. Easy!</p>
+
+<p>The only problem is generating the timestamp, it can be a bit tricky. Also you’ll have to be sure you’ve set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
+
+<h2 id="cache-control-headers">Cache-Control headers</h2>
+
+<p>With HTTP 1.1 there is a new class of headers called “Cache-Control”. These headers are more powerful than the Expires header.<br />
+To enable caching using Cache Control headers you can set:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: max-age=3600, must-revalidate</code></pre></figure>
+
+<p>The “max-age” is time in ms that the current page is valid. And by adding “must-revalidate” we tell the cache it should obey our max-age. If you don’t want an object to be cached you can use:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: no-cache</code></pre></figure>
+
+<h1 id="refreshing-cached-data">Refreshing cached data</h1>
+
+<p>The two methods described above will tell the cache <strong>if</strong> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
+
+<h2 id="last-modified">Last-Modified</h2>
+
+<p>Websites should always set the response header called “Last-Modified”. This is a timestamp of the moment a webpage last changed.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Last-Modified: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header “If-Modified-Since” and include the timestamp.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
+
+<p>If the content on the server hasn’t been changed it’ll reply “304 Not Modified”. The cache can now keep the cached version.</p>
+
+<h2 id="etag">ETag</h2>
+
+<p>With HTTP 1.1 there is also an improved method of doing the “Last-Modified”. Instead of using a timestamp (which is error prone), they’ve introduced the “ETag”. This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ETag: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+
+<p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">If-None-Match: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+
+<p>The term “If-None-Match” isn’t very clear, but is means “if-etag-changed-since” and works the same way as “If-Modified-Since”. When the ETag is the same the server will reply “304 Not Modified”, it won’t send the content back.</p>
+
+<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don’t have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed…! But sometimes you’ll know in advance if the content has been changed.</p>
+
+<h1 id="improving-royvanrijncom">Improving royvanrijn.com</h1>
+
+<p>I’m using WordPress and I’ve found the excellent plugin “WP Total Cache”.</p>
+
+<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you’ll probably be reading this from the browser cache.</p>
+
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2012/05/we-are-now-cached/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
@@ -1035,68 +1147,6 @@ Here is one (including the best song I’ve created): <a href="http://t.co/9oogn
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/10/great-code-is-written-twice-or-more/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Oct 21, 2011 20:46:13
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/great-code-is-written-twice-or-more/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2011/10/great-code-is-written-twice-or-more/">Great code is written twice (or more)</a></h1>
-
-
-        <p><img src="/images/code.jpg" alt="code" class="alignright" /><br />
-The last couple of years more and more people have been moving towards Agile development. These techniques aren’t new, most we’re devised in the <a href="http://en.wikipedia.org/wiki/Scrum_%28development%29">80s</a> or <a href="http://en.wikipedia.org/wiki/Extreme_Programming">90s</a>. But finally these days programmers and (more importantly) business consultants, architects and clients have learned to love and embrace Agile development.</p>
-
-<h1 id="evolving-requirements">Evolving requirements</h1>
-
-<p>It has now become common knowledge that you can’t write down all the requirements before you start the project. These requirements have to be written down in an evolutionary matter. In short cycles/sprints we build pieces of the program and also iteratively extract the latest requirements from our clients. This is all based on the principle of evolution. Like everything in life, you get the best with incremental steps towards improvement.</p>
-
-<h1 id="evolving-code">Evolving code!</h1>
-
-<p>But why stop there? Today most programmers have developed a mindset in which requirements <em>have</em> to be extracted evolutionary. But they seem to forget their own work!? They still think their frameworks and their architecture has to be solid at the start of their project. Also, once code is written, it is done.. right?</p>
-
-<p><strong>Wrong</strong>. In my experience all great code is written at least twice. The first time you are too busy interpreting the requirements and figuring out what it should do. Sure, when you see certain patterns, we know that we need to extract methods and shift responsibilities around. The code you’ll end up can be pretty good, but it isn’t great.</p>
-
-<p>In our current project, almost all important features have been rewritten from scratch multiple times. And slowly but surely the code is becoming better and better. Once you’ve made the 3rd or 4th addition to a certain piece of code, or you’ve fixed another bug, you’ll know where the code smells. You’ll feel like avoiding that piece of code, and you are glad when you are done fiddling with it. What do I do when I get this feeling? I delete the code.</p>
-
-<p><em>But… but… then you have to start all over again!?</em></p>
-
-<p><strong>Wrong again!</strong> Sure, there is nothing left in the IDE, the code is gone, maybe some tests survived. You do have a solid understanding what the code should do. You also know what the code looked like before, so you know where it hurt/smelled in the past! With this knowledge you’ll write much better, maybe even great code! Sure, we could have kept the code and played with it some more, refactoring methods and responsibility… but there is nothing like grabbing the opportunity to start over again, and do it better.</p>
-
-<p>Again, like all things in life: To make something great, it has to go through multiple evolutionary iterations. This is true for your requirements, your architecture and also your code.</p>
-
-<h1 id="doing-it-twice-twice-as-slow">Doing it twice, twice as slow?</h1>
-
-<p>When I tell people that in my opinion all code needs to be written at least twice, they are afraid the project will take double the time. But this is far from true. Here is why:</p>
-
-<ol>
-  <li>The second time you write the code, it’ll only take a fraction of the time it took initially.</li>
-  <li>After rewriting the quality of the code is significantly higher, improving maintainability, extendability and also programming velocity.</li>
-</ol>
-
-<p>Good luck, keep rewriting and evolve your code! And if you think rewriting doesn’t work… <a href="/blog/2011/10/code-quality-confirmation/">we have proof!</a></p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/great-code-is-written-twice-or-more/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

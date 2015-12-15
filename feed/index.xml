@@ -5,9 +5,67 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 14 Dec 2015 16:54:27 +0100</pubDate>
-    <lastBuildDate>Mon, 14 Dec 2015 16:54:27 +0100</lastBuildDate>
+    <pubDate>Tue, 15 Dec 2015 15:35:54 +0100</pubDate>
+    <lastBuildDate>Tue, 15 Dec 2015 15:35:54 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Google Guava: Range with LocalDate</title>
+        <description>&lt;p&gt;This afternoon I was working on implementing a user story with (&lt;a href=&quot;http://www.joda.org/joda-time/&quot;&gt;JodaTime&lt;/a&gt;) &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; contained in this period.&lt;/p&gt;
+
+&lt;p&gt;First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt;s, and &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; is a &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html&quot;&gt;ReadablePartial&lt;/a&gt;, not a &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt;! So to make my code work I had to do the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Use two LocalDate instances to create an Interval (the JodaTime way)&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Interval&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createInterval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDateTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDateTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Interval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Now to check an interval I needed to call:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;createdInterval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It works, sure, but the conversion to &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt; with toDateTimeAtStartOfDay kind of bugged me. But luckely &lt;a href=&quot;https://github.com/google/guava&quot;&gt;Google Guava&lt;/a&gt; has something to make the code much cleaner: &lt;a href=&quot;https://github.com/google/guava/wiki/RangesExplained&quot;&gt;Ranges&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Using Range made the code much smaller and easier to read:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Use two LocalDate instances to create an Range (the Google Guava way)&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createRange&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;closedOpen&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// To check:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;createRange&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;I really love using Google Guava, it provides solutions for a lot of common programming challenges. Not only that, their API is very &lt;em&gt;very&lt;/em&gt; clean and skillfully designed. The use of open/closed in &lt;em&gt;Range.java&lt;/em&gt; is very handy and makes it easy to think about corner cases.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 15 Dec 2015 15:00:41 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/</guid>
+        
+        <category>java</category>
+        
+        <category>Google Guava</category>
+        
+        <category>guava</category>
+        
+        <category>range</category>
+        
+        <category>localdate</category>
+        
+        <category>interval</category>
+        
+        <category>days</category>
+        
+        <category>joda</category>
+        
+        <category>jodatime</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>Makeblock, robots for kids (and adults)</title>
@@ -643,67 +701,6 @@ A10	26  mm × 37  mm ratio: 1.423&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         <category>Math</category>
         
         <category>Science</category>
-        
-      </item>
-    
-      <item>
-        <title>Shaved FAQ</title>
-        <description>&lt;p&gt;&lt;strong&gt;What happened to your beard?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;I shaved.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Have you lost a bet?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;No.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Who are you? How did you get past security?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The same guy as last week and the months before that, I shaved, sorry to shock you, it happens.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Why did you grow a beard in the first place?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Because I felt like it.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Why did you shave?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Same reason I decided to grow a beard, I felt like it.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;But why this Sunday?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Stop it, I shaved, it isn’t special, most men do it a couple of times a week, get over it!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;It looks much better this way!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Thanks for the compliment, don’t get to attached, the beard will probably return.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;You look so much younger!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;I’m not.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;It looks much worse without a beard!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Why do people comment so much on facial hair, I’m not judging your hair/clothing/weight etc.&lt;/p&gt;
-
-&lt;p&gt;Anyway, to quote The Dude Lebowski: &lt;em&gt;Yeah, well that’s just your opinion, man.&lt;/em&gt;&lt;br /&gt;
-(I’m trying to follow the philosophy and lifestyle of &lt;a href=&quot;http://www.dudeism.com&quot;&gt;dudeism&lt;/a&gt;)&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 09 Feb 2015 09:48:26 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/02/shaved-faq/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/02/shaved-faq/</guid>
-        
-        <category>beard</category>
-        
-        <category>dudeism</category>
-        
-        <category>faq</category>
-        
-        <category>shave</category>
-        
-        <category>shaved</category>
-        
-        
-        <category>Other</category>
         
       </item>
     
