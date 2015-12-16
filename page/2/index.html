@@ -107,6 +107,47 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2014/12/devoxx-be-2014-aftermovie/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx BE 2014: Aftermovie" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Dec 1, 2014 12:09:18
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2014/12/devoxx-be-2014-aftermovie/">Devoxx BE 2014: Aftermovie</a></h1>
+
+
+        <p>A couple of weeks ago was Devoxx in Antwerp again, the largest annual European Java conference. As always I was there, with my camera, to capture the amazing atmosphere:</p>
+
+<iframe type="text/html" src="http://player.vimeo.com/video/113170080" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>We (me and my colleagues) had a great time, and learned some new things. But most of all, we met great people and received a lot of inspiration. This year I´ve done a short 5 minute Ignite talk on Mutation testing. This was my first ´Ignite´ session and it is hard! The format of an Ignite session is, 20 slides, 5 minutes, auto forward each 20 seconds. This means timing is everything. A 50 minute talk is much easier, you decide when you´ve told enough and press next.</p>
+
+<p>Also, my J-Fall presentation on mutation testing is now available online (50 minutes, in Dutch).</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/aLAcvMI2VBI"></iframe>
+
+<p>⋆Brag⋆ It was voted as best session of the conference with 61 people! Also of all the visitors it was voted second ´most populair´, surpassed by one vote, but the other session had more people in the room!</p>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2014/11/the-java-9-kulla-repl/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The Java 9 'Kulla' REPL" width="100" height="100" />
@@ -1360,155 +1401,6 @@ Store: %1 is %2</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/02/hacking-runkeeper-data/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hacking your RunKeeper data" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Feb 14, 2014 23:38:17
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2014/02/hacking-runkeeper-data/">Hacking your RunKeeper data</a></h1>
-
-
-        <p>This week I’ve started running/jogging, and I’m using <a href="http://www.runkeeper.com">RunKeeper</a> on my iPhone to track my progress.</p>
-
-<p>RunKeeper stores all the GPS data from your runs. This data is displayed per run, including a nice map of your route. Most important data can be reached throught the web interface, things like pace (min/km or min/mile) and distance. The most rewarding thing in running is breaking your own records, and RunKeeper has a couple of records:</p>
-
-<ul>
-  <li>Longest run (distance)</li>
-  <li>Longest run (time)</li>
-  <li>Most calories burned in a run</li>
-  <li>Fastest average pace</li>
-  <li>etc</li>
-</ul>
-
-<p>As you can see, all those statistics are about single runs, what I’m missing are the following records:</p>
-
-<p>Fastest 1 KM, 3 KM, 5K, 10K etc.</p>
-
-<p>For example, when I’ve run a very fast 5.5 km run, I’d love to see this reflected as my 5K personal record, but right now it is lost because I’ve already done a slow 6 km run and a very fast 1 km sprint.</p>
-
-<h1 id="export-data">Export data</h1>
-
-<p>But luckily RunKeeper has a very useful option for us developers: <strong>Settings &gt; Export data</strong>.<br />
-This results in a ZIP file with GPX files, raw GPS data with time and location!</p>
-
-<h2 id="jaxb">JAXB</h2>
-
-<p>The first thing I did was download the XSD and generate the JAXB Java code:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">$ xjc -p com.royvanrijn.running.gpx gpx.xsd 
-parsing a schema...
-compiling a schema...
-com/royvanrijn/running/gpx/BoundsType.java
-com/royvanrijn/running/gpx/CopyrightType.java
-com/royvanrijn/running/gpx/EmailType.java
-com/royvanrijn/running/gpx/ExtensionsType.java
-com/royvanrijn/running/gpx/GpxType.java
-com/royvanrijn/running/gpx/LinkType.java
-com/royvanrijn/running/gpx/MetadataType.java
-com/royvanrijn/running/gpx/ObjectFactory.java
-com/royvanrijn/running/gpx/PersonType.java
-com/royvanrijn/running/gpx/PtType.java
-com/royvanrijn/running/gpx/PtsegType.java
-com/royvanrijn/running/gpx/RteType.java
-com/royvanrijn/running/gpx/TrkType.java
-com/royvanrijn/running/gpx/TrksegType.java
-com/royvanrijn/running/gpx/WptType.java
-com/royvanrijn/running/gpx/package-info.java</code></pre></figure>
-
-<p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">&quot;com.royvanrijn.running.gpx&quot;</span><span class="o">);</span>
-<span class="n">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
-<span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
-
-<p>The next thing I did was translate the lat+long+time waypoints into ‘legs’ consisting of meters+seconds.<br />
-Those legs can be used to check for a record during longer runs, like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">analyze</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;();</span>
-	
-	<span class="kt">double</span> <span class="n">runningDistance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
-	<span class="k">for</span><span class="o">(</span><span class="n">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">//Add next leg to the tail:</span>
-		<span class="n">cache</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">leg</span><span class="o">);</span>
-		<span class="n">runningDistance</span> <span class="o">+=</span> <span class="n">leg</span><span class="o">.</span><span class="na">getMeters</span><span class="o">();</span>
-		
-		<span class="c1">//If possible remove from head:</span>
-		<span class="k">while</span><span class="o">((</span><span class="n">runningDistance</span><span class="o">-</span><span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">())</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">runningDistance</span> <span class="o">-=</span> <span class="n">cache</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">();</span>
-		<span class="o">}</span>
-		
-		<span class="k">if</span><span class="o">(</span><span class="n">runningDistance</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
-			<span class="c1">//Check if the current target distance time is a record:</span>
-			<span class="n">checkTime</span><span class="o">(</span><span class="n">cache</span><span class="o">);</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>For example using a target of 5000 meters in a 5070 meter run, this analysis finds the following 5K times:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">5000.135743886022	00:29:57
-5001.356437683744	00:29:55
-5013.145427605677	00:30:01
-5009.98623847093	00:30:00
-5000.938905254762	00:30:01
-5001.8612669243685	00:30:03
-5000.555676905546	00:30:05
-5000.514815789608	00:30:07
-5000.514815789608	00:30:07</code></pre></figure>
-
-<p>The information from RunKeeper website is:</p>
-
-<ul>
-  <li>Distance: <strong>5.07 km</strong></li>
-  <li>Time: <strong>30:38</strong></li>
-  <li>Pace: <strong>6:03</strong></li>
-</ul>
-
-<p>But when analysing the data more accurately, it could have said:</p>
-
-<ul>
-  <li>New personal record 3K: <strong>00:16:46</strong></li>
-  <li>New personal record 5K: <strong>00:29:55</strong></li>
-</ul>
-
-<p>I couldn’t believe this feature wasn’t available in RunKeeper… but after a lot of Googling it turns out a lot of other people are looking for this ‘most requested’ feature! With a little bit of Java (100 lines of code) you can get a pretty good result:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Done analyzing all runs:
-Fastest 100m run:	00:00:13
-Fastest 200m run:	00:00:48
-Fastest 400m run:	00:02:01
-Fastest 1500m run:	00:07:50
-Fastest 3000m run:	00:16:46
-Fastest 5000m run:	00:29:55
-Fastest 10000m run:	--:--:--</code></pre></figure>
-
-<p>I’m now thinking of making a simple JavaScript application (no backend) that uses the RunKeeper export zip file as input and displays a lot of additional data. Are you interested in this? Please drop a comment and convince me to make this for you guys and girls!</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

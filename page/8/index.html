@@ -107,6 +107,70 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2010/06/music-matching-part-deux/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Music Matching (part deux)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Jun 6, 2010 19:37:15
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2010/06/music-matching-part-deux/">Music Matching (part deux)</a></h1>
+
+
+        <p>After a comment on my previous blog entry (about creating a shazam clone) I started tinkering again.</p>
+
+<p>Somebody asked: Could this be used to detect duplicate songs in my mp3 collection!?</p>
+
+<p>That is exacly what I just tried!  </p>
+
+<h1 id="the-results">The results</h1>
+
+<p>Here are some examples:  </p>
+
+<p><strong>Duplicate found: 01 - everything in its right place.mp3.song matches with D:\data\v2\01-radiohead-everything_in_it’s_wrong_place-h8me.mp3.song and score: 134</strong><br />
+(note: This is a remix of the original, with some rap mixed in)</p>
+
+<p><strong>Duplicate found: 01 - Joy Division - Exercise One.mp3.song matches with D:\data\v2\114 - Joy Division - Exercise One (From Still).mp3.song and score: 255</strong><br />
+(note: Yes, duplicate!)</p>
+
+<p><strong>Duplicate found: 01 The District Sleeps Alone Tonight.mp3.song matches with D:\data\v2\The Postal Service - The District Sleeps Alone Tonight.mp3.song and score: 636</strong><br />
+(note: Yes, duplicate!)</p>
+
+<p><strong>Duplicate found: 01-AudioTrack 01.mp3.song matches with D:\data\v2\06.Richard cheese -Id like a virgin- Butterfly.mp3.song and score: 144</strong><br />
+(note: Yes, duplicate, the second was a radio snippet with jingle in the song)</p>
+
+<p><strong>Duplicate found: 01-editors-papillon_edit.mp3.song matches with D:\data\v2\02-editors-papillon_instrumental_edit.mp3.song and score: 382</strong><br />
+(note: Almost a duplicate, the second is an instrumental version of the first)</p>
+
+<p><strong>Duplicate found: 01-the_strokes-you_only_live_once-ser.mp3.song matches with D:\data\v2\01-the_strokes-you_only_live_once.mp3.song and score: 450</strong><br />
+(note: Yes, duplicate!)</p>
+
+<p><strong>Duplicate found: 01-the_wombats-backfire_at_the_disco.mp3.song matches with D:\data\v2\Backfire @ The Disco [Promo Version].mp3.song and score: 493</strong><br />
+(note: Yes, almost duplicate, the second is a radio-promo announcement with jingle in it)</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>With a bit of tinkering this algorithm could be used to make a tool to detect duplicate songs, even if the mp3’s aren’t similair. Even live versions and instrumental versions are detected if you lower the threshold.</p>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2010/06/creating-shazam-in-java/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Creating Shazam in Java" width="100" height="100" />
@@ -2128,80 +2192,6 @@ ELSE proceed</em></p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java EE 6 released, including Servlet 3.0" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Dec 10, 2009 22:43:13
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">Java EE 6 released, including Servlet 3.0</a></h1>
-
-
-        <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
-
-<p>About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I’ve worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn’t what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!  </p>
-
-<p>So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply… My next move was just to write about it, first on my own blog, then on <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">DZone</a> (05/30/2008) and on <a href="http://www.theserverside.com/tt/articles/article.tss?l=PonderingAboutJSR135">The Server Side</a> a half year later, december 2008.</p>
-
-<p>The only ‘reply’ I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened <a href="http://swik.net/GlassFish/The+Aquarium/Servlet+3.0+...+Almost+at+PDR/cmaui">here</a>.</p>
-
-<p>Now that the release is final I’m actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Servlet</span><span class="o">(</span><span class="n">urlMappings</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="o">{</span>
-     <span class="nd">@GET</span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
-          <span class="c1">//Handle the GET</span>
-     <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And this was my suggestion on how to improve it (see second article/link):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServletMapping</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">mapping</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
-
-     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
-          <span class="o">...</span>
-     <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And this is from the final release:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">urlPatterns</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span><span class="s">&quot;/bar&quot;</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
-
-     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
-          <span class="o">...</span>
-     <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>That’s very similair, maybe a little too similair..? But anyway, I’m pleased about the result. It’ll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.</p>
-
-<p>I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

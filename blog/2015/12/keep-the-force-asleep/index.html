@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Keep the Force asleep</title>
+  <meta name="description" content="At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,star wars,filter,twitter,bookmarklet,timeline,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Keep the Force asleep" />
+  <meta name="twitter:description" content="At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most o..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2015/12/google-guava-range-with-localdate/" title="Previous Post: Google Guava: Range with LocalDate">&laquo; Google Guava: Range with LocalDate</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img class="post-thumbnail-img" src="/thumbnails/theforce.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by Roy van Rijn on 
+        <span class="date">
+          Dec 15, 2015 15:00:41
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/#disqus_thread">0 comments</a>
+      </p>
+      <h1 class="post-title">Keep the Force asleep</h1>
+    </div>
+
+    <p>At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it yet. But luckely there is a solution, I’ve created a handy <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>.</p>
+
+<p>A bookmarklet is a piece of Javascript code that you can add as a bookmark. When you are on a certain website (like Twitter) you can press the bookmarklet and the Javascript is executed. The bookmarklet code I’m using has been created using this great website: <a href="http://www.conroyp.com/2010/03/11/declutter/">DeClutter Twitter</a> and it removes most Star Wars related tweets from your timeline!</p>
+
+<h2 id="forcefilter">ForceFilter</h2>
+
+<p>Just drag this bookmarklet <a href="javascript:%24(%27body%27).bind(%27ajaxSuccess%27,declutter)%3Bvoid(declutter())%3Bfunction declutter()%7Bvar rk%3D%5B%27star wars%27, %27the empire%27, %27the rebellion%27, %27han solo%27, %27theforceawakens%27, %27jar jar%27, %27kylo ren%27, %27rey%27, %27finn%27, %27poe dameron%27, %27xwing%27, %27deathstar%27, %27c-3po%27, %27r2d2%27, %27leia%27%5D%3B%24.each(%24(%27li.stream-item%27), function()%7Bvar c %3D %24(this).html()%3B var p %3D %24(this)%3B %24.each(rk, function(i, v)%7B if(c.toLowerCase().indexOf(v) &gt; 0)%7Bp.remove()%3B%7D%7D)%3B%7D)%3B%7D">ForceFilter</a> to the bookmark section of your browser. Next time you open Twitter, quickly press the bookmarklet before reading.</p>
+
+<h2 id="the-code">The code</h2>
+
+<p>Below is the (generated) code, again, made by <a href="http://www.conroyp.com/2010/03/11/declutter/">DeClutter Twitter</a> (all credits belong there):</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">javascript</span><span class="o">:</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;ajaxSuccess&#39;</span><span class="p">,</span><span class="nx">declutter</span><span class="p">);</span>
+  
+  <span class="k">void</span><span class="p">(</span><span class="nx">declutter</span><span class="p">());</span>
+
+  <span class="kd">function</span> <span class="nx">declutter</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Remove tweets containing these terms:</span>
+    <span class="kd">var</span> <span class="nx">rk</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;star wars&#39;</span><span class="p">,</span> <span class="s1">&#39;the empire&#39;</span><span class="p">,</span> <span class="s1">&#39;the rebellion&#39;</span><span class="p">,</span> <span class="s1">&#39;han solo&#39;</span><span class="p">,</span> <span class="s1">&#39;theforceawakens&#39;</span><span class="p">,</span> <span class="s1">&#39;jar jar&#39;</span><span class="p">,</span> <span class="s1">&#39;kylo ren&#39;</span><span class="p">,</span> <span class="s1">&#39;rey&#39;</span><span class="p">,</span> <span class="s1">&#39;finn&#39;</span><span class="p">,</span> <span class="s1">&#39;poe dameron&#39;</span><span class="p">,</span> <span class="s1">&#39;xwing&#39;</span><span class="p">,</span> <span class="s1">&#39;deathstar&#39;</span><span class="p">,</span> <span class="s1">&#39;c-3po&#39;</span><span class="p">,</span> <span class="s1">&#39;r2d2&#39;</span><span class="p">,</span> <span class="s1">&#39;leia&#39;</span><span class="p">];</span>
+
+    <span class="c1">// Twitter timeline entries have class &quot;stream-item&quot; - loop through them, </span>
+    <span class="c1">// removing those that match blacklisted term</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;li.stream-item&#39;</span><span class="p">),</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">();</span> 
+        <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> 
+        <span class="c1">// Iterate through the keywords, removing the parent element </span>
+        <span class="c1">// where a match is found</span>
+        <span class="nx">$</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rk</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span> 
+            <span class="c1">// Lower-case the text so case issues don&#39;t trip us up</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="nx">p</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">}</span></code></pre></figure>
+
+
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
