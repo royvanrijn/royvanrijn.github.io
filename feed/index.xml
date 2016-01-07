@@ -5,9 +5,119 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 Dec 2015 14:43:03 +0100</pubDate>
-    <lastBuildDate>Wed, 16 Dec 2015 14:43:03 +0100</lastBuildDate>
+    <pubDate>Thu, 07 Jan 2016 15:30:49 +0100</pubDate>
+    <lastBuildDate>Thu, 07 Jan 2016 15:30:49 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Getting to grips with Gatling: Custom Feeder</title>
+        <description>&lt;p&gt;About a year ago someone on my current project did an initial setup of &lt;a href=&quot;http://gatling.io/&quot;&gt;Gatling&lt;/a&gt;. This is a performance/stress test tool written in &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala&lt;/a&gt;, it is easy to use but very powerful. The basic idea is that you write the test scenario’s in code, the same way as you would create integration/unit tests. The advantage is that the resulting tests are easy to expand, maintain and you’ve got everything under version control.&lt;/p&gt;
+
+&lt;p&gt;One very powerful feature Gatling has is the &lt;em&gt;Recorder&lt;/em&gt;. It is an application you can launch and it acts like a proxy server. Being a proxy server it can record and log all the calls you do to an application. Without writing any code it can &lt;em&gt;automatically&lt;/em&gt; create a stress test!&lt;/p&gt;
+
+&lt;p&gt;But in my case someone has already created a scenario for me.&lt;/p&gt;
+
+&lt;h2 id=&quot;basic-example&quot;&gt;Basic Example&lt;/h2&gt;
+
+&lt;p&gt;As a programmer it can be a bit daunting when you encounter a ‘foreign language’, in this case Scala. Fear not though, it is very easy to read, extend and write Gatling tests. This is the scenario I started with today:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OurSimulation&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Simulation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Define some basic HTTP protocol settings:&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baseHttpProtocol&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inferHtmlResources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;acceptHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;*/*&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;acceptEncodingHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;gzip,deflate&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;acceptLanguageHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contentTypeHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;text/xml&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userAgentHeader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Define a variables that is inserted into the SOAP template:&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;incrementalId&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AtomicInteger&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Define the scenario, read from CSV file, add additional variable to the session and post to OurEndpoint:&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Our scenario&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;csv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;data.csv&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;circular&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;session&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;idField&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;incrementalId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getAndIncrement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;OurEndpoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SoapMessageTemplate.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OurEndpoint&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;soapMessage&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;RequestName&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;/ourapplication/webservices/OurSoapEndpoint&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ELFileBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;soapMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;check&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OurSimulationLocal&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OurSimulation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// The instance we want to run, against localhost (we also have these for other servers)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;httpProtocol&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baseHttpProtocol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;baseURL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;http://localhost:1234&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Setup the test, ramp up 10 users over a period of 20 seconds&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setUp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rampUsers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;over&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;seconds&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;protocols&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;httpProtocol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The &lt;em&gt;SoapMessageTemplate.txt&lt;/em&gt; is just a plain text file containing one SOAP call, instead of data it contains tags like: ${field1}. There is also &lt;em&gt;data.csv&lt;/em&gt; which is a CSV file with the field names in the first row, comma separated values in the following rows. The tags in the SOAP call get replaced by the values from the selected CSV row.&lt;/p&gt;
+
+&lt;p&gt;There is probably nothing more I need to explain, the code reads like it should. The main startingpoint is &lt;em&gt;OurSimulationLocal&lt;/em&gt;, this class sets up the &lt;em&gt;Simulation&lt;/em&gt; (using &lt;em&gt;setUp()&lt;/em&gt;). The &lt;em&gt;Simulation&lt;/em&gt; is contructed in the &lt;em&gt;OurSimulation&lt;/em&gt; class, for each call it takes the ‘next’ value from the CSV, adds one additional field and posts the message to &lt;em&gt;OurEndpoint&lt;/em&gt;, finally it checks for a 200 reply.&lt;/p&gt;
+
+&lt;h2 id=&quot;custom-feeder&quot;&gt;Custom Feeder&lt;/h2&gt;
+
+&lt;p&gt;Instead of having a big list of different options in a CSV file, my task for today was to make a custom &lt;em&gt;Feeder&lt;/em&gt;. It is the class that provides data as input for the SOAP messages. We want to have some random data that still makes sense to the application, based on some averages.&lt;/p&gt;
+
+&lt;p&gt;It looked pretty hard to do, not having programmed a lot of Scala. In the end it was a breeze! The only thing that bugs me is that there are so many different ways to write your code in Scala. I’m not experienced enough yet to know if it ‘reads’ like proper Scala code, I don’t yet know what ‘good’ and ‘bad’ code looks like.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-scala&quot; data-lang=&quot;scala&quot;&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyFeeder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt;  &lt;span class=&quot;kt&quot;&gt;Feeder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;continually&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alphanumeric&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;take&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mkString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toUpperCase&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;country&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nextDouble&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;percentageBuitenlands&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;B&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;NL&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OurSimulation&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Simulation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//... snip ....&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// The same scenario, now using our own feeder:&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feeder&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyFeeder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Our scenario&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feeder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;session&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;idField&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;incrementalId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getAndIncrement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;OurEndpoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SoapMessageTemplate.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Writing a custom feeder is pretty easy to do. The apply() function creates an instance of a Feeder[String] which in turn returns a Map containing [String, String] key value pairs. These are then used to fill the SOAP template!&lt;/p&gt;
+
+&lt;p&gt;Of course the real thing I build today is a bit larger and more complex, but the code is basically the same!&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 15 Dec 2015 15:00:41 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2015/12/getting-to-grips-with-gatling/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/getting-to-grips-with-gatling/</guid>
+        
+        <category>java</category>
+        
+        <category>scala</category>
+        
+        <category>gatling</category>
+        
+        <category>performance</category>
+        
+        <category>testing</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>Keep the Force asleep</title>
@@ -556,58 +666,6 @@ The actual research paper (containing the electoral theory): &lt;a href=&quot;ht
         <category>Devoxx</category>
         
         <category>Programming</category>
-        
-        <category>Science</category>
-        
-      </item>
-    
-      <item>
-        <title>The science behind &#39;Unknown Pleasures&#39;</title>
-        <description>&lt;h1 id=&quot;joy-division&quot;&gt;Joy Division&lt;/h1&gt;
-
-&lt;p&gt;The album cover of &lt;a href=&quot;http://en.wikipedia.org/wiki/Unknown_Pleasures&quot;&gt;Unknown Pleasures&lt;/a&gt; by Joy Division has to be one of the most iconic covers of the 70’s/early 80’s:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/images/Unknown-Pleasures-Joy-Division-1024x1023.jpg&quot;&gt;&lt;img src=&quot;/images/Unknown-Pleasures-Joy-Division-1024x1023-300x300.jpg&quot; alt=&quot;Unknown-Pleasures-Joy-Division-1024x1023&quot; class=&quot;aligncenter&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;The artwork has been re-used and reprinted a lot and is still abundantly present as T-shirt at most music festivals.&lt;/p&gt;
-
-&lt;p&gt;But every time I saw this image I wondered… what do those white lines actually represent (if anything)? It turns out the story behind the white lines makes the artwork much cooler!&lt;/p&gt;
-
-&lt;h1 id=&quot;psr-b191921&quot;&gt;PSR B1919+21&lt;/h1&gt;
-
-&lt;p&gt;At Cambridge University in 1967 a 24 year old student named Jocelyn Bell was analysing a huge printout from a radio telescope. This telescope was built by Anthony Hewish and his group of students to look for quasars. Quasars are the dense centers of super massive blackholes, they emit lots of radio waves and visible light. During the analysis Jocelyn noticed something strange, there appeared to be a signal repeating very quickly, at about 1.337 seconds. Surely this had to be some interference from earth, because this isn’t something a quasar could produce.&lt;/p&gt;
-
-&lt;p&gt;After some research they could rule out a lot of earth-noise, microwaves, French radio signals, police radio and much more. They found out the signal also didn’t follow ‘earth time’, the normal 24 hours we follow, but rather the &lt;a href=&quot;http://en.wikipedia.org/wiki/Sidereal_time&quot;&gt;sidereal time&lt;/a&gt; (star time). In short, when they pointed the telescope to the object again (after earth had rotated) it would be in the same position after 23.9344699 hours. This is a key indicator the signal didn’t come from earth but rather from deep space. Nothing they had previously seen or read about in space could produce such a signal. Jokingly they initially named the signal ‘LGM1’, short for ‘Little Green Men #1’.&lt;/p&gt;
-
-&lt;p&gt;The discovery sparked interest from all over the world, and a year later (1968) scientists had come to the conclusion the signal had to come from something called a &lt;a href=&quot;http://en.wikipedia.org/wiki/Neutron_star&quot;&gt;neutron star&lt;/a&gt;. When a star (larger than our sun) collapses it explodes (this is called a supernova), expelling a lot of material into space. This material, stardust, is literally what we are made of! No other process known in space can produce ‘heavy’ elements like iron, nikkel, gold, silver and platinum. Initially people thought this exploding star didn’t have a ‘corpse’ and all matter was blown into space.&lt;/p&gt;
-
-&lt;p&gt;In 1934 however, just a year after the neutron was discovered two scientists named Walter Baade and Fritz Zwicky predicted the existance of a neutron star. When large stars collapse they expel stardust but also leave behind a dense neutron star. This star, made of super heavy material, spins around producing radio waves. This is what we now call a &lt;a href=&quot;http://en.wikipedia.org/wiki/Pulsar&quot;&gt;pulsar&lt;/a&gt;. The signal from Bell and Hewish was the first observed pulsar, now named PSR B1919+21.&lt;/p&gt;
-
-&lt;h1 id=&quot;cambridge-encyclopedia&quot;&gt;Cambridge Encyclopedia&lt;/h1&gt;
-
-&lt;p&gt;If we look at the Cambridge Encyclopedia of Astronomy there is a page on the discovered pulsar:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/cp1919-joy-division-300x246.jpg&quot; alt=&quot;cp1919-joy-division&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The image on the left page is the same as the album cover, it is the signal of our pulsar: &lt;a href=&quot;http://en.wikipedia.org/wiki/PSR_B1919%2B21&quot;&gt;PSR B1919+21&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 16 Feb 2015 09:13:36 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/</guid>
-        
-        <category>album art</category>
-        
-        <category>cover</category>
-        
-        <category>cp1919</category>
-        
-        <category>joy division</category>
-        
-        <category>lgm1</category>
-        
-        <category>pulsar</category>
-        
         
         <category>Science</category>
         

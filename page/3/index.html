@@ -107,6 +107,171 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2014/04/creating-a-chatterbot/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Creating a chatterbot (Part 1)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Apr 24, 2014 21:26:21
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2014/04/creating-a-chatterbot/">Creating a chatterbot (Part 1)</a></h1>
+
+
+        <p>Ever since the first time I heard about the <a href="http://en.wikipedia.org/wiki/Turing_test">Turing Test</a> I’ve wanted to make my own chatbot. It started probably twenty plus years ago, when the only language I could program in was QBASIC. At that time I never got further than:</p>
+
+<blockquote>
+  <p>Hi computer!<br />
+Hello.</p>
+</blockquote>
+
+<p>…. and now? ….</p>
+
+<h1 id="current-state">Current state</h1>
+
+<p>Since that first try (aged 10 or something) I’ve never tried to build another chatbot. But a couple of days ago I read a news article about the Loebner Prize, an annual event that tests the best chatbots in the world against some human judges, and it sparked my interest again.</p>
+
+<p>I started researching the Loebner Prize winners and there seems to be three distinct groups/types of chatbots and algorithms:</p>
+
+<ol>
+  <li>Template based bots</li>
+  <li>Crowdsourced bots</li>
+  <li>Markov Chain bots</li>
+</ol>
+
+<p>Let me quickly describe how they work.</p>
+
+<h2 id="template-based-bots">Template based bots</h2>
+
+<p>A lot of populair bots (like <a href="http://en.wikipedia.org/wiki/Artificial_Linguistic_Internet_Computer_Entity">A.L.I.C.E.</a> winner of the 2000, 2001 and 2004 Loebner Prize) use pre-defined templates. Most of them use a certain XML template called <a href="http://en.wikipedia.org/wiki/AIML">AIML</a>. This is a short example:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&lt;category&gt;
+  &lt;pattern&gt;* YOUR NAME?&lt;/pattern&gt;
+  &lt;template&gt;My name is Chatbot.&lt;/template&gt;
+&lt;/category&gt;</code></pre></figure>
+
+<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:<br />
+&gt; What is your name?<br />
+&gt; My name is Chatbot.</p>
+
+<p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don’t seem very ‘smart’ and AI to me; so I’m not going to make another AIML-like bot.</p>
+
+<h2 id="crowdsourced-bots">Crowdsourced bots</h2>
+
+<p>One of the best (most human-like) chatbots is <a href="http://www.cleverbot.com/">Cleverbot</a>. But in my opinion it is one of the most simple bots around. It uses a nice trick and huge database. When it encounters a question it doesn’t know/understand, it just ignores it, and stores it. In another chat session, it’ll mimic and repeat that question to another human. The result is stored in the huge database for future conversations. As a result all the answers it gives are very human-like (because, well, they are human answers).</p>
+
+<p>But there is obviously a huge drawback, for example at one moment the bot is pretending to be a 18 year old male, the next moment it claims to be a 40 year old female. Then it starts talking about how much it loves horses, the next moment it says it hates animals…</p>
+
+<h2 id="markov-chain-bots">Markov Chain bots</h2>
+
+<p>To keep this (long) blog post within reasonable length I’m not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let’s for example say we store chains of length three.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;Let&#39;s store this sentence, let&#39;s store it in a markov chain.&quot;
+
+1&gt; Let&#39;s store this
+2&gt; store this sentence
+3&gt; this sentence let&#39;s
+4&gt; sentence let&#39;s store
+5&gt; let&#39;s store it
+6&gt; store it in
+7&gt; it in a
+8&gt; in a markov
+9&gt; a markov chain</code></pre></figure>
+
+<p>Now let’s imagine we are building a valid reply to a question and we already have “let’s store”… what can we do next? We go into the chain and walk the nodes until we find the two matching results (1) and (5). So the sentence can continue with “this” or “it”.</p>
+
+<p>Famous bots like MegaHAL kind of work this way (see their <a href="http://megahal.alioth.debian.org/How.html">explanation</a>). Although this feels much more like real AI/knowledge to me, it also has drawbacks. For example you can’t say these bots are reasoning, they don’t understand the environment/context it is in.</p>
+
+<h1 id="a-new-attempt">A new attempt</h1>
+
+<p>I’ve made a list of what my ideal chatbot should be:</p>
+
+<ul>
+  <li>Learn through conversation/reading text</li>
+  <li>Not just repeat, but understand relations and concepts</li>
+  <li>Have different scopes, global knowledge, conversational scope</li>
+</ul>
+
+<p>Two days ago these ideas started to take shape in my head and I started writing the first code. The first goal is to make the bot able to read text and extract ‘knowledge’ from it.</p>
+
+<p>The first thing I had to do was to break up the input text into pieces, for this I found a great open source framework called <a href="https://opennlp.apache.org/">Apache OpenNLP</a>. It recognises words and sentences, it detects verbs, nouns, pronouns, adjectives, adverbs etc.</p>
+
+<p>The next thing I wanted to do was to turn all the nouns and verbs into their ‘base’. When storing relations in the bots memory I want to avoid duplicate entries, so for example “fish are animals” and “fish is an animal” is the same. For that purpose I’m using <a href="http://wordnet.princeton.edu/">WordNet®</a> in combination with the Java library JWNL.</p>
+
+<p>Currently this is what the bot sees when given some input:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&gt; The bot can parse sentences and understand their base form
+Transformed: (The DT : WordPart) (bot NN : NounPart) (can MD : WordPart) (parse VB : VerbPart) (sentence NNS : NounPart) (and CC : WordPart) (understand VB : VerbPart) (their PRP$ : WordPart) (base form NN : NounPart) 
+&gt; It can also parse names like Roy van Rijn and numbers like five hundred million and 4 hundred
+Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (parse VB : VerbPart) (name NNS : NounPart) (like IN : WordPart) (Roy van Rijn) (and CC : WordPart) (number NNS : NounPart) (like IN : WordPart) (500000000) (and CC : WordPart) (400)</code></pre></figure>
+
+<p>Understanding what kind of words are used and being able to transform them into the base-form will make it easier to store ‘knowledge’ and make sense of the world in the future.</p>
+
+<h1 id="graph-database">Graph database</h1>
+
+<p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I’m in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I’ve got the following unit test working:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:</span>
+<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">);</span>
+    
+<span class="c1">//True: Does human eat banana?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;banana&quot;</span><span class="o">));</span>
+<span class="c1">//True: Does human eat strawberry?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
+<span class="c1">//True: Is banana eaten by human?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
+<span class="c1">//True: Does the group fruit contain strawberry?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
+<span class="c1">//True: Is apple a fruit?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">));</span>
+<span class="c1">//True: Do apples fall from trees?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">));</span>
+    
+<span class="c1">//False: Is strawberry a human?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
+<span class="c1">//False: Is fruit a strawberry?</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span></code></pre></figure>
+
+<p>There are already more facts possible to extract from this ‘knowledge database’ than just the plain information I put in.</p>
+
+<h1 id="data-extraction">Data extraction</h1>
+
+<p>The next step in making my bot is going to be data extraction. I’m probably going to make a small template language that (might!) look like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Pattern: [noun] {be} (adj) [noun]
+Store: %1 is %2</code></pre></figure>
+
+<p>The template should match sentences like “fish are animals”, “roses are red”, “Roy is a handsome dude” and “Roy is an obvious liar”.</p>
+
+<p>The bot should be able to store all these ‘facts’ and put them in my graph/relation database. With these data extraction templates it should be possible to build a large knowledge base with facts for the bot, for example just by parsing a Wikipedia dump.</p>
+
+<p>Now I’m going to dive back into the code and continue my chatbot adventure, keep an eye out for part 2!</p>
+
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2014/02/hacking-runkeeper-data/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hacking your RunKeeper data" width="100" height="100" />
@@ -1426,78 +1591,6 @@ Took: 128 ms</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/06/ethics-for-programmers/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Ethics for programmers" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Jun 21, 2013 16:39:54
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/06/ethics-for-programmers/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2013/06/ethics-for-programmers/">Ethics for programmers</a></h1>
-
-
-        <p>Programmers need more ethics.<br />
-And I’m not talking about ‘craftsmanship’ ethics such as <em>“always make clean code”</em>, <em>“be agile”</em> or <em>“coffee should be consumed pure and black”</em>.</p>
-
-<p>No, I’m talking about real ethics:</p>
-
-<blockquote>
-  <p><strong>Ethics</strong>, also known as <strong>moral philosophy</strong>, is a branch of philosophy that involves systematizing, defending and recommending concepts of <strong>right</strong> and <strong>wrong</strong> conduct.</p>
-
-  <p>Source: <a href="http://en.wikipedia.org/wiki/Ethics">http://en.wikipedia.org/wiki/Ethics</a></p>
-</blockquote>
-
-<h1 id="prism">PRISM</h1>
-
-<p>Almost all the programmers I know are very active online, and all of them are condemning the US government project called <a href="http://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29">PRISM</a>. It is a huge electronic surveillance program, recently revealed by <a href="http://en.wikipedia.org/wiki/Edward_Snowden">Edward Snowden</a>. This program collects (all) data from a huge list of international websites such as Google, Facebook, AOL, Apple, Yahoo, Microsoft, and more.</p>
-
-<p>One can only imagine the magnitude of this project, it handles a humongous amount of data and it would have to filter and match the data. It will have a lot of (secret) API’s and other methods of collecting the data. And this is all created by…. <strong>us programmers</strong>!</p>
-
-<h1 id="just-say-no">Just say no…</h1>
-
-<p>Why would somebody help the government in making these applications? I <em>ethically</em> wouldn’t think about programming this. And I’m serious about it, I’ve already turned down two projects in my young career because of an ethical standpoint:</p>
-
-<ol>
-  <li>Helping to tweak an algorithm for the Dutch government for missile guidance (it would have been a cool project!)</li>
-  <li>A project for a telecom company doing deep packet inspection, enabling them to ask subscription costs for (free) mobile apps<br />
-(such as WhatsApp)</li>
-</ol>
-
-<p>Both these projects might influence my own, or other people’s life in a negative way, and I refuse to help people do that. It’s like being an arms dealer or gun manufacturer condemning the use of weapons. It would feel like selling a crowbar to a thief, making a bit of money, while actually enabling them to break in.</p>
-
-<h1 id="ethics">Ethics!</h1>
-
-<p>Maybe programmers should have an oath, something like the <a href="http://en.wikipedia.org/wiki/Hippocratic_Oath">Hippocratic Oath</a> or the <a href="http://en.wikipedia.org/wiki/Physician%27s_Oath">Physician’s Oath</a>. Here are some of the rules I follow:</p>
-
-<ul>
-  <li>I won’t write code which helps/enables people to harm others</li>
-  <li>I won’t write code which will limit other people’s freedom</li>
-  <li>I won’t work for companies using software patents to bully/attack other people and companies</li>
-  <li>…</li>
-</ul>
-
-<p>If you have any good additions to the list, please drop a comment!</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/06/ethics-for-programmers/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

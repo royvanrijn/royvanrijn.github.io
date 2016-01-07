@@ -107,6 +107,205 @@
   
     <div class="post">
       <div class="post-thumbnail">
+      	<a href="/blog/2010/07/patent-infringement/">
+      	
+      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent infringement" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by Roy van Rijn on 
+          <span class="date">
+            Jul 7, 2010 22:15:34
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
+        </p>
+        <h1><a class="title-link" href="/blog/2010/07/patent-infringement/">Patent infringement</a></h1>
+
+
+        <p>Some time ago I received the following email about <a href="/blog/2010/06/creating-shazam-in-java/">this</a> project.  </p>
+
+<blockquote>
+
+  <p>-–<br />
+Mr. van Rijn,</p>
+
+  <p>I am Darren Briggs, the Chief Technical Officer of Landmark Digital Services, LLC. Landmark Digital Services owns the patents that cover the algorithm used as the basis for your recently posted “<a href="/blog/2010/06/creating-shazam-in-java/">Creating Shazam In Java</a>”. While it is not Landmark’s intention to alienate those in the Open Source and Music Information Retrieval community, Landmark must request that you do not ship, deploy or post the code presented in your post. Landmark also requests that in the future you do not ship, deploy or post any portions or versions of this code in its current state or in any modified state.</p>
+
+  <p>We hope you understand our position and that we would be legally remiss not to make this request. We appreciate your immediate attention and response.</p>
+
+  <p>Best regards,</p>
+
+  <p>Darren P. Briggs<br />
+Vice President &amp;<br />
+Chief Technical Officer<br />
+Landmark Digital Services, LLC<br />
+-–  </p>
+
+</blockquote>
+
+<p>This scared me a bit, why are they emailing me? I’ve written some code (100% my own) and implemented my own methods for matching music. There are some key differences with the algorithm Shazam uses.</p>
+
+<p>The code isn’t published yet, but I was planning on releasing it under Apache License to the open source community soon.</p>
+
+<p>It was never my intention to release this commercially, I’m just a programmer who likes to work on technical, mathematical algorithms in his spare time. And if enough people ask for the source code, I’d be happy to give it to them. Who would have thought that creating something at home in a weekend could result in a possible patent infringement!?</p>
+
+<p>Just to be sure I asked them confirmation that the email was indeed sent from their company. And second, I’d like to know which patents are in play. Because I just couldn’t think that something this easy (music-fingerprint is a hash, and we do a lookup) can be patented.. Maybe in the States, but in Europe?</p>
+
+<p>I got the following reply from Landmark Digital Services LLC:  </p>
+
+<blockquote>
+
+  <p>-–<br />
+Mr. van Rijn,</p>
+
+  <p>I can confirm that the email you received came from me on behalf of Landmark Digital Services, LLC. If you require a more formal notification, the Landmark legal department can provide you with a legal notification. Please let me know if that would be preferable.</p>
+
+  <p>The Landmark patents have been granted around the world, including the US, the EU, individual EU-member countries.</p>
+
+  <p>Examples of some of the Landmark patents include:<br />
+- System and Methods for Recognizing Sound and Music Signals in High Noise and Distortion<br />
+- Robust and Invariant Audio Pattern Matching</p>
+
+  <p>We appreciate your compliance with our request.</p>
+
+  <p>Best regards,</p>
+
+  <p>Darren P. Briggs<br />
+Vice President &amp;<br />
+Chief Technical Officer<br />
+Landmark Digital Services, LLC<br />
+-–  </p>
+
+</blockquote>
+
+<p>They are really serious about this. But there is a problem, I still don’t have patent numbers of European patents, so there is no way for me to check the validity of their claims. Once again I asked them for specific patent numbers. And got the following reply:</p>
+
+<blockquote>
+
+  <p>-–<br />
+Mr. van Rijn,</p>
+
+  <p>The US patent numbers for the two examples I provided you are 6,990,453 and 7,627,477. Note that there are additional issued patents and pending patent applications in the US and Eu that cover these concepts as well.</p>
+
+  <p>Best regards,</p>
+
+  <p>Darren<br />
+P. Briggs<br />
+Vice President &amp;<br />
+Chief Technical Officer<br />
+Landmark Digital Services, LLC<br />
+-–  </p>
+
+</blockquote>
+
+<p>Sigh, again two U.S. patent numbers. But well, lets take a step back. Why does Landmark Digital Services think they hold a patent for the concepts used in my code? Even if my code works pretty different from the Shazam code (from which the patents came).</p>
+
+<p>What they describe in the patent is a system which:<br />
+1. Make a series of fingerprints of a media file and/or media sample<br />
+     (such as audio, but could also be text, video, multimedia, etc)<br />
+2. Have a database/hashtable of fingerprints as lookup<br />
+3. Compare the set of hashtable hits using their moment in time it happened</p>
+
+<p>This is very vague, basically the only innovative idea is matching the found fingerprints linearly in time. Because the first two steps describe how a hashtable works and creating a hash works. These concepts are not new nor innovative.</p>
+
+<p>But, with a bit of imagination one could (possibly) argue that my code (again, written completely by myself in a weekend with some spare time) does the same thing as the patent describes.</p>
+
+<p>Just to be sure I asked around for advice, including help from the <a href="http://fsf.org/">FSF</a> (Free Software Foundation) and the <a href="http://www.eff.org/">EFF</a> (Electronic Frontier Foundation). They forwarded my questions to<a href="http://www.bof.nl/"> Bits of Freedom</a> a Dutch organisation for digital rights.</p>
+
+<p>After a good conversation with Ot van Daalen (from Bits Of Freedom) he suggested I contact <a href="http://www.arnoud.engelfriet.net/">Arnoud Engelfriet</a>, a Dutch ICT lawyer and patent attorney with a lot of knowledge about software patents.</p>
+
+<p>In the last couple of days I’ve had quite a few conversations with Arnoud, and he helped me with a lot of my questions.</p>
+
+<p>Here are some of the conclusions:</p>
+
+<ul>
+  <li>Software companies can make your life very miserable if you don’t comply;</li>
+  <li>Using the Java-Music Match code commercially will likely result in a lawsuit for patent infringement;</li>
+  <li>Releasing the code under an Open Source license on a non-profit website (no ads) is a grey area;</li>
+  <li>Writing/using this code privately can’t be patent infringement in the Netherlands;</li>
+</ul>
+
+<p>And even the Arnoud even mailed me:  </p>
+
+<blockquote>
+
+  <p>-–<br />
+Als je de software laat staan, loop je de kans dat Landmark Digital Services je een proces aandoet. En zoals gezegd kan dat een fiks bedrag worden.</p>
+
+  <p>Translation:<br />
+If you leave the software on your website, you run the risk that Landmark Digital Services files a patent infringement lawsuit. And like I told you, this could result in a substantial amount of money.<br />
+-–  </p>
+
+</blockquote>
+
+<p>Since I don’t want to end up like <a href="http://en.wikipedia.org/wiki/Dmitry_Sklyarov">Dmitry Sklyarov</a>, with the possibility of a lawsuit, I’m not going to publish the code anymore… Grey area’s with lawsuits roaming around are better to be avoided. Especially if you think about the average cost of a patent lawsuit being 1 to 3 million dollars.</p>
+
+<p>In the latest email I received from Landmark Digital Services they are even asking for more:  </p>
+
+<blockquote>
+
+  <p>-–<br />
+Mr. Van Rijn,</p>
+
+  <p>The two example patent numbers that I sent you are U.S. patents, but each of these patents has also been filed as patent applications in the Netherlands. Also, as I’m sure you are aware, your blogpost may be viewed internationally. As a result, you may contribute to someone infringing our patents in any part of the world.</p>
+
+  <p>While we trust your good intentions, yes, we would like you to refrain from releasing the code at all and to remove the blogpost explaining the algorithm.</p>
+
+  <p>Thank you for your understanding.</p>
+
+  <p>Best regards,</p>
+
+  <p>Darren<br />
+P. Briggs<br />
+Vice President &amp;<br />
+Chief Technical Officer<br />
+Landmark Digital Services, LLC<br />
+-–  </p>
+
+</blockquote>
+
+<p>They are still unable to direct me to the correct Dutch patent numbers. But more shocking, they are now telling me that my blogpost may contribute internationally to patent infringement. But… doesn’t the patent itself describe their algorithm in much more detail? The idea of patents are that the world knows about technology and how it can be used, but they can’t legally commercially exploit it? Now next to asking me not to release the code, they are also asking me to remove the previous blogpost!</p>
+
+<p>This seems like a very unjust threat to me, and for now I’m going to ignore that request. If they decide to file a formal legal complaint I might reconsider taking down the blogpost. The only action I’ll take right now is not releasing the source code.</p>
+
+<h1 id="other-implementations">Other implementations</h1>
+
+<p>I’ve also had contact with other people who have implemented this kind of algorithms. Most notible is Dan Ellis. His implementation can be found here: <a href="http://labrosa.ee.columbia.edu/~dpwe/resources/matlab/fingerprint/">http://labrosa.ee.columbia.edu/~dpwe/resources/matlab/fingerprint/</a></p>
+
+<p>He hasn’t been contacted (yet?), but he isn’t planning on taking his MatLab implementation down anyway and has agreed for me to place the link here. This raises another interesting question, why are they targetting me, somebody who hasn’t even published the code yet, and not the already published implementation of Dan?!</p>
+
+<p>And if they think its illegal to explain the algorithm, why aren’t they going after this guy? <a href="http://laplacian.wordpress.com/2009/01/10/how-shazam-works/">http://laplacian.wordpress.com/2009/01/10/how-shazam-works/</a></p>
+
+<p>This is where I got the idea to implement the algorithm and it is mentioned in my own first post about the Java Shazam.</p>
+
+<h1 id="any-advice">Any advice?</h1>
+
+<p>So, has anybody else had these kind of experiences? What would you do in this situation?</p>
+
+<p>Maybe I’m going to need it, maybe I’ll just buy a beer, every penny is welcome:<br />
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=85FHHH25ZUMMN"><img src="/images/btn_donateCC_LG.gif" alt="btn_donateCC_LG.gif" /></a></p>
+
+<h1 id="next">Next:</h1>
+
+<p>The patent infrigement story <a href="/blog/2010/11/patent-infrigement-part-2/">continues here…</a></p>
+
+<p>ps. I’m sorry John Metcalf: You can stop printing “Free Roy van Rijn” t-shirts…</p>
+
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+  
+    <hr/>
+  
+    <div class="post">
+      <div class="post-thumbnail">
       	<a href="/blog/2010/06/music-matching-part-deux/">
       	
       		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Music Matching (part deux)" width="100" height="100" />
@@ -2063,135 +2262,6 @@ etc…</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-  
-    <hr/>
-  
-    <div class="post">
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/inversion_of_logic/">
-      	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Cleaner code: Inversion of logic" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
-            Dec 11, 2009 10:14:10
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
-        </p>
-        <h1><a class="title-link" href="/blog/2009/12/inversion_of_logic/">Cleaner code: Inversion of logic</a></h1>
-
-
-        <h1 id="design-patterns">Design patterns</h1>
-
-<p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_%28computer_science%29">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p>
-
-<p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p>
-
-<p>These patterns help you solve common problems in a well defined way, other programmers will recognise the patterns used and it will help produce more maintainable code.</p>
-
-<h1 id="inversion-of-logic">Inversion of logic</h1>
-
-<p>The patterns described above all say something about classes/methods and architecture. But I think another class of design patterns exist, which have a smaller granularity. These patterns say something about the code inside a single method. A good example is Inversion of logic.</p>
-
-<p>Let me give an example, lets take the following code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
-			<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
-				<span class="c1">//Approve the request</span>
-				<span class="c1">//Process the request in database</span>
-				<span class="c1">//Send email to HQ</span>
-				<span class="c1">//Etc...</span>
-			<span class="o">}</span>				
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-    
-		<span class="k">if</span><span class="o">(</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
-			<span class="c1">//Approve the request</span>
-			<span class="c1">//Process the request in database</span>
-			<span class="c1">//Send email to HQ</span>
-			<span class="c1">//Etc...</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-		<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
-		<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Some programmers don’t like the validateRequest() method above because there are multiple exit points. This was more problematic in C code then in Java because in C you needed to do a bit more resource management (freeing mallocs etc), in Java I actually don’t mind having more then one exit-point in my code. In this case it makes it just a bit more readable. It would be easy to add a ‘requestIsValid’ boolean and fill that instead.</p>
-
-<p>Anyway, the next step in refactoring this code is using what I call “Inversion of Logic”. The idea is that you don’t continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you’ll lose a lot of nesting, making the code more readable. I’m going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
-    
-		<span class="k">if</span><span class="o">(!</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
-			<span class="k">continue</span><span class="o">;</span>
-		<span class="o">}</span>
-		
-		<span class="c1">//Approve the request</span>
-		<span class="c1">//Process the request in database</span>
-		<span class="c1">//Send email to HQ</span>
-		<span class="c1">//Etc...</span>
-	<span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span><span class="o">(!</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
-	<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">||</span> <span class="o">!</span><span class="n">tenant</span><span class="o">.</span><span class="na">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As you can see in the for-loop all the business logic is moved one indent back, this will make your code easier to scan for business rules. And if you look at the validateRequest method the code reads more fluent. Instead of stacking up and remembering the valid cases:</p>
-
-<p><em>IF form is correct<br />
-AND tenant age correct<br />
-AND tenant licence is valid<br />
-THEN proceed</em></p>
-
-<p>We now eliminate the bad cases first:</p>
-
-<p><em>IF form is incorrect: deny rental<br />
-IF tenant’s age or licence is invalid: deny rental<br />
-ELSE proceed</em></p>
-
-<p>I’m trying to do this everywhere I can, it realy helps the readability.</p>
-
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
