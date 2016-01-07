@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Eureqa</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2009-12-04T21:14:48+01:00" class="date">
           Dec 4, 2009 21:14:48
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Eureqa</h1>
+      <h1 itemprop="name" class="post-title">Eureqa</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>I’ve just stumbled across a new program: <a href="http://ccsl.mae.cornell.edu/eureqa">Eureqa</a></p>
 
 <p>Its a program, developed by the Cornell Computational Synthesis Laboratory, that can detect equations in sets of data. Its primary goal is to identify the simplest mathematical formulas which could describe the underlying mechanisms that produced the data.</p>
@@ -148,6 +150,7 @@
 <p>The algorithm(s) used in this program are based around “<a href="http://en.wikipedia.org/wiki/Symbolic_Regression">symbolic regression</a>”. It is a form of Genetic Programming (GA) where the computer processes a tree of possibilities recursively searching for the best suited building-blocks.</p>
 
 
+    </span>
     
   </article>
 

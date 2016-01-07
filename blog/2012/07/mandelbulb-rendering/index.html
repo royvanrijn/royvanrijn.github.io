@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Mandelbulb rendering</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2012-07-12T16:16:08+02:00" class="date">
           Jul 12, 2012 16:16:08
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/mandelbulb-rendering/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Mandelbulb rendering</h1>
+      <h1 itemprop="name" class="post-title">Mandelbulb rendering</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same… So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I’m pretty pleased with the first results!</p>
 
 <h1 id="my-first-3d-engine-tm">My first 3d engine (tm)</h1>
@@ -160,6 +162,7 @@ So I made some more improvements and managed to render a nice wallpaper for myse
 <p>(yes, it has a glitch with the pink mandelbulb, can’t be bothered to fix…)</p>
 
 
+    </span>
     
   </article>
 

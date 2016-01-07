@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>The Java 9 'Kulla' REPL</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2014-11-27T12:09:20+01:00" class="date">
           Nov 27, 2014 12:09:20
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">The Java 9 'Kulla' REPL</h1>
+      <h1 itemprop="name" class="post-title">The Java 9 'Kulla' REPL</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Maybe it’ll be part of JDK 9, maybe it won’t… but people are working hard on creating a REPL tool/environment for the Java Development Kit (JDK). More information on the code and the project is available as part of OpenJDK: <a href="http://openjdk.java.net/projects/kulla/">project Kulla</a>.</p>
 
 <p>Some of you might not be familiar with the terminology ‘REPL’, it is short for Read Evaluate Print Loop. It is hard to explain exactly what it does, but very easy to demonstrate:</p>
@@ -193,6 +195,7 @@ Hello World!</code></pre></figure>
 <p>If you want to try out Kulla, it took me literally 20 minutes to get up and running on my MacBook. Just follow the instructions on <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK</a>, but instead use <a href="http://hg.openjdk.java.net/kulla/dev/">http://hg.openjdk.java.net/kulla/dev/</a> as codebase. After building the JDK, go to ./langtools/repl and look at the README.</p>
 
 
+    </span>
     
   </article>
 

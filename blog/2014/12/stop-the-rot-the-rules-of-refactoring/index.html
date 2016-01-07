@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Stop the Rot, the Rules of Refactoring</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2014-12-09T13:31:22+01:00" class="date">
           Dec 9, 2014 13:31:22
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Stop the Rot, the Rules of Refactoring</h1>
+      <h1 itemprop="name" class="post-title">Stop the Rot, the Rules of Refactoring</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.</p>
 
 <p>Let’s do a quick check:</p>
@@ -182,6 +184,7 @@
 
 <p>In short: <strong>Healthy code!</strong></p>
 
+    </span>
     
   </article>
 

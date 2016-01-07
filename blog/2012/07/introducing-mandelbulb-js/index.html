@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Introducing: mandelbulb.js</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2012-07-12T16:58:15+02:00" class="date">
           Jul 12, 2012 16:58:15
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/introducing-mandelbulb-js/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Introducing: mandelbulb.js</h1>
+      <h1 itemprop="name" class="post-title">Introducing: mandelbulb.js</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>This afternoon Will (the friend I mentioned in <a href="/blog/2012/07/mandelbulb-rendering/">this</a> previous post) showed up again on Google Talk.<br />
 He set me a new challenge: “How about translating your 3d engine/mandelbulb code into pure Javascript?”</p>
 
@@ -154,6 +156,7 @@ He set me a new challenge: “How about translating your 3d engine/mandelbulb co
 <p>I’ve already included <a href="https://gist.github.com/3098912">one improvement</a> by Will himself, scanlines to smooth up the rendering (good for inpatient people!).</p>
 
 
+    </span>
     
   </article>
 

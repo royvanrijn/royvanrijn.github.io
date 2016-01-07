@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>royvanrijn  | Java, algorithms, math, science and more!</title>
@@ -105,27 +106,29 @@
   <hr/>
   <!-- This loops through the paginated posts -->
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/getting-to-grips-with-gatling/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/gatling-logo.png" alt="Getting to grips with Gatling: Custom Feeder" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/gatling-logo.png" alt="Getting to grips with Gatling: Custom Feeder" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
             Dec 15, 2015 15:00:41
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/getting-to-grips-with-gatling/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/getting-to-grips-with-gatling/">Getting to grips with Gatling: Custom Feeder</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/getting-to-grips-with-gatling/">Getting to grips with Gatling: Custom Feeder</a></h1>
 
-
-        <p>About a year ago someone on my current project did an initial setup of <a href="http://gatling.io/">Gatling</a>. This is a performance/stress test tool written in <a href="http://www.scala-lang.org/">Scala</a>, it is easy to use but very powerful. The basic idea is that you write the test scenario’s in code, the same way as you would create integration/unit tests. The advantage is that the resulting tests are easy to expand, maintain and you’ve got everything under version control.</p>
+        <span itemprop="articleBody">
+          <p>About a year ago someone on my current project did an initial setup of <a href="http://gatling.io/">Gatling</a>. This is a performance/stress test tool written in <a href="http://www.scala-lang.org/">Scala</a>, it is easy to use but very powerful. The basic idea is that you write the test scenario’s in code, the same way as you would create integration/unit tests. The advantage is that the resulting tests are easy to expand, maintain and you’ve got everything under version control.</p>
 
 <p>One very powerful feature Gatling has is the <em>Recorder</em>. It is an application you can launch and it acts like a proxy server. Being a proxy server it can record and log all the calls you do to an application. Without writing any code it can <em>automatically</em> create a stress test!</p>
 
@@ -214,36 +217,41 @@
 <p>Of course the real thing I build today is a bit larger and more complex, but the code is basically the same!</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/getting-to-grips-with-gatling/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/keep-the-force-asleep/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/theforce.png" alt="Keep the Force asleep" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/theforce.png" alt="Keep the Force asleep" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
             Dec 15, 2015 15:00:41
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/keep-the-force-asleep/">Keep the Force asleep</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/keep-the-force-asleep/">Keep the Force asleep</a></h1>
 
-
-        <p>At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it yet. But luckely there is a solution, I’ve created a handy <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>.</p>
+        <span itemprop="articleBody">
+          <p>At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it yet. But luckely there is a solution, I’ve created a handy <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>.</p>
 
 <p>A bookmarklet is a piece of Javascript code that you can add as a bookmark. When you are on a certain website (like Twitter) you can press the bookmarklet and the Javascript is executed. The bookmarklet code I’m using has been created using this great website: <a href="http://www.conroyp.com/2010/03/11/declutter/">DeClutter Twitter</a> and it removes most Star Wars related tweets from your timeline!</p>
 
@@ -281,36 +289,41 @@
   <span class="p">}</span></code></pre></figure>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/google-guava-range-with-localdate/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/guava.png" alt="Google Guava: Range with LocalDate" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/guava.png" alt="Google Guava: Range with LocalDate" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
             Dec 15, 2015 15:00:41
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/google-guava-range-with-localdate/">Google Guava: Range with LocalDate</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/google-guava-range-with-localdate/">Google Guava: Range with LocalDate</a></h1>
 
-
-        <p>This afternoon I was working on implementing a user story with (<a href="http://www.joda.org/joda-time/">JodaTime</a>) <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> contained in this period.</p>
+        <span itemprop="articleBody">
+          <p>This afternoon I was working on implementing a user story with (<a href="http://www.joda.org/joda-time/">JodaTime</a>) <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> contained in this period.</p>
 
 <p>First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>s, and <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> is a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html">ReadablePartial</a>, not a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>! So to make my code work I had to do the following:</p>
 
@@ -339,36 +352,41 @@
 <p>I really love using Google Guava, it provides solutions for a lot of common programming challenges. Not only that, their API is very <em>very</em> clean and skillfully designed. The use of open/closed in <em>Range.java</em> is very handy and makes it easy to think about corner cases.</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/makeblock-robots-for-kids-an-adults/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/makeblock.jpg" alt="Makeblock, robots for kids (and adults)" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/makeblock.jpg" alt="Makeblock, robots for kids (and adults)" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-14T10:10:46+01:00" class="date">
             Dec 14, 2015 10:10:46
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/makeblock-robots-for-kids-an-adults/">Makeblock, robots for kids (and adults)</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/makeblock-robots-for-kids-an-adults/">Makeblock, robots for kids (and adults)</a></h1>
 
-
-        <p>When I left the Port of Rotterdam (over a year ago) as consultant/software developer I got a lot of cool gifts. Amongst the gifts was a small blue box from <a href="http://www.makeblock.cc/">Makeblock</a>, called the ‘robot starter kit’. It was put away on my desk and sadly I’d forgotten about it. But recently a colleague of mine showed us the robot his daughter made. She got a similar robot from Makeblock for her birthday and it ‘became her new best friend’. He asked her if he could borrow the robot for one day and show it to us at work, she reluctantly said yes.</p>
+        <span itemprop="articleBody">
+          <p>When I left the Port of Rotterdam (over a year ago) as consultant/software developer I got a lot of cool gifts. Amongst the gifts was a small blue box from <a href="http://www.makeblock.cc/">Makeblock</a>, called the ‘robot starter kit’. It was put away on my desk and sadly I’d forgotten about it. But recently a colleague of mine showed us the robot his daughter made. She got a similar robot from Makeblock for her birthday and it ‘became her new best friend’. He asked her if he could borrow the robot for one day and show it to us at work, she reluctantly said yes.</p>
 
 <p>When I got home I suddenly remembered the blue box I had laying around in the corner of my desk. I decided to show it to my 3 year old daughter. She loved the idea of having her own little robot in her room. Searching online I couldn’t find a suggested appropriate age for these robots so I figured: if she wants to try, just go for it!</p>
 
@@ -406,36 +424,41 @@
 <p>Nontheless: <strong>Every parent should buy one!</strong></p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/hacking-a-broken-roomba/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/roomba.png" alt="Hacking a broken Roomba" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/roomba.png" alt="Hacking a broken Roomba" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-12T11:01:44+01:00" class="date">
             Dec 12, 2015 11:01:44
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/hacking-a-broken-roomba/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/hacking-a-broken-roomba/">Hacking a broken Roomba</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/hacking-a-broken-roomba/">Hacking a broken Roomba</a></h1>
 
-
-        <p><img src="/images/roomba-googledag.jpg" alt="roomba-googledag" class="alignright" />
+        <span itemprop="articleBody">
+          <p><img src="/images/roomba-googledag.jpg" alt="roomba-googledag" class="alignright" />
 Every couple of weeks we organize a hack-day at work. Being a (Java) software consulting company we usually work on exploring new Java frameworks or we contribute to open source projects. But more and more we step out of just software and bring Raspberry Pi’s and other hardware. Another example where we hacked on hardware is playing with Software Defined Radio (SDR), my colleague Bert Jan did a talk about this at <a href="https://www.youtube.com/watch?v=fOlz0OcZPjc">Devoxx 2015</a>.</p>
 
 <h1 id="broken-roomba">Broken Roomba</h1>
@@ -528,36 +551,41 @@ Every couple of weeks we organize a hack-day at work. Being a (Java) software co
 <p>Happy hacking!</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/hacking-a-broken-roomba/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/12/if-you-want-to-build-software/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/ship.jpg" alt="If you want to build software..." width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/ship.jpg" alt="If you want to build software..." width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-12-09T09:17:02+01:00" class="date">
             Dec 9, 2015 09:17:02
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/if-you-want-to-build-software/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/12/if-you-want-to-build-software/">If you want to build software...</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/12/if-you-want-to-build-software/">If you want to build software...</a></h1>
 
-
-        <p>Yesterday I heard a great quote:</p>
+        <span itemprop="articleBody">
+          <p>Yesterday I heard a great quote:</p>
 
 <blockquote>
   <p>If you want to build a ship, don’t drum up people to collect wood and don’t assign them tasks and work, but rather teach them to long for the endless immensity of the sea. <strong>-Antoine de Saint-Exupery</strong></p>
@@ -572,36 +600,41 @@ Every couple of weeks we organize a hack-day at work. Being a (Java) software co
 <p>This should be the same for (Agile) software development:<br />
 Don’t hire programmers and give them tasks, tell them about what you want to achieve! Enthusiasm is contagious, it is the perfect catalyst to boost productivity. When people are hired to do tasks, they do the tasks, nothing more, nothing less. When people are hired to reach for a certain goal they’ll express creativity and ingenuity. They will suggest improvements and you’ll end up with a much (MUCH) better product.</p>
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/if-you-want-to-build-software/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/11/the-most-discriminating-jug-in-the-world/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/duchess.jpg" alt="The most discriminating JUG in the world" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/duchess.jpg" alt="The most discriminating JUG in the world" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-11-30T14:12:35+01:00" class="date">
             Nov 30, 2015 14:12:35
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/11/the-most-discriminating-jug-in-the-world/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/11/the-most-discriminating-jug-in-the-world/">The most discriminating JUG in the world</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/11/the-most-discriminating-jug-in-the-world/">The most discriminating JUG in the world</a></h1>
 
-
-        <p>About a week ago I was talking to a colleague about the lack of female Java programmers, especially here in Western Europe. We came to this topic after hearing that at <a href="http://devoxx.ma/en/">Devoxx Morocco</a> almost <strong>a third</strong> of the attendees was female, great news! The conclusion? Some of my friends are running the most discriminating JUG in the world.</p>
+        <span itemprop="articleBody">
+          <p>About a week ago I was talking to a colleague about the lack of female Java programmers, especially here in Western Europe. We came to this topic after hearing that at <a href="http://devoxx.ma/en/">Devoxx Morocco</a> almost <strong>a third</strong> of the attendees was female, great news! The conclusion? Some of my friends are running the most discriminating JUG in the world.</p>
 
 <p>Here, in the Netherlands, we have just two big JUG’s (Java User Groups). There is the <a href="http://www.nljug.org/">NLJUG</a>, which covers the entire country and organises the J-Fall conference amongst other things, almost all Java coders in the Netherlands are a member. There is also <a href="http://jduchess.org/">JDuchess</a>, the female JUG. They organise meetings with fellow female coders and help them to connect with other (female) coders around the globe, they also hold regular meetups, also internationally at conferences and they are doing an awesome job hosting several Devoxx4Kids events per year. The JDuchess have been awarded (rightly so) multiple times for their effort in bringing more gender equality in the Java world.</p>
 
@@ -628,36 +661,41 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
 <p>But, as a male, I too want to share experiences with everyone, I too want to discuss the topic of equality. There should be no need in the world for a female JUG (which apparently there still is)! All the JUGs should be as open and inviting as the JDuchess, I’ve never seen a JUG so active and welcoming as them. They are an example for other JUGs… except their discriminating admission policy of course. Gender should not matter, it is all about having mutually shared interest.</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/11/the-most-discriminating-jug-in-the-world/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/11/javaone-2015-and-devoxx-2015/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="JavaOne 2015 and Devoxx 2015" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="JavaOne 2015 and Devoxx 2015" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-11-16T14:41:38+01:00" class="date">
             Nov 16, 2015 14:41:38
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/11/javaone-2015-and-devoxx-2015/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/11/javaone-2015-and-devoxx-2015/">JavaOne 2015 and Devoxx 2015</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/11/javaone-2015-and-devoxx-2015/">JavaOne 2015 and Devoxx 2015</a></h1>
 
-
-        <p>The last couple of weeks have been really busy for me. I’ve been to San Francisco for JavaOne 2015 (the official Java conference). After that I had just a week to recover and travelled to Antwerp in Belgium for Devoxx 2015 (the largest community driven conference).</p>
+        <span itemprop="articleBody">
+          <p>The last couple of weeks have been really busy for me. I’ve been to San Francisco for JavaOne 2015 (the official Java conference). After that I had just a week to recover and travelled to Antwerp in Belgium for Devoxx 2015 (the largest community driven conference).</p>
 
 <h1 id="talking">Talking</h1>
 
@@ -700,36 +738,41 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
 <p>Devoxx: It is (for me) the best Java conference in the world, the quality of the talks was very high again. The atmosphere was awesome. And I’m not just saying this because I volunteer during the conference :-)</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/11/javaone-2015-and-devoxx-2015/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/05/microservices-creationism-versus-evolutionism/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/micro-islands.jpg" alt="Microservices: Creationism versus Evolutionism" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/micro-islands.jpg" alt="Microservices: Creationism versus Evolutionism" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-05-14T12:43:00+02:00" class="date">
             May 14, 2015 12:43:00
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/05/microservices-creationism-versus-evolutionism/">Microservices: Creationism versus Evolutionism</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/05/microservices-creationism-versus-evolutionism/">Microservices: Creationism versus Evolutionism</a></h1>
 
-
-        <p>This morning a friend (<a href="https://twitter.com/vgrgic/status/598791639784660994">@vgrgic</a>) tweeted the following quote from Martin Fowler:</p>
+        <span itemprop="articleBody">
+          <p>This morning a friend (<a href="https://twitter.com/vgrgic/status/598791639784660994">@vgrgic</a>) tweeted the following quote from Martin Fowler:</p>
 
 <blockquote>
   <p>“So if you can keep your system simple enough to avoid the need for microservices: do.”</p>
@@ -762,36 +805,41 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
 </ol>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/05/stop-the-conference-committees/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/stop-program-committees.jpg" alt="Stop the conference committees?" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/stop-program-committees.jpg" alt="Stop the conference committees?" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-05-12T21:20:55+02:00" class="date">
             May 12, 2015 21:20:55
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/stop-the-conference-committees/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/05/stop-the-conference-committees/">Stop the conference committees?</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/05/stop-the-conference-committees/">Stop the conference committees?</a></h1>
 
-
-        <p>In this post I’ll try to convince you that all the conferences are doing it wrong. <a href="https://www.oracle.com/javaone/index.html">JavaOne</a>, <a href="http://www.devoxx.be">Devoxx</a>, and all other conferences should stop using conference program committees to select their speakers, there is a much better way.</p>
+        <span itemprop="articleBody">
+          <p>In this post I’ll try to convince you that all the conferences are doing it wrong. <a href="https://www.oracle.com/javaone/index.html">JavaOne</a>, <a href="http://www.devoxx.be">Devoxx</a>, and all other conferences should stop using conference program committees to select their speakers, there is a much better way.</p>
 
 <h1 id="call-for-papers">Call for Papers</h1>
 
@@ -834,36 +882,41 @@ The ‘extra footage’ YouTube video with more details: <a href="https://youtu.
 The actual research paper (containing the electoral theory): <a href="http://arxiv.org/pdf/0906.1943.pdf">Telescope time without tears – a distributed approach to peer review</a></p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/stop-the-conference-committees/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/02/the-science-behind-unknown-pleasures/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/unknown_pleasures.jpg" alt="The science behind 'Unknown Pleasures'" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/unknown_pleasures.jpg" alt="The science behind 'Unknown Pleasures'" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-02-16T09:13:36+01:00" class="date">
             Feb 16, 2015 09:13:36
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/02/the-science-behind-unknown-pleasures/">The science behind 'Unknown Pleasures'</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/02/the-science-behind-unknown-pleasures/">The science behind 'Unknown Pleasures'</a></h1>
 
-
-        <h1 id="joy-division">Joy Division</h1>
+        <span itemprop="articleBody">
+          <h1 id="joy-division">Joy Division</h1>
 
 <p>The album cover of <a href="http://en.wikipedia.org/wiki/Unknown_Pleasures">Unknown Pleasures</a> by Joy Division has to be one of the most iconic covers of the 70’s/early 80’s:</p>
 
@@ -892,36 +945,41 @@ The actual research paper (containing the electoral theory): <a href="http://arx
 <p>The image on the left page is the same as the album cover, it is the signal of our pulsar: <a href="http://en.wikipedia.org/wiki/PSR_B1919%2B21">PSR B1919+21</a></p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/02/paper-sizes/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/paper_sizes.png" alt="Paper sizes" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/paper_sizes.png" alt="Paper sizes" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-02-11T14:00:25+01:00" class="date">
             Feb 11, 2015 14:00:25
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/02/paper-sizes/">Paper sizes</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/02/paper-sizes/">Paper sizes</a></h1>
 
-
-        <h1 id="two-standards">Two standards</h1>
+        <span itemprop="articleBody">
+          <h1 id="two-standards">Two standards</h1>
 
 <p>Yes, this blogpost is about paper. This has absolutely nothing to do with programming, but there is a beautiful piece of math involved.</p>
 
@@ -1048,36 +1106,41 @@ A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
 <p>Ban the US Letter standard, <strong>hurray for math</strong>!</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2015/02/shaved-faq/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Shaved FAQ" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Shaved FAQ" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2015-02-09T09:48:26+01:00" class="date">
             Feb 9, 2015 09:48:26
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/shaved-faq/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2015/02/shaved-faq/">Shaved FAQ</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2015/02/shaved-faq/">Shaved FAQ</a></h1>
 
-
-        <p><strong>What happened to your beard?</strong></p>
+        <span itemprop="articleBody">
+          <p><strong>What happened to your beard?</strong></p>
 
 <p>I shaved.</p>
 
@@ -1117,36 +1180,41 @@ A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
 (I’m trying to follow the philosophy and lifestyle of <a href="http://www.dudeism.com">dudeism</a>)</p>
 
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/shaved-faq/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2014/12/kids-amplify-your-life/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Kids amplify your life" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Kids amplify your life" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2014-12-09T16:38:25+01:00" class="date">
             Dec 9, 2014 16:38:25
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/kids-amplify-your-life/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2014/12/kids-amplify-your-life/">Kids amplify your life</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2014/12/kids-amplify-your-life/">Kids amplify your life</a></h1>
 
-
-        <p>Three years ago my life was pretty normal, I had a house, a wife, a car and a decent job. Everything was nice and easy, very mundane. And then, my daughter was born.</p>
+        <span itemprop="articleBody">
+          <p>Three years ago my life was pretty normal, I had a house, a wife, a car and a decent job. Everything was nice and easy, very mundane. And then, my daughter was born.</p>
 
 <h1 id="impact-of-kids">Impact of kids</h1>
 
@@ -1205,36 +1273,41 @@ A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
 
 <p>Kids cause greater daily downs and thankfully also bigger up moments, they amplify your feelings and make you feel alive!</p>
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/kids-amplify-your-life/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   
+    <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
+
       <div class="post-thumbnail">
       	<a href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">
       	
-      		<img class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stop the Rot, the Rules of Refactoring" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stop the Rot, the Rules of Refactoring" width="100" height="100" />
       	
     	</a>
       </div>
   
       <div class="post-data">
         <p class="post-meta">
-          Written by Roy van Rijn on 
-          <span class="date">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+          <span itemprop="datePublished" content="2014-12-09T13:31:22+01:00" class="date">
             Dec 9, 2014 13:31:22
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/#disqus_thread">0 comments</a>
         </p>
-        <h1><a class="title-link" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">Stop the Rot, the Rules of Refactoring</a></h1>
+        <h1 itemprop="name"><a class="title-link" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">Stop the Rot, the Rules of Refactoring</a></h1>
 
-
-        <p>A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.</p>
+        <span itemprop="articleBody">
+          <p>A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.</p>
 
 <p>Let’s do a quick check:</p>
 
@@ -1279,12 +1352,15 @@ A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
 
 <p>In short: <strong>Healthy code!</strong></p>
 
+        </span>
+
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
+    </article>
   
     <hr/>
   

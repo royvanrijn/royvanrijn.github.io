@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Static state: Evil as well</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2011-04-19T19:23:26+02:00" class="date">
           Apr 19, 2011 19:23:26
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Static state: Evil as well</h1>
+      <h1 itemprop="name" class="post-title">Static state: Evil as well</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
 
 <h1 id="the-scare">The scare</h1>
@@ -179,6 +181,7 @@ That isn’t very helpfull of myself…</p>
 
 <p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
 
+    </span>
     
   </article>
 

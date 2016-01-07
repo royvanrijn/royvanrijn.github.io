@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Splitting up Spring Web Flow & Facelets into JARs</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2009-12-15T15:25:15+01:00" class="date">
           Dec 15, 2009 15:25:15
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Splitting up Spring Web Flow & Facelets into JARs</h1>
+      <h1 itemprop="name" class="post-title">Splitting up Spring Web Flow & Facelets into JARs</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
 
 <p>This sounds straightforward but it took quite a bit of code and time…</p>
@@ -315,6 +317,7 @@ etc…</p>
 <p>Information on <a href="http://forum.springsource.org/showthread.php?t=64252">Spring forum</a></p>
 
 
+    </span>
     
   </article>
 

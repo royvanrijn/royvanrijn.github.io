@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Finding an image in a mosaic</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2014-08-27T15:33:42+02:00" class="date">
           Aug 27, 2014 15:33:42
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Finding an image in a mosaic</h1>
+      <h1 itemprop="name" class="post-title">Finding an image in a mosaic</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Browsing the Ludum Dare (see <a href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">previous post</a>) website I found <a href="http://www.ludumdare.com/compo/2014/08/27/all-ld30-games-in-this-mosaic/">this</a> post from a friend Will. He made the following mosaic:</p>
 
 <p><a href="/images/mosaic.jpg"><img src="/images/mosaic.jpg" alt="mosaic" class="aligncenter" /></a></p>
@@ -169,6 +171,7 @@
 (and another 10 minutes to make the visual conformation and make the animated gif).</p>
 
 
+    </span>
     
   </article>
 

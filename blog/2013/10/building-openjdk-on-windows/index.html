@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Building OpenJDK on Windows</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2013-10-13T20:05:14+02:00" class="date">
           Oct 13, 2013 20:05:14
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/building-openjdk-on-windows/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Building OpenJDK on Windows</h1>
+      <h1 itemprop="name" class="post-title">Building OpenJDK on Windows</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Tomorrow I’ll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK build instructions</a>.</p>
 
 <p>Most <em>cool</em> developers today seem to be using OS/X, but some of us are stuck on Windows laptops. I actually choose to stick with Windows 7 because every single client I’ve worked for has Windows workstations and only require the application to run on Windows. But anyway Martijn said: <em>“Getting OpenJDK to build on Linux/Mac would be easy, Windows can be dicey”</em></p>
@@ -269,6 +271,7 @@ $ bin/java -version</code></pre></figure>
 <p><strong>Update:</strong> I’ve tried compiling and using ccache-3.1.9, but this broke the build. I might try different versions but for now I’ll just skip ‘clean’-ing altogether :-)</p>
 
 
+    </span>
     
   </article>
 

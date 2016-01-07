@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Finding performance problems</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2010-12-14T13:19:08+01:00" class="date">
           Dec 14, 2010 13:19:08
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Finding performance problems</h1>
+      <h1 itemprop="name" class="post-title">Finding performance problems</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Many projects I’ve worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann’s programming contests use C/C++ and maybe even CUDA to get the most out of their system.</p>
 
 <p>I’m usually using Java, just because I’m most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.</p>
@@ -152,6 +154,7 @@
 <p>Let me know!</p>
 
 
+    </span>
     
   </article>
 

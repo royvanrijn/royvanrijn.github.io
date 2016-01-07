@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Playing around with HTML 5</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2010-04-14T12:45:43+02:00" class="date">
           Apr 14, 2010 12:45:43
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Playing around with HTML 5</h1>
+      <h1 itemprop="name" class="post-title">Playing around with HTML 5</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Yesterday, while browsing DZone, I encountered a couple of HTML 5 blogs. So I decided to try and code some HTML5 - Canvas myself.</p>
 
 <p>This is the result of one hour trail-and-error:  </p>
@@ -145,6 +147,7 @@
 
 <p>Maybe I’ll do a write-up soon, but for now, just check the sources. (Yes they are wrong/hack-ish, I know…).</p>
 
+    </span>
     
   </article>
 

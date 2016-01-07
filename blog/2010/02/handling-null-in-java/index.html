@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Handling null in Java</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2010-02-01T11:46:13+01:00" class="date">
           Feb 1, 2010 11:46:13
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Handling null in Java</h1>
+      <h1 itemprop="name" class="post-title">Handling null in Java</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Its a problem I encouter in most JEE projects I’ve worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I’m trying to find out in this post.</p>
 
 <p>Lets start with a piece of business logic, in a world where we don’t have null-values:</p>
@@ -367,6 +369,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 <p>Fun fact: Do you know why the “?:”-operator is called the “Elvis”-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
 
 
+    </span>
     
   </article>
 

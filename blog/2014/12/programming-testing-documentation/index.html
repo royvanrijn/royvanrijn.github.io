@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Programming, testing, documentation</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2014-12-02T16:10:04+01:00" class="date">
           Dec 2, 2014 16:10:04
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Programming, testing, documentation</h1>
+      <h1 itemprop="name" class="post-title">Programming, testing, documentation</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>This week I’ve started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelled in EA (Enterprise Architect), from use cases to the REST API fields. Next we need to perform the actual programming, and the testers write down their tests.</p>
 
 <h1 id="realization">Realization</h1>
@@ -193,6 +195,7 @@ The big advantage was that we had a complete set of tests that:</p>
 
 <p>Most tools seem to be very developer focussed, Fitnesse and Cucumber. What other tools can help us accomplish this goal of automating and verifying this trinity? Are there better alternatives?</p>
 
+    </span>
     
   </article>
 

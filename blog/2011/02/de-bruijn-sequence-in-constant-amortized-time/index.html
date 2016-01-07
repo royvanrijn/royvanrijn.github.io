@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>De Bruijn sequence in constant amortized time</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2011-02-24T22:29:29+01:00" class="date">
           Feb 24, 2011 22:29:29
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">De Bruijn sequence in constant amortized time</h1>
+      <h1 itemprop="name" class="post-title">De Bruijn sequence in constant amortized time</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Follow up on the previous blogpost.</p>
 
 <p>Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:</p>
@@ -177,6 +179,7 @@ I just stumbled across this interesting read: <a href="http://www.learner.org/co
 generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
 
 
+    </span>
     
   </article>
 

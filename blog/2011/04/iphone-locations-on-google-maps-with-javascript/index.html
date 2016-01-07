@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>iPhone locations on Google Maps with Javascript</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2011-04-26T14:34:27+02:00" class="date">
           Apr 26, 2011 14:34:27
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">iPhone locations on Google Maps with Javascript</h1>
+      <h1 itemprop="name" class="post-title">iPhone locations on Google Maps with Javascript</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Wow, great news!</p>
 
 <p>After my <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my ‘iPhone location data to Google Earth’ tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
@@ -151,6 +153,7 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 <p>Kudos to Will and Mark for this great application. Who knew Javascript could be this powerfull!?</p>
 
 
+    </span>
     
   </article>
 

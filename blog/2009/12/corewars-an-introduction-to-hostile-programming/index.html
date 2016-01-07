@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Corewars - An Introduction to Hostile Programming</title>
@@ -117,24 +118,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2009-12-01T11:02:17+01:00" class="date">
           Dec 1, 2009 11:02:17
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Corewars - An Introduction to Hostile Programming</h1>
+      <h1 itemprop="name" class="post-title">Corewars - An Introduction to Hostile Programming</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
 
 <p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
@@ -173,6 +175,7 @@ end</code></pre></figure>
 <p>What are your experiences with Corewar, have you ever had any success?</p>
 
 
+    </span>
     
   </article>
 

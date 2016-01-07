@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Guess the algorithm</title>
@@ -119,24 +120,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2010-01-23T21:54:24+01:00" class="date">
           Jan 23, 2010 21:54:24
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Guess the algorithm</h1>
+      <h1 itemprop="name" class="post-title">Guess the algorithm</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">function</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
@@ -160,6 +162,7 @@
 <p>I’ll probably do more, harder ones, in the future..!</p>
 
 
+    </span>
     
   </article>
 

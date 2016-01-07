@@ -4,6 +4,7 @@
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Getting to grips with Gatling: Custom Feeder</title>
@@ -117,24 +118,25 @@
     </div> 
   </header>
 
-  <article class="post-content">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
 
     <div class="post">
       <div class="post-thumbnail">
         
-          <img class="post-thumbnail-img" src="/thumbnails/gatling-logo.png"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/gatling-logo.png"/>
         
       </div>
       <p class="post-meta">
-        Written by Roy van Rijn on 
-        <span class="date">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> on 
+        <span  itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
           Dec 15, 2015 15:00:41
         </span>
         : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/getting-to-grips-with-gatling/#disqus_thread">0 comments</a>
       </p>
-      <h1 class="post-title">Getting to grips with Gatling: Custom Feeder</h1>
+      <h1 itemprop="name" class="post-title">Getting to grips with Gatling: Custom Feeder</h1>
     </div>
 
+    <span itemprop="articleBody">
     <p>About a year ago someone on my current project did an initial setup of <a href="http://gatling.io/">Gatling</a>. This is a performance/stress test tool written in <a href="http://www.scala-lang.org/">Scala</a>, it is easy to use but very powerful. The basic idea is that you write the test scenario’s in code, the same way as you would create integration/unit tests. The advantage is that the resulting tests are easy to expand, maintain and you’ve got everything under version control.</p>
 
 <p>One very powerful feature Gatling has is the <em>Recorder</em>. It is an application you can launch and it acts like a proxy server. Being a proxy server it can record and log all the calls you do to an application. Without writing any code it can <em>automatically</em> create a stress test!</p>
@@ -224,6 +226,7 @@
 <p>Of course the real thing I build today is a bit larger and more complex, but the code is basically the same!</p>
 
 
+    </span>
     
   </article>
 
