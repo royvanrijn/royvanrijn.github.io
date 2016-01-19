@@ -1302,45 +1302,38 @@ pi$ sudo raspi-config</code></pre></figure>
         <span itemprop="articleBody">
           <p>As some readers might know, I sometimes play a programming game called <a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old ‘Core Warrior’ newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called ‘Thermite II’ I came across this tiny unsolved mystery:</p>
 
-<blockquote>
-
-  <figure class="highlight"><pre><code class="language-text" data-lang="text">John K.W. mailed me with a tiny, suicidal warrior which managed to beat
+<figure class="highlight"><pre><code class="language-text" data-lang="text">John K.W. mailed me with a tiny, suicidal warrior which managed to beat
 Thermite once in two hundred times. All I can imagine is that, that one
 time, I somehow scanned his code within its few cycles of life, and that
 then I crashed as a result. But how?
-</code></pre></figure>
-</blockquote>
 
-<p>&gt;Program "Thermite II" (length 100) by "Robert Macrae"
-L&gt;;strategy Same old strategy, but nastier…
-&gt;Killing Hazy Shade Of Winter III wins: 1
-&gt;Thermite II Qwwaaawins: 199
-&gt;Ties: 0
-&gt;
-&gt;How did I get a win against Thermite?!?!
-&gt;Here is an EXACT copy of what I sent to Pizza…
-&gt;Thermite would've had to die within 3 cycles! … :/
-&gt;
-&gt;;redcode-94
-&gt;;name Killing Hazy Shade Of Winter III
-&gt;;kill Hazy Shade Of Winter III
-&gt;;author John K W
-&gt;
-&gt;p: ldp.b #0, #0
-&gt;jmp &lt;-1</p>
+Program &quot;Thermite II&quot; (length 100) by &quot;Robert Macrae&quot;
+;strategy Same old strategy, but nastier...
+Killing Hazy Shade Of Winter III wins: 1
+Thermite II Qwwaaawins: 199
+Ties: 0
 
-<p>Any ideas, anyone :-?&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</p>
+How did I get a win against Thermite?!?!
+Here is an EXACT copy of what I sent to Pizza...
+Thermite would&#39;ve had to die within 3 cycles! ... :/
 
-<blockquote>
+;redcode-94
+;name Killing Hazy Shade Of Winter III
+;kill Hazy Shade Of Winter III
+;author John K W
 
-  <p>Source: <a href="http://corewar.co.uk/cw/cw024.txt">http://corewar.co.<strong>z</strong>uk/cw/cw024.txt</a></p>
+p: ldp.b #0, #0
+jmp &lt;-1
 
-  <p>When executing the code of the second warrior “Killing Hazy Shade Of Winter III” I noticed there is a false assumption in the email. The warrior qdoesn’t need to die in three cycles! The first round it’ll execute LDP.B #0,#0 and become LDP.B #0,#-1, then it jumps &lt;-1 to a location two higher than the warrior, which is usually empty code… but not always!</p>
+Any ideas, anyone :-?</code></pre></figure>
 
-  <p>The final line in Thermite’s code is a JMP instruction to the launch-instruction which loads Thermite’s bomber ‘Brand’. If John K W’s warrior was loaded at a position 100 or 101 from Thermite it would parasite into the bomber and become Brand before Thermite itself does. This is how the small seemingly suicidal warrior can kill Thermite.</p>
+<p>Source: <a href="http://corewar.co.uk/cw/cw024.txt">http://corewar.co.uk/cw/cw024.txt</a></p>
 
-  <p>After 18 years, Q.E.D. :-)</p>
-</blockquote>
+<p>When executing the code of the second warrior “Killing Hazy Shade Of Winter III” I noticed there is a false assumption in the email. The warrior qdoesn’t need to die in three cycles! The first round it’ll execute LDP.B #0,#0 and become LDP.B #0,#-1, then it jumps &lt;-1 to a location two higher than the warrior, which is usually empty code… but not always!</p>
+
+<p>The final line in Thermite’s code is a JMP instruction to the launch-instruction which loads Thermite’s bomber ‘Brand’. If John K W’s warrior was loaded at a position 100 or 101 from Thermite it would parasite into the bomber and become Brand before Thermite itself does. This is how the small seemingly suicidal warrior can kill Thermite.</p>
+
+<p>After 18 years, Q.E.D. :-)</p>
 
 
         </span>
