@@ -91,6 +91,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -105,6 +107,86 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stop the Rot, the Rules of Refactoring" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-12-09T13:31:22+01:00" class="date">
+            Dec 9, 2014 13:31:22
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">Stop the Rot, the Rules of Refactoring</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.</p>
+
+<p>Let’s do a quick check:</p>
+
+<ul>
+  <li>Are there pieces of code you’d rather not change?</li>
+  <li>Are (parts of) the application sometimes scrapped and rebuild from scratch (over and over)?</li>
+  <li>Do pieces of code exist that turned out much more complex than you had initially imagined?</li>
+  <li>Do you have pieces of code that feel out of place?</li>
+  <li>Is it hard to break up some large classes and/or methods?</li>
+  <li>Do you have a hard time coming up with names for certain classes?</li>
+</ul>
+
+<p>If you’ve answered yes to one or more questions, you are probably suffering from code smells and maybe even advanced code rot.</p>
+
+<h1 id="what-is-a-code-smell">What is a code smell?</h1>
+
+<p>Most of the time a piece of code has a smell when the design underneath is wrong. Often this is not visible at first, but slowly appears when the component gets larger. Classes get too large, methods are hard to break up, some classes or methods feel out of place. Even simple things as struggling with naming a new class is a sign there is something wrong. All of this are code smells and experienced programmers have developed a nose for this. Most of the time this is a sign there is a larger problem. It isn’t something a bit of code can fix, there is probably something wrong in the design. Is this component doing the right thing? Does it have the right responsibilities? Take a step back and look at the complete picture. What problem are these classes/methods trying to solve?</p>
+
+<h1 id="what-is-code-rot">What is code rot?</h1>
+
+<p>When code smells, more often than not, people will continue working on it, adding functionality. Maybe they don’t notice the smell or they don’t take the much needed step back to investigate the problem. This leads to faster code rot. So what exactly is code rot you might ask? Every piece of code starts to ‘rot’ the moment it is written. Eventually the code needs to be replaced and becomes too difficult to maintain. Hopefully this happens in the far future, 20-30 years from now. Unfortunately this is often not the case, there are parts being rebuild and scrapped while the application is being developed.</p>
+
+<p>Each time new code is written, added or changed, the new code starts out as rotten as the code that it depends on. This can cause, with a tiny bit of rotten/smelly code, for an entire application to be trashed! It is highly infectious.</p>
+
+<h1 id="and-the-answer-is-refactoring">And the answer is… refactoring!</h1>
+
+<p>Refactoring is the magic word here, but… it sounds easier than it actually is. At first people will deny there is a problem, sometimes they don’t see it, they don’t share your disgust. Eventually it’ll continue to rot and more people will notice the smell. And once this smell has become unbearable drastic measures seem to be needed. This brings us to rule #1 about code smell:</p>
+
+<p><strong>1. Refactor early, refactor often.</strong></p>
+
+<p>The sooner you refactor and remove some rotten code, the less likely it is to spread and the easier it is to remove. Don’t seek for approval, do something about it. But remember, take a step back first. Sometimes you are rewriting a piece of code, and the result is just as bad as before. The reason is that a design flaw is lurking in the shadows. If the responsibilities between two components is wrong you can scrap a piece of code and rebuild it, but the same problems will keep surfacing. So lets make this rule #2:</p>
+
+<p><strong>2. Before refactoring, take a step back, eliminate possible design flaws.</strong></p>
+
+<p>You’ve taken a step back, looked at the complete picture, fixed the responsibilities, time to do the refactoring! No!! There is a third *very* important rule. Refactoring means changing a piece of code without changing its behavior. How do we do this? We write tests! Only if you have proper testing in place you can start thinking about refactoring. How else will you be certain that a piece of code still has the same behavior as before?</p>
+
+<p><strong>3. Only refactor when you have proper tests.</strong></p>
+
+<p>If you follow these three simple rules, nothing can go wrong. You’re detecting and fixing code smells early and often, you’ll stop the rot as soon as possible to make sure it doesn’t spread, keeping the application healthy. There isn’t a possible design flaw hiding in the shadows, we’ve taken a step back and eliminated that. And finally: We have tests in place that ensure we don’t change any behavior that was painstakingly added to the rotting code.</p>
+
+<p>If you follow these rules you’ll end up with code that is readable, easier to maintain, easy to change (agile code!).</p>
+
+<p>In short: <strong>Healthy code!</strong></p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/stop-the-rot-the-rules-of-refactoring/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -1302,7 +1384,9 @@ pi$ sudo raspi-config</code></pre></figure>
         <span itemprop="articleBody">
           <p>As some readers might know, I sometimes play a programming game called <a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old ‘Core Warrior’ newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called ‘Thermite II’ I came across this tiny unsolved mystery:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">John K.W. mailed me with a tiny, suicidal warrior which managed to beat
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-- Bug?
+
+John K.W. mailed me with a tiny, suicidal warrior which managed to beat
 Thermite once in two hundred times. All I can imagine is that, that one
 time, I somehow scanned his code within its few cycles of life, and that
 then I crashed as a result. But how?
@@ -1310,7 +1394,7 @@ then I crashed as a result. But how?
 Program &quot;Thermite II&quot; (length 100) by &quot;Robert Macrae&quot;
 ;strategy Same old strategy, but nastier...
 Killing Hazy Shade Of Winter III wins: 1
-Thermite II Qwwaaawins: 199
+Thermite II wins: 199
 Ties: 0
 
 How did I get a win against Thermite?!?!
@@ -1329,11 +1413,19 @@ Any ideas, anyone :-?</code></pre></figure>
 
 <p>Source: <a href="http://corewar.co.uk/cw/cw024.txt">http://corewar.co.uk/cw/cw024.txt</a></p>
 
-<p>When executing the code of the second warrior “Killing Hazy Shade Of Winter III” I noticed there is a false assumption in the email. The warrior qdoesn’t need to die in three cycles! The first round it’ll execute LDP.B #0,#0 and become LDP.B #0,#-1, then it jumps &lt;-1 to a location two higher than the warrior, which is usually empty code… but not always!</p>
+<p>When executing the code of the second warrior “Killing Hazy Shade Of Winter III” I noticed there is a false assumption in the email. The warrior doesn’t need to die in three cycles!</p>
+
+<p>The first round it’ll execute:</p>
+
+<p>LDP.B #0,#0 (and become LDP.B #0,#-1)</p>
+
+<p>Then it executes:</p>
+
+<p>JMP &lt;-1 (to a location two higher than the warrior, which is usually empty code… but not always!)</p>
 
 <p>The final line in Thermite’s code is a JMP instruction to the launch-instruction which loads Thermite’s bomber ‘Brand’. If John K W’s warrior was loaded at a position 100 or 101 from Thermite it would parasite into the bomber and become Brand before Thermite itself does. This is how the small seemingly suicidal warrior can kill Thermite.</p>
 
-<p>After 18 years, Q.E.D. :-)</p>
+<p>After 18 years, <strong>Q.E.D.</strong> :-)</p>
 
 
         </span>
@@ -1341,75 +1433,6 @@ Any ideas, anyone :-?</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/04/mosaic-algorithm/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Mosaic algorithm" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-04-30T14:50:41+02:00" class="date">
-            Apr 30, 2014 14:50:41
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/04/mosaic-algorithm/">Mosaic algorithm</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Today I noticed a new blogpost by <a href="http://williamedwardscoder.tumblr.com/">William</a>, he wrote a small Python script to <a href="http://williamedwardscoder.tumblr.com/post/84317701363/i-knew-my-mosaic-script-was-doing-a-poor-job-of">create mosaics from thumbnails</a>.</p>
-
-<p>As input he is using thumbnails from the <a href="http://www.ludumdare.com/">Ludum Dare</a> game programming contest.</p>
-
-<p>To make such a program you basically need four things:</p>
-
-<ol>
-  <li>A collection of thumbnails/photos/images to place</li>
-  <li>Divide the target mosaic image into a grid of tiles</li>
-  <li>Have a scoring/measuring method for each tile</li>
-  <li>Have a placement algorithm</li>
-</ol>
-
-<h1 id="greedy">Greedy</h1>
-
-<p>Will is using all the thumbnails from the contest and a given target image. He then divides the target image into a grid. Next comes the important part, how do you measure how well a thumbnail matches a target tile? He is using a clever per-pixel RGB matching technique. The closer the color matches, the higher the score.</p>
-
-<p>The final (important) step is placement. For each tile he takes the highest scoring thumbnail and assigns it to the tile. If you keep doing this (<a href="http://en.wikipedia.org/wiki/Greedy_algorithm">greedy</a>) you’ll get a good recognisable result:</p>
-
-<p><img src="/images/greedy.png" alt="mosaic generation with greedy placement" class="aligncenter" /></p>
-
-<h1 id="random-swapping">Random swapping</h1>
-
-<p>When he explained his algorithm (in gtalk) it reminded of the problem I encounter in almost all the <a href="http://azspcs.net/">Al Zimmermann programming competitions</a>. Eventually all these algorithms boil down to search algorithms. You are looking for the best combination of images with the highest overall matching score (correctness/likeness). Instead of using just the greedy algorithm I suggested he’d try randomly swapping a couple of images and checking the score for improvements. This turned out to be a difference of night and day, check it out:</p>
-
-<p><img src="/images/swaps.png" alt="mosaic placement improvement with random swaps" class="aligncenter" /></p>
-
-<p>Of course there are still problems with this method, for example: you’ll quickly run into a local optima. Maybe you’ll have a much better image if A -&gt; B and B -&gt; C and C -&gt; A. This will never be reached by swapping two tiles if the individual steps don’t have an improved score. This can be countered by swapping multiple pairs at once and hoping you’ll hit this correct pair.</p>
-
-<p>There are a lot of other ‘smarter’ things you could do, for example always try to put a ‘best match’ on a particular tile and trying to fill the hole it created…. But for now adding this simple random swap is perfect!</p>
-
-<p>Be sure to check out Williams other tech related <a href="http://williamedwardscoder.tumblr.com">blogposts</a>, he’s also involved in the development of the amazing <a href="http://millcomputing.com/">Mill CPU</a>.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
@@ -1461,6 +1484,10 @@ Any ideas, anyone :-?</code></pre></figure>
     
       
         <div class="pagination-item"><a href="/page/9">9</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/10">10</a></div>
       
     
 

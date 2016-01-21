@@ -5,9 +5,55 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 19 Jan 2016 11:02:49 +0100</pubDate>
-    <lastBuildDate>Tue, 19 Jan 2016 11:02:49 +0100</lastBuildDate>
+    <pubDate>Thu, 21 Jan 2016 20:20:15 +0100</pubDate>
+    <lastBuildDate>Thu, 21 Jan 2016 20:20:15 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Fantasy names using Java JShell</title>
+        <description>&lt;p&gt;I’ve been a big fan of the Java JShell from the early beginning. I was even the first one on the mailing list besides the people from Oracle. I’m working on a weekend/side project involving JavaFX and JShell API now for a couple of days and something was bothering me.&lt;/p&gt;
+
+&lt;p&gt;The project I’m working on is targetted at teaching kids to learn Java Programming in a fun way. But automaticly generated variable names called &lt;em&gt;$1&lt;/em&gt;, &lt;em&gt;$2&lt;/em&gt;, &lt;em&gt;$3&lt;/em&gt; etc are not ‘fun’ enough! Luckily I found the following method in the API:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;JShell&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shell&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;JShell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;tempVariableNameGenerator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CustomNameGenerator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As you can see I’m using my own name generator, what does it do? Well it generates semi-random fantasy names! This is what I’ve ended up with:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;Expression&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;is:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;assigned&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temporary&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;variable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baiduth&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baiduth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;Expression&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;is:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;40&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;assigned&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temporary&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;variable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bleibriss&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bleibriss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baiduth&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Much better! If you’re interested in the project I’m working on, teaching kids Java with the JShell API and JavaFX, keep an eye out. When I have something worth showing I’ll push it to GitHub so everyone can enjoy it!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 21 Jan 2016 20:01:11 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2016/01/fantasy-names-using-jshell/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/01/fantasy-names-using-jshell/</guid>
+        
+        <category>java</category>
+        
+        <category>jshell</category>
+        
+        <category>fantasy</category>
+        
+        <category>javafx</category>
+        
+        <category>naming</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>Getting to grips with Gatling: Custom Feeder</title>
@@ -610,74 +656,6 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
         <category>Agile</category>
         
         <category>Java Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Stop the conference committees?</title>
-        <description>&lt;p&gt;In this post I’ll try to convince you that all the conferences are doing it wrong. &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt;, &lt;a href=&quot;http://www.devoxx.be&quot;&gt;Devoxx&lt;/a&gt;, and all other conferences should stop using conference program committees to select their speakers, there is a much better way.&lt;/p&gt;
-
-&lt;h1 id=&quot;call-for-papers&quot;&gt;Call for Papers&lt;/h1&gt;
-
-&lt;p&gt;Some of you know I enjoy speaking in public and I’ve done so at many conferences. To get selected to speak at a conference you’ll need to supply a ‘paper’ to the Call for Papers (CfP). In this paper you outline the content of your talk and provide some information about yourself as speaker.&lt;/p&gt;
-
-&lt;p&gt;Once all these papers are submitted some people from the community will look at all the proposals and they have the daunting task of selecting the right ones. This is very hard to do, I know this for a fact since I’ve been on several program committees, for example for &lt;a href=&quot;http://www.nljug.org/jfall/2014/&quot;&gt;J-Fall&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1 id=&quot;the-honor-from-hell&quot;&gt;The honor from hell&lt;/h1&gt;
-
-&lt;p&gt;When I got asked to be on a program committee it felt like a real honor and a lot of fun. But in reality it is a painstaking task! You’ll get a lot of papers to review, sometimes up to or over a hundred. And you have to rate them, all of them! Once you are halfway through you can’t really give an honest rating compared to the first papers you’ve reviewed, plainly because you’ve seen too much and can’t remember most of them. There is something very wrong about this system.&lt;/p&gt;
-
-&lt;h1 id=&quot;bias&quot;&gt;Bias&lt;/h1&gt;
-
-&lt;p&gt;Another popular topic these days is gender bias. Until recently in IT a lot of these program committees were dominated by males. Research has shown that an all-male committee is much more likely to pick male speakers than female speakers for example. This is why currently most conferences try to pick a committee that is as mixed as possible. But is that really solving the problem?&lt;/p&gt;
-
-&lt;h1 id=&quot;flooding&quot;&gt;Flooding&lt;/h1&gt;
-
-&lt;p&gt;A third problem is the flooding. Some people have found out that submitting papers has a bit of chance/luck to it. If you write down the right words people will fall in love with it and you get picked. So instead of submitting one paper, they’ll just submit five or even ten papers, sometimes about the same topic but with other buzzwords. This actually improves their chances of getting in instead of getting a penalty!&lt;/p&gt;
-
-&lt;h1 id=&quot;telescope-time-assignment&quot;&gt;Telescope Time assignment&lt;/h1&gt;
-
-&lt;p&gt;This brings me to a Numberphile YouTube video called: &lt;a href=&quot;https://www.youtube.com/watch?v=7c0CoXFApnM&quot;&gt;Telescope Time without Tears&lt;/a&gt;. It turns out they had exactly the same problems we’re facing with program committees. There are only a couple of powerful telescopes in the world and a lot more researchers that want to get time on these telescopes. So previously they had selection committees and call for papers. They ran into exactly the same problems as outlined above, so they came up with a much better way to do this.&lt;/p&gt;
-
-&lt;h1 id=&quot;the-solution-distributed-peer-review&quot;&gt;The solution: distributed peer review&lt;/h1&gt;
-
-&lt;p&gt;I’ll try to explain what the Telescope committee did to solve their problems, but I really suggest you take a look at the video first. It explains everything much better than I possibly can.&lt;/p&gt;
-
-&lt;p&gt;Their idea is simple, if you submit a paper, you’ll receive a number of papers in return to review, for example six other papers. This is really what peer-reviewing is about, getting reviewed by actual peers. This instantly solves the problem of flooding, if you submit five papers, you’ll receive thirty (!) papers to review, a real penalty.&lt;/p&gt;
-
-&lt;p&gt;This way of reviewing is also much more fair, more people will vote and they only have to rate six papers each. So, now I know what you are thinking: this can’t be right, we can game this method! For example, if I see a paper that is a lot like my own paper, but better… I give it a very poor rating. There is a solution for that as well. You can do this of course, but only you will do this, others will still give it a fair higher rating. This information can then be used to give a penalty to your own submitted paper. On the other hand, if your scoring is much like other voters, you’ve done a fair and good job, your paper gets a small bonus. So people are motivated to really take a good look at the few papers they need to rank.&lt;/p&gt;
-
-&lt;p&gt;I really like the idea of getting rid of program committees, for some reason it is always feels like there is this group of in-crowd people and they have the tendency to pick friends and colleagues, the same speakers as always. I’m not blaming them, I’m sometimes part of that too! We don’t do it on purpose, it happens automatically! It is the system that is flawed.&lt;/p&gt;
-
-&lt;p&gt;So, for the next JavaOne, Devoxx or J-Fall, instead of selecting a committee and giving them the painstaking task of rating all the papers… maybe we should try distributed peer reviews? It just sounds like a much better approach.&lt;/p&gt;
-
-&lt;h1 id=&quot;sources&quot;&gt;Sources&lt;/h1&gt;
-
-&lt;p&gt;The main YouTube video: &lt;a href=&quot;https://youtu.be/7c0CoXFApnM&quot;&gt;Telescope Time without Tears - Numberphile&lt;/a&gt;&lt;br /&gt;
-The ‘extra footage’ YouTube video with more details: &lt;a href=&quot;https://youtu.be/bplncn4xC74&quot;&gt;Telescope Time (extra footage) - Deep Sky Videos&lt;/a&gt;&lt;br /&gt;
-The actual research paper (containing the electoral theory): &lt;a href=&quot;http://arxiv.org/pdf/0906.1943.pdf&quot;&gt;Telescope time without tears – a distributed approach to peer review&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 12 May 2015 21:20:55 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2015/05/stop-the-conference-committees/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/05/stop-the-conference-committees/</guid>
-        
-        <category>committee</category>
-        
-        <category>conference</category>
-        
-        <category>electoral</category>
-        
-        <category>papers</category>
-        
-        <category>telescope</category>
-        
-        
-        <category>Devoxx</category>
-        
-        <category>Programming</category>
-        
-        <category>Science</category>
         
       </item>
     
