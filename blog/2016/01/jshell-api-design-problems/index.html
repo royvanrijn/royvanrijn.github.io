@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>JShell API, design problems?</title>
+  <meta name="description" content="This weekend I continued working my project making a Java REPL adventure game that teaches the basics of programming (in Java). One main goal of starting thi...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,jshell,snippet,api,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/01/jshell-api-design-problems/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="JShell API, design problems?" />
+  <meta name="twitter:description" content="This weekend I continued working my project making a Java REPL adventure game that teaches the basics of programming (in Java). One main ..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/01/fantasy-names-using-jshell/" title="Previous Post: Fantasy names using Java JShell">&laquo; Fantasy names using Java JShell</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-01-21T20:01:11+01:00" class="date">
+          Jan 21, 2016 20:01:11
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/01/jshell-api-design-problems/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">JShell API, design problems?</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>This weekend I continued working my project making a Java REPL adventure game that teaches the basics of programming (in Java). One main goal of starting this project was to get a better understanding of the JShell API, not just the tool. I’ve used the JDK 9 JShell command line tool before, and it worked great. But there is also a big API behind it you can programatically use.</p>
+
+<p>Let me show you how this works:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">JShell</span> <span class="n">shell</span> <span class="o">=</span> <span class="n">JShell</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">&quot;int i = 10;&quot;</span><span class="o">);</span></code></pre></figure>
+
+<p>What have we done here? Well first we’ve created an instance of the JShell. This is just like starting the command line tool. Now we can call the <em>eval()</em> function to evaluate Java code. As a result you receive so called <em>SnippetEvent</em>s, these are classes containing the information about what happened. Let’s see what the code above returns:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="k">for</span><span class="o">(</span><span class="n">SnippetEvent</span> <span class="n">event</span> <span class="o">:</span> <span class="n">events</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">//Output: SnippetEvent(snippet=Snippet:VariableKey(i)#1-int i = 10;,previousStatus=NONEXISTENT,status=VALID,isSignatureChange=true,causeSnippetnullvalue=10)</span></code></pre></figure>
+
+<p>There is quite some information in there, the event contains the actual ‘snippet’, the piece of code that was executed. Also there is a previous state, status and some other information. This is where the JShell API starts to feel weird to me. To get the <em>Snippet</em> from the <em>SnippetEvent</em> we can call the following method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">SnippetEvent</span> <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">// To get the information, we call snippet (not getSnippet()):</span>
+        <span class="n">Snippet</span> <span class="n">snippet</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">snippet</span><span class="o">();</span>
+
+        <span class="c1">// Next we cast our snippet to the correct subclass:</span>
+        <span class="n">VarSnippet</span> <span class="n">vSnippet</span> <span class="o">=</span> <span class="o">(</span><span class="n">VarSnippet</span><span class="o">)</span> <span class="n">snippet</span><span class="o">;</span>
+
+        <span class="c1">// Now we can retrieve information, for example the type we&#39;ve created:</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">vSnippet</span><span class="o">.</span><span class="na">typeName</span><span class="o">());</span>
+
+        <span class="c1">//Output: int</span>
+
+        <span class="c1">// We can also get the &#39;value&#39; of the SnippetEvent:</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+
+        <span class="c1">//Output: 10</span></code></pre></figure>
+
+<p>There are a couple of points I don’t like about the current JShell API design here:</p>
+
+<ul>
+  <li>Why are the methods to <strong>get</strong> information called .snippet() and .typeName(), why not getSnippet() and getTypeName()?</li>
+  <li>Why is the result of vSnippet.typeName() a <strong>String</strong>?</li>
+  <li>Why is the result of event.value() a <strong>String</strong>? Didn’t we have an ‘int’?</li>
+</ul>
+
+<p>First the question about the method names. In all of the JDK code they seem to be using the bean-specification, where you have getMethods() for getting and setMethod(…) for setting. I’m not sure why this isn’t the case for the JShell API? Is this a new way Oracle is designing their API’s? Do other new JDK API’s have the same syntax?</p>
+
+<p>Next is the question regarding the usage of Strings. Why is the value() a String when we’ve clearly made something an int? Even worse, let’s create something that is not a primitive:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">List</span><span class="o">&lt;</span><span class="n">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">&quot;jdk.jshell.JShell.create();&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">value</span><span class="o">());</span>
+
+        <span class="c1">//Output: jdk.jshell.JShell@4cc0edeb</span></code></pre></figure>
+
+<p>It is even <em>worse</em>, the only result we get from event.value() is a String and it is clearly just the <strong>.toString()</strong> of the actual backing object. For this API I would <em>love</em> to see it returning the actual object instead. I understand the JShell tool uses String’s and communicates the toString(), but shouldn’t the API be more general? Or am I missing something here?</p>
+
+<p>Anyway, this is exactly why <em>more</em> people should <strong>try these API</strong>’s and share the feedback! Mail your feedback and suggestions to the mailing list.</p>
+
+<p>What do you think? Please leave a comment below, or… even better, share your thoughts on the <a href="http://mail.openjdk.java.net/mailman/listinfo/kulla-dev">mailing list</a></p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
