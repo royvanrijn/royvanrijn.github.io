@@ -112,6 +112,187 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2014/05/alternative-for-constructors/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Alternative for Constructors" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-05-12T20:49:14+02:00" class="date">
+            May 12, 2014 20:49:14
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/05/alternative-for-constructors/">Alternative for Constructors</a></h1>
+
+        <span itemprop="articleBody">
+          <p>If you want to create an object in Java there is only one way: use <strong>a constructor</strong>.</p>
+
+<h1 id="constructors">Constructors</h1>
+
+<p><a href="http://en.wikipedia.org/wiki/Constructor_%28object-oriented_programming%29">Constructors</a> in Java are different from all other methods. They don’t have a return type and can’t be invoked, only using the <em>new</em> keyword. Other tasks performed by constructors are:</p>
+
+<ol>
+  <li>Initialisation of class variables</li>
+  <li>Call the default contructor of the superclass if no constructor is present</li>
+  <li>Initialisation of instance variables</li>
+  <li>Execution of constructor body</li>
+</ol>
+
+<p>Here is a common example of a constructor in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
+
+	<span class="c1">//Two mandatory immutable fields</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">firstname</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">;</span>
+	
+	<span class="c1">//Constructor to set the final fields:</span>
+	<span class="kd">public</span> <span class="nf">Person</span><span class="o">(</span><span class="n">String</span> <span class="n">firstname</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">firstname</span> <span class="o">=</span> <span class="n">firstname</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="o">...</span></code></pre></figure>
+
+<p>If you want to create an <strong>immutable</strong> object in Java you need to have a constructor to initialise the final fields. Lets look at another example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="mi">1983</span><span class="o">,</span> <span class="mi">200</span><span class="o">,</span> <span class="mf">95.0</span><span class="o">,</span> <span class="mf">12.5</span><span class="o">);</span></code></pre></figure>
+
+<p>Immediately a problem becomes clear… if you read the code you have absolutely no idea what all the arguments mean. What is 200? What is 95.0? We have to look at the API or open the code of Person to see what arguments we can supply or have been supplied. Thankfully there is a design pattern that solves this problem, the Builder pattern.</p>
+
+<h1 id="builder-pattern">Builder pattern</h1>
+
+<p>The <a href="http://en.wikipedia.org/wiki/Builder_pattern">builder pattern</a> is an ‘object creation software design pattern’. It can be used to create a immutable objects in a fluent, readable way.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span>
+		<span class="o">.</span><span class="na">PersonBuilder</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">birthYear</span><span class="o">(</span><span class="mi">1983</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">length</span><span class="o">(</span><span class="mi">200</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">weight</span><span class="o">(</span><span class="mf">95.0</span><span class="o">)</span> <span class="c1">// This is what all these numbers mean!</span>
+		<span class="o">.</span><span class="na">shoeSize</span><span class="o">(</span><span class="mf">12.5</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></figure>
+
+<p>Reading this code is much clearer, we don’t have to guess what the arguments mean, it is crystal clear. So we’ve got a good solution, right? Well, not really, I’ve got a big problem with the Builder pattern. For a simple immutable object as the Person above with just six fields we need the following code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
+
+	<span class="c1">// The immutable fields</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">firstname</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">birthYear</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">length</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">shoeSize</span><span class="o">;</span>
+	
+	<span class="c1">// The private hidden constructor with all fields:</span>
+	<span class="kd">private</span> <span class="nf">Person</span><span class="o">(</span><span class="n">String</span> <span class="n">firstname</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">,</span> <span class="kt">int</span> <span class="n">birthYear</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">,</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">,</span> <span class="kt">double</span> <span class="n">shoeSize</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">firstname</span> <span class="o">=</span> <span class="n">firstname</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">birthYear</span> <span class="o">=</span> <span class="n">birthYear</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">length</span> <span class="o">=</span> <span class="n">length</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">shoeSize</span> <span class="o">=</span> <span class="n">shoeSize</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="c1">// A second Builder class with all the fields listed again:</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">PersonBuilder</span> <span class="o">{</span>
+		
+		<span class="kd">private</span> <span class="n">String</span> <span class="n">firstname</span><span class="o">;</span>
+		<span class="kd">private</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">;</span>
+		<span class="kd">private</span> <span class="kt">int</span> <span class="n">birthYear</span><span class="o">;</span>
+		<span class="kd">private</span> <span class="kt">int</span> <span class="n">length</span><span class="o">;</span>
+		<span class="kd">private</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>
+		<span class="kd">private</span> <span class="kt">double</span> <span class="n">shoeSize</span><span class="o">;</span>
+		
+		<span class="kd">public</span> <span class="nf">PersonBuilder</span><span class="o">(</span><span class="n">String</span> <span class="n">firstname</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">firstname</span> <span class="o">=</span> <span class="n">firstname</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="c1">// All &#39;setters&#39; with a fluent interface:</span>
+		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">birthYear</span><span class="o">(</span><span class="kt">int</span> <span class="n">birthYear</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">birthYear</span> <span class="o">=</span> <span class="n">birthYear</span><span class="o">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">length</span><span class="o">(</span><span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">length</span> <span class="o">=</span> <span class="n">length</span><span class="o">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">weight</span><span class="o">(</span><span class="kt">double</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">weight</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">shoeSize</span><span class="o">(</span><span class="kt">double</span> <span class="n">shoeSize</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">shoeSize</span> <span class="o">=</span> <span class="n">shoeSize</span><span class="o">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+		<span class="o">}</span>
+	
+		<span class="c1">// Finally a build method that calls the hidden constructor:</span>
+		<span class="kd">public</span> <span class="n">Person</span> <span class="nf">build</span><span class="o">()</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">firstname</span><span class="o">,</span> <span class="n">lastname</span><span class="o">,</span> <span class="n">birthYear</span><span class="o">,</span> <span class="n">length</span><span class="o">,</span> <span class="n">weight</span><span class="o">,</span> <span class="n">shoeSize</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+	<span class="o">}</span></code></pre></figure>
+
+<p>Woah… that is a stupendous amount of code just for a better readable immutable way of object construction. I don’t have a good solution for this problem, the Java language doesn’t have a good way to construct objects (especially immutable objects) in a readable manner. Constructors end up having a lot of confusing nameless arguments; or you’ll have to write a huge Builder class with a nice fluent interface.</p>
+
+<p>The Java language is constantly evolving and there are now <a href="http://cr.openjdk.java.net/~jrose/values/values-0.html">proposals</a> to add ‘value types’ in Java. Reading through the proposal it seems the only way to construct the value type will be using the constructor, but I’m afraid this will quickly become a burden again. I’d love to have a better way to construct objects and (in the future) values, although I have no idea what it should look like. I’d love to have a fluent way of object creation without having to code a big Builder class, preferably in the language itself.</p>
+
+<p>Would it be possible to change to language in a backwards compatible way to allow this?</p>
+
+<p>One possibility would be to ‘steal’ from other languages, for example <a href="http://en.wikipedia.org/wiki/Moose_perl">Moose Perl</a>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">firstname</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">birthYear</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">length</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kt">double</span> <span class="n">shoeSize</span><span class="o">;</span>
+	
+        <span class="c1">// Full constructor</span>
+	<span class="kd">public</span> <span class="nf">Person</span><span class="o">(</span><span class="n">String</span> <span class="n">firstname</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastname</span><span class="o">,</span> <span class="kt">int</span> <span class="n">birthYear</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">,</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">,</span> <span class="kt">double</span> <span class="n">shoeSize</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">firstname</span> <span class="o">=</span> <span class="n">firstname</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">birthYear</span> <span class="o">=</span> <span class="n">birthYear</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">length</span> <span class="o">=</span> <span class="n">length</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">shoeSize</span> <span class="o">=</span> <span class="n">shoeSize</span><span class="o">;</span>
+	<span class="o">}</span>
+
+<span class="o">...</span>
+<span class="c1">// Made up syntax, similar to Moose, providing syntactic sugar.</span>
+<span class="c1">// Leaves the other fields null, compile error if final fields aren&#39;t set.</span>
+<span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">firstname</span> <span class="o">=&gt;</span> <span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="n">lastname</span> <span class="o">=&gt;</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="n">birthYear</span> <span class="o">=&gt;</span> <span class="mi">1983</span><span class="o">);</span></code></pre></figure>
+
+<p>This has the readability advantage and has the flexibility of the Builder pattern (not needing dozens of overloaded constructors).</p>
+
+<p>Would something like this be a good addition to the Java language?</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving a 18-year-old Core War mystery" width="100" height="100" />
@@ -1553,50 +1734,6 @@ Start quickly, get something done quickly, expect changes in movement and go wit
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/to-be-or-not-to-be-agile/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/congratulations-to-devoxx4kids/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Congratulations to Devoxx4Kids!" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-02T14:35:27+02:00" class="date">
-            Oct 2, 2013 14:35:27
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/congratulations-to-devoxx4kids/">Congratulations to Devoxx4Kids!</a></h1>
-
-        <span itemprop="articleBody">
-          <p>If you haven’t heard about Devoxx4Kids, first read the following post and watch the video: <a href="/blog/2012/11/devoxx4kids/">here</a>!</p>
-
-<p>The people behind Java (Oracle) have recognized the great potential behind Devoxx4Kids and decided to award the ‘concept’ with a <a href="https://www.java.net//dukeschoice">Duke’s Choice</a> award!<br />
-This was presented to Stephan Janssen (the original mastermind behind the concept) at JavaOne this year. Because I filmed the original event and also our Dutch event in Amsterdam I was asked to make a very short impression video which was shown at the JavaOne Community Keynote.</p>
-
-<p>You can see it here (including a great shout-out to me and my daughter, the ‘mascotte’) here:<br />
-(from 10:17 up to 14:55)</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
