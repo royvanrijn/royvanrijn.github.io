@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>JavaMail API: Message in EML format</title>
+  <meta name="description" content="Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,message,javamail,mimemessage,download,file,format,eml,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="JavaMail API: Message in EML format" />
+  <meta name="twitter:description" content="Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all t..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/03/adding-var-val-to-java/" title="Previous Post: Pros and cons of JEP 286">&laquo; Pros and cons of JEP 286</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-03-21T11:15:15+01:00" class="date">
+          Mar 21, 2016 11:15:15
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">JavaMail API: Message in EML format</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in our database (and make them downloadable using our GUI).</p>
+
+<p>It turns out this is pretty easy to do!</p>
+
+<p>Let’s start with some very basic email code we already had in place:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Some method to construct a MimeMessage:</span>
+    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+
+    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+
+<p>What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.</p>
+
+<p>It turns out there is a convinient method for doing just that: <em>message.writeTo(OutputStream)</em></p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
+
+    <span class="c1">// Retrieve the entire message as byte[]:</span>
+    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+    <span class="n">message</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+
+    <span class="c1">// Next we store the byte[] in our database (JPA) entity:</span>
+    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+    <span class="n">mailArchive</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">archivedMail</span><span class="o">);</span>
+
+    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+
+<p>Our own little POJO entity (<em>ArchivedMail</em>) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.</p>
+
+<p>We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Add the Wicket link-component to our page:</span>
+    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">&quot;wicketLinkId&quot;</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+                    <span class="c1">// When clicked output a stream which contains the raw byte[]:</span>
+                    <span class="n">output</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">getModelObject</span><span class="o">().</span><span class="na">getBytes</span><span class="o">());</span>
+                <span class="o">}</span>
+
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="n">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="c1">// Add the content type for an EML file:</span>
+                    <span class="k">return</span> <span class="s">&quot;message/rfc822&quot;</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">};</span>
+
+            <span class="c1">// Schedule the handler to return our resource stream (with a fancy name):</span>
+            <span class="n">getRequestCycle</span><span class="o">().</span><span class="na">scheduleRequestHandlerAfterCurrent</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">ResourceStreamRequestHandler</span><span class="o">(</span><span class="n">resourceStream</span><span class="o">).</span><span class="na">setFileName</span><span class="o">(</span><span class="s">&quot;mail.eml&quot;</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">});</span></code></pre></figure>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Using JavaMail (javax.mail) it is very easy to get the ‘raw’ contents of an email when sending it.</p>
+
+<p>This can be stored and downloaded in EML-format. It contains everything you need, mime, multipart, attachements and all the from/to headers.</p>
+
+<p>Happy coding!</p>
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

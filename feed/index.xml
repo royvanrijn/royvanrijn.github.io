@@ -5,9 +5,101 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 21 Mar 2016 13:44:49 +0100</pubDate>
-    <lastBuildDate>Mon, 21 Mar 2016 13:44:49 +0100</lastBuildDate>
+    <pubDate>Tue, 22 Mar 2016 16:07:48 +0100</pubDate>
+    <lastBuildDate>Tue, 22 Mar 2016 16:07:48 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>JavaMail API: Message in EML format</title>
+        <description>&lt;p&gt;Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in our database (and make them downloadable using our GUI).&lt;/p&gt;
+
+&lt;p&gt;It turns out this is pretty easy to do!&lt;/p&gt;
+
+&lt;p&gt;Let’s start with some very basic email code we already had in place:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Some method to construct a MimeMessage:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createMailMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;Transport&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.&lt;/p&gt;
+
+&lt;p&gt;It turns out there is a convinient method for doing just that: &lt;em&gt;message.writeTo(OutputStream)&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;n&quot;&gt;Message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createMailMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// some method to construct a MimeMessage&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Retrieve the entire message as byte[]:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ByteArrayOutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ByteArrayOutputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;writeTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;contents&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toByteArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Next we store the byte[] in our database (JPA) entity:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ArchivedMail&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;archivedMail&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ArchivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;contents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;mailArchive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;archivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;Transport&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Our own little POJO entity (&lt;em&gt;ArchivedMail&lt;/em&gt;) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.&lt;/p&gt;
+
+&lt;p&gt;We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Add the Wicket link-component to our page:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Link&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArchivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;wicketLinkId&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;somemail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onClick&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;IResourceStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AbstractResourceStreamWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;c1&quot;&gt;// When clicked output a stream which contains the raw byte[]:&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getModelObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBytes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getContentType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;c1&quot;&gt;// Add the content type for an EML file:&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;message/rfc822&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
+
+            &lt;span class=&quot;c1&quot;&gt;// Schedule the handler to return our resource stream (with a fancy name):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;getRequestCycle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scheduleRequestHandlerAfterCurrent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ResourceStreamRequestHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resourceStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFileName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;mail.eml&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Using JavaMail (javax.mail) it is very easy to get the ‘raw’ contents of an email when sending it.&lt;/p&gt;
+
+&lt;p&gt;This can be stored and downloaded in EML-format. It contains everything you need, mime, multipart, attachements and all the from/to headers.&lt;/p&gt;
+
+&lt;p&gt;Happy coding!&lt;/p&gt;
+</description>
+        <pubDate>Mon, 21 Mar 2016 11:15:15 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/</guid>
+        
+        <category>java</category>
+        
+        <category>message</category>
+        
+        <category>javamail</category>
+        
+        <category>mimemessage</category>
+        
+        <category>download</category>
+        
+        <category>file</category>
+        
+        <category>format</category>
+        
+        <category>eml</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>Pros and cons of JEP 286</title>
@@ -728,56 +820,6 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
         
         
         <category>Agile</category>
-        
-      </item>
-    
-      <item>
-        <title>The most discriminating JUG in the world</title>
-        <description>&lt;p&gt;About a week ago I was talking to a colleague about the lack of female Java programmers, especially here in Western Europe. We came to this topic after hearing that at &lt;a href=&quot;http://devoxx.ma/en/&quot;&gt;Devoxx Morocco&lt;/a&gt; almost &lt;strong&gt;a third&lt;/strong&gt; of the attendees was female, great news! The conclusion? Some of my friends are running the most discriminating JUG in the world.&lt;/p&gt;
-
-&lt;p&gt;Here, in the Netherlands, we have just two big JUG’s (Java User Groups). There is the &lt;a href=&quot;http://www.nljug.org/&quot;&gt;NLJUG&lt;/a&gt;, which covers the entire country and organises the J-Fall conference amongst other things, almost all Java coders in the Netherlands are a member. There is also &lt;a href=&quot;http://jduchess.org/&quot;&gt;JDuchess&lt;/a&gt;, the female JUG. They organise meetings with fellow female coders and help them to connect with other (female) coders around the globe, they also hold regular meetups, also internationally at conferences and they are doing an awesome job hosting several Devoxx4Kids events per year. The JDuchess have been awarded (rightly so) multiple times for their effort in bringing more gender equality in the Java world.&lt;/p&gt;
-
-&lt;h1 id=&quot;but&quot;&gt;But….&lt;/h1&gt;
-
-&lt;p&gt;When you think about that… surprisingly, JDuchess is &lt;strong&gt;the most discriminating&lt;/strong&gt; JUG in the world! Of all the JUGs I know, it is the only one I’ll never be allowed to join (unless I undergo a sex-change perhaps). It is the only JUG in the world that is filtering members based on gender. And in my opinion, that is a problem.&lt;/p&gt;
-
-&lt;p&gt;So, why is this a problem? It is just a group of female coders that want to hang out and help each other! Well, first of all, don’t get me wrong. Again, I love what the JDuchess are doing for the Java community, I know some of them pretty well personally and they are all very nice and have the best intention!&lt;/p&gt;
-
-&lt;p&gt;But… if you feel like you are not welcome in your local JUG as female coder and you want to do something about this. Please don’t start a ‘female only’-JUG, start a JUG where &lt;strong&gt;everyone&lt;/strong&gt; is welcome and like-minded! If you want to have more equality and integration you shouldn’t be organising your own discriminating group. We need to have male and female coders to work together to solve the gender equality problems!&lt;/p&gt;
-
-&lt;p&gt;Also, I must mention: JDuchess was never about equality or discrimination. It wasn’t born out of frustration as mentioned above. It was just a way for female coders (who often felt lonely during conferences) to connect and have more ‘female-oriented’ conversations with each other.&lt;/p&gt;
-
-&lt;h1 id=&quot;jduke-the-jug-of-testosterone&quot;&gt;JDuke, the JUG of testosterone&lt;/h1&gt;
-
-&lt;p&gt;Imagine this, someone starts JDuke: the male only JUG! We do cool meetings, share experiences with other men! On conferences we proudly wear our male-only badge, because we are MEN! Next to attending sessions and giving talks at conferences we also have our own meetups, just for men of course, and we all go out for dinner, together. Everybody is welcome at our JUG, as long as you have a … are a dude.&lt;/p&gt;
-
-&lt;p&gt;The world would probably explode, how dare we do something so discriminating? But remember, this is exactly what the JDuchess have been doing all the time. Except, what they do isn’t questioned, it is applauded instead. Probably because they are (still) a minority?&lt;/p&gt;
-
-&lt;h1 id=&quot;so-you-are-jealous&quot;&gt;So… you are jealous?&lt;/h1&gt;
-
-&lt;p&gt;Yes! I want to join &lt;a href=&quot;http://jduchess.org/&quot;&gt;JDuchess&lt;/a&gt; too! If I was a female I would totally love being part of their JUG.&lt;/p&gt;
-
-&lt;p&gt;But, as a male, I too want to share experiences with everyone, I too want to discuss the topic of equality. There should be no need in the world for a female JUG (which apparently there still is)! All the JUGs should be as open and inviting as the JDuchess, I’ve never seen a JUG so active and welcoming as them. They are an example for other JUGs… except their discriminating admission policy of course. Gender should not matter, it is all about having mutually shared interest.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 30 Nov 2015 14:12:35 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/11/the-most-discriminating-jug-in-the-world/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/11/the-most-discriminating-jug-in-the-world/</guid>
-        
-        <category>discrimination</category>
-        
-        <category>feminism</category>
-        
-        <category>Java Programming</category>
-        
-        <category>jduchess</category>
-        
-        <category>jug</category>
-        
-        
-        <category>Java Programming</category>
-        
-        <category>Other</category>
         
       </item>
     

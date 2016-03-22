@@ -112,6 +112,77 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="(Annotated) Field injection vs Constructor injection" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-09-21T11:35:41+02:00" class="date">
+            Sep 21, 2010 11:35:41
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">(Annotated) Field injection vs Constructor injection</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of people replied to my last article about constructor vs setter injection that they prefer a third option, field injection. This is a slight variant of setter injection in which we magically let the setter dissapear.</p>
+
+<p>So, another blogpost here!</p>
+
+<p>Let me first show what field injection looks like:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Apple</span> <span class="o">{</span>  
+    <span class="nd">@Inject</span>  
+    <span class="kd">private</span> <span class="n">Orange</span> <span class="n">orange</span><span class="o">;</span>  
+<span class="o">}</span></code></pre></figure>
+
+<p>This is an example from the PicoContainer website, but Spring and Google Guice can do this too. So, you ask, what is wrong with this?</p>
+
+<h1 id="testability">Testability</h1>
+
+<p>I want the classes I write to be testable. Every class needs a test, and every class needs to be tested without the help of any other dependency. For every dependency in my class I want to be able to use a stub/mock implementation.</p>
+
+<p>With constructor injection this is easy, just do new SomeClass(…). But this just can’t be done with field injection..! How do you test these classes? You have no way to construct the objects without bytecode-magic. You cannot create an instance of the above Apple class with its dependencies without using the DI-framework. And the last thing I want is the DI-framework in my unit tests. It makes the test slow, and as we all know, tests need to run as fast as possible to be effective.</p>
+
+<h1 id="final-is-still-tricky">Final is still tricky</h1>
+
+<p>When using field injection your fields can be made private, but you can’t make them final (!!). This is a common mistake, but look at the Google Guice wiki: <a href="http://code.google.com/p/google-guice/wiki/Injections">http://code.google.com/p/google-guice/wiki/Injections</a>.</p>
+
+<p>Note the <strong>warning</strong>: “Avoid using field injection with final fields, which has weak semantics.”</p>
+
+<h1 id="code-smell-is-wanted">Code smell is wanted</h1>
+
+<p>And the final thing I don’t like about field injection… it looks good. This is a bad thing! I tried to explain this in the previous blogpost, but failed I guess. When using constructor injection you’ll notice when it gets ugly, you’ll see that long ugly constructor… and you’ll refactor the class. When using field injection this warning is forgotten.</p>
+
+<p>Large constructor equals bad design. Don’t fix this by changing to setter or field injection, fix the underlying problem and improve your class granularity. The fact that is looks bad with more then 2 or 3 arguments is actually a big <strong>plus</strong>!</p>
+
+<h1 id="annotations">Annotations</h1>
+
+<p>Yes, annotations bind you to the framework, and they are evil. But so is XML. I have to agree on one thing, annotations (javax.inject) are a good thing. But still use constructor injection with these annotations please!</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2010/09/setter-vs-constructor-injection/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Setter vs Constructor injection" width="100" height="100" />
@@ -2160,80 +2231,6 @@ It’ll look something like this:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/01/movies-as-porn/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="What if your favourite movie was remade as porno" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-01-15T15:45:57+01:00" class="date">
-            Jan 15, 2010 15:45:57
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/movies-as-porn/">What if your favourite movie was remade as porno</a></h1>
-
-        <span itemprop="articleBody">
-          <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
-
-<p>My collegues and I were discussing this, and we came up with a top 10. We’ve also started a twitter <a href="http://hashtags.org/moviesasporn">hashtag</a>.</p>
-
-<h1 id="top-10">Top 10</h1>
-
-<ol>
-  <li>Shaving Ryan’s Privates (everybodies favourite)</li>
-  <li>The Curious Taste of Benjamin’s Bottom</li>
-  <li>Honey, I shagged the kids</li>
-  <li>Missionary Impossible III</li>
-  <li>Good Will Humping</li>
-  <li>Free my Willy</li>
-  <li>Legally Boned</li>
-  <li>I Know Who you did last Summer</li>
-  <li>Schindler’s Fist</li>
-  <li>Cliff Banger</li>
-</ol>
-
-<h1 id="honourable-mentions">Honourable mentions</h1>
-
-<p>And some honourable mentions to the titles that just didn’t make the list:</p>
-
-<ul>
-  <li>When Harry ate Sally</li>
-  <li>Saturday Night Beaver</li>
-  <li>Spankenstein</li>
-  <li>Swollow Hal</li>
-  <li>Sorest Rump</li>
-  <li>Bangs of New York</li>
-  <li>American Bangster</li>
-  <li>Thighs Wide Shut</li>
-  <li>Citizen Came</li>
-  <li>The Green Milf</li>
-  <li>The Porn Identity</li>
-  <li>Crouching Woman, Hidden Camera</li>
-</ul>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
