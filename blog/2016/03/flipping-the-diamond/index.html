@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Flipping the diamond - JEP 286</title>
+  <meta name="description" content="After my blogpost yesterday Pros and cons of JEP 286 I’ve received a lot of feedback.The more I’ve been thinking about var/val it seems that my biggest menta...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,jep286,val,var,jdk9,java9,diamond operator,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/03/flipping-the-diamond/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Flipping the diamond - JEP 286" />
+  <meta name="twitter:description" content="After my blogpost yesterday Pros and cons of JEP 286 I’ve received a lot of feedback.The more I’ve been thinking about var/val it seems t..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/03/java-mail-message-as-download/" title="Previous Post: JavaMail API: Message in EML format">&laquo; JavaMail API: Message in EML format</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-03-22T16:41:23+01:00" class="date">
+          Mar 22, 2016 16:41:23
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/flipping-the-diamond/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Flipping the diamond - JEP 286</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>After my blogpost yesterday <a href="http://royvanrijn.com/blog/2016/03/adding-var-val-to-java">Pros and cons of JEP 286</a> I’ve received a lot of feedback.</p>
+
+<p>The more I’ve been thinking about var/val it seems that my biggest mental hurdle is the Java 7 diamond operator. The diamond operator is good, it eliminates typing, and I like it… but I have the feeling it could be so much better!</p>
+
+<p>Instead of (or in addition to) adding <em>var</em> and <em>val</em> I’d love to see a solution where we could ‘flip’ the side of the diamond operator.</p>
+
+<p>Look at the following example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="c1">// Proposed var: (saves 3 characters)</span>
+    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+
+    <span class="c1">// Flipped diamond operator: (larger, but more readable IMHO)</span>
+    <span class="n">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span></code></pre></figure>
+
+<p>In this case adding var/val doesn’t improve much, we still need to specify our generics <em>somewhere</em>, and now it has moved.</p>
+
+<p>But look at the following example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// Proposed var:</span>
+    <span class="n">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// Flipped diamond operator:</span>
+    <span class="n">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
+
+<p>The thing is: There is much more to win on the LHS with the diamond operator than we currently have with the RHS diamond. In most cases you’re going to call code that has already defined the typing, in all those cases you can skip it LHS.</p>
+
+<p>If it is possible to add <em>var</em> and infer everything, it should also be technically possible to have a flipped side diamond operator right? Or am I missing something?</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

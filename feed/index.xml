@@ -5,9 +5,69 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 22 Mar 2016 16:07:48 +0100</pubDate>
-    <lastBuildDate>Tue, 22 Mar 2016 16:07:48 +0100</lastBuildDate>
+    <pubDate>Tue, 22 Mar 2016 17:04:06 +0100</pubDate>
+    <lastBuildDate>Tue, 22 Mar 2016 17:04:06 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Flipping the diamond - JEP 286</title>
+        <description>&lt;p&gt;After my blogpost yesterday &lt;a href=&quot;http://royvanrijn.com/blog/2016/03/adding-var-val-to-java&quot;&gt;Pros and cons of JEP 286&lt;/a&gt; I’ve received a lot of feedback.&lt;/p&gt;
+
+&lt;p&gt;The more I’ve been thinking about var/val it seems that my biggest mental hurdle is the Java 7 diamond operator. The diamond operator is good, it eliminates typing, and I like it… but I have the feeling it could be so much better!&lt;/p&gt;
+
+&lt;p&gt;Instead of (or in addition to) adding &lt;em&gt;var&lt;/em&gt; and &lt;em&gt;val&lt;/em&gt; I’d love to see a solution where we could ‘flip’ the side of the diamond operator.&lt;/p&gt;
+
+&lt;p&gt;Look at the following example:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Java 7 with diamond operator:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Proposed var: (saves 3 characters)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Flipped diamond operator: (larger, but more readable IMHO)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;In this case adding var/val doesn’t improve much, we still need to specify our generics &lt;em&gt;somewhere&lt;/em&gt;, and now it has moved.&lt;/p&gt;
+
+&lt;p&gt;But look at the following example:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Java 7 with diamond operator:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Proposed var:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Flipped diamond operator:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;someMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The thing is: There is much more to win on the LHS with the diamond operator than we currently have with the RHS diamond. In most cases you’re going to call code that has already defined the typing, in all those cases you can skip it LHS.&lt;/p&gt;
+
+&lt;p&gt;If it is possible to add &lt;em&gt;var&lt;/em&gt; and infer everything, it should also be technically possible to have a flipped side diamond operator right? Or am I missing something?&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 22 Mar 2016 16:41:23 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2016/03/flipping-the-diamond/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/03/flipping-the-diamond/</guid>
+        
+        <category>java</category>
+        
+        <category>jep286</category>
+        
+        <category>val</category>
+        
+        <category>var</category>
+        
+        <category>jdk9</category>
+        
+        <category>java9</category>
+        
+        <category>diamond operator</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>JavaMail API: Message in EML format</title>
@@ -794,32 +854,6 @@ Every couple of weeks we organize a hack-day at work. Being a (Java) software co
         
         
         <category>Hacking</category>
-        
-      </item>
-    
-      <item>
-        <title>If you want to build software...</title>
-        <description>&lt;p&gt;Yesterday I heard a great quote:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;If you want to build a ship, don’t drum up people to collect wood and don’t assign them tasks and work, but rather teach them to long for the endless immensity of the sea. &lt;strong&gt;-Antoine de Saint-Exupery&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h1 id=&quot;to-the-moon&quot;&gt;To the moon&lt;/h1&gt;
-
-&lt;p&gt;The modern version of this quote might be: Think about the people who helped build the Saturn rockets that took us to the moon with the Apollo missions. They didn’t work on those projects because it was their job and people payed them to do it. They didn’t just follow tasks. They worked on the project because they loved to be part of this amazing voyage. Every single NASA employee is &lt;strong&gt;in love with space&lt;/strong&gt; and space exploration and they do their absolute best to be part of it.&lt;/p&gt;
-
-&lt;h1 id=&quot;software-development&quot;&gt;Software development&lt;/h1&gt;
-
-&lt;p&gt;This should be the same for (Agile) software development:&lt;br /&gt;
-Don’t hire programmers and give them tasks, tell them about what you want to achieve! Enthusiasm is contagious, it is the perfect catalyst to boost productivity. When people are hired to do tasks, they do the tasks, nothing more, nothing less. When people are hired to reach for a certain goal they’ll express creativity and ingenuity. They will suggest improvements and you’ll end up with a much (MUCH) better product.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 09 Dec 2015 09:17:02 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/12/if-you-want-to-build-software/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/if-you-want-to-build-software/</guid>
-        
-        
-        <category>Agile</category>
         
       </item>
     

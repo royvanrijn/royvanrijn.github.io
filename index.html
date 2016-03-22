@@ -112,6 +112,76 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2016/03/flipping-the-diamond/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Flipping the diamond - JEP 286" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2016-03-22T16:41:23+01:00" class="date">
+            Mar 22, 2016 16:41:23
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/flipping-the-diamond/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/03/flipping-the-diamond/">Flipping the diamond - JEP 286</a></h1>
+
+        <span itemprop="articleBody">
+          <p>After my blogpost yesterday <a href="http://royvanrijn.com/blog/2016/03/adding-var-val-to-java">Pros and cons of JEP 286</a> I’ve received a lot of feedback.</p>
+
+<p>The more I’ve been thinking about var/val it seems that my biggest mental hurdle is the Java 7 diamond operator. The diamond operator is good, it eliminates typing, and I like it… but I have the feeling it could be so much better!</p>
+
+<p>Instead of (or in addition to) adding <em>var</em> and <em>val</em> I’d love to see a solution where we could ‘flip’ the side of the diamond operator.</p>
+
+<p>Look at the following example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="c1">// Proposed var: (saves 3 characters)</span>
+    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+
+    <span class="c1">// Flipped diamond operator: (larger, but more readable IMHO)</span>
+    <span class="n">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span></code></pre></figure>
+
+<p>In this case adding var/val doesn’t improve much, we still need to specify our generics <em>somewhere</em>, and now it has moved.</p>
+
+<p>But look at the following example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// Proposed var:</span>
+    <span class="n">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// Flipped diamond operator:</span>
+    <span class="n">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
+
+<p>The thing is: There is much more to win on the LHS with the diamond operator than we currently have with the RHS diamond. In most cases you’re going to call code that has already defined the typing, in all those cases you can skip it LHS.</p>
+
+<p>If it is possible to add <em>var</em> and infer everything, it should also be technically possible to have a flipped side diamond operator right? Or am I missing something?</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/flipping-the-diamond/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2016/03/java-mail-message-as-download/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaMail API: Message in EML format" width="100" height="100" />
@@ -1327,70 +1397,6 @@ The actual research paper (containing the electoral theory): <a href="http://arx
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/stop-the-conference-committees/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2015/02/the-science-behind-unknown-pleasures/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/unknown_pleasures.jpg" alt="The science behind 'Unknown Pleasures'" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2015-02-16T09:13:36+01:00" class="date">
-            Feb 16, 2015 09:13:36
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/02/the-science-behind-unknown-pleasures/">The science behind 'Unknown Pleasures'</a></h1>
-
-        <span itemprop="articleBody">
-          <h1 id="joy-division">Joy Division</h1>
-
-<p>The album cover of <a href="http://en.wikipedia.org/wiki/Unknown_Pleasures">Unknown Pleasures</a> by Joy Division has to be one of the most iconic covers of the 70’s/early 80’s:</p>
-
-<p><a href="/images/Unknown-Pleasures-Joy-Division-1024x1023.jpg"><img src="/images/Unknown-Pleasures-Joy-Division-1024x1023-300x300.jpg" alt="Unknown-Pleasures-Joy-Division-1024x1023" class="aligncenter" /></a></p>
-
-<p>The artwork has been re-used and reprinted a lot and is still abundantly present as T-shirt at most music festivals.</p>
-
-<p>But every time I saw this image I wondered… what do those white lines actually represent (if anything)? It turns out the story behind the white lines makes the artwork much cooler!</p>
-
-<h1 id="psr-b191921">PSR B1919+21</h1>
-
-<p>At Cambridge University in 1967 a 24 year old student named Jocelyn Bell was analysing a huge printout from a radio telescope. This telescope was built by Anthony Hewish and his group of students to look for quasars. Quasars are the dense centers of super massive blackholes, they emit lots of radio waves and visible light. During the analysis Jocelyn noticed something strange, there appeared to be a signal repeating very quickly, at about 1.337 seconds. Surely this had to be some interference from earth, because this isn’t something a quasar could produce.</p>
-
-<p>After some research they could rule out a lot of earth-noise, microwaves, French radio signals, police radio and much more. They found out the signal also didn’t follow ‘earth time’, the normal 24 hours we follow, but rather the <a href="http://en.wikipedia.org/wiki/Sidereal_time">sidereal time</a> (star time). In short, when they pointed the telescope to the object again (after earth had rotated) it would be in the same position after 23.9344699 hours. This is a key indicator the signal didn’t come from earth but rather from deep space. Nothing they had previously seen or read about in space could produce such a signal. Jokingly they initially named the signal ‘LGM1’, short for ‘Little Green Men #1’.</p>
-
-<p>The discovery sparked interest from all over the world, and a year later (1968) scientists had come to the conclusion the signal had to come from something called a <a href="http://en.wikipedia.org/wiki/Neutron_star">neutron star</a>. When a star (larger than our sun) collapses it explodes (this is called a supernova), expelling a lot of material into space. This material, stardust, is literally what we are made of! No other process known in space can produce ‘heavy’ elements like iron, nikkel, gold, silver and platinum. Initially people thought this exploding star didn’t have a ‘corpse’ and all matter was blown into space.</p>
-
-<p>In 1934 however, just a year after the neutron was discovered two scientists named Walter Baade and Fritz Zwicky predicted the existance of a neutron star. When large stars collapse they expel stardust but also leave behind a dense neutron star. This star, made of super heavy material, spins around producing radio waves. This is what we now call a <a href="http://en.wikipedia.org/wiki/Pulsar">pulsar</a>. The signal from Bell and Hewish was the first observed pulsar, now named PSR B1919+21.</p>
-
-<h1 id="cambridge-encyclopedia">Cambridge Encyclopedia</h1>
-
-<p>If we look at the Cambridge Encyclopedia of Astronomy there is a page on the discovered pulsar:</p>
-
-<p><img src="/images/cp1919-joy-division-300x246.jpg" alt="cp1919-joy-division" class="aligncenter" /></p>
-
-<p>The image on the left page is the same as the album cover, it is the signal of our pulsar: <a href="http://en.wikipedia.org/wiki/PSR_B1919%2B21">PSR B1919+21</a></p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
