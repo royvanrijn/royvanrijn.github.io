@@ -189,7 +189,127 @@ START  add.a  *PTR        , SUBSTR
        mov.a  @PTR        , NEWPTR
 
 ;Check if output is OUT, print and go to next instruction:
-       mov.a</code></pre></figure>
+       mov.a  &lt;PTR        , 1
+       sne.ab #0          , #OUT
+       jmp    PRINT
+
+;Substract and determine if the value &lt;= 0
+SUBSTR sub.a  PROGRAM     , PROGRAM
+       slt.a  #CORESIZE/2 , @-1
+       jmn.ba NEXT        , @-2
+
+;Jump to new address:
+NEWPTR mov.ab #0          , #0
+       mov.f  NEWPTR      , PTR
+       add.f  EQ          , PTR
+       seq.ab NEWPTR      , #HALT
+
+;Check for HALT (jump to DAT-PROGRAM)
+       jmp RESET
+
+LABEL
+PROGRAM
+
+;-----------------------------------------------
+;Translated version of the Hello World program from:
+;http://mozaika.com.au/oleg/subleq/
+
+dat A-LABEL,0
+dat A-LABEL,0
+dat 3,0
+dat p-LABEL,0
+dat Z-LABEL ,0
+dat 6,0
+
+dat Z-LABEL ,0
+dat A-LABEL ,0
+dat 9,0
+
+dat Z-LABEL ,0
+
+dat Z-LABEL ,0
+dat A-LABEL,0
+
+A dat PROGRAM ,0
+dat OUT ,0
+dat 15,0
+
+dat m1-LABEL,0
+dat p-LABEL,0
+dat 18,0
+
+dat A-LABEL ,0
+dat A-LABEL ,0
+dat 21,0
+
+dat E-LABEL ,0
+dat Z-LABEL ,0
+dat 24,0
+
+dat Z-LABEL ,0
+dat A-LABEL ,0
+dat 27,0
+
+dat Z-LABEL,0
+dat Z-LABEL,0
+dat 30,0
+
+dat b-LABEL,0
+dat b-LABEL,0
+dat 33,0
+
+dat p-LABEL,0
+dat Z-LABEL,0
+dat 36,0
+
+dat Z-LABEL ,0
+dat b-LABEL,0
+dat 39,0
+
+dat Z-LABEL,0
+dat Z-LABEL,0
+dat 42,0
+
+dat E-LABEL,0
+dat b-LABEL,0
+dat 48,0 ;?+3
+
+dat Z-LABEL ,0
+dat Z-LABEL,0
+dat 51,0 ;?+3
+
+dat p-LABEL,0
+dat A-LABEL,0
+dat 54,0 ;?+3
+
+dat Z-LABEL ,0
+dat Z-LABEL ,0
+dat 0,0
+
+dat 0 ,0
+dat 0 ,0
+dat -1,0
+
+;data
+p dat H-LABEL,0
+Z dat 0,0
+m1 dat -1,0
+b dat 0,0
+H dat 72,0 ;:H
+dat 101,0 ; e
+dat 108,0 ; l
+dat 108,0 ; l
+dat 111,0 ; o
+dat 32,0 ; space
+dat 87,0 ; W
+dat 111,0 ; o
+dat 114,0 ; r
+dat 108,0 ; l
+dat 100,0 ; d
+E dat E-LABEL,0
+
+end START
+;-----------------------------------------------</code></pre></figure>
 
 
     </span>
