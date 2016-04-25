@@ -112,6 +112,63 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/05/gods-dice/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="God's Dice" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-05-09T09:07:36+02:00" class="date">
+            May 9, 2011 09:07:36
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/gods-dice/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/gods-dice/">God's Dice</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Yay! There is a new Virtual Source Programming Contest: <a href="http://www.v-sonline.com/index.pl?home">“God’s Dice”</a></p>
+
+<p><a href="/images/godsdice.png"><img src="/images/godsdice.png" alt="godsdice" class="alignright" /></a></p>
+
+<p>After a bit of a messy start of the contest, within hours three people had a 100% score (almost, 99.99% due to some rounding errors). This sparked James, the organizer, to change the rules a bit. Now the contest is running smoothly, the loophole is removed.</p>
+
+<p>The goal of the contest is this:</p>
+
+<ol>
+  <li>Take a cube, with all sides length 1</li>
+  <li>Place N (9 to 88) points anywhere on the surface of the cube</li>
+  <li>Now calculate the surface area of all triangles between your points</li>
+  <li>Your score is: totalSurfaceArea * (smallestTriangleSurfaceArea ^ 2)</li>
+</ol>
+
+<p>So basically you need to create triangles as large as possible, BUT, all triangles need to be large. One smaller triangle will exponentially screw up the score.</p>
+
+<p>Up to now I’ve only written a scorer and a basic random searcher just to get myself on the leaderboard. Now it is time to do something a bit smarter, maybe just a better search algorithm, but I’ll probably need something a lot smarter, incorporating geometric knowledge. For example, moving one point changes all triangles involved. So we could test only these triangles to see if they improve (instead of re-testing the whole cube).</p>
+
+<p>And I’ve got some other idea’s, which I won’t share obviously for the contest sake!</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/gods-dice/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/05/website-theme/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="New website theme" width="100" height="100" />
@@ -1415,75 +1472,6 @@ Woodcock Washburn</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/09/handling-frame-switching/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Handling 'Frame switching'" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-09-23T12:37:02+02:00" class="date">
-            Sep 23, 2010 12:37:02
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/handling-frame-switching/">Handling 'Frame switching'</a></h1>
-
-        <span itemprop="articleBody">
-          <p>A couple of days ago I noticed this tweet:  </p>
-
-<p><strong><a href="http://twitter.com/berenguel/status/25061642637">berenguel</a>: What is your view on ‘frame switching’?How do you manage (forced) interruptions of your workflow?How do you get the interruptor to give up?</strong>  </p>
-
-<p>This is something I’m currently not experiencing, but I have been fighting this in the past. And I’ve come up with a quite effective way to eliminate this.  </p>
-
-<p><img src="/images/post-it-300x199.jpg" alt="Post-it" class="alignright" /></p>
-
-<h1 id="priority-todo-list">Priority todo-list</h1>
-
-<p>I’m just a regular guy, and just like all men I can only focus on a single thing. Context swithing/frame of reference switching is hard. If I’m working on a programming problem and people interrupt me, ask other technical questions, I lose my train of thought.</p>
-
-<p>So, how do you counter this? Well, first I made a list of things to do. This is always good to have, it directs your focus. My list is priorized. For example:</p>
-
-<ul>
-  <li>Implement “General overview” page</li>
-  <li>Fix bug with disappearing “Solve” button</li>
-  <li>Refactor OfflineAvailableController</li>
-  <li>Fix table layout bug</li>
-</ul>
-
-<p>Yay!</p>
-
-<h1 id="coffee-time">Coffee time!</h1>
-
-<p>The top post-it is the one I’m working on, that one has my complete focus. When the project lead comes and asks me questions, I ask him to prioritize it. He can add post-its to the list and/or shuffle the list. But there is one catch: Every time he changes or I finish the top priority I need a coffee break. This is my frame-switching moment, to clear my head.</p>
-
-<p>If you do this, and keep doing this (no exceptions!) the project lead will start putting his ‘requests’ (interruptions) beneath your current piece of work, without distracting you. Because else you go for a cup of coffee first…. This is what we want. When we finish what we are currently doing we get a little coffee break. When we’ve fully cleared our head we look at the next item in the todo-queue.</p>
-
-<p>Don’t worry, it may sound a bit rude, they’ll understand it if you explain the problem with frame-switching…! This just makes it visible.</p>
-
-<p>p.s. Berengual will probably write a blog post about his own experiences with frame-switching, I’ll post a link when he does!</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

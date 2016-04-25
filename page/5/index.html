@@ -112,6 +112,180 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2012/09/stacktraces-should-be-inverted/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stacktraces should be inverted" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2012-09-26T10:28:52+02:00" class="date">
+            Sep 26, 2012 10:28:52
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2012/09/stacktraces-should-be-inverted/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/09/stacktraces-should-be-inverted/">Stacktraces should be inverted</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Stacktraces in Java are wrong. This is a conclusion that I’ve drawn after years of working with novice programmers.</p>
+
+<p>What is the first thing novice programmers do when they encounter a stacktrace? They start reading it, and this is wrong! The first thing you <em>should</em> do is scroll down. That is because the most important piece of the stacktrace is most likely at the bottom.</p>
+
+<h1 id="caused-by">Caused by…</h1>
+
+<p>Stacktraces in Java are usually wrapped numerous times, because all the frameworks and the application server wants to add their own little bit of information around the original exception. The problem is that Java uses the “Caused by” way of printing the stacktrace. With the “Caused by” you’ll get a lot of information about what happened (<em>afterwards</em>) first, until you get to the actual reason.</p>
+
+<p>For example:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.NullPointerException
+	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(Unknown Source)
+	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)</code></pre></figure>
+
+<p>The first two traces aren’t at all important, it tells us something went wrong with a webservice call. But the bottom trace gives us the real reason, a NullPointerException!</p>
+
+<h1 id="caused">Caused!</h1>
+
+<p>I’d rather see stacktraces being inverted, so instead of saying:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>**Webservice failed</td>
+      <td>which is caused by -&gt; Webservice failed during translation</td>
+      <td>which is caused by -&gt; A NullPointerException!**</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It should say:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>**A NullPointerException</td>
+      <td>which caused -&gt; Webservice failed during translation</td>
+      <td>which caused -&gt; Webservice failed…**</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So using the example above it would become:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">java.lang.NullPointerException
+	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
+	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
+	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(Unknown Source)
+	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
+	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
+	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
+	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)
+Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
+	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
+	at java.lang.Thread.run(Unknown Source)</code></pre></figure>
+
+<p>This is much easier to understand (IMHO). The first exception you see is now also the first thing that happened. Much clearer for the novice programmer.</p>
+
+<p>Some more tips when you encounter a stacktrace:</p>
+
+<ul>
+  <li>Look for the first line that starts with YOUR package, this is where your control over the code starts, where you might be able to fix it</li>
+  <li>If there are a lot of other packages mentioned before YOUR package, Google it! You are probably not alone</li>
+</ul>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2012/09/stacktraces-should-be-inverted/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hacking with the Mara-Naboisho Lion Project" width="100" height="100" />
@@ -1362,49 +1536,6 @@ Source: wikipedia.org</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/orchard-planting-greatest-common-divisor/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/12/parleys-devoxx-talk-published/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Parleys: Devoxx talk published" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-12-20T20:50:50+01:00" class="date">
-            Dec 20, 2011 20:50:50
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/parleys-devoxx-talk-published/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/12/parleys-devoxx-talk-published/">Parleys: Devoxx talk published</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The guys at Devoxx/Parleys have already processed all the talks and post-processed them. So my talk it now available at Parleys.com.<br />
-There is one drawback though, the talk is currently for subscribers only. If you don’t have one you can only watch the first two (very nervous) minutes.</p>
-
-<p>If you’ve attended Devoxx you will get a free subscription in the email.</p>
-
-<p>(p.s. The intro movie for all the Devoxx ‘11 talks is made by me as well!)</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/parleys-devoxx-talk-published/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
