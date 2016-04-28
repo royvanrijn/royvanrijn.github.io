@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 28 Apr 2016 16:14:42 +0200</pubDate>
-    <lastBuildDate>Thu, 28 Apr 2016 16:14:42 +0200</lastBuildDate>
+    <pubDate>Thu, 28 Apr 2016 16:48:03 +0200</pubDate>
+    <lastBuildDate>Thu, 28 Apr 2016 16:48:03 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -82,9 +82,14 @@ Before diving into that discussion, lets take a look at what Optional does and h
         &lt;span class=&quot;n&quot;&gt;Order&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;order&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maybeOrder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;This is the ‘safe’ way, but it could just as well have been a null check now.&lt;/p&gt;
+&lt;p&gt;This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your &lt;em&gt;Optional&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;There is likely a cleaner way to process the &lt;em&gt;Optional&lt;/em&gt; using &lt;em&gt;filter&lt;/em&gt;, &lt;em&gt;map&lt;/em&gt;, &lt;em&gt;ifPresent&lt;/em&gt; or any of the other powerful methods in &lt;em&gt;Optional&lt;/em&gt;.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;If you want to do something with the result, use &lt;em&gt;filter&lt;/em&gt;, &lt;em&gt;map&lt;/em&gt;, &lt;em&gt;ifPresent&lt;/em&gt; (and many others).&lt;/li&gt;
+  &lt;li&gt;If you need to return something, either return an Optional yourself, or get a default value by calling &lt;em&gt;orElse&lt;/em&gt;, &lt;em&gt;orElseGet&lt;/em&gt; or &lt;em&gt;orElseThrow&lt;/em&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is all you need, why have a &lt;em&gt;get&lt;/em&gt;-method?&lt;/p&gt;
 
 &lt;p&gt;The proposal on the mailinglist is to deprecate the &lt;em&gt;get()&lt;/em&gt; method and rename it to &lt;em&gt;getWhenPresent()&lt;/em&gt;. This name change should warn people that it might not be present and they should check &lt;em&gt;isPresent&lt;/em&gt; before calling &lt;em&gt;get()&lt;/em&gt;.&lt;/p&gt;
 

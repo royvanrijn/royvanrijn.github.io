@@ -202,9 +202,14 @@ Before diving into that discussion, lets take a look at what Optional does and h
         <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
     <span class="o">}</span></code></pre></figure>
 
-<p>This is the ‘safe’ way, but it could just as well have been a null check now.</p>
+<p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>
 
-<p>There is likely a cleaner way to process the <em>Optional</em> using <em>filter</em>, <em>map</em>, <em>ifPresent</em> or any of the other powerful methods in <em>Optional</em>.</p>
+<ul>
+  <li>If you want to do something with the result, use <em>filter</em>, <em>map</em>, <em>ifPresent</em> (and many others).</li>
+  <li>If you need to return something, either return an Optional yourself, or get a default value by calling <em>orElse</em>, <em>orElseGet</em> or <em>orElseThrow</em>.</li>
+</ul>
+
+<p>This is all you need, why have a <em>get</em>-method?</p>
 
 <p>The proposal on the mailinglist is to deprecate the <em>get()</em> method and rename it to <em>getWhenPresent()</em>. This name change should warn people that it might not be present and they should check <em>isPresent</em> before calling <em>get()</em>.</p>
 
