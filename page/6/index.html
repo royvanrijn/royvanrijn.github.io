@@ -112,6 +112,87 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/12/orchard-planting-greatest-common-divisor/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Orchard Planting: Greatest Common Divisor" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-12-30T13:21:59+01:00" class="date">
+            Dec 30, 2011 13:21:59
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/orchard-planting-greatest-common-divisor/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/12/orchard-planting-greatest-common-divisor/">Orchard Planting: Greatest Common Divisor</a></h1>
+
+        <span itemprop="articleBody">
+          <p>The <a href="http://infinitesearchspace.dyndns.org/orchardplanting">Orchard Planting</a> contest from infinite search space is over. So it is time for a quick write-up.</p>
+
+<p>The rules are simple, on a grid of integers, place N points on the grid to get as much 4 points on a line and never more then 4 points on a line.</p>
+
+<p>My big break-through was when I figured out a way to improve the calculation speed of a solution, and make it possible to extend existing solutions (going back and forwards). To do this I used a unique vector (greatest common divisor vector) which is the same for all point on the same line:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Calculate unique vector(hash):</span>
+<span class="n">doubleIntVector</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">stepx</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">stepy</span> <span class="o">=</span> <span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">gcd</span> <span class="o">=</span> <span class="n">gcd</span><span class="o">(</span><span class="n">abs</span><span class="o">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">),</span> <span class="n">abs</span><span class="o">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">));</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">gcd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">stepx</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+        <span class="n">stepy</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="o">-</span><span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="nf">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">stepy</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span> <span class="c1">//this looks curious... but fixed a bug</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we can evaluate the points:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span> <span class="n">point</span> <span class="n">A</span> <span class="n">in</span> <span class="n">points</span> <span class="mi">0</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+    <span class="n">create</span> <span class="n">list</span> <span class="n">vectorsA</span> 
+    <span class="k">for</span> <span class="n">point</span> <span class="n">B</span> <span class="n">in</span> <span class="n">points</span> <span class="n">A</span><span class="o">+</span><span class="mi">1</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+         <span class="n">vectorA</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">doubleIntVector</span><span class="o">(</span><span class="n">A</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">y</span><span class="o">)</span> <span class="o">)</span>
+    <span class="o">}</span>
+    <span class="n">sort</span><span class="o">(</span><span class="n">vectorsA</span><span class="o">)</span>
+    <span class="c1">//if vectorsA has three similair vectors you have 4 points on a line! </span>
+    <span class="c1">//(3&gt; = invalid and 2 = candidate for extending!)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If a point has three vectors that are the same, we have a line with four points! This can be checked easily if you sort the vectors and go through them once.</p>
+
+<p>Also adding and removing points becomes very easy. A lot of the GCD calculations can be cached. To remove a point, just remove the vectors it made. And to add a point, calculate all the new vectors. So in the end it basically all boils down to a lot of GCD calculations and sorting.</p>
+
+<p>Was this the fastest way to calculate solutions in this contest? I don’t know, but I was really pleased when I figured it out. With a better algorithm for picking possible numbers (instead of hill-climbing) and some more processor power I bet I could have ended a bit higher up the hill.</p>
+
+<p>Also: Keep an eye out for the next contest, it is going to be an interesting one! January the 13th.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/orchard-planting-greatest-common-divisor/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/12/parleys-devoxx-talk-published/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Parleys: Devoxx talk published" width="100" height="100" />
@@ -951,47 +1032,6 @@ If you have this problem too, please let me know if this fix helps.</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/05/wedding-video/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Wedding video" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-05-23T10:52:16+02:00" class="date">
-            May 23, 2011 10:52:16
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
-
-        <span itemprop="articleBody">
-          <p>This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I’ve filmed something. I decided to edit everything together with some music. Here is the result:</p>
-
-<iframe type="text/html" src="http://player.vimeo.com/video/24091005?title=0&amp;byline=0&amp;portrait=0" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<p>It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard…</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

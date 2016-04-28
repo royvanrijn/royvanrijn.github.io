@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Deprecating Optional.get()</title>
+  <meta name="description" content="On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s Optional.Before diving into that discussion, lets take a look at what Option...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,guava,optional,lambda,deprecating,ispresent,getwhenpresent,jep,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/04/deprecating-optional-get/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Deprecating Optional.get()" />
+  <meta name="twitter:description" content="On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s Optional.Before diving into that discussion, lets take a..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/04/the-collapse-of-java-ee/" title="Previous Post: The collapse of Java EE?">&laquo; The collapse of Java EE?</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-04-28T14:10:09+02:00" class="date">
+          Apr 28, 2016 14:10:09
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Deprecating Optional.get()</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a>.
+Before diving into that discussion, lets take a look at what Optional does and how you can use it.</p>
+
+<h2 id="checking-for-null">Checking for null</h2>
+
+<p>What do you do when your code calls an external service or <em>god forbid</em> a microservice, and the result isn’t always available?</p>
+
+<p>Most of the time the protocol you are using facilitates in the optional part, for example in REST you’ll get a <em>404</em> instead of JSON. Getting this <em>404</em> forces you to think about this scenario and do something when this happens.</p>
+
+<p>But what do you do when you’re calling a framework (on the boundary of your code) and the value isn’t always known?</p>
+
+<p>You either get the value or the result is a dreaded <strong>null</strong>. This causes a lot of null checks, or bugs where the code just crashes with a NullPointerException.</p>
+
+<p>Example (old skool, Java 7):</p>
+
+<pre><code>Order order = Database.readOrder(); //can be null
+if(order != null) {
+    ProcessResult result = OrderEngine.process(order);
+    if(result != null &amp;&amp; result.succeeded()) {
+        Database.storeResult(result);
+    }
+}
+</code></pre>
+
+<p>This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.</p>
+
+<h2 id="javautiloptional">java.util.Optional</h2>
+
+<p>What happens when you are processing a <em>stream</em> and some values are <em>null</em>? You don’t want null checks inside a stream! This is where Java 8’s Optional comes in. If you’re not (yet!?) using Java 8, there are other implementations as well. For example <a href="https://github.com/google/guava">Google Guava</a> has an Optional as well.</p>
+
+<p>Optional is a class that ‘might’ have a given value in it, or not, it is optional. So how exactly is this helpful? Instead of checking for null this wrapper class can handle some situations for you.</p>
+
+<p>For example:</p>
+
+<pre><code>Optional&lt;Order&gt; order = Database.readOrder();
+Optional&lt;ProcessResult&gt; result = order.map(OrderEngine::process);
+Optional&lt;ProcessResult&gt; filteredResult = result.filter(ProcessResult::succeeded);
+
+filteredResult.ifPresent(Database::storeResult);
+</code></pre>
+
+<p>Or the shorter ‘fluid’ version:</p>
+
+<pre><code>Database.readOrder()
+    .map(OrderEngine::process)
+    .filter(ProcessResult::succeeded)
+    .ifPresent(Database::storeResult);
+</code></pre>
+
+<p>Even if the <em>Optional</em> is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.</p>
+
+<p>As you can see Optional can really clean up your code. You don’t need to worry about null checks anymore.</p>
+
+<p>So what is the problem with Optional.get()?</p>
+
+<h2 id="optionalget-deprecation-discussion">Optional.get() deprecation discussion</h2>
+
+<p>Pretty much out of the blue on the OpenJDK mailinglist <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040484.html">an email arrived</a> with a <a href="http://openjdk.java.net/guide/webrevHelp.html">webrev</a> (similar to a patch file) that contained the deprecation of <em>Optional.get()</em>.</p>
+
+<p>The get() method is too easy to find, and the name isn’t quite what you’d expect, and the webrev author claims there are a lot of cases online where people made the same mistakes.</p>
+
+<p>Many programmers, when they first encounter <em>Optional</em>, don’t know what to do. They look in their IDE and the first thing that pops up is <em>get()</em>.</p>
+
+<p>It is just an easy method to call:</p>
+
+<pre><code>Order order = Database.readOrder().get();
+</code></pre>
+
+<p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
+
+<pre><code>Optional&lt;Order&gt; maybeOrder = Database.readOrder();
+if(maybeOrder.isPresent()) {
+    Order order = maybeOrder.get();
+}
+</code></pre>
+
+<p>This is the ‘safe’ way, but it could just as well have been a null check now.</p>
+
+<p>There is likely a cleaner way to process the <em>Optional</em> using <em>filter</em>, <em>map</em>, <em>ifPresent</em> or any of the other powerful methods in <em>Optional</em>.</p>
+
+<p>The proposal on the mailinglist is to deprecate the <em>get()</em> method and rename it to <em>getWhenPresent()</em>. This name change should warn people that it might not be present and they should check <em>isPresent</em> before calling <em>get()</em>.</p>
+
+<p>Instead of embracing this change some people on the mailinglist argue against deprecation, some of their reasons:</p>
+
+<ul>
+  <li>Renaming will break a <em>LOT</em> of code, well, not really break the code, it will cause deprecation warnings</li>
+  <li><em>getWhenPresent()</em> instead of <em>get()</em> just adds noise to the code, it doesn’t solve anything</li>
+  <li>People should just read the JavaDoc, it clearly states what <em>get()</em> does and throws</li>
+  <li>Guava’s Optional also has the same <em>get()</em> method, they’ve never heard about the problem</li>
+</ul>
+
+<p>The most honest and one of the more powerful replies in the discussion was <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040531.html">from Brian Goetz</a> himself:</p>
+
+<blockquote>
+  <p>As the person who chose the original (terrible) name, let me weigh in…</p>
+
+  <p>……</p>
+
+  <p>I’d like to see it fixed, and the sooner the better.</p>
+</blockquote>
+
+<p>He is clearly in favor of deprecation… what is your opinion? Let me know in the comments!</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

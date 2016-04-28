@@ -112,6 +112,49 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx4Kids UK 2014: the video" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-06-22T15:03:44+02:00" class="date">
+            Jun 22, 2014 15:03:44
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
+
+        <span itemprop="articleBody">
+          <p>The other thing I did while I was in London was volunteer and film at the first UK-based Devoxx4Kids.</p>
+
+<p>Here is my video that sums it all up:</p>
+
+<iframe type="text/html" src="http://player.vimeo.com/video/98852396" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>It was awesome being there, watching the kids play and learn at the same time. The volunteers were absolutely amazing (a lot of them!) and the atmosphere was very relaxed.</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2014/06/devoxx-uk-2014-the-video/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx UK 2014: the video" width="100" height="100" />
@@ -1604,76 +1647,6 @@ A: “You’re drunk, go home.”</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/java-default-methods-future-problem/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java 'default' methods, future problem?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-17T12:33:20+02:00" class="date">
-            Oct 17, 2013 12:33:20
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/java-default-methods-future-problem/">Java 'default' methods, future problem?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>In Java there is one golden rule, we <strong>don’t break backwards compatibility</strong>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
-
-<h1 id="extending-interfaces">Extending interfaces</h1>
-
-<p>With the introduction of Lambda’s in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <em>List.forEach</em> all custom implementations of the List interface won’t compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
-
-<h1 id="default">default</h1>
-
-<p>To counter this the ‘<em>default</em>’ keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn’t have to be). For example, see the following new ‘default’ method from the Iterable interface:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
-	<span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
-    	<span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>There are some important rules; the added code will operate on static data, it can’t and should never manipulate state!<br />
-Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
-
-<h1 id="possible-future-problems">Possible future problems…</h1>
-
-<p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
-
-<p>Now (crazy example) I’ve made something called <strong>MyListSet</strong> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <em>spilerator()</em> on the same level and will thus collide with the following exception:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
-  where T is a type-variable:
-    T extends Object declared in class MyListSet</code></pre></figure>
-
-<p>The more these ‘default’ methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I’m not yet convinced about the default methods.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

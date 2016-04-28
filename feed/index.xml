@@ -5,9 +5,138 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 25 Apr 2016 17:29:04 +0200</pubDate>
-    <lastBuildDate>Mon, 25 Apr 2016 17:29:04 +0200</lastBuildDate>
+    <pubDate>Thu, 28 Apr 2016 16:04:19 +0200</pubDate>
+    <lastBuildDate>Thu, 28 Apr 2016 16:04:19 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Deprecating Optional.get()</title>
+        <description>&lt;p&gt;On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html&quot;&gt;Optional&lt;/a&gt;.
+Before diving into that discussion, lets take a look at what Optional does and how you can use it.&lt;/p&gt;
+
+&lt;h2 id=&quot;checking-for-null&quot;&gt;Checking for null&lt;/h2&gt;
+
+&lt;p&gt;What do you do when your code calls an external service or &lt;em&gt;god forbid&lt;/em&gt; a microservice, and the result isn’t always available?&lt;/p&gt;
+
+&lt;p&gt;Most of the time the protocol you are using facilitates in the optional part, for example in REST you’ll get a &lt;em&gt;404&lt;/em&gt; instead of JSON. Getting this &lt;em&gt;404&lt;/em&gt; forces you to think about this scenario and do something when this happens.&lt;/p&gt;
+
+&lt;p&gt;But what do you do when you’re calling a framework (on the boundary of your code) and the value isn’t always known?&lt;/p&gt;
+
+&lt;p&gt;You either get the value or the result is a dreaded &lt;strong&gt;null&lt;/strong&gt;. This causes a lot of null checks, or bugs where the code just crashes with a NullPointerException.&lt;/p&gt;
+
+&lt;p&gt;Example (old skool, Java 7):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Order order = Database.readOrder(); //can be null
+if(order != null) {
+    ProcessResult result = OrderEngine.process(order);
+    if(result != null &amp;amp;&amp;amp; result.succeeded()) {
+        Database.storeResult(result);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.&lt;/p&gt;
+
+&lt;h2 id=&quot;javautiloptional&quot;&gt;java.util.Optional&lt;/h2&gt;
+
+&lt;p&gt;What happens when you are processing a &lt;em&gt;stream&lt;/em&gt; and some values are &lt;em&gt;null&lt;/em&gt;? You don’t want null checks inside a stream! This is where Java 8’s Optional comes in. If you’re not (yet!?) using Java 8, there are other implementations as well. For example &lt;a href=&quot;https://github.com/google/guava&quot;&gt;Google Guava&lt;/a&gt; has an Optional as well.&lt;/p&gt;
+
+&lt;p&gt;Optional is a class that ‘might’ have a given value in it, or not, it is optional. So how exactly is this helpful? Instead of checking for null this wrapper class can handle some situations for you.&lt;/p&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Optional&amp;lt;Order&amp;gt; order = Database.readOrder();
+Optional&amp;lt;ProcessResult&amp;gt; result = order.map(OrderEngine::process);
+Optional&amp;lt;ProcessResult&amp;gt; filteredResult = result.filter(ProcessResult::succeeded);
+
+filteredResult.ifPresent(Database::storeResult);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Or the shorter ‘fluid’ version:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Database.readOrder()
+    .map(OrderEngine::process)
+    .filter(ProcessResult::succeeded)
+    .ifPresent(Database::storeResult);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Even if the &lt;em&gt;Optional&lt;/em&gt; is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.&lt;/p&gt;
+
+&lt;p&gt;As you can see Optional can really clean up your code. You don’t need to worry about null checks anymore.&lt;/p&gt;
+
+&lt;p&gt;So what is the problem with Optional.get()?&lt;/p&gt;
+
+&lt;h2 id=&quot;optionalget-deprecation-discussion&quot;&gt;Optional.get() deprecation discussion&lt;/h2&gt;
+
+&lt;p&gt;Pretty much out of the blue on the OpenJDK mailinglist &lt;a href=&quot;http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040484.html&quot;&gt;an email arrived&lt;/a&gt; with a &lt;a href=&quot;http://openjdk.java.net/guide/webrevHelp.html&quot;&gt;webrev&lt;/a&gt; (similar to a patch file) that contained the deprecation of &lt;em&gt;Optional.get()&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The get() method is too easy to find, and the name isn’t quite what you’d expect, and the webrev author claims there are a lot of cases online where people made the same mistakes.&lt;/p&gt;
+
+&lt;p&gt;Many programmers, when they first encounter &lt;em&gt;Optional&lt;/em&gt;, don’t know what to do. They look in their IDE and the first thing that pops up is &lt;em&gt;get()&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;It is just an easy method to call:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Order order = Database.readOrder().get();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This works fine! Until there is a situation where the value is not available to the &lt;em&gt;Optional&lt;/em&gt;. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Optional&amp;lt;Order&amp;gt; maybeOrder = Database.readOrder();
+if(maybeOrder.isPresent()) {
+    Order order = maybeOrder.get();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is the ‘safe’ way, but it could just as well have been a null check now.&lt;/p&gt;
+
+&lt;p&gt;There is likely a cleaner way to process the &lt;em&gt;Optional&lt;/em&gt; using &lt;em&gt;filter&lt;/em&gt;, &lt;em&gt;map&lt;/em&gt;, &lt;em&gt;ifPresent&lt;/em&gt; or any of the other powerful methods in &lt;em&gt;Optional&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The proposal on the mailinglist is to deprecate the &lt;em&gt;get()&lt;/em&gt; method and rename it to &lt;em&gt;getWhenPresent()&lt;/em&gt;. This name change should warn people that it might not be present and they should check &lt;em&gt;isPresent&lt;/em&gt; before calling &lt;em&gt;get()&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Instead of embracing this change some people on the mailinglist argue against deprecation, some of their reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Renaming will break a &lt;em&gt;LOT&lt;/em&gt; of code, well, not really break the code, it will cause deprecation warnings&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;getWhenPresent()&lt;/em&gt; instead of &lt;em&gt;get()&lt;/em&gt; just adds noise to the code, it doesn’t solve anything&lt;/li&gt;
+  &lt;li&gt;People should just read the JavaDoc, it clearly states what &lt;em&gt;get()&lt;/em&gt; does and throws&lt;/li&gt;
+  &lt;li&gt;Guava’s Optional also has the same &lt;em&gt;get()&lt;/em&gt; method, they’ve never heard about the problem&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The most honest and one of the more powerful replies in the discussion was &lt;a href=&quot;http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040531.html&quot;&gt;from Brian Goetz&lt;/a&gt; himself:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;As the person who chose the original (terrible) name, let me weigh in…&lt;/p&gt;
+
+  &lt;p&gt;……&lt;/p&gt;
+
+  &lt;p&gt;I’d like to see it fixed, and the sooner the better.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;He is clearly in favor of deprecation… what is your opinion? Let me know in the comments!&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 28 Apr 2016 14:10:09 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2016/04/deprecating-optional-get/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/04/deprecating-optional-get/</guid>
+        
+        <category>guava</category>
+        
+        <category>optional</category>
+        
+        <category>lambda</category>
+        
+        <category>deprecating</category>
+        
+        <category>ispresent</category>
+        
+        <category>getwhenpresent</category>
+        
+        <category>jep</category>
+        
+        
+        <category>Java Programming</category>
+        
+      </item>
     
       <item>
         <title>The collapse of Java EE?</title>
@@ -730,67 +859,6 @@ There are some good &lt;strong&gt;pros&lt;/strong&gt; but also quite a lot of &l
         
         
         <category>Java Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Makeblock, robots for kids (and adults)</title>
-        <description>&lt;p&gt;When I left the Port of Rotterdam (over a year ago) as consultant/software developer I got a lot of cool gifts. Amongst the gifts was a small blue box from &lt;a href=&quot;http://www.makeblock.cc/&quot;&gt;Makeblock&lt;/a&gt;, called the ‘robot starter kit’. It was put away on my desk and sadly I’d forgotten about it. But recently a colleague of mine showed us the robot his daughter made. She got a similar robot from Makeblock for her birthday and it ‘became her new best friend’. He asked her if he could borrow the robot for one day and show it to us at work, she reluctantly said yes.&lt;/p&gt;
-
-&lt;p&gt;When I got home I suddenly remembered the blue box I had laying around in the corner of my desk. I decided to show it to my 3 year old daughter. She loved the idea of having her own little robot in her room. Searching online I couldn’t find a suggested appropriate age for these robots so I figured: if she wants to try, just go for it!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/makeblock-start.jpg&quot; alt=&quot;Starting the assembly of the robot (bananas not included)&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;She immediately jumped in and started handling the screwdriver like a pro. I was amazed to see the dedication, concentration and dexterity, when I was younger I had none of the three. In about half an hour we had the base constructed and she lost interest for a little while. I decided to continue alone for 10 minutes and the only thing left to do was assembling the tank tracks. So I called her over and we decided to hold a little race, 20 rubber pieces for me, 20 for her. It was a pain to assemble, but by introducing a small competition I only had one track to assemble, she did the other one all by herself.&lt;/p&gt;
-
-&lt;p&gt;The cool thing about these robots is their simplicity: The frame goes together quickly with a couple of screws and removable rivets. All the electronics are connected by RJ25 (telephone) jacks. The kit I got had an IR-receiver (+ remote) and ultrasonic sensor. The remote is great because she is too young for programming. The moment you put it together and place the batteries you can start driving the robot around. She loved it, look at her proud smug face:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/makeblock-finish.jpg&quot; alt=&quot;I&#39;ve build a robot, now what?&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Next thing I’ll do it to teach it how to dance! Then I’ll teach it how to clean my room.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;That evening, when she was vast asleep, I started working on the programming. The main board in this robot is compatible with an Arduino. To program the robot you connect it to your laptop using USB and fire up the Arduino IDE with the Makeblock library. Commands are very simple to use, for example reading the distance sensor is: ‘ultraSensor.distanceCm()’. That night, when my daughter was sleeping, I added an automatic drive-mode so the robot would drive around randomly avoiding all obstacles with help of the ultrasonic sensor. When she woke up I told her ‘go ahead and hit the 0 on the remote!’. She was blown away, her little robot had grown a mind of its own!&lt;/p&gt;
-
-&lt;p&gt;When she is a bit older we’re going to try out the &lt;a href=&quot;http://www.mblock.cc/&quot;&gt;mBlock&lt;/a&gt;/&lt;a href=&quot;https://scratch.mit.edu/&quot;&gt;Scratch&lt;/a&gt; plugin. &lt;a href=&quot;https://scratch.mit.edu/&quot;&gt;Scratch&lt;/a&gt; (for those unfamiliar) is an environment where you can visually program with graphical blocks. It is a drag and drop environment and works very well as a first programming tool for kids. It is also something we regularly use at &lt;a href=&quot;http://www.devoxx4kids.org/&quot;&gt;Devoxx4Kids&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Things I like about the Makeblock robot:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Easy to assemble (even for a 3yo)&lt;/li&gt;
-  &lt;li&gt;Instructions had a lot of images&lt;/li&gt;
-  &lt;li&gt;Fun to program&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;And of course, it isn’t perfect, things I didn’t like:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Should come with a CR2025 coin cell battery for the remote (I had to race to the store to get one)&lt;/li&gt;
-  &lt;li&gt;Instructions only had images, nothing else (bit too brief)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Nontheless: &lt;strong&gt;Every parent should buy one!&lt;/strong&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 14 Dec 2015 10:10:46 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/</guid>
-        
-        <category>kids</category>
-        
-        <category>devoxx4kids</category>
-        
-        <category>mbot</category>
-        
-        <category>makeblock</category>
-        
-        <category>robot</category>
-        
-        <category>arduino</category>
-        
-        
-        <category>Hacking</category>
         
       </item>
     
