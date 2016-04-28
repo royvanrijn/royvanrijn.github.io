@@ -154,14 +154,13 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>Example (old skool, Java 7):</p>
 
-<pre><code>Order order = Database.readOrder(); //can be null
-if(order != null) {
-    ProcessResult result = OrderEngine.process(order);
-    if(result != null &amp;&amp; result.succeeded()) {
-        Database.storeResult(result);
-    }
-}
-</code></pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></figure>
 
 <p>This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.</p>
 
@@ -173,20 +172,18 @@ if(order != null) {
 
 <p>For example:</p>
 
-<pre><code>Optional&lt;Order&gt; order = Database.readOrder();
-Optional&lt;ProcessResult&gt; result = order.map(OrderEngine::process);
-Optional&lt;ProcessResult&gt; filteredResult = result.filter(ProcessResult::succeeded);
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
+    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
 
-filteredResult.ifPresent(Database::storeResult);
-</code></pre>
+    <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
 
 <p>Or the shorter ‘fluid’ version:</p>
 
-<pre><code>Database.readOrder()
-    .map(OrderEngine::process)
-    .filter(ProcessResult::succeeded)
-    .ifPresent(Database::storeResult);
-</code></pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
 
 <p>Even if the <em>Optional</em> is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.</p>
 
@@ -204,16 +201,14 @@ filteredResult.ifPresent(Database::storeResult);
 
 <p>It is just an easy method to call:</p>
 
-<pre><code>Order order = Database.readOrder().get();
-</code></pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
 
 <p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
 
-<pre><code>Optional&lt;Order&gt; maybeOrder = Database.readOrder();
-if(maybeOrder.isPresent()) {
-    Order order = maybeOrder.get();
-}
-</code></pre>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span></code></pre></figure>
 
 <p>This is the ‘safe’ way, but it could just as well have been a null check now.</p>
 
