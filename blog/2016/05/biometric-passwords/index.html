@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Biometric passwords: No!</title>
+  <meta name="description" content="Please sit down, we need to have a talk, programmer to programmer.Over the last decade we’ve had a lot of problems with authentication. For example, we’ve st...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,biometric,password,hashing,salted,fingerprint,voice,iris,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Biometric passwords: No!" />
+  <meta name="twitter:description" content="Please sit down, we need to have a talk, programmer to programmer.Over the last decade we’ve had a lot of problems with authentication. F..." />
+  <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
+
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/04/deprecating-optional-get/" title="Previous Post: Deprecating Optional.get()">&laquo; Deprecating Optional.get()</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/fingerprint.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-05-02T10:03:01+02:00" class="date">
+          May 2, 2016 10:03:01
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Biometric passwords: No!</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Please sit down, we need to have a talk, programmer to programmer.</p>
+
+<p>Over the last decade we’ve had a lot of problems with authentication. For example, we’ve stored plain text passwords in the database. We’ve learned from this and nobody is doing this anymore right? If you are, please deposit your programming-license in the nearest trash can.</p>
+
+<h2 id="latest-challenge-biometrics">Latest challenge: Biometrics</h2>
+
+<p>It is time to talk about the latest problem in IT: biometric data.</p>
+
+<p>Some websites are using biometrics, such as your <em>fingerprint</em>, as your <em>password</em>. This sounds great, very hard to fake, unique to you. But there is a problem… what happens when there is a data leak?</p>
+
+<p>If you store passwords in the database (hashed or not), and they get leaked, it is bad. You need to tell all the users to change their passwords immediately. But what happens when you store biometric data and it gets leaked?</p>
+
+<p>The only way to change your fingerprint is this:</p>
+
+<p><img src="/images/fingerprint_remover.jpg" alt="Fingerprint removal tool" class="aligncenter" /></p>
+
+<p>Rather painful… and even worse, all devices and websites that use your fingerprint have the <em>same</em> password.</p>
+
+<p>We don’t want to share passwords on multiple websites/devices!</p>
+
+<h2 id="not-a-password">Not a password</h2>
+
+<p>There is no real solution, as long as you ensist of using biometric data as a password. Even if you use a nice salted hash, it will eventually be leaked, with big consequences.</p>
+
+<p>A better way to use biometrics in authentication is to treat it as a username. It is a great match, it identifies <strong>you</strong>. It is not your secret password, it is your username. That means you still need to provide a password, but having the added biometric username does increase security a lot.</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

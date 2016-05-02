@@ -5,9 +5,61 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 28 Apr 2016 16:48:03 +0200</pubDate>
-    <lastBuildDate>Thu, 28 Apr 2016 16:48:03 +0200</lastBuildDate>
+    <pubDate>Mon, 02 May 2016 10:16:58 +0200</pubDate>
+    <lastBuildDate>Mon, 02 May 2016 10:16:58 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Biometric passwords: No!</title>
+        <description>&lt;p&gt;Please sit down, we need to have a talk, programmer to programmer.&lt;/p&gt;
+
+&lt;p&gt;Over the last decade we’ve had a lot of problems with authentication. For example, we’ve stored plain text passwords in the database. We’ve learned from this and nobody is doing this anymore right? If you are, please deposit your programming-license in the nearest trash can.&lt;/p&gt;
+
+&lt;h2 id=&quot;latest-challenge-biometrics&quot;&gt;Latest challenge: Biometrics&lt;/h2&gt;
+
+&lt;p&gt;It is time to talk about the latest problem in IT: biometric data.&lt;/p&gt;
+
+&lt;p&gt;Some websites are using biometrics, such as your &lt;em&gt;fingerprint&lt;/em&gt;, as your &lt;em&gt;password&lt;/em&gt;. This sounds great, very hard to fake, unique to you. But there is a problem… what happens when there is a data leak?&lt;/p&gt;
+
+&lt;p&gt;If you store passwords in the database (hashed or not), and they get leaked, it is bad. You need to tell all the users to change their passwords immediately. But what happens when you store biometric data and it gets leaked?&lt;/p&gt;
+
+&lt;p&gt;The only way to change your fingerprint is this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/fingerprint_remover.jpg&quot; alt=&quot;Fingerprint removal tool&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Rather painful… and even worse, all devices and websites that use your fingerprint have the &lt;em&gt;same&lt;/em&gt; password.&lt;/p&gt;
+
+&lt;p&gt;We don’t want to share passwords on multiple websites/devices!&lt;/p&gt;
+
+&lt;h2 id=&quot;not-a-password&quot;&gt;Not a password&lt;/h2&gt;
+
+&lt;p&gt;There is no real solution, as long as you ensist of using biometric data as a password. Even if you use a nice salted hash, it will eventually be leaked, with big consequences.&lt;/p&gt;
+
+&lt;p&gt;A better way to use biometrics in authentication is to treat it as a username. It is a great match, it identifies &lt;strong&gt;you&lt;/strong&gt;. It is not your secret password, it is your username. That means you still need to provide a password, but having the added biometric username does increase security a lot.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 02 May 2016 10:03:01 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2016/05/biometric-passwords/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/05/biometric-passwords/</guid>
+        
+        <category>biometric</category>
+        
+        <category>password</category>
+        
+        <category>hashing</category>
+        
+        <category>salted</category>
+        
+        <category>fingerprint</category>
+        
+        <category>voice</category>
+        
+        <category>iris</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Deprecating Optional.get()</title>
@@ -801,64 +853,6 @@ There are some good &lt;strong&gt;pros&lt;/strong&gt; but also quite a lot of &l
         
         
         <category>Javascript</category>
-        
-      </item>
-    
-      <item>
-        <title>Google Guava: Range with LocalDate</title>
-        <description>&lt;p&gt;This afternoon I was working on implementing a user story with (&lt;a href=&quot;http://www.joda.org/joda-time/&quot;&gt;JodaTime&lt;/a&gt;) &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; contained in this period.&lt;/p&gt;
-
-&lt;p&gt;First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt;s, and &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html&quot;&gt;LocalDate&lt;/a&gt; is a &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html&quot;&gt;ReadablePartial&lt;/a&gt;, not a &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt;! So to make my code work I had to do the following:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Use two LocalDate instances to create an Interval (the JodaTime way)&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Interval&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createInterval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDateTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDateTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Interval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Now to check an interval I needed to call:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;createdInterval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toDateTimeAtStartOfDay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;It works, sure, but the conversion to &lt;a href=&quot;http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html&quot;&gt;ReadableInstant&lt;/a&gt; with toDateTimeAtStartOfDay kind of bugged me. But luckely &lt;a href=&quot;https://github.com/google/guava&quot;&gt;Google Guava&lt;/a&gt; has something to make the code much cleaner: &lt;a href=&quot;https://github.com/google/guava/wiki/RangesExplained&quot;&gt;Ranges&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Using Range made the code much smaller and easier to read:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Use two LocalDate instances to create an Range (the Google Guava way)&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createRange&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Range&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;closedOpen&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// To check:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;createRange&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;I really love using Google Guava, it provides solutions for a lot of common programming challenges. Not only that, their API is very &lt;em&gt;very&lt;/em&gt; clean and skillfully designed. The use of open/closed in &lt;em&gt;Range.java&lt;/em&gt; is very handy and makes it easy to think about corner cases.&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 15 Dec 2015 15:00:41 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/</guid>
-        
-        <category>java</category>
-        
-        <category>Google Guava</category>
-        
-        <category>guava</category>
-        
-        <category>range</category>
-        
-        <category>localdate</category>
-        
-        <category>interval</category>
-        
-        <category>days</category>
-        
-        <category>joda</category>
-        
-        <category>jodatime</category>
-        
-        
-        <category>Java Programming</category>
         
       </item>
     
