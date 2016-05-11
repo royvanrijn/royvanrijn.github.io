@@ -5,9 +5,71 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 02 May 2016 11:00:37 +0200</pubDate>
-    <lastBuildDate>Mon, 02 May 2016 11:00:37 +0200</lastBuildDate>
+    <pubDate>Wed, 11 May 2016 14:34:37 +0200</pubDate>
+    <lastBuildDate>Wed, 11 May 2016 14:34:37 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>The Prettiest Code</title>
+        <description>&lt;p&gt;This afternoon I started to wonder… &lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I’ve been a programmer now for 20+ years, but what is the &lt;em&gt;best&lt;/em&gt; piece of code I’ve written in all these years?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The first thing that popped in my mind was &lt;a href=&quot;/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/&quot;&gt;this&lt;/a&gt;. It is a piece of code that can very quickly, in near linear time, generate &lt;a href=&quot;/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/&quot;&gt;de Bruijn sequences&lt;/a&gt;. I ‘invented’ it after reading a scientific paper that described how to quickly generate ‘&lt;a href=&quot;https://en.wikipedia.org/wiki/Lyndon_word&quot;&gt;Lyndon words&lt;/a&gt;’. I knew with Lyndon words you could easily generate the &lt;a href=&quot;/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/&quot;&gt;de Bruijn sequences&lt;/a&gt;. So I implemented it and adopted it for de Bruijn. Read more about this &lt;a href=&quot;/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Why is this my favourite piece of code? Well, it is small, compact and does something impressive. I couldn’t find a lot of implementations that had the fast runtime my code had. And it wasn’t trivial to implement, I had to do quite a lot of research and it felt like I myself did a little inventing. I probably wasn’t the first to write the algorithm though, but it felt like that for a while.&lt;/p&gt;
+
+&lt;h1 id=&quot;but-is-it&quot;&gt;But is it…?&lt;/h1&gt;
+
+&lt;p&gt;As a programmer I &lt;strong&gt;write&lt;/strong&gt; code every day. And what I do even more is &lt;strong&gt;read&lt;/strong&gt; code. If I have to guess, for each line I write I’ve read about ten times more. And after more than two decades of programming, I’ve seen my share of source code. This taught me something important. Is the piece of code I mentioned the best code I’ve written? I don’t think so.&lt;/p&gt;
+
+&lt;p&gt;What I thought the best code should have:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Looks smart&lt;/li&gt;
+  &lt;li&gt;Amazes people&lt;/li&gt;
+  &lt;li&gt;Jumps out&lt;/li&gt;
+  &lt;li&gt;‘I could have never created that!’&lt;/li&gt;
+  &lt;li&gt;It is &lt;strong&gt;magical&lt;/strong&gt;!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The code I picked sure had some of these properties. But is it really the prettiest code I’ve written? &lt;strong&gt;No.&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;When you are working in a large codebase the best (and prettiest) code has the following properties:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Doesn’t stand out&lt;/li&gt;
+  &lt;li&gt;Looks trivial&lt;/li&gt;
+  &lt;li&gt;You don’t notice it’s there&lt;/li&gt;
+  &lt;li&gt;You hardly ever need to change it&lt;/li&gt;
+  &lt;li&gt;‘Gah, anyone could have written this’&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The best code is code you don’t notice, code that doesn’t stand out, code that looks like anyone could have written it. It doesn’t contain smart things, it looks &lt;em&gt;mundane&lt;/em&gt;. This is something we should always strive for… simple code.&lt;/p&gt;
+
+&lt;p&gt;So what is the best piece of code I’ve ever written? It is the code that will never be &lt;em&gt;git-blamed&lt;/em&gt;, nobody will ask questions about it and nobody will even notice it exists.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 10 May 2016 12:25:02 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2016/05/the-prettiest-code/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/05/the-prettiest-code/</guid>
+        
+        <category>code</category>
+        
+        <category>pretty</category>
+        
+        <category>languages</category>
+        
+        <category>simple</category>
+        
+        <category>readable</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Biometric passwords: No!</title>
@@ -796,65 +858,6 @@ There are some good &lt;strong&gt;pros&lt;/strong&gt; but also quite a lot of &l
         
         
         <category>Java Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Keep the Force asleep</title>
-        <description>&lt;p&gt;At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it yet. But luckely there is a solution, I’ve created a handy &lt;a href=&quot;https://en.wikipedia.org/wiki/Bookmarklet&quot;&gt;bookmarklet&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;A bookmarklet is a piece of Javascript code that you can add as a bookmark. When you are on a certain website (like Twitter) you can press the bookmarklet and the Javascript is executed. The bookmarklet code I’m using has been created using this great website: &lt;a href=&quot;http://www.conroyp.com/2010/03/11/declutter/&quot;&gt;DeClutter Twitter&lt;/a&gt; and it removes most Star Wars related tweets from your timeline!&lt;/p&gt;
-
-&lt;h2 id=&quot;forcefilter&quot;&gt;ForceFilter&lt;/h2&gt;
-
-&lt;p&gt;Just drag this bookmarklet &lt;a href=&quot;javascript:%24(%27body%27).bind(%27ajaxSuccess%27,declutter)%3Bvoid(declutter())%3Bfunction declutter()%7Bvar rk%3D%5B%27star wars%27, %27the empire%27, %27the rebellion%27, %27han solo%27, %27theforceawakens%27, %27jar jar%27, %27kylo ren%27, %27rey%27, %27finn%27, %27poe dameron%27, %27xwing%27, %27deathstar%27, %27c-3po%27, %27r2d2%27, %27darth%27, %27jedi%27, %27sith%27, %27leia%27%5D%3B%24.each(%24(%27li.stream-item%27), function()%7Bvar c %3D %24(this).html()%3B var p %3D %24(this)%3B %24.each(rk, function(i, v)%7B if(c.toLowerCase().indexOf(v) &amp;gt; 0)%7Bp.remove()%3B%7D%7D)%3B%7D)%3B%7D&quot;&gt;ForceFilter&lt;/a&gt; to the bookmark section of your browser. Next time you open Twitter, quickly press the bookmarklet before reading.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-code&quot;&gt;The code&lt;/h2&gt;
-
-&lt;p&gt;Below is the (generated) code, again, made by &lt;a href=&quot;http://www.conroyp.com/2010/03/11/declutter/&quot;&gt;DeClutter Twitter&lt;/a&gt; (all credits belong there):&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;javascript&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;body&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;ajaxSuccess&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;declutter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-  
-  &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;declutter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-
-  &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;declutter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Remove tweets containing these terms:&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;rk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;star wars&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;the empire&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;the rebellion&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;han solo&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;theforceawakens&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;jar jar&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;kylo ren&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;rey&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;finn&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;poe dameron&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;xwing&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;deathstar&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;c-3po&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;r2d2&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;jedi&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;darth&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;sith&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;leia&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Twitter timeline entries have class &amp;quot;stream-item&amp;quot; - loop through them, &lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// removing those that match blacklisted term&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;li.stream-item&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; 
-        &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; 
-        &lt;span class=&quot;c1&quot;&gt;// Iterate through the keywords, removing the parent element &lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// where a match is found&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;rk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-            &lt;span class=&quot;c1&quot;&gt;// Lower-case the text so case issues don&amp;#39;t trip us up&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toLowerCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;indexOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toLowerCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                  &lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-</description>
-        <pubDate>Tue, 15 Dec 2015 15:00:41 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2015/12/keep-the-force-asleep/</guid>
-        
-        <category>star wars</category>
-        
-        <category>filter</category>
-        
-        <category>twitter</category>
-        
-        <category>bookmarklet</category>
-        
-        <category>timeline</category>
-        
-        
-        <category>Javascript</category>
         
       </item>
     

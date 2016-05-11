@@ -7,23 +7,23 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Biometric passwords: No!</title>
-  <meta name="description" content="Please sit down, we need to have a talk, programmer to programmer.Over the last decade we’ve had a lot of problems with authentication. For example, we’ve st...">
+  <title>The Prettiest Code</title>
+  <meta name="description" content="This afternoon I started to wonder…   I’ve been a programmer now for 20+ years, but what is the best piece of code I’ve written in all these years?The first ...">
   
-  <meta name="keywords" content="royvanrijn,programming,java,biometric,password,hashing,salted,fingerprint,voice,iris,">
+  <meta name="keywords" content="royvanrijn,programming,java,code,pretty,languages,simple,readable,">
   
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/05/the-prettiest-code/">
   <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@royvanrijn" />
-  <meta name="twitter:title" content="Biometric passwords: No!" />
-  <meta name="twitter:description" content="Please sit down, we need to have a talk, programmer to programmer.Over the last decade we’ve had a lot of problems with authentication. F..." />
+  <meta name="twitter:title" content="The Prettiest Code" />
+  <meta name="twitter:description" content="This afternoon I started to wonder…   I’ve been a programmer now for 20+ years, but what is the best piece of code I’ve written in all th..." />
   <meta name="twitter:image" content="http://www.royvanrijn.com/images/twittercard.jpg"/>
 
 
@@ -110,12 +110,10 @@
     <div class="page-navigation"> 
       <div class="left"> 
          
-          <a href="/blog/2016/04/deprecating-optional-get/" title="Previous Post: Deprecating Optional.get()">&laquo; Deprecating Optional.get()</a> 
+          <a href="/blog/2016/05/biometric-passwords/" title="Previous Post: Biometric passwords: No!">&laquo; Biometric passwords: No!</a> 
          
       </div> 
       <div class="right"> 
-         
-          <a href="/blog/2016/05/the-prettiest-code/" title="next Post: The Prettiest Code">The Prettiest Code &raquo; </a> 
          
       </div> 
       <div class="clear"></div> 
@@ -127,47 +125,59 @@
     <div class="post">
       <div class="post-thumbnail">
         
-          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/fingerprint.png"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/code.png"/>
         
       </div>
       <p class="post-meta">
         Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
-        <span  itemprop="datePublished" content="2016-05-02T10:03:01+02:00" class="date">
-          May 2, 2016 10:03:01
+        <span  itemprop="datePublished" content="2016-05-10T12:25:02+02:00" class="date">
+          May 10, 2016 12:25:02
         </span>
-        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/the-prettiest-code/#disqus_thread">0 comments</a>
       </p>
-      <h1 itemprop="headline" class="post-title">Biometric passwords: No!</h1>
+      <h1 itemprop="headline" class="post-title">The Prettiest Code</h1>
     </div>
 
     <span itemprop="articleBody">
-    <p>Please sit down, we need to have a talk, programmer to programmer.</p>
+    <p>This afternoon I started to wonder… </p>
 
-<p>Over the last decade we’ve had a lot of problems with authentication. For example, we’ve stored plain text passwords in the database. We’ve learned from this and nobody is doing this anymore right? If you are, please deposit your programming-license in the nearest trash can.</p>
+<blockquote>
+  <p>I’ve been a programmer now for 20+ years, but what is the <em>best</em> piece of code I’ve written in all these years?</p>
+</blockquote>
 
-<h2 id="latest-challenge-biometrics">Latest challenge: Biometrics</h2>
+<p>The first thing that popped in my mind was <a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">this</a>. It is a piece of code that can very quickly, in near linear time, generate <a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">de Bruijn sequences</a>. I ‘invented’ it after reading a scientific paper that described how to quickly generate ‘<a href="https://en.wikipedia.org/wiki/Lyndon_word">Lyndon words</a>’. I knew with Lyndon words you could easily generate the <a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">de Bruijn sequences</a>. So I implemented it and adopted it for de Bruijn. Read more about this <a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">here</a>.</p>
 
-<p>It is time to talk about the latest problem in IT: biometric data.</p>
+<p>Why is this my favourite piece of code? Well, it is small, compact and does something impressive. I couldn’t find a lot of implementations that had the fast runtime my code had. And it wasn’t trivial to implement, I had to do quite a lot of research and it felt like I myself did a little inventing. I probably wasn’t the first to write the algorithm though, but it felt like that for a while.</p>
 
-<p>Some websites are using biometrics, such as your <em>fingerprint</em>, as your <em>password</em>. This sounds great, very hard to fake, unique to you. But there is a problem… what happens when there is a data leak?</p>
+<h1 id="but-is-it">But is it…?</h1>
 
-<p>If you store passwords in the database (hashed or not), and they get leaked, it is bad. You need to tell all the users to change their passwords immediately. But what happens when you store biometric data and it gets leaked?</p>
+<p>As a programmer I <strong>write</strong> code every day. And what I do even more is <strong>read</strong> code. If I have to guess, for each line I write I’ve read about ten times more. And after more than two decades of programming, I’ve seen my share of source code. This taught me something important. Is the piece of code I mentioned the best code I’ve written? I don’t think so.</p>
 
-<p>The only way to change your fingerprint is this:</p>
+<p>What I thought the best code should have:</p>
 
-<p><img src="/images/fingerprint_remover.jpg" alt="Fingerprint removal tool" class="aligncenter" /></p>
+<ul>
+  <li>Looks smart</li>
+  <li>Amazes people</li>
+  <li>Jumps out</li>
+  <li>‘I could have never created that!’</li>
+  <li>It is <strong>magical</strong>!</li>
+</ul>
 
-<p>Rather painful… and even worse, all devices and websites that use your fingerprint have the <em>same</em> password.</p>
+<p>The code I picked sure had some of these properties. But is it really the prettiest code I’ve written? <strong>No.</strong>.</p>
 
-<p>We don’t want to share passwords on multiple websites/devices!</p>
+<p>When you are working in a large codebase the best (and prettiest) code has the following properties:</p>
 
-<h2 id="not-a-password">Not a password</h2>
+<ul>
+  <li>Doesn’t stand out</li>
+  <li>Looks trivial</li>
+  <li>You don’t notice it’s there</li>
+  <li>You hardly ever need to change it</li>
+  <li>‘Gah, anyone could have written this’</li>
+</ul>
 
-<p>There is no real solution, as long as you ensist of using biometric data as a password. Even if you use a nice salted hash, it will eventually be leaked, with big consequences.</p>
+<p>The best code is code you don’t notice, code that doesn’t stand out, code that looks like anyone could have written it. It doesn’t contain smart things, it looks <em>mundane</em>. This is something we should always strive for… simple code.</p>
 
-<p>A better way to use biometrics in authentication is to treat it as a username. It is a great match, it identifies <strong>you</strong>. It is not your secret password, it is your username. That means you still need to provide a password, but having the added biometric username does increase security a lot. Of course if there is a database leak, your fingerprint can still be stolen, but that is the entire point. If you touch a glass door you’re also leaving your fingerprint. Using fingerprints as password is like dropping pieces of paper with your secret password all over the place.</p>
-
-<p>Fingerprints (and other biometrics) are not secure, you can never change them once compromised, not suited as passwords. If you really want to use it, use them as usernames.</p>
+<p>So what is the best piece of code I’ve ever written? It is the code that will never be <em>git-blamed</em>, nobody will ask questions about it and nobody will even notice it exists.</p>
 
 
     </span>
