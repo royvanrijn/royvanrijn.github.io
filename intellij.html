@@ -52,8 +52,20 @@
     <div class="page-content">
       <div class="wrapper">
         <div class="post">
+            <p>
 
-            Trying to access your local (running) IntelliJ version: <span id="intellijVersion">...</span>
+              Trying to access your local (running) IntelliJ version: <span id="intellijVersion">...</span>
+            </p>
+
+            <p>
+              <strong>Watch out</strong> older versions of IntelliJ have a security issue. The moment you start the IDE a small webserver is launched. Websites (like this one) are able to access files on your local machine using this webserver by calling to 'localhost' and retrieving information.<br/>
+              <br/>
+
+                Please upgrade ASAP: <a href="http://blog.jetbrains.com/blog/2016/05/11/security-update-for-intellij-based-ides-v2016-1-and-older-versions/">http://blog.jetbrains.com/blog/2016/05/11/security-update-for-intellij-based-ides-v2016-1-and-older-versions/</a>
+
+
+            </p>
+
 
   <script type="text/javascript">
   httpGetAsync("http://localhost:63342/", function(result) {
