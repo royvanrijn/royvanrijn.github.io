@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>The Prettiest Code</title>
+  <title>IntelliJ version check</title>
   <meta name="description" content="Test your version of IntelliJ">
   
   <meta name="keywords" content="royvanrijn,programming,java,code,pretty,languages,simple,readable,">
@@ -53,17 +53,18 @@
       <div class="wrapper">
         <div class="post">
 
-            Trying to get IntelliJ version: <span id="intellijVersion">...</span>
+            Trying to read IntelliJ version: <span id="intellijVersion">...</span>
 
   <script type="text/javascript">
   httpGetAsync("http://localhost:63342/", function(result) {
     var el = document.createElement( 'html' );
     el.innerHTML = result;
-
-    el.getElementsByTagName( 'p' );
-
-    //Update version field:
-    document.getElementById("intellijVersion").innerHTML = el.getElementsByTagName( 'p' )[0].innerHTML;
+    if(el.getElementsByTagName( 'p' )[0]) {
+      //Update version field:
+      document.getElementById("intellijVersion").innerHTML = el.getElementsByTagName( 'p' )[0].innerHTML;
+    } else {
+      document.getElementById("intellijVersion").innerHTML = 'IntelliJ not detected';
+    }
     
   });
   function httpGetAsync(theUrl, callback)
