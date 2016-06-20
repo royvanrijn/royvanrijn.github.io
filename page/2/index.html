@@ -113,6 +113,271 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2015/12/google-guava-range-with-localdate/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/guava.png" alt="Google Guava: Range with LocalDate" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
+            Dec 15, 2015 15:00:41
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/12/google-guava-range-with-localdate/">Google Guava: Range with LocalDate</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This afternoon I was working on implementing a user story with (<a href="http://www.joda.org/joda-time/">JodaTime</a>) <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> ranges. The problem? I needed to represent a lot of periods, in days. The thing I needed to check: Is a certain <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> contained in this period.</p>
+
+<p>First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>s, and <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> is a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html">ReadablePartial</a>, not a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>! So to make my code work I had to do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Interval (the JodaTime way)</span>
+    <span class="kd">private</span> <span class="n">Interval</span> <span class="nf">createInterval</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">DateTime</span> <span class="n">fromDateTime</span> <span class="o">=</span> <span class="n">fromDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+        <span class="n">DateTime</span> <span class="n">toDateTime</span> <span class="o">=</span> <span class="n">toDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Interval</span><span class="o">(</span><span class="n">fromDateTime</span><span class="o">,</span> <span class="n">toDateTime</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Now to check an interval I needed to call:</span>
+    <span class="n">createdInterval</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">inputDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">());</span></code></pre></figure>
+
+<p>It works, sure, but the conversion to <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a> with toDateTimeAtStartOfDay kind of bugged me. But luckely <a href="https://github.com/google/guava">Google Guava</a> has something to make the code much cleaner: <a href="https://github.com/google/guava/wiki/RangesExplained">Ranges</a></p>
+
+<p>Using Range made the code much smaller and easier to read:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Range (the Google Guava way)</span>
+    <span class="kd">private</span> <span class="n">Range</span><span class="o">&lt;</span><span class="n">LocalDate</span><span class="o">&gt;</span> <span class="nf">createRange</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Range</span><span class="o">.</span><span class="na">closedOpen</span><span class="o">(</span><span class="n">fromDate</span><span class="o">,</span> <span class="n">toDate</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// To check:</span>
+    <span class="n">createRange</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">inputDate</span><span class="o">);</span></code></pre></figure>
+
+<p>I really love using Google Guava, it provides solutions for a lot of common programming challenges. Not only that, their API is very <em>very</em> clean and skillfully designed. The use of open/closed in <em>Range.java</em> is very handy and makes it easy to think about corner cases.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/google-guava-range-with-localdate/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2015/12/makeblock-robots-for-kids-an-adults/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/makeblock.jpg" alt="Makeblock, robots for kids (and adults)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2015-12-14T10:10:46+01:00" class="date">
+            Dec 14, 2015 10:10:46
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/12/makeblock-robots-for-kids-an-adults/">Makeblock, robots for kids (and adults)</a></h1>
+
+        <span itemprop="articleBody">
+          <p>When I left the Port of Rotterdam (over a year ago) as consultant/software developer I got a lot of cool gifts. Amongst the gifts was a small blue box from <a href="http://www.makeblock.cc/">Makeblock</a>, called the ‘robot starter kit’. It was put away on my desk and sadly I’d forgotten about it. But recently a colleague of mine showed us the robot his daughter made. She got a similar robot from Makeblock for her birthday and it ‘became her new best friend’. He asked her if he could borrow the robot for one day and show it to us at work, she reluctantly said yes.</p>
+
+<p>When I got home I suddenly remembered the blue box I had laying around in the corner of my desk. I decided to show it to my 3 year old daughter. She loved the idea of having her own little robot in her room. Searching online I couldn’t find a suggested appropriate age for these robots so I figured: if she wants to try, just go for it!</p>
+
+<p><img src="/images/makeblock-start.jpg" alt="Starting the assembly of the robot (bananas not included)" class="aligncenter" /></p>
+
+<p>She immediately jumped in and started handling the screwdriver like a pro. I was amazed to see the dedication, concentration and dexterity, when I was younger I had none of the three. In about half an hour we had the base constructed and she lost interest for a little while. I decided to continue alone for 10 minutes and the only thing left to do was assembling the tank tracks. So I called her over and we decided to hold a little race, 20 rubber pieces for me, 20 for her. It was a pain to assemble, but by introducing a small competition I only had one track to assemble, she did the other one all by herself.</p>
+
+<p>The cool thing about these robots is their simplicity: The frame goes together quickly with a couple of screws and removable rivets. All the electronics are connected by RJ25 (telephone) jacks. The kit I got had an IR-receiver (+ remote) and ultrasonic sensor. The remote is great because she is too young for programming. The moment you put it together and place the batteries you can start driving the robot around. She loved it, look at her proud smug face:</p>
+
+<p><img src="/images/makeblock-finish.jpg" alt="I've build a robot, now what?" class="aligncenter" /></p>
+
+<blockquote>
+  <p>Next thing I’ll do it to teach it how to dance! Then I’ll teach it how to clean my room.</p>
+</blockquote>
+
+<p>That evening, when she was vast asleep, I started working on the programming. The main board in this robot is compatible with an Arduino. To program the robot you connect it to your laptop using USB and fire up the Arduino IDE with the Makeblock library. Commands are very simple to use, for example reading the distance sensor is: ‘ultraSensor.distanceCm()’. That night, when my daughter was sleeping, I added an automatic drive-mode so the robot would drive around randomly avoiding all obstacles with help of the ultrasonic sensor. When she woke up I told her ‘go ahead and hit the 0 on the remote!’. She was blown away, her little robot had grown a mind of its own!</p>
+
+<p>When she is a bit older we’re going to try out the <a href="http://www.mblock.cc/">mBlock</a>/<a href="https://scratch.mit.edu/">Scratch</a> plugin. <a href="https://scratch.mit.edu/">Scratch</a> (for those unfamiliar) is an environment where you can visually program with graphical blocks. It is a drag and drop environment and works very well as a first programming tool for kids. It is also something we regularly use at <a href="http://www.devoxx4kids.org/">Devoxx4Kids</a></p>
+
+<p>Things I like about the Makeblock robot:</p>
+
+<ul>
+  <li>Easy to assemble (even for a 3yo)</li>
+  <li>Instructions had a lot of images</li>
+  <li>Fun to program</li>
+</ul>
+
+<p>And of course, it isn’t perfect, things I didn’t like:</p>
+
+<ul>
+  <li>Should come with a CR2025 coin cell battery for the remote (I had to race to the store to get one)</li>
+  <li>Instructions only had images, nothing else (bit too brief)</li>
+</ul>
+
+<p>Nontheless: <strong>Every parent should buy one!</strong></p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/makeblock-robots-for-kids-an-adults/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2015/12/hacking-a-broken-roomba/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/roomba.png" alt="Hacking a broken Roomba (with Raspberry Pi)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2015-12-12T11:01:44+01:00" class="date">
+            Dec 12, 2015 11:01:44
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/hacking-a-broken-roomba/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/12/hacking-a-broken-roomba/">Hacking a broken Roomba (with Raspberry Pi)</a></h1>
+
+        <span itemprop="articleBody">
+          <p><img src="/images/roomba-googledag.jpg" alt="roomba-googledag" class="alignright" />
+Every couple of weeks we organize a hack-day at work. Being a (Java) software consulting company we usually work on exploring new Java frameworks or we contribute to open source projects. But more and more we step out of just software and bring Raspberry Pi’s and other hardware. Another example where we hacked on hardware is playing with Software Defined Radio (SDR), my colleague Bert Jan did a talk about this at <a href="https://www.youtube.com/watch?v=fOlz0OcZPjc">Devoxx 2015</a>.</p>
+
+<h1 id="broken-roomba">Broken Roomba</h1>
+
+<p>A couple of days before our last hack-day my wife was carrying our old ‘broken’ Roomba vacuuming robot. Most vacuuming parts were worn down and the front wheel keeps dropping out of its socket. She was going to throw a robot out! I can’t let this happen, I have to save the poor bastard.</p>
+
+<p>So I started to do a little research. I’d heard about the <a href="http://www.irobot.com/About-iRobot/STEM/Create-2.aspx">Roomba Create</a> before. It is a STEM-version of their vacuuming robot, for hacking purposes. It doesn’t have the cleaning parts, instead of has more connectors, made especially to be hacked/improved, it is the perfect base for your own little robot! I was very pleased to find that even my 500-series Roomba has a hidden mini-DIN connector that allows serial communication. iRobot provides a <a href="http://irobot.lv/uploaded_files/File/iRobot_Roomba_500_Open_Interface_Spec.pdf">full listing</a> of all the possible commands and outputs, which is a great thing!</p>
+
+<h1 id="connecting-a-raspberry-pi">Connecting a Raspberry Pi</h1>
+
+<p>Here is what my idea was: Take a mini-DIN cable, connect it to a Raspberry Pi and drive the Roomba myself! But I quickly run into two problems:</p>
+
+<ul>
+  <li>How do I connect the Raspberry Pi to a DIN cable?</li>
+  <li>How do I power the Raspberry Pi?</li>
+</ul>
+
+<p>After some research I was able to solve both of the problems.</p>
+
+<h2 id="mini-din-to-raspberry-pi">Mini-DIN to Raspberry Pi</h2>
+
+<p>After some research I found out some good and some bad news. First the good news, the Raspberry Pi has an UART TX and RX pin. These can be used to communicate with the Roomba without any effort.</p>
+
+<p>The bad news? The Roomba has logic pins that have 0-5v and the Raspberry Pi has 0-3.3v. You can’t directly combine the two together or you’ll risk blowing a fuse on the Raspberry Pi. There is however a pretty simple solution, that is to use a <a href="https://www.sparkfun.com/products/12009">Logic Level Converter</a>. This is a small board that you give 3.3v + GND on one end, 5v + GND on the other end. Now it has four logic pins left that can be used to connect 3.3v logic to 5v logic bi-directionally.</p>
+
+<p>So with a bit of creative freeform-soldering I ended up with the following extension to my Raspberry Pi:</p>
+
+<p><img src="/images/freeform-soldering.jpg" alt="freeform-soldering" class="aligncenter" /></p>
+
+<p>The only thing left to do next is to connect the right DIN-wires to the Raspberry Pi. But luckely the <a href="http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf">documentation</a> provided by iRobot had very clear images showing all the mini-DIN pins and what they do.</p>
+
+<h2 id="powering-the-raspberry-pi">Powering the Raspberry Pi</h2>
+
+<p>The next challenge was actually power the Raspberry Pi. The Roomba has a battery pack, 16-17v, so that would be perfect. This seemed to be an easy challenge initially because the DIN-cable also provides access to the battery pack. But just before I hooked the Raspberry Pi to the (unregulated) battery wires of the DIN cable I found that there are actually some fuses between the DIN connector and the battery pack. The Raspberry Pi would draw too much current for these fuses!</p>
+
+<p>Next I opened up the Roomba completely. Just below the ‘Dock’ button are two big pads directly connected to the battery pack. I soldered two wires to these pads. This gave me 16v (without the fuses) to power the Raspberry Pi. But how do I step this down to the 5v needed by the Raspberry Pi? I connected the wires to a UBEC and soldered a mini-USB cable to the output. Connected to the Raspberry Pi and… it worked like a charm!</p>
+
+<h1 id="programming-the-roomba">Programming the Roomba</h1>
+
+<p>When we connect the Raspberry Pi to the Roomba using the DIN cable, it starts to play weird error-beeps. This is because by default the Raspberry Pi writes all console output to the serial connections (!). Please read this link to <a href="http://www.hobbytronics.co.uk/raspberry-pi-serial-port">disable</a> it.</p>
+
+<p>Like I said, the serial commands needed to drive the Roomba are perfectly documented. Using the GNU RXTX library (RXTXcomm.jar) we can write the following Java code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// On the Raspberry Pi the Serial communication pins are connected to /dev/ttyAMA0</span>
+    <span class="n">CommPortIdentifier</span> <span class="n">portIdentifier</span> <span class="o">=</span> <span class="n">CommPortIdentifier</span><span class="o">.</span><span class="na">getPortIdentifier</span><span class="o">(</span><span class="s">&quot;/dev/ttyAMA0&quot;</span><span class="o">);</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">portIdentifier</span><span class="o">.</span><span class="na">isCurrentlyOwned</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">&quot;Error: Port is currently in use&quot;</span> <span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">CommPort</span> <span class="n">commPort</span> <span class="o">=</span> <span class="n">portIdentifier</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="mi">2000</span><span class="o">);</span>
+
+        <span class="k">if</span><span class="o">(</span> <span class="n">commPort</span> <span class="k">instanceof</span> <span class="n">SerialPort</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">SerialPort</span> <span class="n">serialPort</span> <span class="o">=</span> <span class="o">(</span> <span class="n">SerialPort</span> <span class="o">)</span><span class="n">commPort</span><span class="o">;</span>
+            <span class="n">serialPort</span><span class="o">.</span><span class="na">setSerialPortParams</span><span class="o">(</span>
+                    <span class="mi">115200</span><span class="o">,</span>
+                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">DATABITS_8</span><span class="o">,</span>
+                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">STOPBITS_1</span><span class="o">,</span>
+                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">PARITY_NONE</span> <span class="o">);</span>
+
+            <span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+            <span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">();</span>
+
+            <span class="o">(</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="nf">SerialReader</span><span class="o">(</span> <span class="n">in</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
+            <span class="o">(</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="nf">SerialWriter</span><span class="o">(</span> <span class="n">out</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>Now we can send commands to the OutputStream, like documented. Using this I was able to drive the Roomba through SSH to the Raspberry Pi from my laptop!</p>
+
+<p>For example, we can do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    
+    <span class="c1">// Write imperial march as song &#39;0&#39;:</span>
+    <span class="n">write</span><span class="o">(</span><span class="n">out</span><span class="o">,</span> <span class="mi">140</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">9</span><span class="o">,</span> <span class="mi">57</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">57</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">57</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">53</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">60</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">57</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">53</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">60</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">57</span><span class="o">,</span> <span class="mi">45</span><span class="o">);</span>
+    <span class="c1">// Play song &#39;0&#39;:</span>
+    <span class="n">write</span><span class="o">(</span><span class="n">out</span><span class="o">,</span> <span class="mi">141</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    
+    <span class="o">...</span> <span class="n">snip</span> <span class="o">...</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">out</span><span class="o">,</span> <span class="kt">int</span><span class="o">...</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="c1">// Sigh, unsigned Java:</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">output</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)(</span><span class="n">data</span><span class="o">[</span><span class="n">i</span><span class="o">]&amp;</span><span class="mh">0xFF</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">output</span><span class="o">);</span> 
+    <span class="o">}</span></code></pre></figure>
+
+<p>If you remove the DIN cable, it’ll still function perfectly as cleaning robot. So now I have a Star Wars bot to program during the day, and a cleaning robot at night.</p>
+
+<p>Happy hacking!</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2015/12/hacking-a-broken-roomba/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2015/12/if-you-want-to-build-software/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/ship.jpg" alt="If you want to build software..." width="100" height="100" />
@@ -1055,305 +1320,6 @@ The big advantage was that we had a complete set of tests that:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/11/the-java-9-kulla-repl/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The Java 9 'Kulla' REPL" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-11-27T12:09:20+01:00" class="date">
-            Nov 27, 2014 12:09:20
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/11/the-java-9-kulla-repl/">The Java 9 'Kulla' REPL</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Maybe it’ll be part of JDK 9, maybe it won’t… but people are working hard on creating a REPL tool/environment for the Java Development Kit (JDK). More information on the code and the project is available as part of OpenJDK: <a href="http://openjdk.java.net/projects/kulla/">project Kulla</a>.</p>
-
-<p>Some of you might not be familiar with the terminology ‘REPL’, it is short for Read Evaluate Print Loop. It is hard to explain exactly what it does, but very easy to demonstrate:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="n">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Java</span> <span class="n">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="n">Version</span> <span class="mf">0.23</span>
-<span class="o">|</span>  <span class="n">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
-
-<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
-<span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
-
-<span class="o">-&gt;</span></code></pre></figure>
-
-<p>The idea is that you have a place you can enter Java and run it, without main method, class structure. You can build instances, and alter them while you type. For example you’ll able to do Swing development while you type:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; import javax.swing.*;
--&gt; JFrame frame = new JFrame();
--&gt; frame.setVisible(true);</code></pre></figure>
-
-<p>Now we have a visible frame, you can drag it around, resize it etc.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; JPanel panel = new JPanel();
--&gt; frame.add(panel);
--&gt; JButton button = new JButton();
--&gt; panel.add(button);</code></pre></figure>
-
-<p>Suddenly our frame has a panel, and the panel has an empty button! You can prototype, do live coding and you have instant feedback.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.setText(&quot;Push me!&quot;);</code></pre></figure>
-
-<p>Now the button has text, but pressing it still does nothing…</p>
-
-<p><a href="/images/Screen-Shot-2014-11-27-at-11.55.08.png"><img src="/images/Screen-Shot-2014-11-27-at-11.55.08-300x159.png" alt="Push me!" class="aligncenter" /></a></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.addActionListener(e -&gt; System.out.println(&quot;Hello World!&quot;));
--&gt; 
-Hello World!
-Hello World!
-Hello World!</code></pre></figure>
-
-<p>And there we go, a final simple lambda creates a working “Hello World!”-button.</p>
-
-<p>It is also possible to load a repl script from file, allowing you to share, store and run scripts. This is done using the ‘/load’ and ‘/save’ commands. You can even ‘/dump’ all the created classes in a directory.</p>
-
-<p>I’m very curious how people will be using the REPL in the future, some use cases:</p>
-
-<ul>
-  <li>(GUI) Prototyping</li>
-  <li>Live music (like <a href="http://overtone.github.io/">overtone</a>)</li>
-  <li>Coding at conferences</li>
-  <li>Scripting</li>
-  <li><a href="http://codegolf.stackexchange.com/">Code golf!</a></li>
-</ul>
-
-<p>If you want to try out Kulla, it took me literally 20 minutes to get up and running on my MacBook. Just follow the instructions on <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK</a>, but instead use <a href="http://hg.openjdk.java.net/kulla/dev/">http://hg.openjdk.java.net/kulla/dev/</a> as codebase. After building the JDK, go to ./langtools/repl and look at the README.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/11/kill-all-mutants/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Kill all mutants" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-11-18T11:52:35+01:00" class="date">
-            Nov 18, 2014 11:52:35
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/11/kill-all-mutants/">Kill all mutants</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The post below is the content from my 2014 <a href="http://www.nljug.org/jfall/schedule/2014/">J-Fall</a> and <a href="http://www.devoxx.be/ignite-2014/">Devoxx Ignite</a> presentations. You can check you the slides here:<br />
-<a href="http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests">http://www.slideshare.net/royvanrijn/kill-the-mutants-a-better-way-to-test-your-tests</a></p>
-
-<h1 id="we-all-do-testing">We all do testing</h1>
-
-<p>In this day and age you aren’t considered a real Java developer if you are not writing proper unit tests.<br />
-We all know why this is important:</p>
-
-<ul>
-  <li>Instant verification our code works.</li>
-  <li>Automatic future regressions tests.</li>
-</ul>
-
-<p>But how do we know we are writing proper tests? Well most people use code coverage to measure this. If the percentage of coverage is high enough you are doing a good job.</p>
-
-<h1 id="what-is-a-test">What is a test?</h1>
-
-<p>First let’s look at what a test actually is:</p>
-
-<ol>
-  <li>Instantiate classes, setup mocks.</li>
-  <li>Invoke something.</li>
-  <li>Assert and verify the outcome.</li>
-</ol>
-
-<p>Which steps are measured with code coverage? Only steps 1 and 2. And what is the most important thing for a test? It is the third and final step, the assertion, the place where you actually check if the code is working. This is completely ignored by code coverage!</p>
-
-<p>I’ve seen companies where management looks at code coverage reports, they demand the programmers to write 80+ or 90+% coverage because this proves the quality is good enough. What else is a common thing in these organisations? Tests without any real assertion. Tests written purely to boost coverage and please management.</p>
-
-<p>So code coverage says absolutely nothing about the quality of our tests? Well, it does tell you one thing. If you have 0% coverage, you have no tests at all, if you have 100% coverage you might have some very bad tests.</p>
-
-<h1 id="mutation-testing">Mutation testing</h1>
-
-<p>Luckily there is help around the corner, in the form of mutation testing. In mutation testing you create thousands of ‘mutants’ of your codebase. So what is this mutant you might ask? A mutation is a tiny singular change in your codebase.</p>
-
-<p>For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:</span>
-<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
-<span class="o">}</span>
-
-<span class="c1">// After:</span>
-<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>For each mutant the unit tests are run and there are a couple of possible outcomes:<img src="/images/mutant_killed-300x225.png" alt="mutant_killed" class="alignright" /></p>
-
-<h1 id="killed">Killed</h1>
-
-<p> </p>
-
-<p>If you are lucky a test will fail. This means we have ‘killed’ our mutant. This is a positive thing, we’ve actually checked that the mutated line of code is correctly asserted by a test. Now we immediately see the advantage of using mutation testing, we actually verify the assertions in our tests.</p>
-
-<h1 id="survivedmutantlivedmutantlived-alignright-">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
-
-<p>Another possible outcome is that our mutant has survived, meaning no test fails. This is scary, it means the logic we’ve changed isn’t verified by a test. If someone would (accidentally) make this change in your codebase, the automatic build won’t break.</p>
-
-<p> </p>
-
-<h1 id="tooling">Tooling</h1>
-
-<p>In Java (and other languages as well) there are frameworks for doing mutation testing. One of the most complete and modern frameworks for doing mutation testing in Java is called <a href="http://pitest.org/">PIT</a>. The generation of mutants and the process running the tests is fully automated and easy to use, just as easy as code coverage. There are Maven, Ant, Gradle, Sonarqube, Eclipse and IntelliJ plugins available!</p>
-
-<h1 id="what-about-performance">What about performance?</h1>
-
-<p>Using mutation testing isn’t a silver bullet and it doesn’t come without any drawbacks. The major disadvantage is performance. This is the reason it never took off in the 1980s. At that time it would take an entire evening to run all your unit tests, so people could only dream of creating thousands of mutants and running the tests again. Luckily CPU’s have become a <em>lot</em> faster, and PIT has other tricks to speed up the process.</p>
-
-<p>One thing PIT does is that it uses code coverage! Not as a measurement of the quality of your tests but as a tool. Before creating the mutants PIT calculates the code coverage of all unit tests. Now when PIT creates a mutant of a particular line of code it looks at the tests covering that line. If a line is only covered by three unit tests, it only runs those three tests. This greatly decreases the amount of tests needed to run for each mutation.</p>
-
-<p>There are other tricks as well, for example PIT can track the changes in your codebase. It doesn’t need to create mutants if the code isn’t edited.</p>
-
-<h1 id="summary">Summary</h1>
-
-<p>Code coverage is a horrible way of measuring the quality of your tests. It only says something about the invocations but nothing about the actual assertions. Mutation testing is much better, it gives an accurate report on the quality and you can’t ‘game’ the statistics. The only way to fake mutation coverage is to write real tests with good assertions.</p>
-
-<p>Check it out now: <a href="http://pitest.org/">http://pitest.org</a></p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/09/building-commander-keen-on-osx/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Building Commander Keen on OS/X" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-09-17T16:12:14+02:00" class="date">
-            Sep 17, 2014 16:12:14
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/09/building-commander-keen-on-osx/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/09/building-commander-keen-on-osx/">Building Commander Keen on OS/X</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Below is a build-log on how to build <a href="https://github.com/keendreams/keen">Commander Keen: Keen Dreams</a> (which was recently released on Github) on OS/X using DOSBox and a shareware version found online.</p>
-
-<p>Step 1:</p>
-
-<p>Download and install DOSBox</p>
-
-<p>Step 2:</p>
-
-<p>Download: <a href="http://monkey-hole.co.uk/esa/dos/">Borland C++ 3.0</a><br />
-Download: <a href="https://github.com/keendreams/keen">Commander Keen - Keen Dreams</a> source code<br />
-Download: <a href="http://www.phatcode.net/downloads.php?id=280">tasm5.zip</a></p>
-
-<p>Step 3:</p>
-
-<p>Create a new folder, this will be your DOSBox mount-point.</p>
-
-<p>Step 4:</p>
-
-<p>Install TASM:<br />
-Copy all the contents of the directories DISK1/DISK2/DISK3 from tasm5.zip to \TEMP</p>
-
-<p>Step 5:</p>
-
-<p>Install Borland C++ 3:<br />
-Copy all the contents to \BORLANDC.</p>
-
-<p>Step 6:</p>
-
-<p>Copy all the source files from Commander Keen to \KEEN.</p>
-
-<p>Step 7:</p>
-
-<p>Fire up DOSBox, mount the mount folder to C.<br />
-Put the following paths to PATH:<br />
-SET PATH=C:\BORLANDC\BIN;C:\TASM\BIN;C:\;Z:\</p>
-
-<p>Go into C:\TEMP and run the installer to install TASM.</p>
-
-<p>Go into directory C:\KEEN\STATIC and run ‘make.bat’<br />
-In the directory C:\KEEN and run ‘BC’ to start Borland C++.</p>
-
-<p>To change the Borland directories to the correct path go to: Options &gt; Directories and change the paths to C:\BORLANDC\*.</p>
-
-<p>Step 8:</p>
-
-<p>Compile and run! It creates the binary for me KDREAMS.EXE.</p>
-
-<p>But sadly, when I run the executable it says “Can’t open KDREAMS.MAP!” :-(<br />
-It turns out you’ll need to own the game’s actual content before you can run this source code.<br />
-Thankfully a shareware version can be downloaded here: <a href="ftp://ftp.3drealms.com/share/keendm.zip">keendm.zip</a>. This corresponds with the 1.01S version of the released source code, which is also released <a href="https://github.com/keendreams/keen/tree/44773ae2502192ca553ab6518b644ee75e42dd8b">here</a>.</p>
-
-<p>Copy the missing files (SHL, MAP, AUD, etc) from the shareware version and play your own compiled Commander Keen!</p>
-
-<p>Screenshot:</p>
-
-<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" class="aligncenter" /></a>  </p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/09/building-commander-keen-on-osx/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

@@ -113,6 +113,488 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2010/06/creating-shazam-in-java/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Creating Shazam in Java" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-06-01T01:43:08+02:00" class="date">
+            Jun 1, 2010 01:43:08
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/06/creating-shazam-in-java/">Creating Shazam in Java</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of days ago I encountered this article: <a href="http://laplacian.wordpress.com/2009/01/10/how-shazam-works/">How Shazam Works</a></p>
+
+<p>This got me interested in how a program like Shazam works… And more importantly, how hard is it to program something similar in Java?</p>
+
+<h1 id="about-shazam">About Shazam</h1>
+
+<p>Shazam is an application which you can use to analyse/match music. When you install it on your phone, and hold the microphone to some music for about 20 to 30 seconds, it will tell you which song it is.</p>
+
+<p>When I first used it it gave me a magical feeling. “How did it do that!?”. And even today, after using it a lot, it still has a bit of magical feel to it.<br />
+Wouldn’t it be great if we can program something of our own that gives that same feeling? That was my goal for the past weekend.</p>
+
+<h1 id="listen-up">Listen up..!</h1>
+
+<p>First things first, get the music sample to analyse we first need to listen to the microphone in our Java application…! This is something I hadn’t done yet in Java, so I had no idea how hard this was going to be.</p>
+
+<p>But it turned out it was very easy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings</span>
+<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">TargetDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
+<span class="kd">final</span> <span class="n">TargetDataLine</span> <span class="n">line</span> <span class="o">=</span> <span class="o">(</span><span class="n">TargetDataLine</span><span class="o">)</span> <span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+<span class="n">line</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">);</span>
+<span class="n">line</span><span class="o">.</span><span class="na">start</span><span class="o">();</span></code></pre></figure>
+
+<p>Now we can read the data from the TargetDataLine just like a normal InputStream:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// In another thread I start:</span>
+
+<span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+<span class="n">running</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+<span class="k">try</span> <span class="o">{</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">running</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">buffer</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">count</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;I/O problems: &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Using this method it is easy to open the microphone and record all the sounds! The AudioFormat I’m currently using is:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">AudioFormat</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">float</span> <span class="n">sampleRate</span> <span class="o">=</span> <span class="mi">44100</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">sampleSizeInBits</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//mono</span>
+    <span class="kt">boolean</span> <span class="n">signed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="kt">boolean</span> <span class="n">bigEndian</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="n">sampleRate</span><span class="o">,</span> <span class="n">sampleSizeInBits</span><span class="o">,</span> <span class="n">channels</span><span class="o">,</span> <span class="n">signed</span><span class="o">,</span> <span class="n">bigEndian</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>So, now we have the recorded data in a ByteArrayOutputStream, great! Step 1 complete.</p>
+
+<h1 id="microphone-data">Microphone data</h1>
+
+<p>The next challenge is analyzing the data, when I outputted the data I received in my byte array I got a long list of numbers, like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0
+0
+1
+2
+4
+7
+6
+3
+-1
+-2
+-4
+-2
+-5
+-7
+-8
+(etc)</code></pre></figure>
+
+<p>Erhm… yes? This is sound?</p>
+
+<p>To see if the data could be visualized I took the output and placed it in Open Office to generate a line graph:</p>
+
+<p><a href="/images/graph.png"><img src="/images/graph-300x248.png" alt="graph" /></a></p>
+
+<p>Ah yes! This kind of looks like ‘sound’. It looks like what you see when using for example Windows Sound Recorder.</p>
+
+<p>This data is actually known as <a href="http://en.wikipedia.org/wiki/Time_domain">time domain</a>. But these numbers are currently basically useless to us… if you read the above article on how Shazam works you’ll read that they use a <a href="http://en.wikipedia.org/wiki/Spectrum_analyzer">spectrum analysis</a> instead of direct time domain data.<br />
+So the next big question is: How do we transform the current data into a spectrum analysis?</p>
+
+<h1 id="discrete-fourier-transform">Discrete Fourier transform</h1>
+
+<p>To turn our data into usable data we need to apply the so called <a href="http://en.wikipedia.org/wiki/Discrete_Fourier_transform">Discrete Fourier Transformation</a>. This turns the data from time domain into frequency domain.<br />
+There is just one problem, if you transform the data into the frequency domain you loose every bit of information regarding time. So you’ll know what the magnitude of all the frequencies are, but you have no idea when they appear.</p>
+
+<p>To solve this we need a sliding window. We take chunks of data (in my case 4096 bytes of data) and transform just this bit of information. Then we know the magnitude of all frequencies that occur during just these 4096 bytes.</p>
+
+<h1 id="implementing-this">Implementing this</h1>
+
+<p>Instead of worrying about the Fourier Transformation I googled a bit and found code for the so called FFT (Fast Fourier Transformation). I’m calling this code with the chunks:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">byte</span> <span class="n">audio</span><span class="o">[]</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+
+<span class="kd">final</span> <span class="kt">int</span> <span class="n">totalSize</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+
+<span class="kt">int</span> <span class="n">amountPossible</span> <span class="o">=</span> <span class="n">totalSize</span><span class="o">/</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span>
+
+<span class="c1">//When turning into frequency domain we&#39;ll need complex numbers:</span>
+<span class="n">Complex</span><span class="o">[][]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">amountPossible</span><span class="o">][];</span>
+
+<span class="c1">//For all the chunks:</span>
+<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">times</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">times</span> <span class="o">&lt;</span> <span class="n">amountPossible</span><span class="o">;</span> <span class="n">times</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">Complex</span><span class="o">[]</span> <span class="n">complex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">];</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="c1">//Put the time domain data into a complex number with imaginary part as 0:</span>
+        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//Perform FFT analysis on the chunk:</span>
+    <span class="n">results</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="n">FFT</span><span class="o">.</span><span class="na">fft</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">//Done!</span></code></pre></figure>
+
+<p>Now we have a double array containing all chunks as Complex[]. This array contains data about all frequencies. To visualize this data I decided to implement a full spectrum analyzer (just to make sure I got the math right).<br />
+To show the data I hacked this together:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">results</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">line</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">line</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">line</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="c1">// To get the magnitude of the sound at a given frequency slice</span>
+        <span class="c1">// get the abs() from the complex number.</span>
+        <span class="c1">// In this case I use Math.log to get a more managable number (used for color)</span>
+        <span class="kt">double</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()+</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">// The more blue in the color the more intensity for a given frequency point:</span>
+        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
+        <span class="c1">// Fill:</span>
+        <span class="n">g2d</span><span class="o">.</span><span class="na">fillRect</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="n">blockSizeX</span><span class="o">,</span> <span class="o">(</span><span class="n">size</span><span class="o">-</span><span class="n">line</span><span class="o">)*</span><span class="n">blockSizeY</span><span class="o">,</span><span class="n">blockSizeX</span><span class="o">,</span><span class="n">blockSizeY</span><span class="o">);</span>
+		
+        <span class="c1">// I used a improviced logarithmic scale and normal scale:</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">logModeEnabled</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">freq</span> <span class="o">+=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">freq</span><span class="o">++;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="introducing-aphex-twin">Introducing, Aphex Twin</h1>
+
+<p>This seems a bit of OT (off-topic), but I’d like to tell you about a electronic musician called Aphex Twin (Richard David James). He makes crazy electronic music… but some songs have an interesting feature. His biggest hit for example, <a href="http://en.wikipedia.org/wiki/Windowlicker">Windowlicker</a> has a spectrogram image in it.<br />
+If you look at the song as spectral image it shows a nice spiral. Another song, called ‘Mathematical Equation’ shows the face of Twin! More information can be found here: <a href="http://www.bastwood.com/aphex.php">Bastwood - Aphex Twin’s face</a>.</p>
+
+<p>When running this song against my spectral analyzer I get the following result:</p>
+
+<p><a href="/images/face.png"><img src="/images/face-299x300.png" alt="face" /></a></p>
+
+<p>Not perfect, but it seems to be Twin’s face!</p>
+
+<h1 id="determining-the-key-music-points">Determining the key music points</h1>
+
+<p>The next step in Shazam’s algorithm is to determine some key points in the song, save those points as a hash and then try to match on them against their database of over 8 million songs. This is done for speed, the lookup of a hash is O(1) speed. That explains a lot of the awesome performance of Shazam!</p>
+
+<p>Because I wanted to have everything working in one weekend (this is my maximum attention span sadly enough, then I need a new project to work on) I kept my algorithm as simple as possible. And to my surprise it worked.</p>
+
+<p>For each line the in spectrum analysis I take the points with the highest magnitude from certain ranges. In my case: 40-80, 80-120, 120-180, 180-300.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//For every line of data:</span>
+
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">LOWER_LIMIT</span><span class="o">;</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="n">UPPER_LIMIT</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">freq</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="c1">//Get the magnitude:</span>
+    <span class="kt">double</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+
+    <span class="c1">//Find out which range we are in:</span>
+    <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">getIndex</span><span class="o">(</span><span class="n">freq</span><span class="o">);</span>
+
+    <span class="c1">//Save the highest magnitude and corresponding frequency:</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">mag</span> <span class="o">&gt;</span> <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">])</span> <span class="o">{</span>
+        <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">mag</span><span class="o">;</span>
+        <span class="n">recordPoints</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">freq</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">//Write the points to a file:</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">AMOUNT_OF_POINTS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">recordPoints</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot;\t&quot;</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+
+<span class="c1">// ... snip ...</span>
+
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">RANGE</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">40</span><span class="o">,</span><span class="mi">80</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span><span class="mi">180</span><span class="o">,</span> <span class="n">UPPER_LIMIT</span><span class="o">+</span><span class="mi">1</span><span class="o">};</span>
+
+<span class="c1">//Find out in which range</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">(</span><span class="kt">int</span> <span class="n">freq</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span><span class="n">RANGE</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">freq</span><span class="o">)</span> <span class="n">i</span><span class="o">++;</span>
+        <span class="k">return</span> <span class="n">i</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When we record a song now, we get a list of numbers such as:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">33	56	99	121	195	
+30	41	84	146	199	
+33	51	99	133	183	
+33	47	94	137	193	
+32	41	106	161	191	
+33	76	95	123	185	
+40	68	110	134	232	
+30	62	88	125	194	
+34	57	83	121	182	
+34	42	89	123	182	
+33	56	99	121	195	
+30	41	84	146	199	
+33	51	99	133	183	
+33	47	94	137	193	
+32	41	106	161	191	
+33	76	95	123	185</code></pre></figure>
+
+<p>If I record a song and look at it visually it looks like this:</p>
+
+<p><a href="/images/points.png"><img src="/images/points-228x300.png" alt="points" /></a><br />
+(all the red dots are ‘important points’)</p>
+
+<h1 id="indexing-my-own-music">Indexing my own music</h1>
+
+<p>With this algorithm in place I decided to index all my 3000 songs. Instead of using the microphone you can just open mp3 files, convert them to the correct format, and read them the same way we did with the microphone, using an AudioInputStream. Converting stereo music into mono-channel audio was a bit trickier then I hoped. Examples can be found online (requires a bit too much code to paste here) have to change the sampling a bit.</p>
+
+<h1 id="matching">Matching!</h1>
+
+<p>The most important part of the program is the matching process. Reading Shazams paper they use hashing to get matches and the decide which song was the best match.</p>
+
+<p>Instead of using difficult point-groupings in time I decided to use a line of our data (for example “33, 47, 94, 137”) as one hash: 1370944733<br />
+(in my tests using 3 or 4 points works best, but tweaking is difficult, I need to re-index my mp3 every time!)</p>
+
+<p>Example hash-code using 4 points per line:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Using a little bit of error-correction, damping</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">FUZ_FACTOR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+
+<span class="kd">private</span> <span class="kt">long</span> <span class="nf">hash</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+    <span class="kt">long</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p4</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">3</span><span class="o">]);</span>
+    <span class="k">return</span>  <span class="o">(</span><span class="n">p4</span><span class="o">-(</span><span class="n">p4</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p3</span><span class="o">-(</span><span class="n">p3</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p2</span><span class="o">-(</span><span class="n">p2</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="o">(</span><span class="n">p1</span><span class="o">-(</span><span class="n">p1</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now I create two data sets:</p>
+
+<p>- A list of songs, List<string> (List index is Song-ID, String is songname)  
+\- Database of hashes: Map&lt;Long, List<datapoint>&gt;</datapoint></string></p>
+
+<p>The long in the database of hashes represents the hash itself, and it has a bucket of DataPoints.</p>
+
+<p>A DataPoint looks like:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">class</span> <span class="nc">DataPoint</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">time</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">songId</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">DataPoint</span><span class="o">(</span><span class="kt">int</span> <span class="n">songId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">time</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">songId</span> <span class="o">=</span> <span class="n">songId</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">;</span>
+    <span class="o">}</span>
+	
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getTime</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getSongId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">songId</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we already have everything in place to do a lookup. First I read all the songs and generate hashes for each point of data. This is put into the hash-database.<br />
+The second step is reading the data of the song we need to match. These hashes are retrieved and we look at the matching datapoints.</p>
+
+<p>There is just one problem, for each hash there are some hits, but how do we determine which song is the correct song..? Looking at the amount of matches? No, this doesn’t work…<br />
+The most important thing is timing. We must overlap the timing…! But how can we do this if we don’t know where we are in the song? After all, we could just as easily have recorded the final chords of the song.</p>
+
+<p>By looking at the data I discovered something interesting, because we have the following data:</p>
+
+<p>- A hash of the recording<br />
+- A matching hash of the possible match<br />
+- A song ID of the possible match<br />
+- The current time in our own recording<br />
+- The time of the hash in the possible match</p>
+
+<p>Now we can substract the current time in our recording (for example, line 34) with the time of the hash-match (for example, line 1352). This difference is stored together with the song ID. Because this offset, this difference, tells us where we possibly could be in the song.<br />
+When we have gone through all the hashes from our recording we are left with a lot of song id’s and offsets. The cool thing is, if you have a lot of hashes with matching offsets, you’ve found your song.</p>
+
+<h1 id="the-results">The results</h1>
+
+<p>For example, when listening to The Kooks - Match Box for just 20 seconds, this is the output of my program:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Done loading: 2921 songs
+
+Start matching song...
+
+Top 20 matches:
+
+01: 08_the_kooks_-_match_box.mp3 with 16 matches.
+02: 04 Racoon - Smoothly.mp3 with 8 matches.
+03: 05 Röyksopp - Poor Leno.mp3 with 7 matches.
+04: 07_athlete_-_yesterday_threw_everyting_a_me.mp3 with 7 matches.
+05: Flogging Molly - WMH - Dont Let Me Dia Still Wonderin.mp3 with 7 matches.
+06: coldplay - 04 - sparks.mp3 with 7 matches.
+07: Coldplay - Help Is Round The Corner (yellow b-side).mp3 with 7 matches.
+08: the arcade fire - 09 - rebellion (lies).mp3 with 7 matches.
+09: 01-coldplay-_clocks.mp3 with 6 matches.
+10: 02 Scared Tonight.mp3 with 6 matches.
+11: 02-radiohead-pyramid_song-ksi.mp3 with 6 matches.
+12: 03 Shadows Fall.mp3 with 6 matches.
+13: 04 Röyksopp - In Space.mp3 with 6 matches.
+14: 04 Track04.mp3 with 6 matches.
+15: 05 - Dress Up In You.mp3 with 6 matches.
+16: 05 Supergrass - Can&#39;t Get Up.mp3 with 6 matches.
+17: 05 Track05.mp3 with 6 matches.
+18: 05The Fox In The Snow.mp3 with 6 matches.
+19: 05_athlete_-_wires.mp3 with 6 matches.
+20: 06 Racoon - Feel Like Flying.mp3 with 6 matches.
+
+Matching took: 259 ms
+
+Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre></figure>
+
+<p>It works!!</p>
+
+<p>Listening for 20 seconds it can match almost all the songs I have. And even this <a href="http://www.youtube.com/watch?v=sLR9d4sMcq4">live recording of the Editors</a> could be matched to the correct song after listening 40 seconds!</p>
+
+<p>Again it feels like magic! :-)</p>
+
+<p>Currently, the code isn’t in a releasable state and it doesn’t work perfectly. It has been a pure weekend-hack, more like a proof-of-concept / algorithm exploration.</p>
+
+<p>Maybe, if enough people ask about it, I’ll clean it up and release it somewhere.</p>
+
+<h1 id="update">Update:</h1>
+
+<p>The Shazam patent holders lawyers are sending me emails to stop me from releasing the code and removing this blogpost, read the story <a href="/blog/2010/07/patent-infringement/">here</a>.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/04/playing-around-with-html-5/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Playing around with HTML 5" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-04-14T12:45:43+02:00" class="date">
+            Apr 14, 2010 12:45:43
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/04/playing-around-with-html-5/">Playing around with HTML 5</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Yesterday, while browsing DZone, I encountered a couple of HTML 5 blogs. So I decided to try and code some HTML5 - Canvas myself.</p>
+
+<p>This is the result of one hour trail-and-error:  </p>
+
+<p><strong>Sorry, no <canvas></canvas> support, please upgrade your browser!</strong>  </p>
+
+<p>Maybe I’ll do a write-up soon, but for now, just check the sources. (Yes they are wrong/hack-ish, I know…).</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2010/04/some-of-my-software-development-rules/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Some of my software development rules" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-04-12T07:54:31+02:00" class="date">
+            Apr 12, 2010 07:54:31
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/04/some-of-my-software-development-rules/">Some of my software development rules</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Here are (in my opinion) five of the most important ‘rules’ in software development.</p>
+
+<h1 id="changes-happen">Changes happen</h1>
+
+<p>The reason why waterfall doesn’t work and agile works a lot better. Changes happen. People will always change their mind, over time technology changes and situations change. So during software development you will have to be flexible with the requirements.</p>
+
+<h1 id="create-software-that-the-client-wants-not-what-he-says-he-wants">Create software that the client wants, not what he says he wants.</h1>
+
+<p>What the clients tells you he wants might not (entirely) be what he/she actually wants or the organisation needs. It is vital to ask questions and release early. When you have something visible, let the client judge it.<br />
+Some people say there is one major drawback of showing designs and the application early on, the client probably gets new ideas and wants to change the design. But that actually is a good thing, you still have much time left to plan these changes! If you do a waterfall-method and release on delivery date.. the client still wants his/her changes (!).</p>
+
+<h1 id="always-write-down-decisions">Always write down decisions.</h1>
+
+<p>During a project, especially during the startup, there are a lot of choices to be made. Is it going to be a web application, or standalone? What frameworks are we going to use?<br />
+All these decisions are made with arguments, pro’s and con’s, write those down! A project-wiki would be a perfect place. If some members leave the team and new members join the team this information is vital. When the new members join the team their first reaction will be “Why are they doing it this way and not …?”. Reading the argumentation will help them understand the situation and get them up to speed. Also, during projects there are always moments when you reflect on choices made in the past: “Why did we do … wouldn’t we have done better if we did/used …”. You can now always review the past arguments to see if the current situation has changed so much that a reconsideration would be in order or not.</p>
+
+<h1 id="the-team-owns-the-code">The team owns the code.</h1>
+
+<p>If you write a piece of code, it is not your code. The code belongs to the collective, the team. If somebody changes your code, embrace it, it was probably needed. If you see an ugly piece of code you didn’t write, you are also responsible, refactor it.</p>
+
+<h1 id="commit-driven-development">Commit driven development.</h1>
+
+<p>Test driven development is a great idea. First write a unit-test, check to see if it fails, now write your code until the test succeeds. This way you know two important things, the final code is easy to test (it was written with testing in mind) and the code does what the test expects. But there is one major drawback, most people (not all) simply can’t work this way. For some people it works great, but some developers want to write their tests afterwards. And that is ok, there is just one important rule: Never check your code in (the trunk) if it isn’t tested and doesn’t have proper documentation (e.g. JavaDoc). So: It is no problem if you write code and then tests, or tests then the code, as long as you write them before commiting to your SCM repository.</p>
+
+<p>There are situations when you need to write a lot of new code, in that case you still want to be able to check your code in, even if you aren’t done yet. For these situations you create a feature-branch. On this branch you develop all the new funtionality and once it is done, documented and tested, merge it with the trunk.</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2010/02/compression-by-prediction/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Compression by prediction" width="100" height="100" />
@@ -1813,370 +2295,6 @@ ELSE proceed</em></p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/steve-oakley-the-head-hunter/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Steve Oakley, the head hunter" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-10T15:28:57+01:00" class="date">
-            Dec 10, 2009 15:28:57
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/steve-oakley-the-head-hunter/">Steve Oakley, the head hunter</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Every once in a while head hunters call me. They call you at home, at work, they work out your email adress and mail you… This will probably sound very familiar to most IT professionals.</p>
-
-<p>Anyway, the thing that strikes me is that about 50% of the time a head hunter calls, its Steve Oakley! And it isn’t just me that is getting calls from Steve Oakley, no, all my collegues and friends are getting calls from him as well!</p>
-
-<p>So, are you in or out? Have you been called by Steve Oakley yet?</p>
-
-<p><img src="/images/steve_oakley.PNG" alt="I went to work, and all I got was a call from Steve Oakley" /></p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/testing-with-spring/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Testing with Spring" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-08T23:49:31+01:00" class="date">
-            Dec 8, 2009 23:49:31
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/testing-with-spring/">Testing with Spring</a></h1>
-
-        <span itemprop="articleBody">
-          <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I’ll describe these terms and show examples on how to create tests using JUnit and Spring’s Test library.</p>
-
-<h1 id="unit-testing">Unit Testing</h1>
-
-<p>A unit-test is an automated test that tests one single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.</p>
-
-<p>Here is an example of a unit-test:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CalculatorTest</span> <span class="o">{</span>
-
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD1</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">ANSWER</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-	
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAdd</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">Calculator</span> <span class="n">calculator</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Calculator</span><span class="o">();</span>
-		
-		<span class="n">Integer</span> <span class="n">returnedAnswer</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">TOADD1</span><span class="o">,</span> <span class="n">TOADD2</span><span class="o">);</span>
-		
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">&quot;The answer of &quot;</span> <span class="o">+</span> <span class="n">TOADD1</span> <span class="o">+</span> <span class="s">&quot;+&quot;</span> <span class="o">+</span> <span class="n">TOADD2</span> <span class="o">+</span>
-			<span class="s">&quot; should be &quot;</span> <span class="o">+</span> <span class="n">ANSWER</span> <span class="o">+</span> <span class="s">&quot; but was &quot;</span> <span class="o">+</span> <span class="n">returnedAnswer</span><span class="o">,</span> 
-			<span class="n">ANSWER</span><span class="o">,</span> <span class="n">returnedAnswer</span><span class="o">);</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.</p>
-
-<h1 id="test-driven-development">Test Driven Development</h1>
-
-<p>Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.</p>
-
-<p>What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:</p>
-
-<ol>
-  <li>Write a unit-test that verifies your usecase</li>
-  <li>Implement the interfaces you created for step 1<br />
-(can be done quick and dirty, just to get the logic correct)</li>
-  <li>Run the tests and confirm your code is logically correct</li>
-  <li>Refactor your code into maintainable, readable, reusable code</li>
-  <li>Confirm the code still works as designed by running the test(s)</li>
-</ol>
-
-<p>Actually, I don’t write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I’m going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.</p>
-
-<h1 id="integration-testing">Integration testing</h1>
-
-<p>With unit testing you can verify that the smallest units of work are correct. But this doesn’t give you any guarantees!</p>
-
-<p>A famous example is NASA’s $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.</p>
-
-<p>Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested a lot, but apparently they neglected to test the components together.</p>
-
-<h1 id="integration-testing-with-spring">Integration testing with Spring</h1>
-
-<p>Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.</p>
-
-<p>Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.</p>
-
-<p>One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending <em>org.springframework.test.AbstractDependencyInjectionSpringContextTests</em> or <em>org.springframework.test.AbstractTransactionalSpringContextTests</em>.</p>
-
-<p>If you want to use these classes you need two things:</p>
-
-<ul>
-  <li>Create a seperate Spring configuration with test-beans (or use your normal Spring config)</li>
-  <li>Override <em>String[] getConfigLocations()</em>, provide it with the location of your Spring configuration.</li>
-</ul>
-
-<p>Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.</p>
-
-<p>A small example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> 
-	<span class="kd">extends</span> <span class="n">AbstractDependencyInjectionSpringContextTests</span> <span class="o">{</span>
-
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
-
-	<span class="cm">/**</span>
-<span class="cm">	 * Integration test for my calculator.</span>
-<span class="cm">	 * It also calls the calculatorDao which is in the calculatorService.</span>
-<span class="cm">	 */</span>
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
-		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
-		
-		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
-		
-		<span class="c1">//Test if the person has been added.</span>
-	<span class="o">}</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * Provide the test with a configuration</span>
-<span class="cm">	 */</span>
-	<span class="nd">@Override</span>
-	<span class="kd">protected</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">getConfigLocations</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;my-test-applicationcontext.xml&quot;</span> <span class="o">};</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="testing-with-spring-25">Testing with Spring 2.5+</h1>
-
-<p>With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.</p>
-
-<p>This is how you would use it:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.junit.runner.RunWith</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.AbstractDependencyInjectionSpringContextTests</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.context.ContextConfiguration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringJUnit4ClassRunner</span><span class="o">;</span>
-
-<span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="nd">@ContextConfiguration</span><span class="o">(</span><span class="n">locations</span><span class="o">=</span> <span class="o">{</span> <span class="s">&quot;my-test-applicationcontext.xml&quot;</span> <span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> <span class="o">{</span>
-
-	<span class="nd">@Autowired</span>
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
-
-	<span class="cm">/**</span>
-<span class="cm">	 * Integration test for my calculator.</span>
-<span class="cm">	 * It also calls the calculatorDao which is in the calculatorService.</span>
-<span class="cm">	 */</span>
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
-		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
-		
-		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
-		
-		<span class="c1">//Test if the person has been added.</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It works the same way as before, but instead of having to override the <em>AbstractDependencyInjectionSpringContextTests</em> you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.</p>
-
-<p>Hopefully I’ll find the time to write another post on mocking, including EasyMock and Mockito.</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/feed-your-curiosity/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Feed your curiosity" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-08T18:21:54+01:00" class="date">
-            Dec 8, 2009 18:21:54
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/feed-your-curiosity/">Feed your curiosity</a></h1>
-
-        <span itemprop="articleBody">
-          <p><em><strong>Curiosity</strong> is an emotion related to natural inquisitive behaviour such as exploration, investigation, and learning, evident by observation in human and many animal species.</em></p>
-
-<h1 id="source-wikipedia">Source: <a href="http://en.wikipedia.org/wiki/Curiosity">wikipedia</a></h1>
-
-<p>To me, curiosity is one of the greatest things we as humans have. It feeds you with knowledge and sparks your fantasy, its an emotion that tickles your brain and forces you to explore.</p>
-
-<p><img src="/images/curious_kitten.jpg" alt="Curiosity isn't limited to humans" /></p>
-
-<p>In life its vital to search for new things, new limits, new experiences. Always keep asking questions, because with every answer you find, more questions will arise!</p>
-
-<p>At first this sounds a bit depressing, more questions for every answer you get. This doesn’t sound satisfactory, but trust me, it is! Its not the answer that gives you satisfaction, its the new array of questions that give satisfaction! Because these questions feed our curiosity.</p>
-
-<p>It also strikes me that children are very good in asking questions, and they come up with the most amazing questions! I really think this is a good skill, and its a shame we lose this when we get older. Why don’t adults ask these questions? Is it the fear of the “dumb-question”, does it make them look stupid?</p>
-
-<p>Here are some examples of good curious questions:</p>
-
-<ul>
-  <li><strong>Q: How do blind people know when they’re done wiping toiletpaper?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>They can feel it from the drag, and then wipe two times extra (just to be sure)</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: If you smoke, and go into a coma. When you wake up, do you crave for a cigarette?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>It depends, after 8 days all the nicotine would be out of him/her bloodstream. So the physical chemical craving wouldn’t be there when they wake up. They’ll probably still have a habitual craving though.</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: Why don’t our eyelashes grow?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>All hair follicles have a certain cycle. The hair grows for a certain time, and then it just drops out. Eyelashes have a short cycle-rate.</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: Do fish drink?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>It actually depends: Saltwater fish drink, and filter the salt and minerals with their gills. Freshwater fish absorb water with their bodies.</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: How many neck-vertebrates does a giraffe have?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>The same amount as we have, seven. Even a mouse has seven vertebrates. All mammals have seven vertebrates except the manatee and three-toed sloth (They only have six)</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: Can Elephants jump?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>No, they can’t! They weigh too much. Also they get very uncomfortable if there is more then one feet of the ground at any time.</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: If you die from anti-freeze poisoning, would you be able to do cryopreservation?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>?</em></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li><strong>Q: A Dutch question: Waarom moet je bevroren eten altijd “ontdooien”? Dooien is het tegenovergestelde van bevriezen! Dus moet je iets toch dooien in plaats van ontdooien?</strong></li>
-</ul>
-
-<p> </p>
-
-<ul>
-  <li>A: <em>?</em></li>
-</ul>
-
-<p>If you have curious/weird questions, or know answers to unanswered questions, please drop me a comment!</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
