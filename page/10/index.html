@@ -113,6 +113,86 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java EE 6 released, including Servlet 3.0" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2009-12-10T22:43:13+01:00" class="date">
+            Dec 10, 2009 22:43:13
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">Java EE 6 released, including Servlet 3.0</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today marks the release of Java EE 6. The reference implementation (Glassfish V3) has been released and the specifications are going into their final state very soon.</p>
+
+<p>About two years ago, while I was attending the JavaOne conference, I first heard about the Servlet 3.0 ideas. As a web developer I’ve worked a lot with these Servlets so I was curious about the ideas. But what I saw wasn’t what I hoped for. On the contrary, what I saw was a huge mistake in my opinion!  </p>
+
+<p>So I decided to contact the guys behind this JSR, to ask for some more information and share my views. Some time passed but I never got a reply… My next move was just to write about it, first on my own blog, then on <a href="http://java.dzone.com/articles/reviewing-early-draft-servlet-">DZone</a> (05/30/2008) and on <a href="http://www.theserverside.com/tt/articles/article.tss?l=PonderingAboutJSR135">The Server Side</a> a half year later, december 2008.</p>
+
+<p>The only ‘reply’ I got from the people of the JSR was in the days following my (re-)post on The Server Side. Glassfish has a short re-cap on what happened <a href="http://swik.net/GlassFish/The+Aquarium/Servlet+3.0+...+Almost+at+PDR/cmaui">here</a>.</p>
+
+<p>Now that the release is final I’m actually glad with the result. All the issues I raised from the early draft have been fixed. This is what a simple servlet would have looked like in the early draft:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Servlet</span><span class="o">(</span><span class="n">urlMappings</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="o">{</span>
+     <span class="nd">@GET</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//Handle the GET</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And this was my suggestion on how to improve it (see second article/link):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServletMapping</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">mapping</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span> <span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="o">...</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And this is from the final release:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;myServlet&quot;</span><span class="o">,</span> <span class="n">urlPatterns</span><span class="o">={</span><span class="s">&quot;/foo&quot;</span><span class="o">,</span><span class="s">&quot;/bar&quot;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+     <span class="nd">@Override</span> <span class="c1">//keep strong typing!</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+          <span class="o">...</span>
+     <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>That’s very similair, maybe a little too similair..? But anyway, I’m pleased about the result. It’ll be a lot easier in the future to write Servlets and Filters and a lot of cool new features have been added too.</p>
+
+<p>I love the spec, despite the lack of feedback and replies from the expert group, ignoring all positive feedback and constructive advice. If I now look at the way the annotations turned out its almost identical to my first sketch after their JavaOne presentation in March 2008.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2009/12/steve-oakley-the-head-hunter/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Steve Oakley, the head hunter" width="100" height="100" />

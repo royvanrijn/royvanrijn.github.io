@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Saving the world with a code review</title>
+  <meta name="description" content="This morning I noticed the following tweet by fellow programmer (and runner) Arun Gupta:Why code reviews are important? pic.twitter.com/8KyMo7Syis&mdash; Aru...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,code review,programming,yoda conditions,state,encapsulation,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Saving the world with a code review" />
+  <meta name="twitter:description" content="This morning I noticed the following tweet by fellow programmer (and runner) Arun Gupta:Why code reviews are important? pic.twitter.com/8..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/oh-no-the-robots.png"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/06/gender-inqeuality-my-honest-mistake/" title="Previous Post: Gender (in-)equality: my honest mistake">&laquo; Gender (in-)equality: my honest mistake</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/oh-no-the-robots.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-08-29T09:45:12+02:00" class="date">
+          Aug 29, 2016 09:45:12
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Saving the world with a code review</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>This morning I noticed the following tweet by fellow programmer (and runner) Arun Gupta:</p>
+
+<blockquote class="twitter-tweet" data-cards="hidden" data-lang="en"><p lang="en" dir="ltr">Why code reviews are important? <a href="https://t.co/8KyMo7Syis">pic.twitter.com/8KyMo7Syis</a></p>&mdash; Arun Gupta (@arungupta) <a href="https://twitter.com/arungupta/status/769886902090539008">August 28, 2016</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>The tweet contained the following cartoon by <a href="http://oppressive-silence.com/comics/oh-no-the-robots">‘Oppressive Silence’</a>, check out their website for more laughs!</p>
+
+<p><img src="/images/oh-no-the-robots.jpg" alt="Oh no the robots" class="aligncenter" />
+<sub>(<a href="http://oppressive-silence.com/comics/oh-no-the-robots">Source of the comic</a>)</sub></p>
+
+<h1 id="solved-by-a-code-review">Solved by a code review?</h1>
+
+<p>The main question I’d like to ask:</p>
+
+<p>Is this really something that you’ll find during a code review?</p>
+
+<p>I think my answer below won’t surprise you, but the reasoning behind it might. First lets look at <strong>four</strong> reasons this bug should never happen to me (or any other experienced programmer).</p>
+
+<h1 id="static-variablesglobal-state">1) Static variables/global state</h1>
+
+<p>The first obvious problem with the code is the usage of static state. The variable ‘isCrazyMurderingRobot’ is mutable and static, so anywhere in the code the value can be changed. This makes it very hard to reason about the variable and keep track of it. Any programmer can come along and change the value in some method. This is unacceptable, there is almost <strong>no</strong> reason to use mutable static variables.</p>
+
+<p>Top tip: If you have variables, especially mutable variables, keep their scope as small as possible!</p>
+
+<h1 id="final-method-arguments">2) Final method arguments</h1>
+
+<p>If you solve the global state problem you’ll probably end up with something like this (translated to Java):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">isCrazyMurderingRobot</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">kill</span><span class="o">(</span><span class="n">humans</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">be_nice_to</span><span class="o">(</span><span class="n">humans</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>Whenever an argument is passed to a method I have the habit (and my IDE-settings enforce this for me) to make them final. Method arguments should never change inside a method. It is just strange if you need to do this when you think about it. It probably means the method should have its own (scoped) mutable variable.</p>
+
+<p>In the code the following would happen:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">isCrazyMurderingRobot</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Compilation error: &#39;Cannot assign a value to final variable &#39;isCrazyMurderingRobot&#39;</span></code></pre></figure>
+
+<p>The code won’t even compile before telling me what is wrong, the world is saved!</p>
+
+<h1 id="static-code-analysis">3) Static code analysis</h1>
+
+<p>Another reason this bug will never happen in my code is because we have static code analysis on <em>all</em> our projects. A program like <a href="http://findbugs.sourceforge.net/">FindBugs</a> will immediately flag this as a major problem, assigning values inside an if-statement.</p>
+
+<p>Look at this particular check in FindBugs:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">QBA: Method assigns boolean literal in boolean expression (QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)
+
+This method assigns a literal boolean value (true or false) to a boolean variable inside an if or while expression. Most probably this was supposed to be a boolean comparison using ==, not an assignment using =.</code></pre></figure>
+
+<p>Static code analysis is an essential tool in modern programming, it is just so convenient, never reads over certain bugs like a human would (spoiler: more on that in the final conclusion below).</p>
+
+<h1 id="yoda-conditions">4) Yoda conditions</h1>
+
+<p>The final reason this bug will never happen in my code is: <a href="https://en.wikipedia.org/wiki/Yoda_conditions">Yoda conditions</a></p>
+
+<p>A habit I learned a long time ago (in older languages) is writing my if-statements like Yoda. Good it is, mistakes you won’t make. The reason behind doing this is that it’ll prevent exactly the bug in the cartoon.</p>
+
+<p>In the cartoon the if-statement would change from: <em>‘is crazy murdering robot true?’</em> to <em>‘true is crazy murdering robot?’</em>.</p>
+
+<p>If you do this, the following happens:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="kc">true</span> <span class="o">=</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Compilation error: &#39;Variable expected&#39;</span></code></pre></figure>
+
+<h1 id="conclusion--saving-the-world">Conclusion / saving the world</h1>
+
+<p>So, do I think Arun is right? Will code reviews find the bug in the cartoon? Yes and no.</p>
+
+<p>Humans are good at reasoning, thinking, being creative, finding bugs, but there is one thing we are horrible at: syntax parsing.</p>
+
+<p>During a code review you are just as likely (maybe even <em>more</em> likely) to read over this typo and don’t notice it. A second pair of eyes won’t save the world here just yet.</p>
+
+<p><strong>But</strong>: when reviewing this piece of code, I <strong>will</strong> complain about the global state! If you start to refactor, encapsulating the logic and remove the mutable static variable the bug will be noticed and solved. So <strong>yes</strong>, if you do a code review, the code would have be been fixed and humans will be safe for just a little bit longer.</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

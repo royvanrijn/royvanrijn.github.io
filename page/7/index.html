@@ -113,6 +113,58 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/10/code-quality-confirmation/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Code quality: Confirmation" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-10-24T15:32:29+02:00" class="date">
+            Oct 24, 2011 15:32:29
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/10/code-quality-confirmation/">Code quality: Confirmation</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Last week I wrote a blogpost on <a href="/blog/2011/10/great-code-is-written-twice-or-more/">rewriting code</a> and improving quality. And now we have some great news that will support my claims. To verify our project and convince management we are doing it the right way, we’ve send a copy of our code to <a href="http://www.tuvit.de/english/Home.asp">TÜViT</a>.</p>
+
+<h1 id="tvit">TÜViT</h1>
+
+<p>Most people from Europe will know TÜV. They test and certify cars, elevators and even nuclear power plants. They also verify IT security, quality, infrastructure, products, processes and their requirements. TÜViT is accredited by organisations and official bodies for the areas of IT security and IT quality.</p>
+
+<p><a href="/images/hamisteam.jpg"><img src="/images/hamisteam.jpg" alt="The team that made it possible (and some management stealing our thunder)" /></a></p>
+
+<h1 id="hamis">HaMIS</h1>
+
+<p>Their verdict couldn’t have been better, last week we’ve received a banner with 5 out of 5 stars! Just 5% of the projects that are submitted to get tested get 5 stars. More information can be found in the official <a href="http://www.portofrotterdam.com/en/News/pressreleases-news/Pages/stars-port-rotterdam.aspx">press release</a> and in the <a href="http://www.automatiseringgids.nl/technologie/software/2011/42/vijf-sterren-voor-software-havenbedrijf-rotterdam.aspx">Automatiserings Gids</a> (Dutch).</p>
+
+<h1 id="agile-architecture-and-refactoring">Agile architecture and refactoring</h1>
+
+<p>For some reason getting these 5 stars makes me very proud. Normally I don’t care much about certification, they usually focus on the wrong issues. We know we are doing the right stuff, it feels good, and we’re making good progress. And this is just a perfect verification from an external source, this will also assure management we are on the right track.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/10/great-code-is-written-twice-or-more/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Great code is written twice (or more)" width="100" height="100" />
@@ -952,81 +1004,6 @@ checked exceptions are “the embodiment of evil”?’</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="De Bruijn sequence in constant amortized time" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-02-24T22:29:29+01:00" class="date">
-            Feb 24, 2011 22:29:29
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">De Bruijn sequence in constant amortized time</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Follow up on the previous blogpost.</p>
-
-<p>Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:</p>
-
-<p><em>K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)</em></p>
-
-<p>It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that it isn’t really constant time, but approaches it very much. Calculating the worst-case scenario isn’t worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true…. until the array underneath needs to be resized. During this resize it’ll take some more time. So the algorithm isn’t really constant time, but constant amortized time.</p>
-
-<p>This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">generateDeBruijnSequence</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="o">();</span>
-	<span class="n">generateLyndonWords</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">],</span> <span class="n">sequence</span><span class="o">);</span>
-	<span class="k">return</span> <span class="n">sequence</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-<span class="o">}</span>
-
-<span class="kd">private</span> <span class="kt">void</span> <span class="nf">generateLyndonWords</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">,</span> <span class="kt">int</span> <span class="n">p</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">sequence</span><span class="o">)</span> <span class="o">{</span>
-	<span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">if</span><span class="o">((</span><span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)%</span><span class="n">p</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-				<span class="n">sequence</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-		<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">];</span> 
-		<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">p</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
-		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">]+</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;=</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
-			<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span> 
-			<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">t</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p><strong>Update June 7th 2012:</strong><br />
-I just stumbled across this interesting read: <a href="http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php">http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php</a></p>
-
-<p>The keypad example from that link can be easily calculated with the code above:<br />
-generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

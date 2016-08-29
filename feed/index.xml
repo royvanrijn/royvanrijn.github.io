@@ -5,9 +5,113 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 20 Jun 2016 13:02:54 +0200</pubDate>
-    <lastBuildDate>Mon, 20 Jun 2016 13:02:54 +0200</lastBuildDate>
+    <pubDate>Mon, 29 Aug 2016 11:31:24 +0200</pubDate>
+    <lastBuildDate>Mon, 29 Aug 2016 11:31:24 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Saving the world with a code review</title>
+        <description>&lt;p&gt;This morning I noticed the following tweet by fellow programmer (and runner) Arun Gupta:&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot; data-cards=&quot;hidden&quot; data-lang=&quot;en&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;Why code reviews are important? &lt;a href=&quot;https://t.co/8KyMo7Syis&quot;&gt;pic.twitter.com/8KyMo7Syis&lt;/a&gt;&lt;/p&gt;&amp;mdash; Arun Gupta (@arungupta) &lt;a href=&quot;https://twitter.com/arungupta/status/769886902090539008&quot;&gt;August 28, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async=&quot;&quot; src=&quot;//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;The tweet contained the following cartoon by &lt;a href=&quot;http://oppressive-silence.com/comics/oh-no-the-robots&quot;&gt;‘Oppressive Silence’&lt;/a&gt;, check out their website for more laughs!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/oh-no-the-robots.jpg&quot; alt=&quot;Oh no the robots&quot; class=&quot;aligncenter&quot; /&gt;
+&lt;sub&gt;(&lt;a href=&quot;http://oppressive-silence.com/comics/oh-no-the-robots&quot;&gt;Source of the comic&lt;/a&gt;)&lt;/sub&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;solved-by-a-code-review&quot;&gt;Solved by a code review?&lt;/h1&gt;
+
+&lt;p&gt;The main question I’d like to ask:&lt;/p&gt;
+
+&lt;p&gt;Is this really something that you’ll find during a code review?&lt;/p&gt;
+
+&lt;p&gt;I think my answer below won’t surprise you, but the reasoning behind it might. First lets look at &lt;strong&gt;four&lt;/strong&gt; reasons this bug should never happen to me (or any other experienced programmer).&lt;/p&gt;
+
+&lt;h1 id=&quot;static-variablesglobal-state&quot;&gt;1) Static variables/global state&lt;/h1&gt;
+
+&lt;p&gt;The first obvious problem with the code is the usage of static state. The variable ‘isCrazyMurderingRobot’ is mutable and static, so anywhere in the code the value can be changed. This makes it very hard to reason about the variable and keep track of it. Any programmer can come along and change the value in some method. This is unacceptable, there is almost &lt;strong&gt;no&lt;/strong&gt; reason to use mutable static variables.&lt;/p&gt;
+
+&lt;p&gt;Top tip: If you have variables, especially mutable variables, keep their scope as small as possible!&lt;/p&gt;
+
+&lt;h1 id=&quot;final-method-arguments&quot;&gt;2) Final method arguments&lt;/h1&gt;
+
+&lt;p&gt;If you solve the global state problem you’ll probably end up with something like this (translated to Java):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;kill&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;be_nice_to&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Whenever an argument is passed to a method I have the habit (and my IDE-settings enforce this for me) to make them final. Method arguments should never change inside a method. It is just strange if you need to do this when you think about it. It probably means the method should have its own (scoped) mutable variable.&lt;/p&gt;
+
+&lt;p&gt;In the code the following would happen:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Compilation error: &amp;#39;Cannot assign a value to final variable &amp;#39;isCrazyMurderingRobot&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The code won’t even compile before telling me what is wrong, the world is saved!&lt;/p&gt;
+
+&lt;h1 id=&quot;static-code-analysis&quot;&gt;3) Static code analysis&lt;/h1&gt;
+
+&lt;p&gt;Another reason this bug will never happen in my code is because we have static code analysis on &lt;em&gt;all&lt;/em&gt; our projects. A program like &lt;a href=&quot;http://findbugs.sourceforge.net/&quot;&gt;FindBugs&lt;/a&gt; will immediately flag this as a major problem, assigning values inside an if-statement.&lt;/p&gt;
+
+&lt;p&gt;Look at this particular check in FindBugs:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;QBA: Method assigns boolean literal in boolean expression (QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)
+
+This method assigns a literal boolean value (true or false) to a boolean variable inside an if or while expression. Most probably this was supposed to be a boolean comparison using ==, not an assignment using =.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Static code analysis is an essential tool in modern programming, it is just so convenient, never reads over certain bugs like a human would (spoiler: more on that in the final conclusion below).&lt;/p&gt;
+
+&lt;h1 id=&quot;yoda-conditions&quot;&gt;4) Yoda conditions&lt;/h1&gt;
+
+&lt;p&gt;The final reason this bug will never happen in my code is: &lt;a href=&quot;https://en.wikipedia.org/wiki/Yoda_conditions&quot;&gt;Yoda conditions&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;A habit I learned a long time ago (in older languages) is writing my if-statements like Yoda. Good it is, mistakes you won’t make. The reason behind doing this is that it’ll prevent exactly the bug in the cartoon.&lt;/p&gt;
+
+&lt;p&gt;In the cartoon the if-statement would change from: &lt;em&gt;‘is crazy murdering robot true?’&lt;/em&gt; to &lt;em&gt;‘true is crazy murdering robot?’&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you do this, the following happens:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Compilation error: &amp;#39;Variable expected&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;conclusion--saving-the-world&quot;&gt;Conclusion / saving the world&lt;/h1&gt;
+
+&lt;p&gt;So, do I think Arun is right? Will code reviews find the bug in the cartoon? Yes and no.&lt;/p&gt;
+
+&lt;p&gt;Humans are good at reasoning, thinking, being creative, finding bugs, but there is one thing we are horrible at: syntax parsing.&lt;/p&gt;
+
+&lt;p&gt;During a code review you are just as likely (maybe even &lt;em&gt;more&lt;/em&gt; likely) to read over this typo and don’t notice it. A second pair of eyes won’t save the world here just yet.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;But&lt;/strong&gt;: when reviewing this piece of code, I &lt;strong&gt;will&lt;/strong&gt; complain about the global state! If you start to refactor, encapsulating the logic and remove the mutable static variable the bug will be noticed and solved. So &lt;strong&gt;yes&lt;/strong&gt;, if you do a code review, the code would have be been fixed and humans will be safe for just a little bit longer.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 29 Aug 2016 09:45:12 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/</guid>
+        
+        <category>code review</category>
+        
+        <category>programming</category>
+        
+        <category>yoda conditions</category>
+        
+        <category>state</category>
+        
+        <category>encapsulation</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Gender (in-)equality: my honest mistake</title>
@@ -631,98 +735,6 @@ Some people have warned me that I’m being &lt;em&gt;too&lt;/em&gt; optimistic.
         <category>java9</category>
         
         <category>diamond operator</category>
-        
-        
-        <category>Java Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>JavaMail API: Message in EML format</title>
-        <description>&lt;p&gt;Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in our database (and make them downloadable using our GUI).&lt;/p&gt;
-
-&lt;p&gt;It turns out this is pretty easy to do!&lt;/p&gt;
-
-&lt;p&gt;Let’s start with some very basic email code we already had in place:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Some method to construct a MimeMessage:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createMailMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Transport&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.&lt;/p&gt;
-
-&lt;p&gt;It turns out there is a convinient method for doing just that: &lt;em&gt;message.writeTo(OutputStream)&lt;/em&gt;&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;n&quot;&gt;Message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createMailMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// some method to construct a MimeMessage&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Retrieve the entire message as byte[]:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ByteArrayOutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ByteArrayOutputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;writeTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;contents&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toByteArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Next we store the byte[] in our database (JPA) entity:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ArchivedMail&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;archivedMail&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ArchivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;contents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LocalDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;mailArchive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;archivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Transport&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Our own little POJO entity (&lt;em&gt;ArchivedMail&lt;/em&gt;) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.&lt;/p&gt;
-
-&lt;p&gt;We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Add the Wicket link-component to our page:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Link&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArchivedMail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;wicketLinkId&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;somemail&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onClick&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;IResourceStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AbstractResourceStreamWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OutputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;c1&quot;&gt;// When clicked output a stream which contains the raw byte[]:&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getModelObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBytes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getContentType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;c1&quot;&gt;// Add the content type for an EML file:&lt;/span&gt;
-                    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;message/rfc822&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
-
-            &lt;span class=&quot;c1&quot;&gt;// Schedule the handler to return our resource stream (with a fancy name):&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;getRequestCycle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scheduleRequestHandlerAfterCurrent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ResourceStreamRequestHandler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resourceStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFileName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;mail.eml&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;Using JavaMail (javax.mail) it is very easy to get the ‘raw’ contents of an email when sending it.&lt;/p&gt;
-
-&lt;p&gt;This can be stored and downloaded in EML-format. It contains everything you need, mime, multipart, attachements and all the from/to headers.&lt;/p&gt;
-
-&lt;p&gt;Happy coding!&lt;/p&gt;
-</description>
-        <pubDate>Tue, 22 Mar 2016 11:15:15 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/</guid>
-        
-        <category>java</category>
-        
-        <category>message</category>
-        
-        <category>javamail</category>
-        
-        <category>mimemessage</category>
-        
-        <category>download</category>
-        
-        <category>file</category>
-        
-        <category>format</category>
-        
-        <category>eml</category>
         
         
         <category>Java Programming</category>

@@ -113,6 +113,81 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="De Bruijn sequence in constant amortized time" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-02-24T22:29:29+01:00" class="date">
+            Feb 24, 2011 22:29:29
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">De Bruijn sequence in constant amortized time</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Follow up on the previous blogpost.</p>
+
+<p>Yesterday I wrote an algorithm in Java to generate de Bruijn sequences. But I had a breakthrough after reading:</p>
+
+<p><em>K. Cattell, F. Ruskey, J. Sawada, M. Serra, C.R. Miers, Fast algorithms to generate necklaces, unlabeled necklaces, and irreducible polynomials over GF(2)</em></p>
+
+<p>It has an algorithm which generates Lyndon words in CAT. CAT stands for Constant Amortized Time. This means that it isn’t really constant time, but approaches it very much. Calculating the worst-case scenario isn’t worth it. For example using an ArrayList in Java. The time to do insertions is said to be O(1), and this is true…. until the array underneath needs to be resized. During this resize it’ll take some more time. So the algorithm isn’t really constant time, but constant amortized time.</p>
+
+<p>This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">generateDeBruijnSequence</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="o">();</span>
+	<span class="n">generateLyndonWords</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">],</span> <span class="n">sequence</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">sequence</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">generateLyndonWords</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">,</span> <span class="kt">int</span> <span class="n">p</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">sequence</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">((</span><span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">)%</span><span class="n">p</span><span class="o">==</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">sequence</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+		<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">];</span> 
+		<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">p</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">-</span><span class="n">p</span><span class="o">]+</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;=</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">a</span><span class="o">[</span><span class="n">t</span><span class="o">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span> 
+			<span class="n">generateLyndonWords</span><span class="o">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">t</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">a</span><span class="o">,</span> <span class="n">sequence</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><strong>Update June 7th 2012:</strong><br />
+I just stumbled across this interesting read: <a href="http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php">http://www.learner.org/courses/mathilluminated/units/2/textbook/07.php</a></p>
+
+<p>The keypad example from that link can be easily calculated with the code above:<br />
+generateDeBruijnSequence(9, 5).length() = 59049 :-)</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Generating de Bruijn sequences and Lyndon words" width="100" height="100" />
@@ -1651,76 +1726,6 @@ Landmark Digital Services, LLC<br />
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/06/music-matching-part-deux/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Music Matching (part deux)" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-06-06T19:37:15+02:00" class="date">
-            Jun 6, 2010 19:37:15
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/06/music-matching-part-deux/">Music Matching (part deux)</a></h1>
-
-        <span itemprop="articleBody">
-          <p>After a comment on my previous blog entry (about creating a shazam clone) I started tinkering again.</p>
-
-<p>Somebody asked: Could this be used to detect duplicate songs in my mp3 collection!?</p>
-
-<p>That is exacly what I just tried!  </p>
-
-<h1 id="the-results">The results</h1>
-
-<p>Here are some examples:  </p>
-
-<p><strong>Duplicate found: 01 - everything in its right place.mp3.song matches with D:\data\v2\01-radiohead-everything_in_it’s_wrong_place-h8me.mp3.song and score: 134</strong><br />
-(note: This is a remix of the original, with some rap mixed in)</p>
-
-<p><strong>Duplicate found: 01 - Joy Division - Exercise One.mp3.song matches with D:\data\v2\114 - Joy Division - Exercise One (From Still).mp3.song and score: 255</strong><br />
-(note: Yes, duplicate!)</p>
-
-<p><strong>Duplicate found: 01 The District Sleeps Alone Tonight.mp3.song matches with D:\data\v2\The Postal Service - The District Sleeps Alone Tonight.mp3.song and score: 636</strong><br />
-(note: Yes, duplicate!)</p>
-
-<p><strong>Duplicate found: 01-AudioTrack 01.mp3.song matches with D:\data\v2\06.Richard cheese -Id like a virgin- Butterfly.mp3.song and score: 144</strong><br />
-(note: Yes, duplicate, the second was a radio snippet with jingle in the song)</p>
-
-<p><strong>Duplicate found: 01-editors-papillon_edit.mp3.song matches with D:\data\v2\02-editors-papillon_instrumental_edit.mp3.song and score: 382</strong><br />
-(note: Almost a duplicate, the second is an instrumental version of the first)</p>
-
-<p><strong>Duplicate found: 01-the_strokes-you_only_live_once-ser.mp3.song matches with D:\data\v2\01-the_strokes-you_only_live_once.mp3.song and score: 450</strong><br />
-(note: Yes, duplicate!)</p>
-
-<p><strong>Duplicate found: 01-the_wombats-backfire_at_the_disco.mp3.song matches with D:\data\v2\Backfire @ The Disco [Promo Version].mp3.song and score: 493</strong><br />
-(note: Yes, almost duplicate, the second is a radio-promo announcement with jingle in it)</p>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>With a bit of tinkering this algorithm could be used to make a tool to detect duplicate songs, even if the mp3’s aren’t similair. Even live versions and instrumental versions are detected if you lower the threshold.</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
