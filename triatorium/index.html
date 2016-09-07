@@ -131,7 +131,6 @@
 			}
 
 			function onMove( event ) {
-				event.preventDefault();
 				updatePosition(event);
 			}
 			window.addEventListener( 'mousemove', onMove, false );
@@ -141,7 +140,6 @@
 			var hoveringTile;
 
 			function onClick( event ) {
-				event.preventDefault();
 				updatePosition(event);
 				if(hoveringTile && hoveringTile.userData[2] < 3) {
 
