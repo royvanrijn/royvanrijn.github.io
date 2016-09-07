@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<title>Triatorium Online</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="lib/three.min.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+
+			// Set up the camera facing down a bit:
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+			camera.rotation.x -= 0.4;
+			camera.position.y = 0;
+			camera.position.z = 50;
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			// Create the shape of a triangle
+			var triangleShape = new THREE.Shape();
+			triangleShape.moveTo( 0, 4.2);
+			triangleShape.lineTo( -5, -5);
+			triangleShape.lineTo( 5, -5);
+			triangleShape.lineTo( 0, 4.2);
+
+			// Create triangle geometry (extrude with bevel)
+			var extrudeSettings = { amount: 1.4, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 1, bevelThickness: 1 };
+			var exTriangle = new THREE.ExtrudeGeometry( triangleShape, extrudeSettings );
+
+			//  Create a board with the triangles:
+			var board = new THREE.Object3D();
+			for ( var row = 0; row < 16; row ++ ) {
+				for ( var line = 0; line < 6; line ++ ) {
+					var mesh = new THREE.Mesh(exTriangle, new THREE.MeshPhongMaterial( { color: 0xffffff } ) ) ;
+					// Turn sideways, make the triangle lay down flat:
+					mesh.rotation.x = Math.PI / 2;
+
+					// Alternate the rotation
+					if(line%2==row%2) {
+						mesh.rotation.z = Math.PI / 2;
+					} else {
+						mesh.rotation.z = -(Math.PI / 2);
+					}
+					// Set a position and place on the board:
+	    			mesh.position.set(30 - line * 11.5, 0, 30-row*6.4);
+    				board.add( mesh );
+				}
+			}
+			// Move the board
+			board.position.y = -30;
+
+			// Display:
+			scene.add( board );
+
+			// Some simple lighting:
+			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.4 );
+			directionalLight.position.set( 0, 1, 1 );
+			scene.add( directionalLight );
+
+			var light = new THREE.AmbientLight( 0x8c8c80 );
+			scene.add( light );
+
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+				// Rotate the board in animation:
+				board.rotation.y += 0.001;
+
+				renderer.render(scene, camera);
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
