@@ -1,21 +1,26 @@
 <html>
 	<head>
 		<title>Triatorium Online</title>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
+		<style type="text/css">
+			body {
+				margin: 0px;
+			}
+			canvas {
+				width: 100%; height: 100%
+			}
 		</style>
 	</head>
 	<body>
 		<script src="lib/three.min.js"></script>
 		<script>
 			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 0x1b1b1b );
 
 			// Set up the camera facing down a bit:
-			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 1000 );
 			camera.rotation.x -= 0.4;
-			camera.position.y = 0;
-			camera.position.z = 50;
+			camera.position.y = 30;
+			camera.position.z = 80;
 
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
@@ -30,35 +35,57 @@
 
 			// Create triangle geometry (extrude with bevel)
 			var extrudeSettings = { amount: 1.4, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 1, bevelThickness: 1 };
-			var exTriangle = new THREE.ExtrudeGeometry( triangleShape, extrudeSettings );
+			var triangleGeom = new THREE.ExtrudeGeometry( triangleShape, extrudeSettings );
 
+			var cnt = 0;
 			//  Create a board with the triangles:
 			var board = new THREE.Object3D();
-			for ( var row = 0; row < 16; row ++ ) {
+			for ( var row = 0; row < 17; row ++ ) {
+				var skip = 0;
+				if(row == 0 || row == 16) {
+					skip = 2;
+				} else 	if(row == 1 || row == 15) {
+					skip = 1;
+				}
+
 				for ( var line = 0; line < 6; line ++ ) {
-					var mesh = new THREE.Mesh(exTriangle, new THREE.MeshPhongMaterial( { color: 0xffffff } ) ) ;
+					cnt++;
+					var triangleColor = 0xffffff;
+					if(cnt > 40 && cnt < 53) {
+						triangleColor = 0x7b6b6b;
+					}
+					var mesh = new THREE.Mesh(triangleGeom, new THREE.MeshPhongMaterial( { color: triangleColor } ) ) ;
 					// Turn sideways, make the triangle lay down flat:
 					mesh.rotation.x = Math.PI / 2;
 
 					// Alternate the rotation
 					if(line%2==row%2) {
-						mesh.rotation.z = Math.PI / 2;
-					} else {
 						mesh.rotation.z = -(Math.PI / 2);
+					} else {
+						mesh.rotation.z = Math.PI / 2;
 					}
 					// Set a position and place on the board:
-	    			mesh.position.set(30 - line * 11.5, 0, 30-row*6.4);
-    				board.add( mesh );
+	    			mesh.position.set(34 - line * 11.5, 0, 40-row*6.4);
+	    			if(line >= skip && line <= 5-skip) {
+    					board.add( mesh );
+    				}
 				}
 			}
 			// Move the board
-			board.position.y = -30;
+			board.position.z = 10;
 
 			// Display:
 			scene.add( board );
 
+			var tokenGeom = new THREE.CylinderGeometry( 1, 1.2, 1, 40 );
+			var tokenMesh = new THREE.Mesh( tokenGeom, new THREE.MeshPhongMaterial( {color: 0x8f0000} ));
+			tokenMesh.position.y = 1.5;
+			tokenMesh.position.x = 0;
+			tokenMesh.position.z = 2;
+			board.add( tokenMesh );
+
 			// Some simple lighting:
-			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.4 );
+			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.5 );
 			directionalLight.position.set( 0, 1, 1 );
 			scene.add( directionalLight );
 
@@ -69,7 +96,7 @@
 				requestAnimationFrame( animate );
 
 				// Rotate the board in animation:
-				board.rotation.y += 0.001;
+				board.rotation.y += 0.01;
 
 				renderer.render(scene, camera);
 			};
