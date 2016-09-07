@@ -34,25 +34,34 @@
 			triangleShape.lineTo( 0, 4.2);
 
 			// Create triangle geometry (extrude with bevel)
-			var extrudeSettings = { amount: 1.4, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 1, bevelThickness: 1 };
+			var extrudeSettings = { amount: 0.5, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 1, bevelThickness: 1 };
 			var triangleGeom = new THREE.ExtrudeGeometry( triangleShape, extrudeSettings );
+
+			// Triangle with bevel size:
+			var triangleWidth = 6.3;
+			var triangleHeight = (triangleWidth + 5) / 2;
+
+			var MAX_ROWS = 16;
+			var MAX_LINES = 5;
 
 			var cnt = 0;
 			//  Create a board with the triangles:
 			var board = new THREE.Object3D();
-			for ( var row = 0; row < 17; row ++ ) {
+			for ( var row = 0; row <= MAX_ROWS; row ++ ) {
+
+				// Build board shape (not a 'square')
 				var skip = 0;
-				if(row == 0 || row == 16) {
+				if(row == 0 || row == MAX_ROWS) {
 					skip = 2;
-				} else 	if(row == 1 || row == 15) {
+				} else 	if(row == 1 || row == MAX_ROWS - 1) {
 					skip = 1;
 				}
 
-				for ( var line = 0; line < 6; line ++ ) {
+				for ( var line = 0; line <= MAX_LINES; line ++ ) {
 					cnt++;
 					var triangleColor = 0xffffff;
 					if(cnt > 40 && cnt < 53) {
-						triangleColor = 0x7b6b6b;
+						triangleColor = 0x9b6b6b;
 					}
 					var mesh = new THREE.Mesh(triangleGeom, new THREE.MeshPhongMaterial( { color: triangleColor } ) ) ;
 					// Turn sideways, make the triangle lay down flat:
@@ -60,43 +69,63 @@
 
 					// Alternate the rotation
 					if(line%2==row%2) {
-						mesh.rotation.z = -(Math.PI / 2);
-					} else {
 						mesh.rotation.z = Math.PI / 2;
+					} else {
+						mesh.rotation.z = -(Math.PI / 2);
 					}
-					// Set a position and place on the board:
-	    			mesh.position.set(34 - line * 11.5, 0, 40-row*6.4);
-	    			if(line >= skip && line <= 5-skip) {
+					// Set a position and place on the board (middle of board is 0,0,0)
+	    			mesh.position.set(
+	    				(line * (triangleHeight * 2)) - (MAX_LINES * triangleHeight),
+	    				0, 
+	    				(row * triangleWidth) - (MAX_ROWS * triangleWidth) / 2);
+	    			if(line >= skip && line <= MAX_LINES - skip) {
     					board.add( mesh );
     				}
 				}
 			}
-			// Move the board
-			board.position.z = 10;
-
 			// Display:
 			scene.add( board );
 
-			var tokenGeom = new THREE.CylinderGeometry( 1, 1.2, 1, 40 );
-			var tokenMesh = new THREE.Mesh( tokenGeom, new THREE.MeshPhongMaterial( {color: 0x8f0000} ));
-			tokenMesh.position.y = 1.5;
-			tokenMesh.position.x = 0;
-			tokenMesh.position.z = 2;
-			board.add( tokenMesh );
+			// Draw the tokens
+			for(var onRow = -3; onRow < 3; onRow++) {
+				for(var onLine = -6; onLine <= 6; onLine++) {
+					var maxHeight = 1 + Math.floor(Math.random()*3);
+					for(var height = 1; height < maxHeight; height++) {
+						var tokenGeom = new THREE.CylinderGeometry( 1, 1.2, 1, 40 );
+						var tokenMesh = new THREE.Mesh( tokenGeom, new THREE.MeshStandardMaterial( {
+							color: (Math.random()>0.5?0x20af60:0x942121),
+							metalness: 0.6,
+							roughness: 0.7
+
+						} ));
+						tokenMesh.position.y = 1 + height;
+						tokenMesh.position.x = 
+						(triangleHeight * 0.66) * (1+((Math.abs(onRow)+Math.abs(onLine)%2) %2)) + (onRow * (triangleHeight*2));
+						tokenMesh.position.z = (onLine * triangleWidth);
+						board.add( tokenMesh );
+					}
+				}
+			}
+
+			// TODO: Next step is to cast a ray and click on a triangle
 
 			// Some simple lighting:
-			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.5 );
-			directionalLight.position.set( 0, 1, 1 );
+			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.6 );
+			directionalLight.position.set( 0, 30, -80 );
 			scene.add( directionalLight );
 
-			var light = new THREE.AmbientLight( 0x8c8c80 );
+			var directionalLight2 = new THREE.DirectionalLight( 0xcfcf88, 0.2 );
+			directionalLight2.position.set( 100, 40, 50 );
+			scene.add( directionalLight2 );
+
+			var light = new THREE.AmbientLight( 0x9c9c80 );
 			scene.add( light );
 
 			var animate = function () {
 				requestAnimationFrame( animate );
 
 				// Rotate the board in animation:
-				board.rotation.y += 0.01;
+				board.rotation.y += 0.002;
 
 				renderer.render(scene, camera);
 			};
