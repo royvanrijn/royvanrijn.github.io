@@ -44,9 +44,9 @@
 			var MAX_ROWS = 16;
 			var MAX_LINES = 5;
 
-			var cnt = 0;
 			//  Create a board with the triangles:
-			var board = new THREE.Object3D();
+			var tiles = new THREE.Object3D();
+
 			for ( var row = 0; row <= MAX_ROWS; row ++ ) {
 
 				// Build board shape (not a 'square')
@@ -58,12 +58,7 @@
 				}
 
 				for ( var line = 0; line <= MAX_LINES; line ++ ) {
-					cnt++;
-					var triangleColor = 0xffffff;
-					if(cnt > 40 && cnt < 53) {
-						triangleColor = 0x9b6b6b;
-					}
-					var mesh = new THREE.Mesh(triangleGeom, new THREE.MeshPhongMaterial( { color: triangleColor } ) ) ;
+					var mesh = new THREE.Mesh(triangleGeom, new THREE.MeshPhongMaterial( { color: 0xffffff } ) ) ;
 					// Turn sideways, make the triangle lay down flat:
 					mesh.rotation.x = Math.PI / 2;
 
@@ -78,36 +73,35 @@
 	    				(line * (triangleHeight * 2)) - (MAX_LINES * triangleHeight),
 	    				0, 
 	    				(row * triangleWidth) - (MAX_ROWS * triangleWidth) / 2);
+
+	    			// Add token index and token-count to userData of the tile:
+	    			mesh.userData = [line - ((1+MAX_LINES)/2), row - MAX_ROWS/2, 0];
 	    			if(line >= skip && line <= MAX_LINES - skip) {
-    					board.add( mesh );
+    					tiles.add( mesh );
     				}
 				}
 			}
+
+			var tokens = new THREE.Object3D();
+
+			// Board is the tiles + tokens
+			var board = new THREE.Object3D();
+			board.add(tiles);
+			board.add(tokens);
+
 			// Display:
-			scene.add( board );
+			scene.add(board);
 
-			// Draw the tokens
-			for(var onRow = -3; onRow < 3; onRow++) {
-				for(var onLine = -6; onLine <= 6; onLine++) {
-					var maxHeight = 1 + Math.floor(Math.random()*3);
-					for(var height = 1; height < maxHeight; height++) {
-						var tokenGeom = new THREE.CylinderGeometry( 1, 1.2, 1, 40 );
-						var tokenMesh = new THREE.Mesh( tokenGeom, new THREE.MeshStandardMaterial( {
-							color: (Math.random()>0.5?0x20af60:0x942121),
-							metalness: 0.6,
-							roughness: 0.7
-
-						} ));
-						tokenMesh.position.y = 1 + height;
-						tokenMesh.position.x = 
-						(triangleHeight * 0.66) * (1+((Math.abs(onRow)+Math.abs(onLine)%2) %2)) + (onRow * (triangleHeight*2));
-						tokenMesh.position.z = (onLine * triangleWidth);
-						board.add( tokenMesh );
-					}
-				}
-			}
-
-			// TODO: Next step is to cast a ray and click on a triangle
+			// TODO:
+			// - Translate tile into coordinate (maybe a lookup table?)
+			// - When hovering above a candidate, show token placement? (remember token stacking)
+			// - Implement move generator/game logic in Javascript (!?)
+			// - Allow user to move the board (dragging) also using touch events (!)
+			// - Overlay for selecting
+			// - Overlay for exploding
+			// - Animate explosion(s)
+			// - Start-square lines
+			// - Menu etc
 
 			// Some simple lighting:
 			var directionalLight = new THREE.DirectionalLight( 0xcfcf88, 0.6 );
@@ -121,14 +115,73 @@
 			var light = new THREE.AmbientLight( 0x9c9c80 );
 			scene.add( light );
 
+			var raycaster = new THREE.Raycaster();
+			var mouse = new THREE.Vector2();
+			function onMouseMove( event ) {
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
+			}
+			window.addEventListener( 'mousemove', onMouseMove, false );
+			function onMouseClick( event ) {
+				if(hoveringTile) {
+					console.log(hoveringTile.userData);
+					tokens.add (createToken(hoveringTile.userData[0], hoveringTile.userData[1], hoveringTile.userData[2]));
+					hoveringTile.userData[2]++;
+				}
+			}
+			window.addEventListener( 'mouseup', onMouseClick, false );
+
+			var hoveringTile;
+
 			var animate = function () {
 				requestAnimationFrame( animate );
+
+				// update the picking ray with the camera and mouse position	
+				raycaster.setFromCamera( mouse, camera );	
+
+				// calculate objects intersecting the picking ray
+				var intersects = raycaster.intersectObjects( tiles.children );
+				if(intersects.length > 0) {
+					if(hoveringTile != intersects[0].object) {
+						// Pointing at new tile:
+						if(hoveringTile) {
+							stopHovering();
+						}
+						startHovering(intersects[0].object);
+					}
+				} else if(hoveringTile) {
+					stopHovering();
+				}
 
 				// Rotate the board in animation:
 				board.rotation.y += 0.002;
 
 				renderer.render(scene, camera);
 			};
+
+			function startHovering(input) {
+				hoveringTile = input;
+				hoveringTile.material.color.set(0x9b6b6b);
+			}
+
+			function stopHovering() {
+				hoveringTile.material.color.set( 0xffffff);
+				hoveringTile = null;
+			}
+
+			function createToken(line, row, height) {
+				var tokenGeom = new THREE.CylinderGeometry( 1, 1.2, 1, 40 );
+				var tokenMesh = new THREE.Mesh( tokenGeom, new THREE.MeshStandardMaterial( {
+						color: (Math.random()>0.5?0x20af60:0x942121),
+						metalness: 0.6,
+						roughness: 0.7
+				} ));
+				tokenMesh.position.y = 1 + height;
+				tokenMesh.position.x = 
+					(triangleHeight * 0.66) * (1 + ((Math.abs(line)+Math.abs(row)%2) %2)) + (line * (triangleHeight*2));
+				tokenMesh.position.z = (row * triangleWidth);
+				return tokenMesh;
+			}
 
 			animate();
 		</script>
