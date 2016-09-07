@@ -126,6 +126,7 @@
 			var raycaster = new THREE.Raycaster();
 			var mouse = new THREE.Vector2();
 			function onMouseMove( event ) {
+				event.preventDefault();
 				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
 			}
@@ -135,8 +136,9 @@
 			var hoveringTile;
 
 			function onMouseClick( event ) {
+				event.preventDefault();
 				if(hoveringTile && hoveringTile.userData[2] < 3) {
-					console.log(hoveringTile.userData);
+
 					tokens.add (createToken(hoveringTile.userData[0], hoveringTile.userData[1], hoveringTile.userData[2]));
 					hoveringTile.userData[2]++;
 
@@ -151,6 +153,7 @@
 				}
 			}
 			window.addEventListener( 'click', onMouseClick, false );
+			window.addEventListener( 'tap', onMouseClick, false );
 
 			var boardGoalY = 0;
 			var animate = function () {
@@ -188,16 +191,13 @@
 				} else if(hoveringTile) {
 					stopHovering();
 				}
-
-				// Rotate the board in animation:
-				//board.rotation.y += 0.002;
-
 				renderer.render(scene, camera);
 			};
 
 			function startHovering(input) {
 				hoveringTile = input;
 				if(hoveringTile.userData[2] < 3) {
+					// TODO: Only allow clicking if the current player owns neighbours (!) or it is a start-tile
 					hoveringTile.material.color.set(0x9b6b6b);
 				}
 			}
@@ -210,6 +210,8 @@
 			function explodeTile(tile) {
 				hoveringTile.material.color.set( 0xaaaaaa);
 				hoveringTile = null;
+				// Make a list of tiles to explode, these are the only clickable tiles
+				// Find the corresponding tokens, once the tile it clicked, these must be redistributed
 			}
 
 			function createToken(line, row, height) {
