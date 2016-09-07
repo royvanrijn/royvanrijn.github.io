@@ -124,19 +124,25 @@
 
 			var raycaster = new THREE.Raycaster();
 			var mouse = new THREE.Vector2();
-			function onMouseMove( event ) {
-				event.preventDefault();
+
+			function updatePosition(event) {
 				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
 			}
-			window.addEventListener( 'mousemove', onMouseMove, false );
-			window.addEventListener( 'touchmove', onMouseMove, false );
+
+			function onMove( event ) {
+				event.preventDefault();
+				updatePosition(event);
+			}
+			window.addEventListener( 'mousemove', onMove, false );
+			window.addEventListener( 'touchmove', onMove, false );
 
 			var currentPlayer = 1;
 			var hoveringTile;
 
-			function onMouseClick( event ) {
+			function onClick( event ) {
 				event.preventDefault();
+				updatePosition(event);
 				if(hoveringTile && hoveringTile.userData[2] < 3) {
 
 					tokens.add (createToken(hoveringTile.userData[0], hoveringTile.userData[1], hoveringTile.userData[2]));
@@ -152,8 +158,8 @@
 					boardGoalY = currentPlayer == 1 ? 0 : Math.PI;
 				}
 			}
-			window.addEventListener( 'click', onMouseClick, false );
-			window.addEventListener( 'touchend', onMouseClick, false );
+			window.addEventListener( 'click', onClick, false );
+			window.addEventListener( 'touchend', onClick, false );
 
 			var boardGoalY = 0;
 			var animate = function () {
