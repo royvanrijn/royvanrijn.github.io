@@ -29,7 +29,6 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			function onWindowResize(){
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -131,6 +130,7 @@
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
 			}
 			window.addEventListener( 'mousemove', onMouseMove, false );
+			window.addEventListener( 'touchmove', onMouseMove, false );
 
 			var currentPlayer = 1;
 			var hoveringTile;
@@ -153,7 +153,7 @@
 				}
 			}
 			window.addEventListener( 'click', onMouseClick, false );
-			window.addEventListener( 'tap', onMouseClick, false );
+			window.addEventListener( 'touchend', onMouseClick, false );
 
 			var boardGoalY = 0;
 			var animate = function () {
