@@ -23,10 +23,10 @@
 			camera.position.z = 85;
 
 			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setSize( window.innerWidth, window.innerHeight);
 			document.body.appendChild( renderer.domElement );
 
-			window.addEventListener( 'resize', onWindowResize, false );
+			window.addEventListener( 'resize', debounce(function() {onWindowResize() }, 100), false );
 
 			function onWindowResize(){
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -101,9 +101,9 @@
 			scene.add(board);
 
 			// TODO:
-			// - When hovering above a candidate, show token placement? (remember token stacking)
 			// - Implement move generator/game logic in Javascript (!?)
 			// - Allow user to move the board (dragging) also using touch events (!)
+			// - When explosions on list, users should click them (target)
 			// - Overlay for selecting
 			// - Overlay for exploding
 			// - Animate explosion(s)
@@ -141,6 +141,7 @@
 
 			function onClick( event ) {
 				updatePosition(event);
+				raycaster.setFromCamera( mouse, camera );	
 				if(hoveringTile && hoveringTile.userData[2] < 3) {
 
 					tokens.add (createToken(hoveringTile.userData[0], hoveringTile.userData[1], hoveringTile.userData[2]));
@@ -234,6 +235,29 @@
 
 			// Start animation loop:
 			animate();
+
+			/*
+			------ MISC FUNCTIONS: ------------------------------
+			*/
+
+			// Returns a function, that, as long as it continues to be invoked, will not
+			// be triggered. The function will be called after it stops being called for
+			// N milliseconds. If `immediate` is passed, trigger the function on the
+			// leading edge, instead of the trailing.
+			function debounce(func, wait, immediate) {
+				var timeout;
+				return function() {
+					var context = this, args = arguments;
+					var later = function() {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					timeout = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
 		</script>
 	</body>
 </html>
