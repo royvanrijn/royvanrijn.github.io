@@ -94,6 +94,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -108,6 +110,83 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2011/04/static-state-evil-as-well/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Static state: Evil as well" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-04-19T10:23:26-07:00" class="date">
+            Apr 19, 2011 10:23:26
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/static-state-evil-as-well/">Static state: Evil as well</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p>
+
+<h1 id="the-scare">The scare</h1>
+
+<p>Quickly I looked around and went into overdrive mode:<br />
+<em>I need to fix this bug before somebody sees it!<br />
+I’m always yelling at people who break the build, and now it has happend to me…!</em>  </p>
+
+<p>Looking at the SVN comment it only said: “cleaned up some code” (or something)<br />
+That isn’t very helpfull of myself…</p>
+
+<h1 id="the-second-scare">The second scare</h1>
+
+<p>Then I noticed I changed only one file. The change should be contained and easy to fix. But then I had a moment of relief and scare at the same time:</p>
+
+<ul>
+  <li>Phew, it isn’t my fault… removing empty lines should not break builds…</li>
+  <li>But… why the heck does removing an empty line break the build!?</li>
+</ul>
+
+<h1 id="the-culprit">The culprit</h1>
+
+<p>After looking around in the code, and the failing tests a collegue and me found the culprit: statefull static.</p>
+
+<p>In our application we’ve introduced a static class called GlobalContext. In this class we keep session information, things like the MapState (we have a map, which has dimensions, view extents, etc). And throughout the code we read this information and mutate it. To unit-test the code we added setters to inject mock MapState’s into the GlobalContext.</p>
+
+<p>Running all the unit tests in Eclipse always runs them synchronously, and everything is fine. But this goes horribly wrong when running Maven and/or the Hudson build. Surefire takes all test classes and runs them parallel! So when one test is busy reading the state of our static class, another test is setting different information in the same static class! This causes NPE’s and other weird values. Until now we have been lucky the tests all ran correctly, but after my commit, the execution-order appearantly changed.</p>
+
+<h1 id="the-fix">The fix</h1>
+
+<p>The only way to fix this is removing the static-ness of the GlobalContext. Since we are also using Spring we can just put an instance of the MapState in Spring and inject that into the classes that use it. That way, when doing tests you can inject the mock-instance into the instances you are testing! This solves everything…</p>
+
+<p>Even better, get rid of the GlobalContext at all. It contained a couple of instances that could easily be injected into the other objects. This makes it much clearer to see which objects depend on which other objects and makes the code a heck of a lot easier to test.</p>
+
+<h1 id="lessons-learned">Lessons learned…</h1>
+
+<p>This got me thinking, in which cases should you use static? Obviously “public static final”-fields are useful. And maybe static functions in Utility classes, which have no state and only mutate data. But are there cases when you really need static state? I’ve been thinking about this for a day now, but I can’t come up with any good usecase. Do you know any? Mail me, comment below!</p>
+
+<p>So for now, my new rule: Don’t use static unless you have a very good reason, and never ever have static (mutable) state!</p>
+
+<p>p.s. And people, stop using SimpleDateFormat as fields, they are not threadsafe and cause weird exceptions and weird dates! I was lucky to catch one in our code today before weird errors occured.</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/static-state-evil-as-well/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -1500,86 +1579,6 @@ Some known bugs:</p>
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/07/patent-publicity/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent, publicity" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-07-09T12:29:27-07:00" class="date">
-            Jul 9, 2010 12:29:27
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/07/patent-publicity/">Patent, publicity</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Wow, just wow…</p>
-
-<p>Thanks a lot for all your support people, it’s great to see and read I’m not the only one to think this situation isn’t normal.</p>
-
-<h1 id="social-networking">Social networking:</h1>
-
-<p>First it became huge on social network sites:<br />
-- #1 on yCombinator Hacker News: <a href="http://news.ycombinator.com/item?id=1496683">here</a><br />
-- #1 on Reddit: <a href="http://www.reddit.com/r/programming/comments/cn79s/apparently_describing_a_patented_algorithm_is/">here</a><br />
-- Frontpage on Slashdot: <a href="http://yro.slashdot.org/story/10/07/08/2311225/Open-Source-Music-Fingerprinter-Gets-Patent-Nastygram">here</a><br />
-- DZone Top Link: <a href="http://www.dzone.com/links/after_creating_shazam_in_java_patent_infringement.html">here</a><br />
-- Digg: <a href="http://digg.com/programming/When_amateur_programming_meets_patent_infringement">here</a></p>
-
-<h1 id="blogs-and-news-sites">Blogs and news sites:</h1>
-
-<p>And it was featured on some major blogs/news sites:</p>
-
-<p>- BoingBoing: <a href="http://www.boingboing.net/2010/07/08/patent-holders-legal.html">here</a><br />
-- OpenDotDotDot: <a href="http://opendotdotdot.blogspot.com/2010/07/patent-bullying-over-algorithms.html">here</a><br />
-- Webwereld (Dutch): <a href="https://secure.webwereld.nl/nieuws/66518/open-source-shazam-kopie-stopt-onder-patentdruk.html">here</a><br />
-- TechDirt: <a href="http://delta.techdirt.com/articles/20100708/04230710128.shtml">here</a><br />
-- The Command Line: <a href="http://thecommandline.net/2010/07/08/patent-threat-for-posting-partial-sources-to-a-weekend-project/">here</a><br />
-(and many more)</p>
-
-<h1 id="twitter">Twitter</h1>
-
-<p>Also, it is a hit on Twitter too, with hunderds of retweets and people taking aim at Shazam:</p>
-
-<p>(which might be a bit unfair since Landmark Digital Services LLC is the complaining patent holder, not Shazam, but I’m not sure how they relate)</p>
-
-<p>``</p>
-
-<p>``</p>
-
-<p><code>springify: RT @StefanRoock: RT @mittie RT @merbist: wow the Shazam guys are real jerks: http://sites.google.com/site/redcodenl/ #wtf   asgerhallas: RT @tomasekeli: Hey #shazam, you suck :) Software patents, seriously uncool. Being a dick, even more so. #shazamfail http://bit.ly/cm4Y5f (via @blakefate)   gerharbo: Patent issues ivm Shazam. Een developer uit nl heeft code in java, shazam niet blij http://sites.google.com/site/redcodenl/   unimatrixZxero: RT @ralph: Now that I've found SoundHound, I can safely delete the app from the jerks that made Shazam: http://sites.google.com/site/redcodenl/   LuisBenavides: RT @stilkov: Software patents just suck RT @merbist: wow the Shazam guys are real jerks: http://sites.google.com/site/redcodenl/</code></p>
-
-<p><code>...etc etc etc...  </code></p>
-
-<h1 id="thanks-again">Thanks again!</h1>
-
-<p>So thanks again for the support and the emails en tweets and blogs… I’m going to wait and see now what the next reply from Landmark Digital Services LLC will be. In the mean time, with the article available you should be able to create something similair for yourself.</p>
-
-<p>Or just take the describing scientific paper and/or the patent itself, that should be sufficient (and it isn’t too mathematical, nor hard).</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -1628,6 +1627,10 @@ Some known bugs:</p>
     
       
         <div class="pagination-item"><a href="/page/10">10</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/11">11</a></div>
       
     
 

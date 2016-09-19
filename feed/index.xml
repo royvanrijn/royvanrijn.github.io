@@ -5,9 +5,63 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 18 Sep 2016 09:56:52 -0700</pubDate>
-    <lastBuildDate>Sun, 18 Sep 2016 09:56:52 -0700</lastBuildDate>
+    <pubDate>Mon, 19 Sep 2016 13:07:38 -0700</pubDate>
+    <lastBuildDate>Mon, 19 Sep 2016 13:07:38 -0700</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>JavaOne 2016, the Future of Java EE</title>
+        <description>&lt;p&gt;Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees &lt;a href=&quot;https://twitter.com/reza_rahman&quot;&gt;Reza Rahman&lt;/a&gt; was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 7 ground to a halt and Oracle was thinking about stopping Java EE development all together.&lt;/p&gt;
+
+&lt;p&gt;Oracle finally gave some insight on their proposal of the future of Java EE during &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt; 2016 (where I am right now).&lt;/p&gt;
+
+&lt;h1 id=&quot;what-is-java-ee&quot;&gt;What is Java EE?&lt;/h1&gt;
+
+&lt;p&gt;First, lets take a step back and look at what Java EE actually is. If you download Java SDK/JRE you are able to compile classes and run them. In the language (java.* and javax.*) there are a couple of libraries that you can use. For example if you want to compute mathematical equations there are classes to use in the java.math.* package.&lt;/p&gt;
+
+&lt;p&gt;Oracle quickly realized it is hard to make larger enterprise applications using just these libraries. That is why they developed the following things:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A set of interfaces (API) for Enterprise Applications (Java EE)&lt;/li&gt;
+  &lt;li&gt;A default server &lt;em&gt;implemention&lt;/em&gt; for these API’s (Glassfish)&lt;/li&gt;
+  &lt;li&gt;A licensing structure for vendors that want to implement these API’s&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So if you want to make an Java EE application you can use the Java EE API. For example you can define Servlets for web communication. Next when you deploy this application on an official licensed Java EE server it’ll make sure the methods are implemented and called when a URL is invoked.&lt;/p&gt;
+
+&lt;h1 id=&quot;java-ee-at-javaone-2016&quot;&gt;Java EE at &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt; 2016&lt;/h1&gt;
+
+&lt;p&gt;During the keynote Oracle informed the crowd about Java EE 7. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 7 specification worth the effort? They clearly thought it wasn’t.&lt;/p&gt;
+
+&lt;p&gt;The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.&lt;/p&gt;
+
+&lt;p&gt;The decision has been made to continue developing Java EE 7. And during the keynote they proposed a release of EE 7 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.&lt;/p&gt;
+
+&lt;h1 id=&quot;my-thoughts&quot;&gt;My thoughts&lt;/h1&gt;
+
+&lt;p&gt;Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.&lt;/p&gt;
+
+&lt;p&gt;The problem is that Java EE 7 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.&lt;/p&gt;
+
+&lt;p&gt;The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 18 Sep 2016 10:45:12 -0700</pubDate>
+        <link>http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/</guid>
+        
+        <category>java ee</category>
+        
+        <category>enterprise</category>
+        
+        <category>future</category>
+        
+        <category>javaone</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Job titles when writing code</title>
@@ -682,65 +736,6 @@ Before diving into that discussion, lets take a look at what Optional does and h
         <category>getwhenpresent</category>
         
         <category>jep</category>
-        
-        
-        <category>Java Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>The collapse of Java EE?</title>
-        <description>&lt;p&gt;Recently there has been a lot of discussion about the state of Java EE and Oracle’s stewardship. There seems to be happening a lot. There is the fact that a lot of evangelist are leaving Oracle. There have been (Twitter) ‘fights’ between developers from Pivotal and Reza Rahman. And there are the Java EE Guardians, a group formed by Reza after he left Oracle.&lt;/p&gt;
-
-&lt;p&gt;And during the last JCP ‘&lt;a href=&quot;https://jcp.org/aboutJava/communityprocess/ec-public/materials/2016-04-05/April-2016-Public-Minutes.html&quot;&gt;Executive Committee Meeting Minutes&lt;/a&gt;’ the London Java Community (LJC) openly expressed their worries:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Martijn said that while he recognizes Oracle’s absolute right to pursue a product strategy and allocate resources in ways that meet their business interests, the LJC is concerned that the lack of progress and the absence of any explanation from Oracle is doing significant harm to the Java community and ecosystem.&lt;/p&gt;
-
-  &lt;p&gt;He explained that “splinter groups” are discussing taking over both the code work and thought leadership of Java EE, and that many companies are building proprietary frameworks such as microservices stacks, leading to even more fragmentation.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;There are splinter groups forming, companies are building frameworks and stacks without following Java EE or contributing to future Java EE specs. People in the blogosphere/tweetosphere are complaining and worrying about it… but is it really a problem?&lt;/p&gt;
-
-&lt;p&gt;In my personal opinion: &lt;strong&gt;No&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;There have always been companies experimenting, pioneering new technologies, without following Java EE specifications. This is for example how the Spring Framework got as big as it did. Remember however: Spring really shaped the future of Java EE, without it we might still be coding EntityBeans.&lt;/p&gt;
-
-&lt;p&gt;I think it might not even be a bad thing for Java EE to take a little break. There is a lot of unproven technology happening at the moment, for example there are the reactive frameworks and everything related to microservices. The landscape is changing quickly right now.&lt;/p&gt;
-
-&lt;p&gt;The worst thing that Java EE can do is to come up with their own new standards for these technologies while we, as developers, haven’t really worked out the quirks yet. Historically the best Java EE specs (IMHO) are the ones that came late to the party. But those are built on years of experimentation and crystallization. Those specs looked at everything the market had to offer, brought the relevant groups together and made it work.&lt;/p&gt;
-
-&lt;h2 id=&quot;so-there-is-nothing-wrong&quot;&gt;So there is nothing wrong?&lt;/h2&gt;
-
-&lt;p&gt;There is one big danger to Java EE right now. It is the fact people are complaining. If we don’t stop this, it might all become a selffulfilling prophecy.&lt;/p&gt;
-
-&lt;p&gt;Instead of worrying about Java EE, lets build tools and frameworks that are worth becoming an official spec. For example, look at the work &lt;a href=&quot;http://blog.joda.org/&quot;&gt;Stephen Colebourne&lt;/a&gt; did with &lt;a href=&quot;http://www.joda.org/joda-time/&quot;&gt;Joda Time&lt;/a&gt;. He was fed up with the horrible &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Date.html&quot;&gt;java.util.Date&lt;/a&gt; and decided to make something better. After years of programming and growing a huge fanbase it was finally turned into an excellent specification (&lt;a href=&quot;https://jcp.org/en/jsr/detail?id=310&quot;&gt;JSR-310&lt;/a&gt;).&lt;/p&gt;
-
-&lt;p&gt;If you look at it, the most important thing Java EE might have done for us is bringing the relevant groups together, share ideas and distill the best practices (and writing those down as specifications). It is exactly the opposite of what is happening right now. I don’t mind splinter groups forming, if they get the right people together and work together towards forming solid specifications and implementations, why not?&lt;/p&gt;
-
-&lt;p&gt;I’m pretty sure Oracle (with Java EE) will take a look at the proposals and adopt them.&lt;/p&gt;
-
-&lt;p&gt;The most important thing is that we keep working together!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;:
-Some people have warned me that I’m being &lt;em&gt;too&lt;/em&gt; optimistic. But time will tell, maybe Oracle will kill off Java EE, maybe they won’t. Maybe everything will take a turn for the worse, maybe it won’t.&lt;/p&gt;
-
-&lt;p&gt;For now I’ll just do what the Dalai Lama suggests: Choose to be optimistic, it feels better.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 25 Apr 2016 01:10:09 -0700</pubDate>
-        <link>http://royvanrijn.com/blog/2016/04/the-collapse-of-java-ee/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/04/the-collapse-of-java-ee/</guid>
-        
-        <category>java ee</category>
-        
-        <category>jcp</category>
-        
-        <category>guardians</category>
-        
-        <category>specification</category>
-        
-        <category>spring framework</category>
         
         
         <category>Java Programming</category>

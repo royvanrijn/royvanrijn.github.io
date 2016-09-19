@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>JavaOne 2016, the Future of Java EE</title>
+  <meta name="description" content="Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees Reza Rahman was one of the first to voice their concern ab...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java ee,enterprise,future,javaone,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="JavaOne 2016, the Future of Java EE" />
+  <meta name="twitter:description" content="Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees Reza Rahman was one of the first to vo..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/java.png"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/09/job-titles-when-writing-code/" title="Previous Post: Job titles when writing code">&laquo; Job titles when writing code</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-09-18T10:45:12-07:00" class="date">
+          Sep 18, 2016 10:45:12
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">JavaOne 2016, the Future of Java EE</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 7 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p>
+
+<p>Oracle finally gave some insight on their proposal of the future of Java EE during <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016 (where I am right now).</p>
+
+<h1 id="what-is-java-ee">What is Java EE?</h1>
+
+<p>First, lets take a step back and look at what Java EE actually is. If you download Java SDK/JRE you are able to compile classes and run them. In the language (java.* and javax.*) there are a couple of libraries that you can use. For example if you want to compute mathematical equations there are classes to use in the java.math.* package.</p>
+
+<p>Oracle quickly realized it is hard to make larger enterprise applications using just these libraries. That is why they developed the following things:</p>
+
+<ol>
+  <li>A set of interfaces (API) for Enterprise Applications (Java EE)</li>
+  <li>A default server <em>implemention</em> for these API’s (Glassfish)</li>
+  <li>A licensing structure for vendors that want to implement these API’s</li>
+</ol>
+
+<p>So if you want to make an Java EE application you can use the Java EE API. For example you can define Servlets for web communication. Next when you deploy this application on an official licensed Java EE server it’ll make sure the methods are implemented and called when a URL is invoked.</p>
+
+<h1 id="java-ee-at-javaone-2016">Java EE at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016</h1>
+
+<p>During the keynote Oracle informed the crowd about Java EE 7. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 7 specification worth the effort? They clearly thought it wasn’t.</p>
+
+<p>The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.</p>
+
+<p>The decision has been made to continue developing Java EE 7. And during the keynote they proposed a release of EE 7 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.</p>
+
+<h1 id="my-thoughts">My thoughts</h1>
+
+<p>Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.</p>
+
+<p>The problem is that Java EE 7 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.</p>
+
+<p>The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

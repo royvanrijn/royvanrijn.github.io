@@ -94,6 +94,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -108,6 +110,64 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2012/07/mandelbulb-rendering/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Mandelbulb rendering" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2012-07-12T07:16:08-07:00" class="date">
+            Jul 12, 2012 07:16:08
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/mandelbulb-rendering/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/mandelbulb-rendering/">Mandelbulb rendering</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same… So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I’m pretty pleased with the first results!</p>
+
+<h1 id="my-first-3d-engine-tm">My first 3d engine (tm)</h1>
+
+<p>On sunday I had the first things ready, lighting (Blinn-Phong), soft shadows, but still I had no perspective build on (all rays travelled in the same direction) and I had no way to change the view point/camera position:</p>
+
+<p><img src="/images/raymarching.png" alt="Simple ray marching example, wrong perspective, two balls and a cube" /></p>
+
+<p>Next step was to render something other than spheres and cubes, and get the camera position under control, that breakthrough came monday evening:</p>
+
+<p><a href="http://www.royvanrijn.com/img/mandelbulb1.png"><img src="/images/mandelbulb1.png" alt="First Mandelbulb render, full of programming bugs" /></a></p>
+
+<p>My first mandelbulb! The perspective is still flat and it misses detail, we’ve also rendered through the camera/near field.<br />
+So I made some more improvements and managed to render a nice wallpaper for myself:</p>
+
+<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" /></a></p>
+
+<p>Yesterday I’ve been playing around with optimizing the code a little bit (less memory usage, already twice as fast as it was, but still slow). And I’ve added some glow and the ability to add ‘distance fog’. Also I’ve recorded my first movie, just to show some moving fractals:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/r-sGABWMH2o"></iframe>
+<p>(yes, it has a glitch with the pink mandelbulb, can’t be bothered to fix…)</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/mandelbulb-rendering/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -1277,51 +1337,6 @@ Here is one (including the best song I’ve created): <a href="http://t.co/9oogn
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/11/simple-made-easy/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Simple Made Easy" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-11-24T13:22:55-08:00" class="date">
-            Nov 24, 2011 13:22:55
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/11/simple-made-easy/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/11/simple-made-easy/">Simple Made Easy</a></h1>
-
-        <span itemprop="articleBody">
-          <p>When browsing <a href="http://williamedwardscoder.tumblr.com/">this</a> blog I came across a very good talk about programming and simplicity. What is simplicity? Things that are easy right? Wrong.</p>
-
-<p><a href="http://www.infoq.com/presentations/Simple-Made-Easy"><br />
-<img src="/images/simpleMadeEasy.jpg" alt="simpleMadeEasy" /><br />
-</a></p>
-
-<p>I won’t go into the subject, just watch this talk!!<br />
-<a href="http://www.infoq.com/presentations/Simple-Made-Easy">http://www.infoq.com/presentations/Simple-Made-Easy</a></p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/11/simple-made-easy/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -1370,6 +1385,10 @@ Here is one (including the best song I’ve created): <a href="http://t.co/9oogn
     
       
         <div class="pagination-item"><a href="/page/10">10</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/11">11</a></div>
       
     
 

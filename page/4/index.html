@@ -94,6 +94,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -108,6 +110,75 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a href="/blog/2014/04/mosaic-algorithm/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Mosaic algorithm" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-04-30T05:50:41-07:00" class="date">
+            Apr 30, 2014 05:50:41
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/04/mosaic-algorithm/">Mosaic algorithm</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today I noticed a new blogpost by <a href="http://williamedwardscoder.tumblr.com/">William</a>, he wrote a small Python script to <a href="http://williamedwardscoder.tumblr.com/post/84317701363/i-knew-my-mosaic-script-was-doing-a-poor-job-of">create mosaics from thumbnails</a>.</p>
+
+<p>As input he is using thumbnails from the <a href="http://www.ludumdare.com/">Ludum Dare</a> game programming contest.</p>
+
+<p>To make such a program you basically need four things:</p>
+
+<ol>
+  <li>A collection of thumbnails/photos/images to place</li>
+  <li>Divide the target mosaic image into a grid of tiles</li>
+  <li>Have a scoring/measuring method for each tile</li>
+  <li>Have a placement algorithm</li>
+</ol>
+
+<h1 id="greedy">Greedy</h1>
+
+<p>Will is using all the thumbnails from the contest and a given target image. He then divides the target image into a grid. Next comes the important part, how do you measure how well a thumbnail matches a target tile? He is using a clever per-pixel RGB matching technique. The closer the color matches, the higher the score.</p>
+
+<p>The final (important) step is placement. For each tile he takes the highest scoring thumbnail and assigns it to the tile. If you keep doing this (<a href="http://en.wikipedia.org/wiki/Greedy_algorithm">greedy</a>) you’ll get a good recognisable result:</p>
+
+<p><img src="/images/greedy.png" alt="mosaic generation with greedy placement" class="aligncenter" /></p>
+
+<h1 id="random-swapping">Random swapping</h1>
+
+<p>When he explained his algorithm (in gtalk) it reminded of the problem I encounter in almost all the <a href="http://azspcs.net/">Al Zimmermann programming competitions</a>. Eventually all these algorithms boil down to search algorithms. You are looking for the best combination of images with the highest overall matching score (correctness/likeness). Instead of using just the greedy algorithm I suggested he’d try randomly swapping a couple of images and checking the score for improvements. This turned out to be a difference of night and day, check it out:</p>
+
+<p><img src="/images/swaps.png" alt="mosaic placement improvement with random swaps" class="aligncenter" /></p>
+
+<p>Of course there are still problems with this method, for example: you’ll quickly run into a local optima. Maybe you’ll have a much better image if A -&gt; B and B -&gt; C and C -&gt; A. This will never be reached by swapping two tiles if the individual steps don’t have an improved score. This can be countered by swapping multiple pairs at once and hoping you’ll hit this correct pair.</p>
+
+<p>There are a lot of other ‘smarter’ things you could do, for example always try to put a ‘best match’ on a particular tile and trying to fill the hole it created…. But for now adding this simple random swap is perfect!</p>
+
+<p>Be sure to check out Williams other tech related <a href="http://williamedwardscoder.tumblr.com">blogposts</a>, he’s also involved in the development of the amazing <a href="http://millcomputing.com/">Mill CPU</a>.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -1520,177 +1591,6 @@ That’s why I’m now going to try to combine thing I love:</p>
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="No more DSL for acceptance/integration testing" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-07-25T13:33:38-07:00" class="date">
-            Jul 25, 2013 13:33:38
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/">No more DSL for acceptance/integration testing</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Everybody seems to be using <a href="http://fitnesse.org/">Fitnesse</a> or <a href="http://cukes.info/">Cucumber</a> for integration testing these days. The main idea is that users (testers/business analists and programmers) can write what your program should do in plain text. The programmer then creates a small layer of code which gets interpreted and executes your actual program to see if the specified requirements are met.</p>
-
-<h1 id="fitnesse-example">Fitnesse example</h1>
-
-<p>For example a (hypothetical) piece of code in Fitnesse as it could have been used in the Port of Rotterdam:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">!3 Anchorage tests
-
-!|given a ship                                |
-|Id  |Name       |Category|CallSign|Shipnumber|
-|1001|Maersk Bali|TANKER  |D6DZ8   |7420211   |
-
-|script                                                              |
-|When a ship called|MAERSK BALI|reaches the port                     |
-|And it reports anchor down                                          |
-|ensure            |the ship is shown in the list of anchored vessels|
-|check             |the list of anchored vessels now has size|1      |</code></pre></figure>
-
-<p>This is something the testers and product owners can read and understand. Behind this layer of text Fitnesse will try to execute pieces of code. This is left as an exercise for the programmers to complete. They’ll need to write something like:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">GivenAShip:</span>
-<span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">category</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setCallSign</span><span class="o">(</span><span class="n">String</span> <span class="n">callSign</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setShipnumber</span><span class="o">(</span><span class="n">String</span> <span class="n">shipnumber</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span> <span class="c1">//Stores the ship in the database</span>
-
-<span class="nl">AnchorageScenarios:</span>
-<span class="kt">void</span> <span class="nf">whenAShipCalledReachedThePort</span><span class="o">(</span><span class="n">String</span> <span class="n">shipName</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">andItReportsAnchorDown</span><span class="o">();</span>
-<span class="kt">boolean</span> <span class="nf">theShipIsShownInTheListOfAnchoredVessels</span><span class="o">();</span>
-<span class="kt">int</span> <span class="nf">theListOfAnchoredVesselsNowHasSize</span><span class="o">();</span></code></pre></figure>
-
-<p>This is where the problems start, there is a lot of room for typos. Which will send you all over the codebase constantly translating Fitnesse text like “<em>and it reports anchor down</em>” to “<em>andItReportsAnchorDown</em>” during your searches.</p>
-
-<p>Also people always say, because it is ‘plain text’ the testers, analists and product owners can instantly start writing tests. But this just isn’t true… It <strong>isn’t</strong> just writing down tests/requirements, it is programming with a DSL. Normal human text isn’t good enough, it still needs some DSL structure. They’ll have to learn to <strong>program</strong> in the Fitnesse DSL language. In almost all project I’ve worked on, it is the programmers writing and maintaining tests, people from the business stay far away from Fitnesse.</p>
-
-<p>If you want to refactor the scenarios/fixtures in Fitnesse you’re in for a treat. Everything is bound by name only, and renaming code for example won’t rename the DSL! Using Fitnesse ‘sounds’ very agile, but it doesn’t really make the code agile at all. Most test code I’ve worked on is <strong>fragile</strong>, very <strong>ridged</strong> and <strong>not easy to refactor</strong>. Why not take advantage of that IDE and statically typed language if the programmers are writing and maintaining the tests?</p>
-
-<h1 id="using-code-instead">Using code instead</h1>
-
-<p>Today we had a “ShipIt”-day (nautical-pun intended) at work, where we’re free to work on any project for 24 hours straight and we present our findings afterwards. This boosts the creative ideas and in the long run efficiency and innovation.</p>
-
-<p>After using Fitnesse now for three years we’ve become used to it, and don’t ever <strong>question its usage</strong>. Although we feel the <strong>pain</strong> of the rigid/fragile test code on a daily basis. I decided to start rethinking the way we do acceptance tests.</p>
-
-<p>My goals was to make our tests:</p>
-
-<ul>
-  <li>Simpler to write</li>
-  <li>Easier to refactor</li>
-  <li>Maintain the readability</li>
-  <li>Easier to reuse</li>
-  <li>Faster! (no DSL parsing)</li>
-</ul>
-
-<p>This is what the initial design now looks like. The example used above would become the following:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Jitness</span>        <span class="c1">// Annotation that indicates this is a test class</span>
-<span class="nd">@SuiteSetUp</span><span class="o">({</span>   <span class="c1">// This is called once for all the methods in the class below</span>
-	<span class="nd">@Execute</span><span class="o">(</span>
-			<span class="n">type</span> <span class="o">=</span> <span class="n">ShipExecutor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-			<span class="n">data</span> <span class="o">=</span> <span class="o">{</span> <span class="s">&quot;1001&quot;</span><span class="o">,</span> <span class="s">&quot;Maersk Bali&quot;</span><span class="o">,</span> <span class="s">&quot;TANKER&quot;</span><span class="o">,</span> <span class="s">&quot;D6DZ8&quot;</span><span class="o">,</span> <span class="s">&quot;7420211&quot;</span> <span class="o">})</span>
-	<span class="o">})</span>
-<span class="o">})</span>
-<span class="nd">@SetUp</span><span class="o">({</span>
-	       <span class="c1">// @Execute annotations here will be called before each of the methods below</span>
-	       <span class="c1">// The @SetUp annotation can also be placed on a single method in the test class</span>
-<span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AnchorageTests</span> <span class="o">{</span>
-
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">givingCommandAnchorDownCausesShipToAppearInList</span><span class="o">()</span> <span class="o">{</span>
-
-		<span class="kd">final</span> <span class="n">AnchorageScenarios</span> <span class="n">scenarios</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AnchorageScenarios</span><span class="o">();</span>
-
-		<span class="n">scenarios</span><span class="o">.</span><span class="na">whenAShipReachedThePortCalled</span><span class="o">(</span><span class="s">&quot;Maersk Bali&quot;</span><span class="o">);</span>
-		<span class="n">scenarios</span><span class="o">.</span><span class="na">andItReportsAnchorDown</span><span class="o">();</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">scenarios</span><span class="o">.</span><span class="na">theShipIsShownInTheListOfAnchoredVessels</span><span class="o">());</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">scenarios</span><span class="o">.</span><span class="na">theListOfAnchoredVesselsNowHasSize</span><span class="o">());</span>
-	<span class="o">}</span>
-
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">anotherTestHere</span><span class="o">()</span> <span class="o">{</span>
-		<span class="o">...</span> <span class="n">etc</span> <span class="o">...</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Using Jitness (<em>working title</em>) the scenarios will be implemented in exactly the same way we’ve already been doing. This makes it easier to transition from Fitnesse to this code.<br />
-The only bit of ‘magic’ is the execute annotation. You can write executors like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShipExecutor</span> <span class="kd">implements</span> <span class="n">Executor</span> <span class="o">{</span>
-
-	<span class="kd">private</span> <span class="n">ShipRepository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ShipRepository</span><span class="o">();</span>
-
-	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-                <span class="n">repository</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
-	<span class="o">}</span>
-	
-	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">after</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-                <span class="n">repository</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
-	<span class="o">}</span>
-
-        <span class="kd">private</span> <span class="n">Ship</span> <span class="nf">parse</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="k">new</span> <span class="nf">ShipBuilder</span><span class="o">()</span>
-                         <span class="o">.</span><span class="na">id</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">])</span>
-                         <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span>
-                         <span class="o">.</span><span class="na">category</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">2</span><span class="o">])</span>
-                         <span class="o">.</span><span class="na">callSign</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span>
-                         <span class="o">.</span><span class="na">shipNumber</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">4</span><span class="o">])</span>
-                         <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-        <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>A (more elaborate) sample of the output it generates, with failure:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Results: 
-OK	BunkeringTests.SuiteSetUp
-OK	BunkeringTests.addTypeOfFuelToBunker
-OK	BunkeringTests.changeTypeOfFuelToBunker
-OK	BunkeringTests.removeTypeOfFuelToBunker
-OK	BunkeringTests.bunkeringOnIncomingMovement
-OK	BunkeringTests.bunkeringOnOutgoingMovement
-OK	BunkeringTests.loadBunkeringForOpenVesselVisit
-NOK	BunkeringTests.retrieveListOfBunkerBarges
-expected:&lt;1&gt; but was:&lt;2&gt;
-OK	BunkeringTests.SuiteTearDown
-Took: 128 ms</code></pre></figure>
-
-<p>The main advantages of using this are obviously leveraging the full potential of your IDE, including renaming/refactoring. Changing methods and classes in your production code will automatically show up as changes in Jitness. And everything is easy to refactor because it is just code! This will eventually lead to much more <strong>agile code</strong>, <strong>simpler</strong> and <strong>easier to refactor</strong>. Obviously there is one main drawback, it is harder for testers to read and write. But if they pair up with a programmer this should be no problem I think. I’d rather have the testers learn a bit of coding than the programmers learn a text DSL which leads to fragile tests.</p>
-
-<p>Another big advantage is execution time, using compiled code is always faster than parsing plain text or HTML at runtime. Also this code is compiled during the build, so there is no need for additional classpath (Maven) plugins. I’m really fond of the idea to use code to describe the tests, and I’m very curious how my colleagues are going to rate this tomorrow when we demo the “ShipIt” ideas. With a couple of more days work this can be fully tested and made robust enough to start using it and maybe even open source it.</p>
-
-<p>What are your thoughts? Any ideas about improving the API? Should we just keep using Fitnesse/Cucumber or any other alternative DSL instead?</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/07/no-more-dsl-for-acceptanceintegration-testing/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -1739,6 +1639,10 @@ Took: 128 ms</code></pre></figure>
     
       
         <div class="pagination-item"><a href="/page/10">10</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/11">11</a></div>
       
     
 
