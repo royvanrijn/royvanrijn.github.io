@@ -134,7 +134,7 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/09/the-future-of-java-ee/">JavaOne 2016, the Future of Java EE</a></h1>
 
         <span itemprop="articleBody">
-          <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 7 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p>
+          <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 8 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p>
 
 <p>Oracle finally gave some insight on their proposal of the future of Java EE during <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016 (where I am right now).</p>
 
@@ -154,17 +154,17 @@
 
 <h1 id="java-ee-at-javaone-2016">Java EE at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016</h1>
 
-<p>During the keynote Oracle informed the crowd about Java EE 7. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 7 specification worth the effort? They clearly thought it wasn’t.</p>
+<p>During the keynote Oracle informed the crowd about Java EE 8. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 8 specification worth the effort? They clearly thought it wasn’t.</p>
 
 <p>The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.</p>
 
-<p>The decision has been made to continue developing Java EE 7. And during the keynote they proposed a release of EE 7 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.</p>
+<p>The decision has been made to continue developing Java EE 8. And during the keynote they proposed a release of EE 8 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.</p>
 
 <h1 id="my-thoughts">My thoughts</h1>
 
 <p>Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.</p>
 
-<p>The problem is that Java EE 7 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.</p>
+<p>The problem is that Java EE 8 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.</p>
 
 <p>The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.</p>
 
