@@ -115,6 +115,87 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving a 18-year-old Core War mystery" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-05-03T22:57:56+02:00" class="date">
+            May 3, 2014 22:57:56
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">Solving a 18-year-old Core War mystery</a></h1>
+
+        <span itemprop="articleBody">
+          <p>As some readers might know, I sometimes play a programming game called <a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Core War</a>. This afternoon I was browsing through some old ‘Core Warrior’ newsletters which John Metcalf has collected <a href="http://corewar.co.uk/cw/">here</a>. When reading an article about an old successful warrior called ‘Thermite II’ I came across this tiny unsolved mystery:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-- Bug?
+
+John K.W. mailed me with a tiny, suicidal warrior which managed to beat
+Thermite once in two hundred times. All I can imagine is that, that one
+time, I somehow scanned his code within its few cycles of life, and that
+then I crashed as a result. But how?
+
+Program &quot;Thermite II&quot; (length 100) by &quot;Robert Macrae&quot;
+;strategy Same old strategy, but nastier...
+Killing Hazy Shade Of Winter III wins: 1
+Thermite II wins: 199
+Ties: 0
+
+How did I get a win against Thermite?!?!
+Here is an EXACT copy of what I sent to Pizza...
+Thermite would&#39;ve had to die within 3 cycles! ... :/
+
+;redcode-94
+;name Killing Hazy Shade Of Winter III
+;kill Hazy Shade Of Winter III
+;author John K W
+
+p: ldp.b #0, #0
+jmp &lt;-1
+
+Any ideas, anyone :-?</code></pre></figure>
+
+<p>Source: <a href="http://corewar.co.uk/cw/cw024.txt">http://corewar.co.uk/cw/cw024.txt</a></p>
+
+<p>When executing the code of the second warrior “Killing Hazy Shade Of Winter III” I noticed there is a false assumption in the email. The warrior doesn’t need to die in three cycles!</p>
+
+<p>The first round it’ll execute:</p>
+
+<p>LDP.B #0,#0 (and become LDP.B #0,#-1)</p>
+
+<p>Then it executes:</p>
+
+<p>JMP &lt;-1 (to a location two higher than the warrior, which is usually empty code… but not always!)</p>
+
+<p>The final line in Thermite’s code is a JMP instruction to the launch-instruction which loads Thermite’s bomber ‘Brand’. If John K W’s warrior was loaded at a position 100 or 101 from Thermite it would parasite into the bomber and become Brand before Thermite itself does. This is how the small seemingly suicidal warrior can kill Thermite.</p>
+
+<p>After 18 years, <strong>Q.E.D.</strong> :-)</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2014/04/mosaic-algorithm/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Mosaic algorithm" width="100" height="100" />
@@ -126,8 +207,8 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-04-30T05:50:41-07:00" class="date">
-            Apr 30, 2014 05:50:41
+          <span itemprop="datePublished" content="2014-04-30T14:50:41+02:00" class="date">
+            Apr 30, 2014 14:50:41
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
         </p>
@@ -195,8 +276,8 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-04-24T12:26:21-07:00" class="date">
-            Apr 24, 2014 12:26:21
+          <span itemprop="datePublished" content="2014-04-24T21:26:21+02:00" class="date">
+            Apr 24, 2014 21:26:21
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
         </p>
@@ -366,8 +447,8 @@ Store: %1 is %2</code></pre></figure>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-02-14T14:38:17-08:00" class="date">
-            Feb 14, 2014 14:38:17
+          <span itemprop="datePublished" content="2014-02-14T23:38:17+01:00" class="date">
+            Feb 14, 2014 23:38:17
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
         </p>
@@ -521,8 +602,8 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-01-12T03:15:41-08:00" class="date">
-            Jan 12, 2014 03:15:41
+          <span itemprop="datePublished" content="2014-01-12T12:15:41+01:00" class="date">
+            Jan 12, 2014 12:15:41
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
         </p>
@@ -583,8 +664,8 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-12-12T05:54:47-08:00" class="date">
-            Dec 12, 2013 05:54:47
+          <span itemprop="datePublished" content="2013-12-12T14:54:47+01:00" class="date">
+            Dec 12, 2013 14:54:47
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/12/6-traits-of-good-programmers/#disqus_thread">0 comments</a>
         </p>
@@ -711,8 +792,8 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-11-26T02:27:31-08:00" class="date">
-            Nov 26, 2013 02:27:31
+          <span itemprop="datePublished" content="2013-11-26T11:27:31+01:00" class="date">
+            Nov 26, 2013 11:27:31
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/developers-are-code-artists/#disqus_thread">0 comments</a>
         </p>
@@ -767,8 +848,8 @@ A: “You’re drunk, go home.”</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-11-18T14:05:06-08:00" class="date">
-            Nov 18, 2013 14:05:06
+          <span itemprop="datePublished" content="2013-11-18T23:05:06+01:00" class="date">
+            Nov 18, 2013 23:05:06
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/reviewing-devoxx-2013/#disqus_thread">0 comments</a>
         </p>
@@ -946,8 +1027,8 @@ A: “You’re drunk, go home.”</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-11-15T07:19:07-08:00" class="date">
-            Nov 15, 2013 07:19:07
+          <span itemprop="datePublished" content="2013-11-15T16:19:07+01:00" class="date">
+            Nov 15, 2013 16:19:07
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/11/devoxx-and-my-online-identity/#disqus_thread">0 comments</a>
         </p>
@@ -996,8 +1077,8 @@ A: “You’re drunk, go home.”</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-21T13:09:10-07:00" class="date">
-            Oct 21, 2013 13:09:10
+          <span itemprop="datePublished" content="2013-10-21T22:09:10+02:00" class="date">
+            Oct 21, 2013 22:09:10
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread">0 comments</a>
         </p>
@@ -1065,8 +1146,8 @@ A: “You’re drunk, go home.”</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-17T03:33:20-07:00" class="date">
-            Oct 17, 2013 03:33:20
+          <span itemprop="datePublished" content="2013-10-17T12:33:20+02:00" class="date">
+            Oct 17, 2013 12:33:20
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
         </p>
@@ -1135,8 +1216,8 @@ Some more info, examples and other solutions can be found <a href="http://zerotu
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-15T07:47:44-07:00" class="date">
-            Oct 15, 2013 07:47:44
+          <span itemprop="datePublished" content="2013-10-15T16:47:44+02:00" class="date">
+            Oct 15, 2013 16:47:44
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/openjdk-and-xkcd-random-number/#disqus_thread">0 comments</a>
         </p>
@@ -1249,8 +1330,8 @@ This is absolutely not a valid patch but it really shows how easy it is to modif
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-13T11:05:14-07:00" class="date">
-            Oct 13, 2013 11:05:14
+          <span itemprop="datePublished" content="2013-10-13T20:05:14+02:00" class="date">
+            Oct 13, 2013 20:05:14
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/building-openjdk-on-windows/#disqus_thread">0 comments</a>
         </p>
@@ -1416,8 +1497,8 @@ $ bin/java -version</code></pre></figure>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-02T06:32:05-07:00" class="date">
-            Oct 2, 2013 06:32:05
+          <span itemprop="datePublished" content="2013-10-02T15:32:05+02:00" class="date">
+            Oct 2, 2013 15:32:05
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/to-be-or-not-to-be-agile/#disqus_thread">0 comments</a>
         </p>
@@ -1497,8 +1578,8 @@ Start quickly, get something done quickly, expect changes in movement and go wit
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-02T05:35:27-07:00" class="date">
-            Oct 2, 2013 05:35:27
+          <span itemprop="datePublished" content="2013-10-02T14:35:27+02:00" class="date">
+            Oct 2, 2013 14:35:27
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
         </p>
@@ -1519,71 +1600,6 @@ This was presented to Stephan Janssen (the original mastermind behind the concep
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/09/episode-1/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Episode #1" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-09-01T08:30:35-07:00" class="date">
-            Sep 1, 2013 08:30:35
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/09/episode-1/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/09/episode-1/">Episode #1</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Lately I’ve been having a lot of blog ideas, but I never take the time to write it all down in a blogpost.<br />
-That’s why I’m now going to try to combine thing I love:</p>
-
-<ul>
-  <li>Programming</li>
-  <li>Technology</li>
-  <li>Filming/video editing</li>
-</ul>
-
-<p>Here is the first episode of Roy on programming:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/C6wU-3BPK_4"></iframe>
-
-<p>Item 1: Oculus Rift<br />
-- <a href="http://www.oculusvr.com/">http://www.oculusvr.com/</a><br />
-- <a href="http://www.reddit.com/r/oculus/">http://www.reddit.com/r/oculus/</a></p>
-
-<p>Item 2: Rich Hickey<br />
-- <a href="http://www.infoq.com/presentations/Simple-Made-Easy">http://www.infoq.com/presentations/Simple-Made-Easy</a><br />
-- <a href="http://www.infoq.com/presentations/Design-Composition-Performance">http://www.infoq.com/presentations/Design-Composition-Performance</a></p>
-
-<p>Item 3: Separation of Concerns<br />
-- <a href="http://en.wikipedia.org/wiki/Separation_of_concerns">http://en.wikipedia.org/wiki/Separation_of_concerns</a></p>
-
-<p>Music by:<br />
-- Nasty Goreng: <a href="https://soundcloud.com/nastygoreng">https://soundcloud.com/nastygoreng</a></p>
-
-<p>Please let me know what you think about it.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/09/episode-1/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

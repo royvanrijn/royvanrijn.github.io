@@ -115,6 +115,90 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2010/01/md5-fixed-point/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="MD5 quine, fixed point" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-01-05T16:04:53+01:00" class="date">
+            Jan 5, 2010 16:04:53
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/md5-fixed-point/">MD5 quine, fixed point</a></h1>
+
+        <span itemprop="articleBody">
+          <h1 id="md5-quines">MD5 quines</h1>
+
+<p>Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?</p>
+
+<p>Thus: MD5(x) = x</p>
+
+<p>This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.</p>
+
+<h1 id="information-ive-found">Information I’ve found</h1>
+
+<p>So I started investigating, soon I discovered <a href="http://www.mscs.dal.ca/~selinger/md5collision/">this</a> website about collisions. Its well known that all hashing algorithms must have collisions, you can’t always produce a unique hash for input larger then the output of course.</p>
+
+<p>The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn’t really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn’t a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.</p>
+
+<p>So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).</p>
+
+<p>Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.</p>
+
+<p>But, of course, there is no randomness involved here - there either is a fixed point or there isn’t. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).</p>
+
+<h1 id="looking-for-the-fixed-point">Looking for the fixed point</h1>
+
+<p>I’ve just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)</p>
+
+<p>The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:</p>
+
+<ol>
+  <li>Go into a loop  </li>
+  <li>Find a fixed point (which is a loop of size 1)</li>
+</ol>
+
+<p>The weird thing is, if it ends up in a loop of size 1… I’ve found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!</p>
+
+<h1 id="graph">Graph</h1>
+
+<p>Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.</p>
+
+<h1 id="open-questions">Open questions</h1>
+
+<ul>
+  <li>Are there loops? (It is possible there aren’t any loops at all…?)</li>
+  <li>Are there loops of size 1, a.k.a. fixed points?</li>
+  <li>Which/how many 128 bit combinations can’t be created with the input values?</li>
+  <li>Which/how many collisions will you get with all the input values?</li>
+</ul>
+
+<p>More thoughts, errors, solutions..?</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Splitting up Spring Web Flow & Facelets into JARs" width="100" height="100" />
@@ -126,8 +210,8 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-15T06:25:15-08:00" class="date">
-            Dec 15, 2009 06:25:15
+          <span itemprop="datePublished" content="2009-12-15T15:25:15+01:00" class="date">
+            Dec 15, 2009 15:25:15
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
         </p>
@@ -339,8 +423,8 @@ etc…</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-11T01:14:10-08:00" class="date">
-            Dec 11, 2009 01:14:10
+          <span itemprop="datePublished" content="2009-12-11T10:14:10+01:00" class="date">
+            Dec 11, 2009 10:14:10
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
         </p>
@@ -474,8 +558,8 @@ ELSE proceed</em></p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-10T13:43:13-08:00" class="date">
-            Dec 10, 2009 13:43:13
+          <span itemprop="datePublished" content="2009-12-10T22:43:13+01:00" class="date">
+            Dec 10, 2009 22:43:13
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
         </p>
@@ -554,8 +638,8 @@ ELSE proceed</em></p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-10T06:28:57-08:00" class="date">
-            Dec 10, 2009 06:28:57
+          <span itemprop="datePublished" content="2009-12-10T15:28:57+01:00" class="date">
+            Dec 10, 2009 15:28:57
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
         </p>
@@ -598,8 +682,8 @@ ELSE proceed</em></p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-08T14:49:31-08:00" class="date">
-            Dec 8, 2009 14:49:31
+          <span itemprop="datePublished" content="2009-12-08T23:49:31+01:00" class="date">
+            Dec 8, 2009 23:49:31
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
         </p>
@@ -770,8 +854,8 @@ ELSE proceed</em></p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-08T09:21:54-08:00" class="date">
-            Dec 8, 2009 09:21:54
+          <span itemprop="datePublished" content="2009-12-08T18:21:54+01:00" class="date">
+            Dec 8, 2009 18:21:54
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
         </p>
@@ -918,8 +1002,8 @@ ELSE proceed</em></p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-07T11:10:59-08:00" class="date">
-            Dec 7, 2009 11:10:59
+          <span itemprop="datePublished" content="2009-12-07T20:10:59+01:00" class="date">
+            Dec 7, 2009 20:10:59
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread">0 comments</a>
         </p>
@@ -1018,8 +1102,8 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-07T02:47:56-08:00" class="date">
-            Dec 7, 2009 02:47:56
+          <span itemprop="datePublished" content="2009-12-07T11:47:56+01:00" class="date">
+            Dec 7, 2009 11:47:56
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread">0 comments</a>
         </p>
@@ -1067,8 +1151,8 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-04T12:14:48-08:00" class="date">
-            Dec 4, 2009 12:14:48
+          <span itemprop="datePublished" content="2009-12-04T21:14:48+01:00" class="date">
+            Dec 4, 2009 21:14:48
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread">0 comments</a>
         </p>
@@ -1115,8 +1199,8 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-04T10:09:29-08:00" class="date">
-            Dec 4, 2009 10:09:29
+          <span itemprop="datePublished" content="2009-12-04T19:09:29+01:00" class="date">
+            Dec 4, 2009 19:09:29
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread">0 comments</a>
         </p>
@@ -1329,8 +1413,8 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-04T07:35:15-08:00" class="date">
-            Dec 4, 2009 07:35:15
+          <span itemprop="datePublished" content="2009-12-04T16:35:15+01:00" class="date">
+            Dec 4, 2009 16:35:15
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread">0 comments</a>
         </p>
@@ -1424,8 +1508,8 @@ For example Eclipse says:</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-04T07:17:16-08:00" class="date">
-            Dec 4, 2009 07:17:16
+          <span itemprop="datePublished" content="2009-12-04T16:17:16+01:00" class="date">
+            Dec 4, 2009 16:17:16
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/son-of-darts/#disqus_thread">0 comments</a>
         </p>
@@ -1491,8 +1575,8 @@ Can we throw fifteen? Err… no, sorry…</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-04T06:55:20-08:00" class="date">
-            Dec 4, 2009 06:55:20
+          <span itemprop="datePublished" content="2009-12-04T15:55:20+01:00" class="date">
+            Dec 4, 2009 15:55:20
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread">0 comments</a>
         </p>
@@ -1579,8 +1663,8 @@ But OTOH, its kind of depressing I still have soo much to learn.</p>
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-02T13:13:10-08:00" class="date">
-            Dec 2, 2009 13:13:10
+          <span itemprop="datePublished" content="2009-12-02T22:13:10+01:00" class="date">
+            Dec 2, 2009 22:13:10
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/brainfck-in-redcode/#disqus_thread">0 comments</a>
         </p>
@@ -2225,212 +2309,6 @@ end START</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/brainfck-in-redcode/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/corewar-subleq-interpreter/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - SUBLEQ interpreter" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-02T01:00:26-08:00" class="date">
-            Dec 2, 2009 01:00:26
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewar-subleq-interpreter/">Corewars - SUBLEQ interpreter</a></h1>
-
-        <span itemprop="articleBody">
-          <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
-
-<p>And here is the result:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">;-----------------------------------------------
-;redcode-94odd
-;name SUBLEQ Hello World
-;author Roy van Rijn
-;assert 1
-;-----------------------------------------------
-;Implementation of the OISC SUBLEQ interpreter.
-; All instructions take 3 lines:
-; dat A,0
-; dat B,0
-; dat C,0
-;
-; The interpreter works as following:
-;
-; Substract A from B
-; If B is less or equal to zero jump to C
-; Else go to the next instruction (+3)
-;
-; If the jump is to HALT (-1) the program will halt
-; If the substraction is OUT (-2) the program will output the amount substracted
-;-----------------------------------------------
-HALT   equ -1
-OUT    equ -2
-
-;Pointers used by program:
-EQ     dat PROGRAM-1      , PROGRAM
-PTR    dat PROGRAM        , PROGRAM+1
-RESETV dat PROGRAM-SUBSTR , PROGRAM-SUBSTR ;reset values
-NEXTV  dat #3             , #3
-
-;Print to command line:
-PRINT  mov.ab *SUBSTR     , #0
-       mov.b  -1          , &lt;1000 ;sts.b -1,0 for output
-
-;Reset to absolute values:
-NEXT   add.f NEXTV        , PTR
-RESET  mov.f RESETV       , SUBSTR
-
-;Main logic:
-START  add.a  *PTR        , SUBSTR
-       add.ab &gt;PTR        , SUBSTR
-       mov.a  @PTR        , NEWPTR
-
-;Check if output is OUT, print and go to next instruction:
-       mov.a  &lt;PTR        , 1
-       sne.ab #0          , #OUT
-       jmp    PRINT
-
-;Substract and determine if the value &lt;= 0
-SUBSTR sub.a  PROGRAM     , PROGRAM
-       slt.a  #CORESIZE/2 , @-1
-       jmn.ba NEXT        , @-2
-
-;Jump to new address:
-NEWPTR mov.ab #0          , #0
-       mov.f  NEWPTR      , PTR
-       add.f  EQ          , PTR
-       seq.ab NEWPTR      , #HALT
-
-;Check for HALT (jump to DAT-PROGRAM)
-       jmp RESET
-
-LABEL
-PROGRAM
-
-;-----------------------------------------------
-;Translated version of the Hello World program from:
-;http://mozaika.com.au/oleg/subleq/
-
-dat A-LABEL,0
-dat A-LABEL,0
-dat 3,0
-dat p-LABEL,0
-dat Z-LABEL ,0
-dat 6,0
-
-dat Z-LABEL ,0
-dat A-LABEL ,0
-dat 9,0
-
-dat Z-LABEL ,0
-
-dat Z-LABEL ,0
-dat A-LABEL,0
-
-A dat PROGRAM ,0
-dat OUT ,0
-dat 15,0
-
-dat m1-LABEL,0
-dat p-LABEL,0
-dat 18,0
-
-dat A-LABEL ,0
-dat A-LABEL ,0
-dat 21,0
-
-dat E-LABEL ,0
-dat Z-LABEL ,0
-dat 24,0
-
-dat Z-LABEL ,0
-dat A-LABEL ,0
-dat 27,0
-
-dat Z-LABEL,0
-dat Z-LABEL,0
-dat 30,0
-
-dat b-LABEL,0
-dat b-LABEL,0
-dat 33,0
-
-dat p-LABEL,0
-dat Z-LABEL,0
-dat 36,0
-
-dat Z-LABEL ,0
-dat b-LABEL,0
-dat 39,0
-
-dat Z-LABEL,0
-dat Z-LABEL,0
-dat 42,0
-
-dat E-LABEL,0
-dat b-LABEL,0
-dat 48,0 ;?+3
-
-dat Z-LABEL ,0
-dat Z-LABEL,0
-dat 51,0 ;?+3
-
-dat p-LABEL,0
-dat A-LABEL,0
-dat 54,0 ;?+3
-
-dat Z-LABEL ,0
-dat Z-LABEL ,0
-dat 0,0
-
-dat 0 ,0
-dat 0 ,0
-dat -1,0
-
-;data
-p dat H-LABEL,0
-Z dat 0,0
-m1 dat -1,0
-b dat 0,0
-H dat 72,0 ;:H
-dat 101,0 ; e
-dat 108,0 ; l
-dat 108,0 ; l
-dat 111,0 ; o
-dat 32,0 ; space
-dat 87,0 ; W
-dat 111,0 ; o
-dat 114,0 ; r
-dat 108,0 ; l
-dat 100,0 ; d
-E dat E-LABEL,0
-
-end START
-;-----------------------------------------------</code></pre></figure>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

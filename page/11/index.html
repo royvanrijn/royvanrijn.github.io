@@ -115,6 +115,212 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2009/12/corewar-subleq-interpreter/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - SUBLEQ interpreter" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2009-12-02T10:00:26+01:00" class="date">
+            Dec 2, 2009 10:00:26
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewar-subleq-interpreter/">Corewars - SUBLEQ interpreter</a></h1>
+
+        <span itemprop="articleBody">
+          <p>In my previous blogpost I talked about Corewars and the Redcode language. But instead of playing the game, you can do a lot more with the programming language. John Metcalf posted a blog about <a href="http://retrocode.blogspot.com/2009/01/ultimate-risc-one-instruction-set.html">OISC</a> (One Instruction Set Computers). He decided to implement the RSSB algorithm, so I took on the challenge of implementing SUBLEQ, another single instruction set computer.</p>
+
+<p>And here is the result:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">;-----------------------------------------------
+;redcode-94odd
+;name SUBLEQ Hello World
+;author Roy van Rijn
+;assert 1
+;-----------------------------------------------
+;Implementation of the OISC SUBLEQ interpreter.
+; All instructions take 3 lines:
+; dat A,0
+; dat B,0
+; dat C,0
+;
+; The interpreter works as following:
+;
+; Substract A from B
+; If B is less or equal to zero jump to C
+; Else go to the next instruction (+3)
+;
+; If the jump is to HALT (-1) the program will halt
+; If the substraction is OUT (-2) the program will output the amount substracted
+;-----------------------------------------------
+HALT   equ -1
+OUT    equ -2
+
+;Pointers used by program:
+EQ     dat PROGRAM-1      , PROGRAM
+PTR    dat PROGRAM        , PROGRAM+1
+RESETV dat PROGRAM-SUBSTR , PROGRAM-SUBSTR ;reset values
+NEXTV  dat #3             , #3
+
+;Print to command line:
+PRINT  mov.ab *SUBSTR     , #0
+       mov.b  -1          , &lt;1000 ;sts.b -1,0 for output
+
+;Reset to absolute values:
+NEXT   add.f NEXTV        , PTR
+RESET  mov.f RESETV       , SUBSTR
+
+;Main logic:
+START  add.a  *PTR        , SUBSTR
+       add.ab &gt;PTR        , SUBSTR
+       mov.a  @PTR        , NEWPTR
+
+;Check if output is OUT, print and go to next instruction:
+       mov.a  &lt;PTR        , 1
+       sne.ab #0          , #OUT
+       jmp    PRINT
+
+;Substract and determine if the value &lt;= 0
+SUBSTR sub.a  PROGRAM     , PROGRAM
+       slt.a  #CORESIZE/2 , @-1
+       jmn.ba NEXT        , @-2
+
+;Jump to new address:
+NEWPTR mov.ab #0          , #0
+       mov.f  NEWPTR      , PTR
+       add.f  EQ          , PTR
+       seq.ab NEWPTR      , #HALT
+
+;Check for HALT (jump to DAT-PROGRAM)
+       jmp RESET
+
+LABEL
+PROGRAM
+
+;-----------------------------------------------
+;Translated version of the Hello World program from:
+;http://mozaika.com.au/oleg/subleq/
+
+dat A-LABEL,0
+dat A-LABEL,0
+dat 3,0
+dat p-LABEL,0
+dat Z-LABEL ,0
+dat 6,0
+
+dat Z-LABEL ,0
+dat A-LABEL ,0
+dat 9,0
+
+dat Z-LABEL ,0
+
+dat Z-LABEL ,0
+dat A-LABEL,0
+
+A dat PROGRAM ,0
+dat OUT ,0
+dat 15,0
+
+dat m1-LABEL,0
+dat p-LABEL,0
+dat 18,0
+
+dat A-LABEL ,0
+dat A-LABEL ,0
+dat 21,0
+
+dat E-LABEL ,0
+dat Z-LABEL ,0
+dat 24,0
+
+dat Z-LABEL ,0
+dat A-LABEL ,0
+dat 27,0
+
+dat Z-LABEL,0
+dat Z-LABEL,0
+dat 30,0
+
+dat b-LABEL,0
+dat b-LABEL,0
+dat 33,0
+
+dat p-LABEL,0
+dat Z-LABEL,0
+dat 36,0
+
+dat Z-LABEL ,0
+dat b-LABEL,0
+dat 39,0
+
+dat Z-LABEL,0
+dat Z-LABEL,0
+dat 42,0
+
+dat E-LABEL,0
+dat b-LABEL,0
+dat 48,0 ;?+3
+
+dat Z-LABEL ,0
+dat Z-LABEL,0
+dat 51,0 ;?+3
+
+dat p-LABEL,0
+dat A-LABEL,0
+dat 54,0 ;?+3
+
+dat Z-LABEL ,0
+dat Z-LABEL ,0
+dat 0,0
+
+dat 0 ,0
+dat 0 ,0
+dat -1,0
+
+;data
+p dat H-LABEL,0
+Z dat 0,0
+m1 dat -1,0
+b dat 0,0
+H dat 72,0 ;:H
+dat 101,0 ; e
+dat 108,0 ; l
+dat 108,0 ; l
+dat 111,0 ; o
+dat 32,0 ; space
+dat 87,0 ; W
+dat 111,0 ; o
+dat 114,0 ; r
+dat 108,0 ; l
+dat 100,0 ; d
+E dat E-LABEL,0
+
+end START
+;-----------------------------------------------</code></pre></figure>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - An Introduction to Hostile Programming" width="100" height="100" />
@@ -126,8 +332,8 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-01T02:02:17-08:00" class="date">
-            Dec 1, 2009 02:02:17
+          <span itemprop="datePublished" content="2009-12-01T11:02:17+01:00" class="date">
+            Dec 1, 2009 11:02:17
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
         </p>

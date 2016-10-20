@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Excuse me, sorry to interrupt...</title>
+  <meta name="description" content="Interruptions are a software developers worst nightmare. This is what you often hear. There is nothing worse than being interrupted while working hard on a p...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,interruptions,agile,scrum,holdup,interrupt,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Excuse me, sorry to interrupt..." />
+  <meta name="twitter:description" content="Interruptions are a software developers worst nightmare. This is what you often hear. There is nothing worse than being interrupted while..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/interrupt.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2016/09/the-future-of-java-ee/" title="Previous Post: JavaOne 2016, the Future of Java EE">&laquo; JavaOne 2016, the Future of Java EE</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/interrupt.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2016-10-20T10:28:12+02:00" class="date">
+          Oct 20, 2016 10:28:12
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Excuse me, sorry to interrupt...</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Interruptions are a software developers worst nightmare. This is what you often hear. There is nothing worse than being interrupted while working hard on a problem, while you’re in <em>the zone</em>. You’ll lose your train of thought and the world collapses.</p>
+
+<p>The idea is that in software development you are sometimes very deep into a problem, analysing code: </p>
+
+<p>This orchestrator calls that service, it is managed by this class and talks to that queue. So this generator has these parameters and it all depends on… “<strong>hey</strong> <em>I still need your time sheet</em>”</p>
+
+<p><img src="/images/rage.gif" alt="Rage" class="aligncenter" /></p>
+
+<p><strong>Poof</strong>… everything gone. Your mind is now filled with rage and lost the entire train of thought. This is the main reason programmers hate interruptions.</p>
+
+<h1 id="root-cause-analysis">Root cause analysis</h1>
+
+<p>During the <a href="https://www.oracle.com/javaone/">JavaOne</a> 2016 conference I attended a talk by Holly Cummins called <em>“Euphoria Despite the Despair”</em>. In this talk she went in depth into what makes work <strong>fun</strong> and stressed the point that interruptions should be <strong>avoided</strong> <em>at all cost</em>.</p>
+
+<p>She even talked about a team that has a dedicated duo that had ‘interruption duty’. A Slack-bot was created so you could ask which colleagues you could interrupt each day.</p>
+
+<p>Another thing that triggered me was the following question I asked on Twitter:</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">If you hear something new during the daily &#39;Scrum&#39; standup from your team members, isn&#39;t that a sign of a communication problem?</p>&mdash; Roy van Rijn (@royvanrijn) <a href="https://twitter.com/royvanrijn/status/788363621617266688">October 18, 2016</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>And the following reply:</p>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/royvanrijn">@royvanrijn</a> 2/2 Or is all that stuff abt dev productivity and no interruptions overrated? What works best in team setting?</p>&mdash; Fred Verheul (@fredverheul) <a href="https://twitter.com/fredverheul/status/788368365236678656">October 18, 2016</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>Maybe we are judging too quickly here. Are <strong>all</strong> interruptions bad? I don’t think they are.</p>
+
+<h1 id="sync-versus-async-and-good-versus-bad">Sync versus async and good versus bad</h1>
+
+<p>Interruptions are synchronous and blocking. Someone walks up to you and stands near your desk trying to get your attention. You might have a few milliseconds to finish what you are doing but you’ll need to reply. Other forms of communication are asynchronous, for example mail or chat clients (Slack). Someone asks a question and when you have the time to reply, you reply.</p>
+
+<p>Our team has evolved to use this to our advantage. Some problems ask for <strong>direct</strong> action, but <em>most</em> can be handled <strong>asynchronous</strong>. This is something we talk about and discuss.</p>
+
+<p>For example: If my manager wants a time sheet? Ask me asynchronous, it can wait. If a colleague has a question but is able to do other things first? Ask asynchronous, it can wait. If a colleague is <em>stuck</em> and can’t continue to work? I’d be happy to drop what I’m doing and assist! This is what teams do, they work together and communicate!</p>
+
+<p>Don’t throw all interruptions on one big pile and label them as bad, distinguish between the <strong>good</strong> and <strong>bad</strong> interruptions.</p>
+
+<h1 id="mount-the-headphones-get-in-the-zone">Mount the headphones, get in the zone</h1>
+
+<p>Sometimes, as a programmer, you just want to concentrate and solve some deep problem alone.</p>
+
+<p>In our team this can be done in two ways:</p>
+
+<ol>
+  <li>Work at <strong>home</strong> or in a small <strong>dedicated room</strong> in our office</li>
+  <li>Put on your <strong>headphones</strong>, if they are on, you signal you don’t want to be disturbed</li>
+</ol>
+
+<p>I do this too, mostly using my headphones. Most of the time I don’t even have music playing and I can hear everything the team says (this is important, more on this below!).</p>
+
+<p>In my opinion though we need to <strong>rethink</strong> this. Is it really the <em>best</em> way to program when you are ‘in the zone’?</p>
+
+<p>I think you are much more likely to solve problems when you openly <strong>share</strong> and <strong>collaborate</strong>. Pairing isn’t just for trivial work, instead: the trivial things are things you should do alone! Teams should have no secrets, at each point in time you should have a pretty good idea what each of your team buddies is working on. Actively ask questions, even trivial things.</p>
+
+<h1 id="near-subliminal-team-updates">Near-subliminal team updates</h1>
+
+<p>What? “Near-subliminal” team updates? Yes, I’m so sorry, I can’t think of a better name. Can you? <strong>Please tell me</strong>.</p>
+
+<p>One thing that is very important in software development is the use of what I’ve just called near-subliminal team updates/mumblings. It is the main reason I have headphones on without any music, and why I don’t like working at different locations (at home or in cubicles).</p>
+
+<h2 id="example">Example</h2>
+
+<p>You are working on something and you feel the need to refactor a class. At this moment you say/mumble out loud:</p>
+
+<p><em>“Hey team, I’m going to refactor <strong>classname</strong> because <strong>reason</strong> okay?”</em></p>
+
+<p>This is what I call a near-subliminal team update, and they are <em>very</em> important. They can solve a lot of problems!</p>
+
+<ol>
+  <li>
+    <p>Maybe you <strong>don’t</strong> agree with <strong>reason</strong>, this is the perfect time to talk about that. You don’t want to wait until a code review and tell them it was a bad idea later the same day.</p>
+  </li>
+  <li>
+    <p>Maybe you are also working on something in <strong>classname</strong> and it might collide with your work. You don’t want to wait until you <em>git pull</em> and need to merge, tackle it right away!</p>
+  </li>
+  <li>
+    <p>Maybe it <strong>isn’t</strong> relevant to you at all (which is most of the time)… Well, most likely you don’t even really notice the update. It didn’t contain any trigger words. Terms you are working on or have an opinion about. You aren’t really interrupted and can continue to work.</p>
+  </li>
+</ol>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>To summerize:</p>
+
+<ol>
+  <li>Don’t treat all interruptions as <strong>evil</strong>, they are not…</li>
+  <li>If you are annoyed about interrupts, <strong>talk</strong> about it</li>
+  <li>Speak up, mumble, use those near-submliminal team updates!</li>
+</ol>
+
+<p>Did I miss anything? How do you cope or deal with interruptions?</p>
+
+<p>And <strong>please</strong>: If there is someone with a <strong>better name</strong> for these short near-subliminal status updates, let me know!</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
