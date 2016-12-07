@@ -115,6 +115,50 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2013/10/congratulations-to-devoxx4kids/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Congratulations to Devoxx4Kids!" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2013-10-02T14:35:27+02:00" class="date">
+            Oct 2, 2013 14:35:27
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/congratulations-to-devoxx4kids/">Congratulations to Devoxx4Kids!</a></h1>
+
+        <span itemprop="articleBody">
+          <p>If you haven’t heard about Devoxx4Kids, first read the following post and watch the video: <a href="/blog/2012/11/devoxx4kids/">here</a>!</p>
+
+<p>The people behind Java (Oracle) have recognized the great potential behind Devoxx4Kids and decided to award the ‘concept’ with a <a href="https://www.java.net//dukeschoice">Duke’s Choice</a> award!<br />
+This was presented to Stephan Janssen (the original mastermind behind the concept) at JavaOne this year. Because I filmed the original event and also our Dutch event in Amsterdam I was asked to make a very short impression video which was shown at the JavaOne Community Keynote.</p>
+
+<p>You can see it here (including a great shout-out to me and my daughter, the ‘mascotte’) here:<br />
+(from 10:17 up to 14:55)</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/congratulations-to-devoxx4kids/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2013/09/episode-1/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Episode #1" width="100" height="100" />
@@ -1515,92 +1559,6 @@ With the sudden surge of visitors from Reddit (Hello!) I decided to take look at
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/visitors-you-make-me-proud/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2012/07/java-speed-of-math/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java vs Javascript: Speed of Math" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2012-07-15T11:17:02+02:00" class="date">
-            Jul 15, 2012 11:17:02
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/java-speed-of-math/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/java-speed-of-math/">Java vs Javascript: Speed of Math</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Last week I’ve created a <a href="/blog/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/blog/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
-
-<p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn’t have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
-
-<p><a href="/images/compare1.png"><img src="/images/compare1.png" alt="Comparing Javascript and Java" /></a></p>
-
-<p>What has happened here? The output is the same, why is Java so much slower than Javascript? I would have suspected the opposite…</p>
-
-<p>I fired up the profiler to see what was causing the Java code to be so slow, and it turned out the method it spend most time in was Math.pow(). Other slow methods were Math.acos(), cos(), sin() etc. It turns out that the Math library isn’t very fast, but there is an alternative, <a href="http://commons.apache.org/math/apidocs/org/apache/commons/math/util/FastMath.html">FastMath</a>. Apache Commons has implemented a faster Math library for commons-math. Lets see what changing Math.* to FastMath.* does to the performance:</p>
-
-<p><a href="/images/compare2.png"><img src="/images/compare2.png" alt="compare2" /></a></p>
-
-<p>This is already much better. But still the method causing most delay is FastMath.pow(). Why is Javascript so much faster? The method is made so you can calculate the power of two doubles, not only integer values. But I’m only doing Integer powers (7 and 8 to be precise). So I decided to implement my own method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">double</span> <span class="nf">fasterPow</span><span class="o">(</span><span class="kt">double</span> <span class="n">d</span><span class="o">,</span> <span class="kt">int</span> <span class="n">exp</span><span class="o">)</span> <span class="o">{</span>
-	<span class="kt">double</span> <span class="n">r</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
-	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">exp</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-		<span class="n">r</span> <span class="o">*=</span> <span class="n">d</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p><strong>Warning: This isn’t the same as Math.pow/FastMath.pow!</strong></p>
-
-<p><a href="/images/compare3.png"><img src="/images/compare3.png" alt="compare3" /></a></p>
-
-<p>The speed with this new method is much better and seems comparable with Javascript. Maybe this is an optimization the V8 engine does by default? Who knows.</p>
-
-<p>The slowest method in the program now is FastMath.acos. From highschool I know that acos(x) can also be calculated as atan(sqrt(1-x*x)/x). So I created a own version of acos. When benchmarked, the different methods: Math.acos(), FastMath.acos() and FastMath.atan(FastMath.sqrt(1-x*x)/x), the result is again surprising:</p>
-
-<p><a href="/images/compare4.png"><img src="/images/compare4.png" alt="compare4" /></a></p>
-
-<p>The custom acos() function is a bit faster than FastMath.acos() and a lot faster than Math.acos(). Using this function in the Mandelbulb renderer gives us the following metric:</p>
-
-<p><a href="/images/compare5.png"><img src="/images/compare5.png" alt="compare5" /></a></p>
-
-<p>So it turns out that with a bit of tweaking we can get the Java version faster than Javascript, but I would have never imagined Java would be slower in the first place. The Chrome V8 guys really did an amazing job improving the speed of their Javascript VM. Mozilla isn’t far behind, they are getting +/- 2200 ms in the benchmark. Which is also faster than Java.Math and FastMath! It seems that V8’s math implementation has some optimizations that Java could really use. The tricks used above don’t make any difference with the Javascript version.</p>
-
-<p><strong>Edit 1:</strong> Is Javascript faster than Java?</p>
-
-<p>Well surprisingly in this case it is. With the code a 100% the same, using arrays as vector and Math.* the code actually runs faster in my browser!</p>
-
-<p><strong>Edit 2:</strong> People have been asking me: What could have been done to make it faster in Java? And, why is it slow?</p>
-
-<p>Well the answer is twofold:</p>
-
-<p>1) The Math libraries are made for ‘double’ in Java. Having a power() method work with doubles is much harder than working with just integer numbers. The only way to optimize this would be to overload the methods with int-variants. This would allow much greater speeds and optimizations. I think Java should add Math.pow(float, int), Math.pow(int, int) etc.</p>
-
-<p>2) All the Math libraries have to work in <em>all</em> situations, with negative numbers, small numbers, large numbers, zero, null etc. They tend to have a lot of checks to cope with all those scenario’s. But most of the time you’ll know more about the numbers you put in… For example, my fastPower method will only work with positive integers larger than zero. Maybe you know that the power will always have even numbers…? This all means that the implementation can be improved. The problem is, this <em>can’t</em> be easily achieved in a generic (math) library.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2012/07/java-speed-of-math/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

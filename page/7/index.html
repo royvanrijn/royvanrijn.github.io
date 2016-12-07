@@ -115,6 +115,97 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/12/bytebeat-algorithmic-symphonies/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Bytebeat: Algorithmic Symphonies" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-12-07T16:42:08+01:00" class="date">
+            Dec 7, 2011 16:42:08
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/bytebeat-algorithmic-symphonies/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/12/bytebeat-algorithmic-symphonies/">Bytebeat: Algorithmic Symphonies</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of days ago I first encountered <em>“bytebeat”</em>. This is a new hype revolving algorithmic music and sounds. The basic idea is this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">main</span><span class="o">(</span><span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">for</span><span class="o">(</span><span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="o">;;</span><span class="n">t</span><span class="o">++)</span>
+    <span class="n">putchar</span><span class="o">(</span> <span class="n">t</span> <span class="o">*</span> <span class="o">(((</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">12</span><span class="o">)</span> <span class="o">|</span> <span class="o">(</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">8</span><span class="o">)</span> <span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span> <span class="mi">63</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">4</span><span class="o">))));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This simple loop has one variable, t (time). And every iteration we use t to calculate some output. Next, we take the output and pipe it into 8-bit 8-kHz PCM channel (for example /dev/audio!).</p>
+
+<p>A couple of examples in a YouTube video:<br />
+&lt;iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="http://www.youtube.com/embed/tCRPUv8V22o"&gt;&lt;/iframe&gt;</p>
+
+<p>In Java you could do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">javax.sound.sampled.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AudioPump</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+		<span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="mi">8000</span><span class="n">f</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+		<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">SourceDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
+		<span class="n">SourceDataLine</span> <span class="n">soundLine</span> <span class="o">=</span> <span class="o">(</span><span class="n">SourceDataLine</span><span class="o">)</span><span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+		<span class="n">soundLine</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">,</span> <span class="mi">32000</span><span class="o">);</span>
+		<span class="n">soundLine</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="kt">byte</span><span class="o">[]</span> <span class="n">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8</span><span class="o">];</span>
+		<span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+		<span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">buffer</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">n</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">buffer</span><span class="o">[</span><span class="n">n</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span><span class="n">f</span><span class="o">(</span><span class="n">t</span><span class="o">++);</span>
+			<span class="o">}</span>
+			<span class="n">soundLine</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">buffer</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">f</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="o">(</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">7</span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">)*</span><span class="mi">10</span><span class="o">+</span><span class="mi">4</span><span class="o">*(</span><span class="n">t</span><span class="o">&amp;</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">13</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="c1">//return (t*(t&gt;&gt;5|t&gt;&gt;8))&gt;&gt;(t&gt;&gt;16);</span>
+	<span class="c1">//return t*(((t&gt;&gt;12)|(t&gt;&gt;8))&amp;(63&amp;(t&gt;&gt;4)));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>These simple one-liners are able to produce amazing sounds and music!</p>
+
+<p>It becomes even easier to play around with bytebeat if you use one of the many Javascript implementations.<br />
+Here is one (including the best song I’ve created): <a href="http://t.co/9oognysS">http://t.co/9oognysS</a></p>
+
+<p>The computer/synthetic sounds are also good for <a href="http://wurstcaptures.untergrund.net/music/?oneliner=t%7C%28%28t%2F80%29%7C%28t%2F40%29%29%26%28t%2F5%29%7C%28t%2F160%29%7C%28t%2F240%29%2F8%3C%3C%28sin%28t%2F3.43%29*2%29&amp;rate=11025">dubstep</a>.</p>
+
+<p>For more information on this subject:<br />
+- <a href="http://canonical.org/~kragen/bytebeat/">http://canonical.org/~kragen/bytebeat/</a><br />
+- <a href="http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html">http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html</a></p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/bytebeat-algorithmic-symphonies/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/12/math-doodling-vi-hart/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Math doodling: Vi Hart" width="100" height="100" />
@@ -898,55 +989,6 @@ A lot of people have asked me why I’m using that avatar instead of a normal ph
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/crowdflow-needs-you/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="iPhone locations on Google Maps with Javascript" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-04-26T14:34:27+02:00" class="date">
-            Apr 26, 2011 14:34:27
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">iPhone locations on Google Maps with Javascript</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Wow, great news!</p>
-
-<p>After my <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my ‘iPhone location data to Google Earth’ tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
-
-<p>When chatting to <a href="https://github.com/williame">Will</a> about this he suggested using Javascript instead. Soon he had the code working that could parse the iPhone backup files. He then contacted <a href="https://github.com/markolson">Mark Olson</a>, who helped him with the SQLLite format in Javascript. Together they finished it up so the resulting GPS data is shown in Google Maps.</p>
-
-<p>The result of their effort: <a href="http://markolson.github.com/js-sqlite-map-thing/">http://markolson.github.com/js-sqlite-map-thing/</a></p>
-
-<p>To use it, drag the backup files into the upper part of the website. It will parse the files, locate the data and display the track on Google Maps!<br />
-The source code can be found here: <a href="https://github.com/markolson/js-sqlite-map-thing">https://github.com/markolson/js-sqlite-map-thing</a></p>
-
-<p>Kudos to Will and Mark for this great application. Who knew Javascript could be this powerfull!?</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
