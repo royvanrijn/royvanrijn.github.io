@@ -312,12 +312,16 @@
 
 <h2 id="underscores">Underscores</h2>
 
-<p>Since Java 8 the use of an underscore as lambda argument caused a warning. From Java 9 the use of an underscore became an error. This allows future Java versions to use the underscore for other purposes. One of these proposed purposes is the following:</p>
+<p>Up to Java 8 it was perfectly acceptable to use the underscore character ‘_’ as a variable name. But this has been changed, all leading up to JEP 302. In most languages with lambda’s it is possible to denote certain inputs as <em>unused</em>. This is done using the underscore. In Java this causes problems because it is right now a valid variable name.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+<p>Starting with Java 8 the use of an underscore as lambda argument caused a warning and from Java 9 the use of an underscore became an error. This allows future Java versions beyond 9 to be able to use the underscore for other purposes. And one of those purposes is to bring it back as a default variable name. Not causing collisions if used multiple times and it can’t be used as variable by calling _.toString() for example.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Ignore the second parameter, just use i:</span>
+<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+
+<span class="c1">// Even possible, ignore both:</span>
+<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">&quot;someString&quot;</span><span class="o">;</span>
     </code></pre></figure>
-
-<p>The lambda in this example ony uses the first parameter and doesn’t care about the other. In a lot of languages (for example C#) the underscore is used to denote that the developer isn’t interested in naming or using these parameters.</p>
 
 <h2 id="shadowing-of-parameters">Shadowing of parameters</h2>
 
