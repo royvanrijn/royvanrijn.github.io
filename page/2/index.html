@@ -115,6 +115,106 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2016/03/java-mail-message-as-download/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaMail API: Message in EML format" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2016-03-22T11:15:15+01:00" class="date">
+            Mar 22, 2016 11:15:15
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/03/java-mail-message-as-download/">JavaMail API: Message in EML format</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in our database (and make them downloadable using our GUI).</p>
+
+<p>It turns out this is pretty easy to do!</p>
+
+<p>Let’s start with some very basic email code we already had in place:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Some method to construct a MimeMessage:</span>
+    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+
+    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+
+<p>What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.</p>
+
+<p>It turns out there is a convinient method for doing just that: <em>message.writeTo(OutputStream)</em></p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
+
+    <span class="c1">// Retrieve the entire message as byte[]:</span>
+    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+    <span class="n">message</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+
+    <span class="c1">// Next we store the byte[] in our database (JPA) entity:</span>
+    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+    <span class="n">mailArchive</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">archivedMail</span><span class="o">);</span>
+
+    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+
+<p>Our own little POJO entity (<em>ArchivedMail</em>) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.</p>
+
+<p>We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Add the Wicket link-component to our page:</span>
+    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">&quot;wicketLinkId&quot;</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+                    <span class="c1">// When clicked output a stream which contains the raw byte[]:</span>
+                    <span class="n">output</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">getModelObject</span><span class="o">().</span><span class="na">getBytes</span><span class="o">());</span>
+                <span class="o">}</span>
+
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="n">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="c1">// Add the content type for an EML file:</span>
+                    <span class="k">return</span> <span class="s">&quot;message/rfc822&quot;</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">};</span>
+
+            <span class="c1">// Schedule the handler to return our resource stream (with a fancy name):</span>
+            <span class="n">getRequestCycle</span><span class="o">().</span><span class="na">scheduleRequestHandlerAfterCurrent</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">ResourceStreamRequestHandler</span><span class="o">(</span><span class="n">resourceStream</span><span class="o">).</span><span class="na">setFileName</span><span class="o">(</span><span class="s">&quot;mail.eml&quot;</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">});</span></code></pre></figure>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Using JavaMail (javax.mail) it is very easy to get the ‘raw’ contents of an email when sending it.</p>
+
+<p>This can be stored and downloaded in EML-format. It contains everything you need, mime, multipart, attachements and all the from/to headers.</p>
+
+<p>Happy coding!</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2016/03/java-mail-message-as-download/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2016/03/adding-var-val-to-java/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Pros and cons of JEP 286" width="100" height="100" />
@@ -1294,172 +1394,6 @@ The actual research paper (containing the electoral theory): <a href="http://arx
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/the-science-behind-unknown-pleasures/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2015/02/paper-sizes/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/paper_sizes.png" alt="Paper sizes" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2015-02-11T14:00:25+01:00" class="date">
-            Feb 11, 2015 14:00:25
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/02/paper-sizes/">Paper sizes</a></h1>
-
-        <span itemprop="articleBody">
-          <p><strong>Update Apr 22, 2016</strong>: I’ve made a video which explains most of what is in this blogpost:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/bWMGfFHr1ww"></iframe>
-
-<h1 id="two-standards">Two standards</h1>
-
-<p>Yes, this blogpost is about paper. This has absolutely nothing to do with programming, but there is a beautiful piece of math involved.</p>
-
-<p>There are two major standards of paper sizes in the world. The most widely used is <a href="http://en.wikipedia.org/wiki/ISO_216">ISO-216</a>, more commonly known as the A-series, as in ‘A4’ size. This system is used almost everywhere in the world, the main exceptions are United States and Canada. In the United States they use their own <a href="http://en.wikipedia.org/wiki/Letter_%28paper_size%29">US Letter</a> standard.</p>
-
-<h1 id="us-letter">US Letter</h1>
-
-<p>The standard US Letter has a size of: 216 mm x 279 mm (8.5 by 11 inches) and a ratio of 1,291666666666667.<br />
-(I’ll explain why this ratio is important in the math part below!).</p>
-
-<p>The origin of this size is very vague and lost in history. Most origins say (from Wikipedia):</p>
-
-<blockquote>
-  <p>The 11” length of the standard paper being about a quarter of “the average maximum stretch of an experienced vatman’s arms.”</p>
-</blockquote>
-
-<p>Basically US Letter is a standard because it is a standard, don’t ask questions, just deal with it.</p>
-
-<h1 id="iso-216-the-a-standard">ISO-216, the A-standard</h1>
-
-<p>The letter size of the ISO standard is A4. The size is 210 mm × 297 mm and has a ratio of √2 (math!).</p>
-
-<p>The ratio is what makes this standard superior. This of course isn’t a coincidence. Smart people have thought about these sizes, it became a standard because it was superior. The ‘magic’ property A4 paper size has is that is consists of exactly two A5 papers side-by-side. In turn, two of these A4 papers make up the larger A3 paper. This makes it very easy for example to make a booklet in A5 format consisting of folded A4 papers. Also if you scale up a document in A5 it’ll exactly fit A4. If you want to use a copier and print two A5 pages on A4 paper, go ahead! This is impossible to do with US Letter, you’ll end up with white spaces or stretched documents!</p>
-
-<h2 id="aspect-ratio-math">Aspect ratio math</h2>
-
-<p>How does this work mathematically? The magic hides in the fact that 2 / √2 = √2. Imagine we have a piece of paper with long side A and short side B. If we fold the long side and create a new paper size with B and C, what is the aspect ratio?</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Given:
-A/B = √2 (aspect ratio)
-C = A/2 (new short length is A folded in half)
-
-So what is the new aspect ratio of B/C?
-B/C = B/(A/2)
-
-B/(A/2) = 2/(A/B)
-
-2/(A/B) = 2/√2
-
-2/√2 = √2!</code></pre></figure>
-
-<p>When you start with the aspect ratio of √2, the resulting folded aspect ratio is again √2. You can keep doing this.</p>
-
-<p>Lets take the largest standard paper size, A0: 841 × 1189. What happens when we fold it? Well: 841 becomes the long side, 1189/2=594.5 the short side. This is indeed the A1 paper size (594 mm x 841 mm). It will keep the magic √2 aspect ratio!</p>
-
-<h2 id="size-of-a0-paper">Size of A0 paper</h2>
-
-<p>Now that we can explain the aspect ratio, we still don’t know how we ended up with the magic numbers 210 mm × 297 mm. This number originates simply because the A0 paper size is defined as having an aspect ratio of √2 and a surface area of 1 m2.</p>
-
-<p><strong>This is all you need to know, √2 and 1m2.</strong></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Given:
-A*B = 1m2 = 1000² (our paper size)
-A/B = √2 (our ratio)</code></pre></figure>
-
-<p>The first formula we need is:</p>
-
-<blockquote>
-  <p>area = (diagonal²) / (ratio + (1/ratio))</p>
-</blockquote>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">When we plug in the given values:
-1000² = (diagonal²) / (√2 + (1/√2))
-
-diagonal² = (√2 + (1/√2)) × 1000² ≅ 2121320.34
-
-Remember our magic aspect ratio: 
-A / B = √2:
-B = A × √2
-
-With our old pal Pythagoras we now know:
-diagonal² = A² + B² (= 2121320.34)
-
-Let&#39;s get rid of B²:
-diagonal² = A² + (A * √2)²
-
-Now we can simplify:
-diagonal² = A² + (A × √2)²
-diagonal² = A² + 2 × A²
-diagonal² = 3 × A²
-
-And easily calculate the result:
-3 × A² = 2121320.34
-
-A = √(2121320.34 / 3) ≅ 840.89
-B = A × √2 ≅ 1189.20</code></pre></figure>
-
-<p>We started with just two simple numbers, ratio: √2 and area: 1m2 and now we’ve ended up with the A0 paper, 841 mm and 1189 mm!<br />
-To calculate the rest of the A-series you just take:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">A&#39; = B / 2
-B&#39; = A</code></pre></figure>
-
-<p>Mathematically folding it in half results in: 594 mm x 841 mm = exactly the A1 paper size!</p>
-
-<p><img src="/images/reference_iso_paper_size-300x226.jpg" alt="reference_iso_paper_size" class="aligncenter" /></p>
-
-<h1 id="keep-on-folding">Keep on folding</h1>
-
-<p>When we take an A4 paper and keep folding it, we get the following aspects (aspects fluctuate a little bit due to rounding):</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">A4	210 mm × 297 mm ratio: 1.414
-A5	148 mm × 210 mm ratio: 1.419
-A6	105 mm × 148 mm ratio: 1.409
-A7	74  mm × 105 mm ratio: 1.418
-A8	52  mm × 74  mm ratio: 1.423
-A9	37  mm × 52  mm ratio: 1.405
-A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
-
-<p>But what do you end up with folding the US Letter? Let’s see:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">216 mm x 279 mm ratio: 1.291
-139 mm x 216 mm ratio: 1.554 &lt;- What?
-108 mm x 139 mm ratio: 1.287 &lt;- Ah..
-69  mm x 108 mm ratio: 1.565 &lt;- HUH!?
-54  mm x 69  mm ratio: 1.278
-34  mm x 54  mm ratio: 1.588
-27  mm x 34  mm ratio: 1.259 &lt;- Oh god...</code></pre></figure>
-
-<p>This fluctuating ratio results in so much wasted space, ink, paper! And it is just ugly! If you decide to scale something up from A5 to A4 it instantly fits, if you scale something in US Letter… you’ll either have to crop or stretch or leave unprinted paper.</p>
-
-<p>US Letter is bad for the environment!</p>
-
-<p>Ban the US Letter standard, <strong>hurray for math</strong>!</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

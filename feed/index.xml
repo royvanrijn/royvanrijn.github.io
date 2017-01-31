@@ -5,9 +5,263 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 07 Dec 2016 15:20:24 +0100</pubDate>
-    <lastBuildDate>Wed, 07 Dec 2016 15:20:24 +0100</lastBuildDate>
+    <pubDate>Tue, 31 Jan 2017 12:05:20 +0100</pubDate>
+    <lastBuildDate>Tue, 31 Jan 2017 12:05:20 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Vikipedia: A Java YouTube bot</title>
+        <description>&lt;p&gt;YouTube, the future of television. I’ve got a lot of subscriptions to YouTube channels that deliver quality content, and those shows are ‘cast’ (using my Chromecast) to my TV. Another thing I often do is look up information, for example I watch talks from programming conferences like &lt;a href=&quot;https://www.youtube.com/channel/UCCBVCTuk6uJrN3iFV_3vurg/videos&quot;&gt;Devoxx&lt;/a&gt; using YouTube.&lt;/p&gt;
+
+&lt;p&gt;This gave me an idea, what if I can take some free information (like Wikipedia, all creative commons) and use that to create content for YouTube? Maybe I’ll even get some views :-)&lt;/p&gt;
+
+&lt;p&gt;So this is what I’ve come up with, the following video is generated completely automatically:&lt;/p&gt;
+
+&lt;iframe id=&quot;randomVikipediaVideo&quot; width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;script&gt;
+
+function nextVideo(autoplay) {
+
+    /* Don&#39;t always insert the same video in the article, spread the views across the videos randomly: */
+    var iframe = document.getElementById(&#39;randomVikipediaVideo&#39;);
+    var allVideos = [&quot;dw_HP2AeYIU&quot;,&quot;VXNElLG9t_Q&quot;,&quot;2shv5Fv7ZNg&quot;,&quot;mnYrSUiLIgg&quot;,&quot;N45qnVlEAHw&quot;,&quot;1qBaUYcXJWM&quot;,&quot;ayZCJizN604&quot;,&quot;Z6N4bJDs9m4&quot;,&quot;AX4Ex5nYQqM&quot;,&quot;w9QF30yOGag&quot;,&quot;gruzWYNhE04&quot;,&quot;5rKxcZKIOP0&quot;,&quot;T-QvHcEMHEc&quot;,&quot;I4BR-pA9APc&quot;,&quot;QsbM9R0qAWE&quot;,&quot;4kPdhwVCAck&quot;,&quot;vV3JjOLOc0o&quot;,&quot;YU1UFQr9ezA&quot;,&quot;-6XJK7-L4Qk&quot;,&quot;1Uxn51TtA24&quot;,&quot;UknPDIoHVYc&quot;,&quot;WmTwh7AsaJQ&quot;,&quot;8dNTnrA_5gY&quot;,&quot;EH1MytpdcpM&quot;,&quot;bavzjaZLCJc&quot;,&quot;vro8u3N4HBc&quot;,&quot;k-LDzwP8jbs&quot;,&quot;dGPQUHKlabc&quot;,&quot;VlC1q_Edqj0&quot;,&quot;-zOb7D33SCE&quot;,&quot;OtyjkvlMJQY&quot;,&quot;ta3S29-evYY&quot;,&quot;KNTMCnZTp4k&quot;,&quot;UaH7hZXIiso&quot;,&quot;zIWxkcpc4cI&quot;,&quot;c5Ql0T-DHWM&quot;,&quot;whC5odvJmzA&quot;,&quot;lRpBMLmxQ3A&quot;,&quot;OEkTxgxFxm8&quot;,&quot;wzHdr1cG9qY&quot;,&quot;hRAU_4VPtVE&quot;,&quot;y8AO2YmnRgU&quot;,&quot;EzkyZefY5QI&quot;,&quot;RHmfvXO4dAc&quot;,&quot;krXrsq5MXmE&quot;,&quot;7KSlXBn9BFU&quot;,&quot;t0xr4dreV8g&quot;,&quot;wsX4dZj21pU&quot;,&quot;46OeYWZNXC4&quot;,&quot;u90MHVbJWLQ&quot;,&quot;j6DrUXCi55I&quot;,&quot;e5RxuXO1MGw&quot;,&quot;yQ12Q03RQ8M&quot;,&quot;1NU6c4CoOa4&quot;,&quot;l0EcOf-ivSI&quot;,&quot;Z1HSEsLo2M0&quot;,&quot;qDbl0gxu7Dc&quot;,&quot;EVztRfoZHQ0&quot;,&quot;yq-s6RegMzY&quot;,&quot;Mvx7WMFZ-ec&quot;,&quot;rynm5ii1gKI&quot;,&quot;hnDQzbAhQW0&quot;,&quot;RJBUHNiW_LA&quot;,&quot;z7PDxRpEuCM&quot;,&quot;GWYoMnviUTo&quot;,&quot;KJnKrh4HqO8&quot;,&quot;Qj18ci7ahXU&quot;,&quot;LVPTjW0HWCE&quot;,&quot;kKYJGL5zOdA&quot;,&quot;Gy3uG2sB0EI&quot;,&quot;EobwR1VvP6U&quot;,&quot;1e3oKKtT9Uc&quot;,&quot;9HT1Jq-pJsU&quot;,&quot;4mmTbQhYSe8&quot;,&quot;aCBmsv-Z0pY&quot;,&quot;XkytdbikWwQ&quot;,&quot;Kvh0Ks-xp_Q&quot;,&quot;Yo7Rro5aIJo&quot;,&quot;xlUjTuo11v4&quot;,&quot;3XpyQCxAFhE&quot;,&quot;upGOccVyjPk&quot;,&quot;U1XToo-yA0o&quot;,&quot;iTXIDqoozxY&quot;,&quot;Mpnaojg9CGg&quot;,&quot;G1Akiwn2b0k&quot;,&quot;YgEuC4B54Qw&quot;,&quot;owCh8KOVa1k&quot;,&quot;VE23gPaLWoI&quot;,&quot;ZKFksbkTKzI&quot;,&quot;xB1pPhgUSFo&quot;,&quot;2y9Nen8GedM&quot;,&quot;DmTxZSL0ezQ&quot;,&quot;S6L9d9oMP8k&quot;,&quot;NeaNEY_-HsQ&quot;,&quot;3lOEjy3G8zs&quot;,&quot;fabUIVQJS-U&quot;,&quot;AjlP3xVboPI&quot;,&quot;DOLK4E9CN44&quot;,&quot;xevdO-i_5X8&quot;,&quot;iBsClalmitY&quot;,&quot;tVAudOBNpSY&quot;,&quot;U5uXj1ITxvM&quot;,&quot;8ly91g6SpQY&quot;,&quot;Lx-QCSrwPVg&quot;,&quot;3Wd-AX8znpY&quot;,&quot;HVSxw2asHmw&quot;,&quot;BgtgmoAljkg&quot;,&quot;LEa03im5k5A&quot;,&quot;GofEE8LOGs4&quot;,&quot;86Swgtxs6Po&quot;,&quot;i3d1LspMBIU&quot;,&quot;PirEmJOo6CE&quot;,&quot;Lv6VILwZz1M&quot;,&quot;7YmUhQwq2YU&quot;,&quot;exePCusCm9k&quot;,&quot;H3PD7frrI_8&quot;,&quot;ghTqYWxoVrA&quot;,&quot;4rPNThNEQO4&quot;,&quot;P3o36TonBXE&quot;,&quot;5VsQd2ovTHY&quot;,&quot;HmwWy97ef5A&quot;,&quot;-0QlVaGlk1E&quot;,&quot;zO3Rl-rh6Bs&quot;,&quot;o9pkhKm_kAI&quot;,&quot;y5_fnfMm1_o&quot;,&quot;n9MQM919MDI&quot;,&quot;u73-_ofPYwA&quot;,&quot;WXWcfUwRWK8&quot;,&quot;PpyKc8dc4iQ&quot;,&quot;naEG81DttQk&quot;,&quot;4bMcrDV1vJs&quot;,&quot;BWNUqERTWyo&quot;,&quot;UCgOm1WvWB8&quot;,&quot;PjRJf-3i7wA&quot;,&quot;gCokmHyYIsk&quot;,&quot;o7Fkorc8xw4&quot;,&quot;0N81aj-0v8I&quot;,&quot;0Sts7wqwuhI&quot;,&quot;KmxQ9YvYP8U&quot;,&quot;1NuL1LFJqN4&quot;,&quot;EI9U85KR00k&quot;,&quot;sKTZ39Z55kM&quot;,&quot;RqGQRHwqD1Q&quot;,&quot;ToJ1hL_UxR8&quot;,&quot;BzVFH7dudGI&quot;,&quot;4YV-kJsnTY4&quot;,&quot;Hh1Ktyion00&quot;,&quot;cS0DksC2ThE&quot;,&quot;vVhUdj_6AJI&quot;,&quot;WBGEAkHIdEY&quot;,&quot;OhNypsK8dgs&quot;,&quot;KWgxgSwNQeg&quot;,&quot;wBq0yFH1NKA&quot;,&quot;by_kgenndME&quot;,&quot;Q3PfF8KQnnQ&quot;,&quot;qyubdFmpOzY&quot;,&quot;Fd4OuSQKSYc&quot;,&quot;M91jqRCuwSE&quot;,&quot;SZeFzFvvnww&quot;,&quot;1x9mR-8Jlk8&quot;,&quot;v60DhhXigj8&quot;,&quot;L2EtzWbmsSM&quot;,&quot;8OEh0WRIZpU&quot;,&quot;A6Fq0BDKUkI&quot;,&quot;B0fISmMwe0o&quot;,&quot;UJvXxTLMNCc&quot;,&quot;Oyit-UF0hU0&quot;,&quot;sJnT-ZBx-aw&quot;,&quot;w9DhHHmxkxk&quot;,&quot;09s8AsA_1_8&quot;,&quot;WpULC6QbFs8&quot;,&quot;oooZW-0Ib00&quot;,&quot;D6doByXH2qg&quot;,&quot;YNskJwjp2qs&quot;,&quot;GCwyct06ewQ&quot;,&quot;1wwGHpuoTRY&quot;,&quot;xCjBcNHVMN8&quot;,&quot;XXjCXeov7MU&quot;,&quot;j5pp75JMHLg&quot;,&quot;tN0Xhw1kXek&quot;,&quot;dnKc7ujewTg&quot;,&quot;508DpfT1xjM&quot;,&quot;7eeef5LwqBc&quot;,&quot;L3BFStFNPUc&quot;,&quot;b7Ap5MoqYOI&quot;,&quot;xBdrHXqTU9w&quot;,&quot;N7zUVxlp4kU&quot;,&quot;tqfJ3x337VE&quot;,&quot;jG4XesjoSfw&quot;,&quot;z79-HH7SgmA&quot;,&quot;Uu3qbMp9DVs&quot;,&quot;au8KcahWxG4&quot;,&quot;k2mDwz01YZk&quot;,&quot;f-vvDNc5mT0&quot;,&quot;Idg7R-9OI74&quot;,&quot;mhxE8xaaFi0&quot;,&quot;XryqTofd1tE&quot;,&quot;4yItBLDG6pc&quot;,&quot;zuKkQpziypw&quot;,&quot;9ewf9WEYy2M&quot;,&quot;uZK0M_K34MU&quot;,&quot;UIwzSvZYvBY&quot;,&quot;du0aqYDnd0Q&quot;,&quot;jy9azLipJbA&quot;,&quot;J-6yhQRz6_o&quot;,&quot;N3N2mQ7laF4&quot;,&quot;LtxnksrTXG0&quot;,&quot;-jqVIXfCkBI&quot;,&quot;P3MZsfQ4its&quot;,&quot;YVU1Ko9xKkU&quot;,&quot;s1R40DPur88&quot;,&quot;wfgny3djwGk&quot;,&quot;YLZ2x1-r6AQ&quot;,&quot;fUQX7gPNr7I&quot;,&quot;Cru4l_KrDv0&quot;,&quot;D1iuOpxeytw&quot;,&quot;FGhk31NdBoY&quot;,&quot;YPSW9YpFlu0&quot;,&quot;2ZST_JEpfRU&quot;,&quot;ZwH0E4EypOg&quot;,&quot;HA19BfHDrFk&quot;,&quot;blpoR8ooqI0&quot;,&quot;uI0KwvCqFVw&quot;,&quot;PoAI247TCWo&quot;,&quot;tF1gASEhQEQ&quot;,&quot;aZKK6d5IDbI&quot;,&quot;_jEgK66-ixg&quot;,&quot;2cb4Vt8EBEY&quot;,&quot;eXhlj12yOkM&quot;,&quot;-X9sVpmzkko&quot;,&quot;JTpPXmyER94&quot;,&quot;KDSkPksssrI&quot;,&quot;LV52_vn82tM&quot;,&quot;cvAu2-xaJ7k&quot;,&quot;KMq8JJYSSVM&quot;,&quot;92PtXvteSeI&quot;,&quot;obf4rmqWNfY&quot;,&quot;-0PT7-_5y58&quot;,&quot;5tzT5Aa2w58&quot;,&quot;-s9m266PR3A&quot;,&quot;xTyZVhbQ2l8&quot;,&quot;xNZgiBLUqWA&quot;,&quot;60zr04WK_7k&quot;,&quot;2wQegUuMv-A&quot;,&quot;SKeHyxQMBlg&quot;,&quot;7_n560myhjA&quot;,&quot;88TdVV7swU4&quot;,&quot;wpqmuNaET48&quot;,&quot;FVym7WQTBCM&quot;,&quot;oOm1eMCiNbQ&quot;,&quot;cgS1FTromKY&quot;,&quot;gLITbNSHRQ8&quot;,&quot;P_rMQK5w8lY&quot;,&quot;boJKjmTK_lg&quot;,&quot;QkiOMJ0nO-0&quot;,&quot;Wu8YElT21fQ&quot;,&quot;jcRegawJ4DY&quot;,&quot;Q_OW_A5uyYo&quot;,&quot;QQNVmwHBC1Y&quot;,&quot;MgasuaHMZow&quot;,&quot;c9M2OSRrLbY&quot;,&quot;rs-blPkEmSc&quot;,&quot;8IXc5BmlGBc&quot;,&quot;yrjrb_wK0fg&quot;,&quot;JLxWvfUO2lM&quot;,&quot;t0QIsLg7kxM&quot;,&quot;DZFKdRVzymw&quot;,&quot;_S5Njfgm0GA&quot;,&quot;bcd5L_UHATo&quot;,&quot;fvwi4hKxTFU&quot;,&quot;GnSUGxgUT54&quot;,&quot;d0y3Q-00ZNA&quot;,&quot;XBDsnpsmTYs&quot;,&quot;RrL4OcobwYI&quot;,&quot;5zf76gHJGto&quot;,&quot;_NoLH86yO7k&quot;,&quot;ub2uWc_mndk&quot;,&quot;RUqSACHf-Qo&quot;,&quot;XaUHVOpXCuA&quot;,&quot;Lo7qvHIWICk&quot;,&quot;MHw4wQ44ZjY&quot;,&quot;__yMErSqfK0&quot;,&quot;4atX5oRvoTU&quot;,&quot;R2Qd9Vf40g4&quot;,&quot;2m2UFpaB8NY&quot;,&quot;GyE0Z_1A6_M&quot;,&quot;LWnbLpF3AlU&quot;,&quot;mYQTMJnO6hs&quot;,&quot;dRl8xPKoXlQ&quot;,&quot;UabkSkq5wUs&quot;,&quot;lZ9e_43F0Vw&quot;,&quot;SK4NaWuUUhM&quot;,&quot;H2CMnpmSH1Y&quot;,&quot;WeKMvlBuDgc&quot;,&quot;9Ta7PW8cDL4&quot;,&quot;CXRRwU5k3U8&quot;,&quot;dwAlC6zcvl4&quot;,&quot;MoKrxAWu5Wk&quot;,&quot;S7uoR1gVw_A&quot;,&quot;6_hpi9qSz_M&quot;,&quot;VmwiIZ7OV6Y&quot;,&quot;NOS4reuwl-o&quot;,&quot;CSrD1srzfWE&quot;,&quot;KRH33rHzeh8&quot;,&quot;F6MBzJF7mTo&quot;,&quot;IRSb4qBbaGQ&quot;,&quot;L7Z3O1vw6bo&quot;,&quot;h6bTtr9qMf4&quot;,&quot;MUlyzmxEZ4I&quot;,&quot;OM7tycgoZyE&quot;,&quot;kEgajhCjKVU&quot;,&quot;Py0_yYTs3i4&quot;,&quot;Nwrlzz5L9Zc&quot;,&quot;RNmLNxM1cQg&quot;,&quot;jgih4zIJJQ0&quot;,&quot;Sclpx3BN4TQ&quot;,&quot;rTIvHfYbw_8&quot;,&quot;yJQXTCXlaDY&quot;,&quot;tHTXjVR-KlQ&quot;,&quot;ASue7eEeaYU&quot;,&quot;KwNNFTAYgYU&quot;,&quot;FgYHaJlEIws&quot;,&quot;b3EDCuFDlX8&quot;,&quot;9U3CAcmJB5M&quot;,&quot;_Gfhivl4oxY&quot;,&quot;-7DDBHcU8sU&quot;,&quot;RzGxbeOeF_E&quot;,&quot;IAnpo_fWCFs&quot;,&quot;lJGnVjwhxn4&quot;,&quot;4UWXEhA2_lw&quot;,&quot;nQi44X0yky8&quot;,&quot;dl8JAi-oy2E&quot;,&quot;qhdxInl7FnM&quot;,&quot;mI1FPIzucvI&quot;,&quot;uCsPGI_fKLY&quot;,&quot;b-HqkyuD1bw&quot;,&quot;Pf34zP-r0Vw&quot;,&quot;203nO3CQx8E&quot;,&quot;VTBS73N9HAA&quot;,&quot;mYiS70eXi2Y&quot;,&quot;nL7DkuSzTME&quot;,&quot;8gYPuHs3a3w&quot;,&quot;-6clJ54425g&quot;,&quot;ENEt6YPP-bA&quot;,&quot;3dcub25B8vo&quot;,&quot;c0C2q4uC2lU&quot;,&quot;vP1XuZFnCuY&quot;,&quot;d8eQGh2hmZs&quot;,&quot;DnwVCpFUa8c&quot;,&quot;o13RQmWafQQ&quot;,&quot;Fzeq5q7fZec&quot;,&quot;Rc3BiJyptyQ&quot;,&quot;0MTZ_4TpeCs&quot;,&quot;NWAlGoRayI8&quot;,&quot;_CxnGtd5wRc&quot;,&quot;GsJ52VMmOTA&quot;,&quot;4xoPkMY9jTY&quot;,&quot;FbVZX4QpLt0&quot;,&quot;vR8nfv-nuRw&quot;,&quot;hPDjW_WDLjE&quot;,&quot;Xt-KS-7yxIY&quot;,&quot;Af2EbXntrNo&quot;,&quot;YcWjPXF61bw&quot;,&quot;REFb1N0IOTU&quot;,&quot;Xq7RGuyXHac&quot;,&quot;0ZNk6o4eQW0&quot;,&quot;ndBFMQ4cfVg&quot;,&quot;1g3BJOTOjdg&quot;,&quot;Vw1noAhipyU&quot;,&quot;CzRRqzh2rc8&quot;,&quot;8AlSU3uYgwE&quot;,&quot;Fm4Hwq3yIv8&quot;,&quot;ox43bEl6Zd8&quot;,&quot;pZiOS2hX984&quot;,&quot;gYOE1g9t6WA&quot;,&quot;lqQ_R0A1Sjk&quot;,&quot;Fkzh2BXYX4c&quot;,&quot;F3M1Afx-foY&quot;,&quot;IVnxLf4VwnM&quot;,&quot;C2hzcRh8A94&quot;,&quot;UX5fDO8-CQ8&quot;,&quot;XwX-DcngYV8&quot;,&quot;YBsWk-mxIo0&quot;,&quot;vgcLJVrRlEg&quot;,&quot;wnAddG_K7DI&quot;,&quot;j5uKfryafHA&quot;,&quot;wIiIbwASTqc&quot;,&quot;EhtwtkSvWyA&quot;,&quot;769WvedTtbw&quot;,&quot;GyVMfFetXsI&quot;,&quot;nyIKQ5D123Q&quot;,&quot;STjTk8jwoQw&quot;,&quot;wMPyviYwxWU&quot;,&quot;0bD6qoS2sz4&quot;,&quot;v2F-dCCB-jY&quot;,&quot;qPVkEm7apu0&quot;,&quot;ZlCQKTIT3xA&quot;,&quot;_00UwBZX9p8&quot;,&quot;9OpPtRH61SM&quot;,&quot;Lgsw-yPW7d4&quot;,&quot;RIkobdBlBZ4&quot;,&quot;Iq_pCB-Dl8w&quot;,&quot;SzxXJQxdO9c&quot;,&quot;dkpEcuOHcSA&quot;,&quot;N71fY05Lsxg&quot;,&quot;szOc2LWxQHY&quot;,&quot;73bKxGIHYrs&quot;,&quot;qWL_QRAAH38&quot;,&quot;dDzkglVA6o8&quot;,&quot;GRo09AmIMak&quot;,&quot;fby9mwcYdnY&quot;,&quot;qY_FxwvWA_o&quot;,&quot;oIU6UL-coG0&quot;,&quot;6BrtQYvRy4g&quot;,&quot;UjWFmAEA79A&quot;,&quot;MpPWOGB3FuA&quot;,&quot;nrg-D07wy1M&quot;,&quot;WswpDPrmVM4&quot;,&quot;tl24wXyIONo&quot;,&quot;iHSN9Y-Vf_8&quot;,&quot;KLNPjVbwb7Q&quot;,&quot;-ihJHRKhIFQ&quot;,&quot;nE4YbY0sNH8&quot;,&quot;mZpSx73ozao&quot;,&quot;X01cwva4g8Q&quot;,&quot;t0rBJ2gxk9g&quot;,&quot;pvD8gIIUkyM&quot;,&quot;-Iv9fO-q5-I&quot;,&quot;-__thIfjTO4&quot;,&quot;zQf51_qR0zY&quot;,&quot;J0U_Gmw7MaI&quot;,&quot;mEUAdBA8w0Q&quot;,&quot;NfFZMjGmWVc&quot;,&quot;Lil5_uWyFbY&quot;,&quot;ejtUgTgppwU&quot;,&quot;QGIUnYo4UpQ&quot;,&quot;ibTsY0YlW6g&quot;,&quot;lwbcUgwM5l8&quot;,&quot;nbnh_kdDBfw&quot;,&quot;ucElDXT1Ygs&quot;,&quot;XtG7KQuTcio&quot;,&quot;tYIo5ApR9Eg&quot;,&quot;ZuTtJotj-LI&quot;,&quot;Ws_qpfu4CD0&quot;,&quot;bMLtbEUngkg&quot;,&quot;D1WpvfHFt0Y&quot;,&quot;m9RqegSPQsg&quot;,&quot;mgJ5hiy0WKw&quot;,&quot;rtfJGm6Rml0&quot;,&quot;JEv9tyXOnnc&quot;,&quot;UYiHvh9E2pU&quot;,&quot;TyooQUmlcOA&quot;,&quot;dcVWjjfgguU&quot;,];
+
+    var videoId = allVideos[Math.floor(Math.random()*allVideos.length)];
+    iframe.src = &#39;https://www.youtube.com/embed/&#39; + videoId + &quot;?autoplay=&quot; + autoplay;
+
+}
+
+nextVideo(0);
+
+&lt;/script&gt;
+
+&lt;form&gt;
+
+&lt;button onclick=&quot;nextVideo(1);return false&quot;&gt;Click to play next random video&lt;/button&gt;
+
+&lt;/form&gt;
+
+&lt;h1 id=&quot;step-1-wikipedia-api&quot;&gt;Step 1: Wikipedia API&lt;/h1&gt;
+
+&lt;p&gt;The first step in creating these videos was to get some actual freely available content. For this I chose to use Wikipedia. This can be accessed using JSON/REST, and to quickly hack this into place I decided to use a framework called ‘Unirest’. This makes the while prototype easy:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// API URI for the English Wikipedia&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ENGLISH_WIKIPEDIA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;https://en.wikipedia.org/w/api.php&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Using a &amp;#39;search query&amp;#39;, name of the page, retrieve the content:&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getPageContent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UnirestException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//Example URI created for query &amp;#39;Stack Overflow&amp;#39;: https://en.wikipedia.org/w/api.php?format=json&amp;amp;action=query&amp;amp;prop=extracts&amp;amp;titles=Stack%20Overflow&amp;amp;redirects=true&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;HttpResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;JsonNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Unirest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ENGLISH_WIKIPEDIA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;format&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;json&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;action&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;query&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;prop&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;extracts&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;titles&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;queryString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;redirects&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;true&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asJson&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;JSONObject&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pagesObject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getJSONObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;query&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getJSONObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;pages&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pagesObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pageKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pagesObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;htmlContent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pagesObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getJSONObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pageKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;extract&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;htmlContent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;empty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The resulting JSON (see this &lt;a href=&quot;https://en.wikipedia.org/w/api.php?format=json&amp;amp;action=query&amp;amp;prop=extracts&amp;amp;titles=Stack%20Overflow&amp;amp;redirects=true&quot;&gt;example&lt;/a&gt;) contains the Wikipedia page in simple processed HTML. From this HTML I used a library called ‘Jsoup’ to extract the plain text. The first alinea of text contains the introduction of the topic, this is what I’ve decided to use as content for the video. Initially I had &lt;em&gt;all&lt;/em&gt; the content of the page in the videos, but they quickly turned out to be 30+ minutes long and very boring.&lt;/p&gt;
+
+&lt;p&gt;This is the code I used to go from HTML to the first alinea of text:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * Clean the HTML, get inner text of first alinea and break into sentences.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * @param htmlContent&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * @return&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cleanAndBreakIntoSentences&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;htmlContent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Document&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;document&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Jsoup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;htmlContent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fullText&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Elements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elements&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;children&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// All the text is contained in paragraph elements:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;is&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;p&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+            &lt;span class=&quot;c1&quot;&gt;// Break the text into sentences using the smart JDK &amp;#39;BreakIterator&amp;#39;:&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;BreakIterator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;breakIterator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BreakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSentenceInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Locale&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;US&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;breakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;breakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;breakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BreakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;DONE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;breakIterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fullText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;substring&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// If we reach a header, stop processing, we only need the first section/alinea:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;is&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;h2&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// We break on the first (sub-) title:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fullText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;step-2-stunning-visuals-with-java-2d&quot;&gt;Step 2: Stunning visuals with Java 2D&lt;/h1&gt;
+
+&lt;p&gt;We have some text, now how do we turn this into a video? We need visuals! I decided to cut the content into seperate lines, and for each line I have a single ‘slide’. This is an (buffered) image created using Java’s 2D API and saved to file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * For each sentence, create a buffered image and paint some text on this.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * We need the text to be &amp;#39;wrapped&amp;#39;, for this I repurpose a JTextArea, on a JPanel.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; * Also increase the font size so the text fits on the screen.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;paintText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Graphics2D&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;JPanel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;JPanel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setOpaque&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Dimension&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1920&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1080&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setVisible&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;JTextArea&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;JTextArea&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Dimension&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1920&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1080&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFocusable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setBorder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BorderFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createEmptyBorder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BORDER_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BORDER_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BORDER_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BORDER_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setWrapStyleWord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setLineWrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setOpaque&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Increase the font size as long as it fits on screen (and don&amp;#39;t go bigger than 100, looks ugly):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getPreferredScrollableViewportSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getHeight&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1080&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fontSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFont&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Futura&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;PLAIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFont&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Futura&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Font&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;PLAIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Print this panel on the Graphics2D object (which is a BufferedImage)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;panel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;step-3-text-to-speech&quot;&gt;Step 3: Text-To-Speech&lt;/h1&gt;
+
+&lt;p&gt;Instead of using a Java Text-To-Speech (TTS) library, which aren’t very clear or good, I decided to use the build-in OS/X command ‘say’.
+On the command line you can execute: &lt;code&gt;say Hello world!&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The ‘say’ command supports different voices and also has the ability to store the output in a file. Which is perfect for us!&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;c1&quot;&gt;// Execute the say command with a given filename, voice and sentence to speak:&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Process&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRuntime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;say -o &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot; -v &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;voice&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot; -r 210 &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;BufferedReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BufferedReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;InputStreamReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;line1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;readLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;line1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Wait for the say-command to finish&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;waitFor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;step-4-putting-it-all-together&quot;&gt;Step 4: Putting it all together&lt;/h1&gt;
+
+&lt;p&gt;What do we have now? A list of sentences from Wikipedia, for each sentence we have an image and we have an audio snippet created with TTS. Now it is time to put everything together and create a video.
+The easiest way to do this is to use ffmpeg, a powerful command line video tool. To make this easier I created a small method ‘executeCommandLine’ which does the same thing as the snippet with ‘Runtime.getRuntime().exec’ shown above.&lt;/p&gt;
+
+&lt;p&gt;Combine the image (png file) and the TTS audio (mp4 file) into a series of MPG files:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;VikipediaSentence&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sentence&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sentences&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sentence&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getFilename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;//Combine audio and image into a short video:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;executeCommandLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;ffmpeg -loop 1 -y -i &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.png -i &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.mp4 -tune stillimage -shortest &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;.mpg&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We now have a series of small MPG files. They need to be combined into a single video. For this we need a text file which contains a list of all the MPG files. This is stored on disc and next we execute the following command:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;//merge all:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;executeCommandLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next we convert the video from one large MPG to MP4 file (which is a nicer, compressed format):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;//convert to mp4:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;executeCommandLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And to add a little more ‘production value’ I’ve gone online and found some soothing (free, creative commons) background music. This music is looped into a large audio file of 50 minutes (enough for all videos). Again using ffmpeg the audio is mixed in:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// add background music:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;executeCommandLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;There it is, we have a complete video with text audio, text visuals and background music! Only one thing left to do, uploading to YouTube!&lt;/p&gt;
+
+&lt;h1 id=&quot;step-5-uploading-everything-to-youtube&quot;&gt;Step 5: Uploading everything to YouTube&lt;/h1&gt;
+
+&lt;p&gt;To automate the process of uploading, I first needed a place to put the videos, so I created a new YouTube channel named: &lt;a href=&quot;https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw&quot;&gt;Vikipedia&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Next we can use the Google YouTube Data API. It turns out this is &lt;em&gt;very&lt;/em&gt; easy and well documented. I don’t even need to share the code I wrote here because I used the example from Google’s website itself! Check out this &lt;a href=&quot;https://developers.google.com/youtube/v3/code_samples/java#upload_a_video&quot;&gt;amazing documentation&lt;/a&gt;. Very detailed and does exactly what I needed it to do.&lt;/p&gt;
+
+&lt;p&gt;The example code takes a video file and uploads it. The only things I changed were setting the correct description, I was ready to generate all the content!&lt;/p&gt;
+
+&lt;h1 id=&quot;not-implemented-yet&quot;&gt;Not implemented (yet?)&lt;/h1&gt;
+
+&lt;p&gt;Things I wanted to implement (but didn’t and probably never will):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add a little color to the videos (black and white is boring)&lt;/li&gt;
+  &lt;li&gt;Add &lt;a href=&quot;https://trac.ffmpeg.org/wiki/Waveform&quot;&gt;waveform&lt;/a&gt; from ffmpeg (just to keep it visually interesing)&lt;/li&gt;
+  &lt;li&gt;Download (did this) and use (didn’t do this) the images from the Wikipedia page and add those to the video&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;final-thoughts&quot;&gt;Final thoughts&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Yes, it is pretty easy to hack together a bot to create YouTube videos.&lt;/li&gt;
+  &lt;li&gt;No, the quality isn’t &lt;em&gt;that&lt;/em&gt; good… yet?&lt;/li&gt;
+  &lt;li&gt;Yes, it can be made in a single afternoon!&lt;/li&gt;
+  &lt;li&gt;No, I’m not going to automate the spidering of Wikipedia and upload a million videos… (but I could easily do that!)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Up to now all the videos created are based on a small list of ‘hot topics’ I found on Wikipedia and Twitter. I don’t want to automate the entire process and flood YouTube, the content just isn’t good enough for that. But it was a fun project for a lazy afternoon! I’ve learned a lot of new tricks, maybe you can benefit from that as well.&lt;/p&gt;
+
+&lt;p&gt;The next thing I want to do with the 400+ YouTube videos I’ve generated is to see how (and if) people are going to watch them. Do they show up in the search results? Which topics are searched and watched? Maybe more on that in a future post!&lt;/p&gt;
+
+&lt;p&gt;Do &lt;strong&gt;you&lt;/strong&gt; have any good ideas on how to generate videos, let me know in the &lt;strong&gt;comments&lt;/strong&gt;!
+I’ve created a bot that generates music some years, maybe I should improve that bot to upload its own YouTube music videos? ;-)&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 06 Dec 2016 07:28:12 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2016/12/vikipedia-a-java-youtube-bot/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/12/vikipedia-a-java-youtube-bot/</guid>
+        
+        <category>Java</category>
+        
+        <category>Bot</category>
+        
+        <category>Wikipedia</category>
+        
+        <category>API</category>
+        
+        <category>Vikipedia</category>
+        
+        <category>ffmpeg</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Three new JEPs</title>
@@ -840,68 +1094,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:&lt;/p&gt;
         <category>mistakes</category>
         
         <category>carreer</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>The Prettiest Code</title>
-        <description>&lt;p&gt;This afternoon I started to wonder… &lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;I’ve been a programmer now for 20+ years, but what is the &lt;em&gt;best&lt;/em&gt; piece of code I’ve written in all these years?&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;The first thing that popped in my mind was &lt;a href=&quot;/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/&quot;&gt;this&lt;/a&gt;. It is a piece of code that can very quickly, in near linear time, generate &lt;a href=&quot;/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/&quot;&gt;de Bruijn sequences&lt;/a&gt;. I ‘invented’ it after reading a scientific paper that described how to quickly generate ‘&lt;a href=&quot;https://en.wikipedia.org/wiki/Lyndon_word&quot;&gt;Lyndon words&lt;/a&gt;’. I knew with Lyndon words you could easily generate the &lt;a href=&quot;/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/&quot;&gt;de Bruijn sequences&lt;/a&gt;. So I implemented it and adopted it for de Bruijn. Read more about this &lt;a href=&quot;/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Why is this my favourite piece of code? Well, it is small, compact and does something impressive. I couldn’t find a lot of implementations that had the fast runtime my code had. And it wasn’t trivial to implement, I had to do quite a lot of research and it felt like I myself did a little inventing. I probably wasn’t the first to write the algorithm though, but it felt like that for a while.&lt;/p&gt;
-
-&lt;h1 id=&quot;but-is-it&quot;&gt;But is it…?&lt;/h1&gt;
-
-&lt;p&gt;As a programmer I &lt;strong&gt;write&lt;/strong&gt; code every day. And what I do even more is &lt;strong&gt;read&lt;/strong&gt; code. If I have to guess, for each line I write I’ve read about ten times more. And after more than two decades of programming, I’ve seen my share of source code. This taught me something important. Is the piece of code I mentioned the best code I’ve written? I don’t think so.&lt;/p&gt;
-
-&lt;p&gt;What I thought the best code should have:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Looks smart&lt;/li&gt;
-  &lt;li&gt;Amazes people&lt;/li&gt;
-  &lt;li&gt;Jumps out&lt;/li&gt;
-  &lt;li&gt;‘I could have never created that!’&lt;/li&gt;
-  &lt;li&gt;It is &lt;strong&gt;magical&lt;/strong&gt;!&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The code I picked sure had some of these properties. But is it really the prettiest code I’ve written? &lt;strong&gt;No.&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;When you are working in a large codebase the best (and prettiest) code has the following properties:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Doesn’t stand out&lt;/li&gt;
-  &lt;li&gt;Looks trivial&lt;/li&gt;
-  &lt;li&gt;You don’t notice it’s there&lt;/li&gt;
-  &lt;li&gt;You hardly ever need to change it&lt;/li&gt;
-  &lt;li&gt;‘Gah, anyone could have written this’&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The best code is code you don’t notice, code that doesn’t stand out, code that looks like anyone could have written it. It doesn’t contain smart things, it looks &lt;em&gt;mundane&lt;/em&gt;. This is something we should always strive for… simple code.&lt;/p&gt;
-
-&lt;p&gt;So what is the best piece of code I’ve ever written? It is the code that will never be &lt;em&gt;git-blamed&lt;/em&gt;, nobody will ask questions about it and nobody will even notice it exists.&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 10 May 2016 12:25:02 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/05/the-prettiest-code/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/05/the-prettiest-code/</guid>
-        
-        <category>code</category>
-        
-        <category>pretty</category>
-        
-        <category>languages</category>
-        
-        <category>simple</category>
-        
-        <category>readable</category>
         
         
         <category>Programming</category>
