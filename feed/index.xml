@@ -5,9 +5,55 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 01 Feb 2017 12:04:56 +0100</pubDate>
-    <lastBuildDate>Wed, 01 Feb 2017 12:04:56 +0100</lastBuildDate>
+    <pubDate>Thu, 22 Jun 2017 15:11:36 +0200</pubDate>
+    <lastBuildDate>Thu, 22 Jun 2017 15:11:36 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Inverse Conway&#39;s law</title>
+        <description>&lt;p&gt;Today I got to present at &lt;a href=&quot;http://www.devoxx.pl&quot;&gt;Devoxx Poland&lt;/a&gt; on being agile and managing your architecture.&lt;/p&gt;
+
+&lt;p&gt;One of the points I made during the talk had to do with Conway’s Law. For those unfamiliar with it, here it is:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations &lt;cite&gt;M. Conway&lt;/cite&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This basically means that the code you create is likely to reflect the way the people and teams in your company communicate. For example, banks are usually pretty strict and have a tendency to document things. The code written at banks in turn have the tendency to use SOAP for example, verbose and strict.&lt;/p&gt;
+
+&lt;p&gt;The project I’m currently working on has a very agile mindset, we change a lot and have open communication. This reflects in our codebase as well, all the code is easy to understand and easy to change (thankfully!).&lt;/p&gt;
+
+&lt;p&gt;But lately we’ve started to move away from our old monolith and we’ve began cutting it up into microservices. That’s when I noticed something odd, which I call the &lt;strong&gt;Inverse Conway’s Law&lt;/strong&gt; (maybe it is &lt;strong&gt;Roy’s Law&lt;/strong&gt;?):&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;organisations which radically change their system design should expect changes in communication structure &lt;cite&gt;Roy van Rijn&lt;/cite&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What does this mean?&lt;/p&gt;
+
+&lt;p&gt;We’ve started to move towards a microservice environment, where each team has a responsibility over a couple of services. They’ve developed it and they &lt;em&gt;own&lt;/em&gt; it. This ownership completely changed the culture in our team. Up to now if the monolithic backend was broken or offline, everyone was hurting and everyone wanted to fix this as soon as possible. With microservices, this is gone. The first thing we now do is check which microservice failed. If it isn’t theirs, it is not their problem, it’s someone elses problem now!&lt;/p&gt;
+
+&lt;p&gt;This is just one example on how changing the design of our system changed the culture and team dynamic. It is one thing that sounds logical when you think about it, but I didn’t expect this before we started the transition.&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 22 Jun 2017 14:28:12 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2017/06/inverse-conways-law/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2017/06/inverse-conways-law/</guid>
+        
+        <category>Devoxx</category>
+        
+        <category>Programming</category>
+        
+        <category>Scrum</category>
+        
+        <category>Conway</category>
+        
+        <category>conference</category>
+        
+        
+        <category>Agile</category>
+        
+      </item>
     
       <item>
         <title>JavaOne Rock Star 2016</title>
@@ -1003,60 +1049,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:&lt;/p&gt;
         <category>jofofcoding</category>
         
         <category>joy</category>
-        
-        <category>public speaking</category>
-        
-        <category>alphago</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Speaking at Devoxx UK 2016</title>
-        <description>&lt;p&gt;Last week I went to London with my colleague Bert Jan Schrijver for the Devoxx UK 2016 conference. The UK-member of the international Devoxx conference family is smaller than its siblings. The event was three days, with the first two having talks and the last day was filled with hands-on-labs. During the first two days there were four parallel tracks giving the almost 1000 visitors enough content to pick from.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/devoxxuk_speaking.jpg&quot; alt=&quot;Roy van Rijn speaking at Devoxx UK&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The quality of the speakers is very high in London. There are usually a lot of international speakers, probably due to the Devoxx-branding. But also the LJC (London Java Community) has done a lot to encourage their members to do public speaking, it shows!&lt;/p&gt;
-
-&lt;h1 id=&quot;day-1&quot;&gt;Day 1&lt;/h1&gt;
-
-&lt;p&gt;Devoxx UK started with one large keynote. James Veitch (stand-up comedian/nerd) entertained us with his experiences with so called ‘nigerian’ spammers. If you’ve never seen a presentation by him, check out &lt;a href=&quot;https://www.ted.com/talks/james_veitch_this_is_what_happens_when_you_reply_to_spam_email&quot;&gt;his TED Talk&lt;/a&gt; for example right now! He’s amazing.&lt;/p&gt;
-
-&lt;p&gt;After the entertaining kick-off Mark Hazell (organizer) took the stage. And during his talk the next Devoxx-sibling was announced: &lt;a href=&quot;https://devoxx.us/&quot;&gt;Devoxx US&lt;/a&gt;. For the first time Devoxx is going to cross the Atlantic ocean. It will take place 21 to 23 March 2017 (during the Java 9 release?) in San José.&lt;/p&gt;
-
-&lt;p&gt;This news was followed by two technical keynotes. The first one was by Hadi Hariri (about the ‘free lunch’ in open source software) anf the second talk was by Mazz Mosley (about her Agile experiences). After this the four parallel tracks started. My colleague Bert Jan immediately took the stage with his talk on microservices in Vert.x.&lt;/p&gt;
-
-&lt;p&gt;The first conference day ended with the Ignite sessions (5 minute talks, 20 slides, auto-forwarding slides, fun topics), this is where I talked about the coming of Skynet (from the Terminator movies) and the fact that Skynet will run on the JVM.&lt;/p&gt;
-
-&lt;p&gt;The second day of the conference has again four rooms with parallel sessions. And during lunch I had my main talk, a 15 minute quickie about game theory, algorithms and the breakthroughs of Google/DeepMinds AlphaGo. The talk takes you from the most simple game you can imagine to Noughts and Crosses, to Chess and finally to Go. It talks about the algorithms you can use to make a computer play these games and why all those techniques don’t work with Go.&lt;/p&gt;
-
-&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;http://www.youtube.com/embed/xGZmiqn4Blo&quot;&gt;&lt;/iframe&gt;
-
-&lt;h1 id=&quot;day-2&quot;&gt;Day 2&lt;/h1&gt;
-
-&lt;p&gt;The second day ended with the usual Community Keynote. During this keynote some crazy French guy warned us for Brexit, they talked about the problems with Java EE and they did three short interviews, one of them was with me! Martijn and Antonio asked me some questions about Joggling (which I’d done an Ignite talk before) and filming at Devoxx. The most scary part was then Antonio challenged me to juggle three glasses… which I did: (skip to 16:79)&lt;/p&gt;
-
-&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;http://www.youtube.com/embed/P-qwkVuwIs&quot;&gt;&lt;/iframe&gt;
-
-&lt;p&gt;We ended the day like real Londoners do: in the pub. After the last talk we went to ‘DevRoxx’, a party sponsored by Tomitribe, Lightbend, Couchbase and Atlassian.&lt;/p&gt;
-
-&lt;h1 id=&quot;impression-video&quot;&gt;Impression video&lt;/h1&gt;
-
-&lt;p&gt;I’m also the ‘official’ Devoxx UK camera man/editor and I’ve created the following movie:&lt;/p&gt;
-
-&lt;iframe type=&quot;text/html&quot; src=&quot;http://player.vimeo.com/video/170226861&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-
-</description>
-        <pubDate>Fri, 10 Jun 2016 13:25:02 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/06/devoxx-uk-2016/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/06/devoxx-uk-2016/</guid>
-        
-        <category>devoxx</category>
-        
-        <category>devoxxuk</category>
         
         <category>public speaking</category>
         

@@ -99,15 +99,37 @@ h1 > a:visited {
  * Blockquotes
  */
 blockquote {
-  color: #222222;
-  border-left: 5px solid #1977ca;
-  padding-left: 15px;
-  font-size: 16px;
-  letter-spacing: 0px;
-  font-family: 'Helvetica Neue', Helvetica, Calibri, Arial, Verdana, sans-serif;
-  font-style: italic; }
-  blockquote > :last-child {
-    margin-bottom: 0; }
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  width: 500px;
+  margin: 0.25em 0;
+  padding: 0.35em 45px;
+  line-height: 1.45;
+  position: relative;
+  color: #626262; }
+
+blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: 0px;
+  top: -20px;
+  color: #626262; }
+
+blockquote > :last-child {
+  margin-bottom: 0; }
+
+blockquote cite {
+  color: #c8c8c8;
+  font-size: 14px;
+  font-style: normal;
+  display: block;
+  margin-top: 5px; }
+
+blockquote cite:before {
+  content: "\2014 \2009"; }
 
 /**
  * Code formatting
@@ -194,7 +216,8 @@ div.page-content > div.wrapper {
   line-height: 56px;
   letter-spacing: -1px;
   margin-bottom: 0;
-  float: left; }
+  float: left;
+  border: none; }
   .site-title, .site-title:visited {
     color: #222222; }
 

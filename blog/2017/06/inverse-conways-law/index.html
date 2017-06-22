@@ -7,23 +7,23 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Patent infringement (part 2)</title>
-  <meta name="description" content="After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, t...">
+  <title>Inverse Conway's law</title>
+  <meta name="description" content="Today I got to present at Devoxx Poland on being agile and managing your architecture.One of the points I made during the talk had to do with Conway’s Law. F...">
   
-  <meta name="keywords" content="royvanrijn,programming,java,copyright,patent infrigement,shazam,">
+  <meta name="keywords" content="royvanrijn,programming,java,Devoxx,Programming,Scrum,Conway,conference,">
   
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2017/06/inverse-conways-law/">
   <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@royvanrijn" />
-  <meta name="twitter:title" content="Patent infringement (part 2)" />
-  <meta name="twitter:description" content="After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landma..." />
+  <meta name="twitter:title" content="Inverse Conway's law" />
+  <meta name="twitter:description" content="Today I got to present at Devoxx Poland on being agile and managing your architecture.One of the points I made during the talk had to do ..." />
   
   <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
   
@@ -113,12 +113,10 @@
     <div class="page-navigation"> 
       <div class="left"> 
          
-          <a href="/blog/2010/09/handling-frame-switching/" title="Previous Post: Handling 'Frame switching'">&laquo; Handling 'Frame switching'</a> 
+          <a href="/blog/2017/02/javaone-rock-star-2016/" title="Previous Post: JavaOne Rock Star 2016">&laquo; JavaOne Rock Star 2016</a> 
          
       </div> 
       <div class="right"> 
-         
-          <a href="/blog/2010/11/xor-doubly-linked-list/" title="next Post: XOR doubly linked list">XOR doubly linked list &raquo; </a> 
          
       </div> 
       <div class="clear"></div> 
@@ -135,43 +133,39 @@
       </div>
       <p class="post-meta">
         Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
-        <span  itemprop="datePublished" content="2010-11-24T09:56:46+01:00" class="date">
-          Nov 24, 2010 09:56:46
+        <span  itemprop="datePublished" content="2017-06-22T14:28:12+02:00" class="date">
+          Jun 22, 2017 14:28:12
         </span>
-        : <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
       </p>
-      <h1 itemprop="headline" class="post-title">Patent infringement (part 2)</h1>
+      <h1 itemprop="headline" class="post-title">Inverse Conway's law</h1>
     </div>
 
     <span itemprop="articleBody">
-    <p>After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, telling them this is just a hobby project, and will (in its current form) never be a replacement for Shazam. Also, I explained a lot of people hated Shazam and deleted the application after reading this blog… the only thing they got out of it is bad marketing.</p>
+    <p>Today I got to present at <a href="http://www.devoxx.pl">Devoxx Poland</a> on being agile and managing your architecture.</p>
 
-<p>So I asked them for a peaceful solution, I’ll release the code, tell everybody Landmark Digital Services is a good company after all, and that’s it, both will benefit.</p>
-
-<p>This is the reply I got:</p>
+<p>One of the points I made during the talk had to do with Conway’s Law. For those unfamiliar with it, here it is:</p>
 
 <blockquote>
-  <p>Dear Mr. Van Rijn,</p>
-
-  <p>I am an attorney for Landmark Digital Services. Thank you for your response and attention to this important matter. As we have stated in detail in previous communications, we would like you to refrain from releasing the code and to remove the blogpost explaining the algorithm. While we appreciate your thoughtful comments and questions, we have already made our position clear and hope you will respect our interest in our IP.</p>
-
-  <p>Sincerely,<br />
-XXX<br />
-Attorney<br />
-Woodcock Washburn</p>
+  <p>organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations <cite>M. Conway</cite></p>
 </blockquote>
 
-<p>WHAT!? They tell me again to remove the blogpost, this is crazy! A blogpost describing an algorithm can never be infrigement of intellectual property. The whole idea of a patent is to preserve an idea, to write down what it does and how it works for future generations. A patent has to be publicly available for this sole reason. This isn’t protecting their intellectual property, this is plain censorship.</p>
+<p>This basically means that the code you create is likely to reflect the way the people and teams in your company communicate. For example, banks are usually pretty strict and have a tendency to document things. The code written at banks in turn have the tendency to use SOAP for example, verbose and strict.</p>
 
-<p>My reply to the email was short an concise:</p>
+<p>The project I’m currently working on has a very agile mindset, we change a lot and have open communication. This reflects in our codebase as well, all the code is easy to understand and easy to change (thankfully!).</p>
+
+<p>But lately we’ve started to move away from our old monolith and we’ve began cutting it up into microservices. That’s when I noticed something odd, which I call the <strong>Inverse Conway’s Law</strong> (maybe it is <strong>Roy’s Law</strong>?):</p>
 
 <blockquote>
-  <p>I’m sorry, but I can’t comply.</p>
-
-  <p>Good luck.</p>
+  <p>organisations which radically change their system design should expect changes in communication structure <cite>Roy van Rijn</cite></p>
 </blockquote>
 
-<p>This was a week ago, lets see what they come up with this time…</p>
+<p>What does this mean?</p>
+
+<p>We’ve started to move towards a microservice environment, where each team has a responsibility over a couple of services. They’ve developed it and they <em>own</em> it. This ownership completely changed the culture in our team. Up to now if the monolithic backend was broken or offline, everyone was hurting and everyone wanted to fix this as soon as possible. With microservices, this is gone. The first thing we now do is check which microservice failed. If it isn’t theirs, it is not their problem, it’s someone elses problem now!</p>
+
+<p>This is just one example on how changing the design of our system changed the culture and team dynamic. It is one thing that sounds logical when you think about it, but I didn’t expect this before we started the transition.</p>
+
 
     </span>
     
