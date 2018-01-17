@@ -210,11 +210,11 @@ To enable caching using Cache Control headers you can set:</p>
 
 <p>With HTTP 1.1 there is also an improved method of doing the “Last-Modified”. Instead of using a timestamp (which is error prone), they’ve introduced the “ETag”. This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">ETag: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ETag: "686897696a7c876b7e"</code></pre></figure>
 
 <p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">If-None-Match: &quot;686897696a7c876b7e&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">If-None-Match: "686897696a7c876b7e"</code></pre></figure>
 
 <p>The term “If-None-Match” isn’t very clear, but is means “if-etag-changed-since” and works the same way as “If-Modified-Since”. When the ETag is the same the server will reply “304 Not Modified”, it won’t send the content back.</p>
 

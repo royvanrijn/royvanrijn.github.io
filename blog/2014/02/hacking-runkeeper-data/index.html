@@ -193,7 +193,7 @@ com/royvanrijn/running/gpx/package-info.java</code></pre></figure>
 
 <p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">&quot;com.royvanrijn.running.gpx&quot;</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">"com.royvanrijn.running.gpx"</span><span class="o">);</span>
 <span class="n">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
 <span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
@@ -207,17 +207,20 @@ Those legs can be used to check for a record during longer runs, like this:</p>
 	
 	<span class="kt">double</span> <span class="n">runningDistance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
 	<span class="k">for</span><span class="o">(</span><span class="n">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">//Add next leg to the tail:</span>
+		<span class="c1">//Add next leg to the tail:
+</span>
 		<span class="n">cache</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">leg</span><span class="o">);</span>
 		<span class="n">runningDistance</span> <span class="o">+=</span> <span class="n">leg</span><span class="o">.</span><span class="na">getMeters</span><span class="o">();</span>
 		
-		<span class="c1">//If possible remove from head:</span>
+		<span class="c1">//If possible remove from head:
+</span>
 		<span class="k">while</span><span class="o">((</span><span class="n">runningDistance</span><span class="o">-</span><span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">())</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
 			<span class="n">runningDistance</span> <span class="o">-=</span> <span class="n">cache</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">();</span>
 		<span class="o">}</span>
 		
 		<span class="k">if</span><span class="o">(</span><span class="n">runningDistance</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
-			<span class="c1">//Check if the current target distance time is a record:</span>
+			<span class="c1">//Check if the current target distance time is a record:
+</span>
 			<span class="n">checkTime</span><span class="o">(</span><span class="n">cache</span><span class="o">);</span>
 		<span class="o">}</span>
 	<span class="o">}</span>

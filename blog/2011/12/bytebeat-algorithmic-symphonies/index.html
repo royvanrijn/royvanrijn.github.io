@@ -153,8 +153,8 @@
 
 <p>This simple loop has one variable, t (time). And every iteration we use t to calculate some output. Next, we take the output and pipe it into 8-bit 8-kHz PCM channel (for example /dev/audio!).</p>
 
-<p>A couple of examples in a YouTube video:<br />
-&lt;iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="http://www.youtube.com/embed/tCRPUv8V22o"&gt;&lt;/iframe&gt;</p>
+<p>A couple of examples in a YouTube video:</p>
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/tCRPUv8V22o"></iframe>
 
 <p>In Java you could do the following:</p>
 
@@ -164,7 +164,7 @@
 
 	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
 
-		<span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="mi">8000</span><span class="n">f</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+		<span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AudioFormat</span><span class="o">(</span><span class="mi">8000</span><span class="n">f</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
 		<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">SourceDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
 		<span class="n">SourceDataLine</span> <span class="n">soundLine</span> <span class="o">=</span> <span class="o">(</span><span class="n">SourceDataLine</span><span class="o">)</span><span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
 		<span class="n">soundLine</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">,</span> <span class="mi">32000</span><span class="o">);</span>
@@ -184,8 +184,10 @@
 	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">f</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="o">(</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">7</span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">)*</span><span class="mi">10</span><span class="o">+</span><span class="mi">4</span><span class="o">*(</span><span class="n">t</span><span class="o">&amp;</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">13</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">);</span>
 	<span class="o">}</span>
-	<span class="c1">//return (t*(t&gt;&gt;5|t&gt;&gt;8))&gt;&gt;(t&gt;&gt;16);</span>
-	<span class="c1">//return t*(((t&gt;&gt;12)|(t&gt;&gt;8))&amp;(63&amp;(t&gt;&gt;4)));</span>
+	<span class="c1">//return (t*(t&gt;&gt;5|t&gt;&gt;8))&gt;&gt;(t&gt;&gt;16);
+</span>
+	<span class="c1">//return t*(((t&gt;&gt;12)|(t&gt;&gt;8))&amp;(63&amp;(t&gt;&gt;4)));
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>These simple one-liners are able to produce amazing sounds and music!</p>

@@ -179,28 +179,28 @@
 
 <p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <strong>qemu.rb</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">require &#39;formula&#39;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">require 'formula'
 
 class Qemu &lt; Formula
-  homepage &#39;http://www.qemu.org/&#39;
-  url &#39;http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2&#39;
+  homepage 'http://www.qemu.org/'
+  url 'http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2'
 
-  depends_on &#39;jpeg&#39;
-  depends_on &#39;gnutls&#39;
-  depends_on &#39;glib&#39;
+  depends_on 'jpeg'
+  depends_on 'gnutls'
+  depends_on 'glib'
 
   fails_with :clang do
     build 318
   end
 
   def install
-    system &quot;./configure&quot;, &quot;--prefix=#{prefix}&quot;,
-                          &quot;--cc=#{ENV.cc}&quot;,
-                          &quot;--host-cc=#{ENV.cc}&quot;,
-                          &quot;--enable-cocoa&quot;,
-                          &quot;--disable-bsd-user&quot;,
-                          &quot;--disable-guest-agent&quot;
-    system &quot;make install&quot;
+    system "./configure", "--prefix=#{prefix}",
+                          "--cc=#{ENV.cc}",
+                          "--host-cc=#{ENV.cc}",
+                          "--enable-cocoa",
+                          "--disable-bsd-user",
+                          "--disable-guest-agent"
+    system "make install"
   end
 end</code></pre></figure>
 
@@ -231,7 +231,7 @@ In our case: 2014-01-07-wheezy-raspbian.img</p>
 
 <p>Now it is time to start the image in the emulator:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
 
 <p>This first boot is a bit special because we only initialize /bin/bash. This is because we need to make two changes to the system:</p>
 
@@ -249,9 +249,9 @@ In our case: 2014-01-07-wheezy-raspbian.img</p>
 
 <p>And put in the following content: <strong>90-qemu.rules</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL==&quot;sda&quot;, SYMLINK+=&quot;mmcblk0&quot;
-KERNEL==&quot;sda?&quot;, SYMLINK+=&quot;mmcblk0p%n&quot;
-KERNEL==&quot;sda2&quot;, SYMLINK+=&quot;root&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL=="sda", SYMLINK+="mmcblk0"
+KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
+KERNEL=="sda2", SYMLINK+="root"</code></pre></figure>
 
 <p>Now we can stop the emulator and make one final change, the image file is a bit small and we need to increase the size before we continue:</p>
 
@@ -259,7 +259,7 @@ KERNEL==&quot;sda2&quot;, SYMLINK+=&quot;root&quot;</code></pre></figure>
 
 <p>From now on we can do a normal boot (save this command) by removing the “init=/bin/bash” part:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
 
 <p>The last thing we need to do to get our virtual Raspberry Pi up and running is:</p>
 

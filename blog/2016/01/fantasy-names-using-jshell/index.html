@@ -149,7 +149,7 @@
 <p>The project I’m working on is targetted at teaching kids to learn Java Programming in a fun way. But automaticly generated variable names called <em>$1</em>, <em>$2</em>, <em>$3</em> etc are not ‘fun’ enough! Luckily I found the following method in the API:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JShell</span> <span class="n">shell</span> <span class="o">=</span> <span class="n">JShell</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">tempVariableNameGenerator</span><span class="o">(</span><span class="k">new</span> <span class="nf">CustomNameGenerator</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">tempVariableNameGenerator</span><span class="o">(</span><span class="k">new</span> <span class="n">CustomNameGenerator</span><span class="o">())</span>
                 <span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></figure>
 
 <p>The name generator has to implement <em>Supplier&lt;String&gt;</em>, with a single method <em>get()</em>, very easy! The generator I’ve made generates semi-random fantasy character names. This is what I’ve ended up with:</p>

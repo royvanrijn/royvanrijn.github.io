@@ -154,7 +154,7 @@ While programming my little robot I wanted to have an algorithm calculate this f
 
 <p>How do I calculate where to put the circle so it encapsulates the most points?</p>
 
-<p>This is what I came up with, three algorithms:  </p>
+<p>This is what I came up with, three algorithms:</p>
 
 <h1 id="algorithm-1-centerpoint">Algorithm #1: Centerpoint</h1>
 
@@ -175,7 +175,7 @@ First I loop over all the points, and I check if there are points located at <st
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
 	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
+		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
 		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
 			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>

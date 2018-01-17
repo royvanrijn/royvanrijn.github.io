@@ -157,36 +157,36 @@
 
 <p>Now we browse until we find:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Returns the next pseudorandom, uniformly distributed {@code int}</span>
-<span class="cm"> * value from this random number generator&#39;s sequence. The general</span>
-<span class="cm"> * contract of {@code nextInt} is that one {@code int} value is</span>
-<span class="cm"> * pseudorandomly generated and returned. All 2&lt;sup&gt;32&lt;/sup&gt; possible</span>
-<span class="cm"> * {@code int} values are produced with (approximately) equal probability.</span>
-<span class="cm"> *</span>
-<span class="cm"> * &lt;p&gt;The method {@code nextInt} is implemented by class {@code Random}</span>
-<span class="cm"> * as if by:</span>
-<span class="cm"> *  &lt;pre&gt; {@code</span>
-<span class="cm"> * public int nextInt() {</span>
-<span class="cm"> *   return next(32);</span>
-<span class="cm"> * }}&lt;/pre&gt;</span>
-<span class="cm"> *</span>
-<span class="cm"> * @return the next pseudorandom, uniformly distributed {@code int}</span>
-<span class="cm"> *         value from this random number generator&#39;s sequence</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * Returns the next pseudorandom, uniformly distributed {@code int}
+ * value from this random number generator's sequence. The general
+ * contract of {@code nextInt} is that one {@code int} value is
+ * pseudorandomly generated and returned. All 2&lt;sup&gt;32&lt;/sup&gt; possible
+ * {@code int} values are produced with (approximately) equal probability.
+ *
+ * &lt;p&gt;The method {@code nextInt} is implemented by class {@code Random}
+ * as if by:
+ *  &lt;pre&gt; {@code
+ * public int nextInt() {
+ *   return next(32);
+ * }}&lt;/pre&gt;
+ *
+ * @return the next pseudorandom, uniformly distributed {@code int}
+ *         value from this random number generator's sequence
+ */</span>
 <span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> <span class="nf">next</span><span class="o">(</span><span class="mi">32</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Now we need fix the obvious error and turn it into:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Returns guaranteed random number, rolled by nerdy DnD d20 dice.</span>
-<span class="cm"> *</span>
-<span class="cm"> * http://en.wikipedia.org/wiki/D20_System</span>
-<span class="cm"> *</span>
-<span class="cm"> * @return guaranteed random number</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * Returns guaranteed random number, rolled by nerdy DnD d20 dice.
+ *
+ * http://en.wikipedia.org/wiki/D20_System
+ *
+ * @return guaranteed random number
+ */</span>
 <span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> <span class="mi">14</span><span class="o">;</span>
 <span class="o">}</span></code></pre></figure>
@@ -199,7 +199,7 @@ Next I run the following code:</p>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
 
 	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="kd">final</span> <span class="n">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Random</span><span class="o">();</span>
+		<span class="kd">final</span> <span class="n">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
 		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">rnd</span><span class="o">.</span><span class="na">nextInt</span><span class="o">());</span>
 		<span class="o">}</span>

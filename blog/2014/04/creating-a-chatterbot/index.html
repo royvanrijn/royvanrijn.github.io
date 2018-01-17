@@ -176,9 +176,11 @@ Hello.</p>
   &lt;template&gt;My name is Chatbot.&lt;/template&gt;
 &lt;/category&gt;</code></pre></figure>
 
-<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:<br />
-&gt; What is your name?<br />
-&gt; My name is Chatbot.</p>
+<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:</p>
+<blockquote>
+  <p>What is your name?<br />
+My name is Chatbot.</p>
+</blockquote>
 
 <p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don’t seem very ‘smart’ and AI to me; so I’m not going to make another AIML-like bot.</p>
 
@@ -192,13 +194,13 @@ Hello.</p>
 
 <p>To keep this (long) blog post within reasonable length I’m not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let’s for example say we store chains of length three.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;Let&#39;s store this sentence, let&#39;s store it in a markov chain.&quot;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">"Let's store this sentence, let's store it in a markov chain."
 
-1&gt; Let&#39;s store this
+1&gt; Let's store this
 2&gt; store this sentence
-3&gt; this sentence let&#39;s
-4&gt; sentence let&#39;s store
-5&gt; let&#39;s store it
+3&gt; this sentence let's
+4&gt; sentence let's store
+5&gt; let's store it
 6&gt; store it in
 7&gt; it in a
 8&gt; in a markov
@@ -237,32 +239,42 @@ Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (par
 
 <p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I’m in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I’ve got the following unit test working:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:</span>
-<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:
+</span>
+<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]
+</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">);</span>
     
-<span class="c1">//True: Does human eat banana?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;banana&quot;</span><span class="o">));</span>
-<span class="c1">//True: Does human eat strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
-<span class="c1">//True: Is banana eaten by human?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
-<span class="c1">//True: Does the group fruit contain strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
-<span class="c1">//True: Is apple a fruit?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">));</span>
-<span class="c1">//True: Do apples fall from trees?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">));</span>
+<span class="c1">//True: Does human eat banana?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"banana"</span><span class="o">));</span>
+<span class="c1">//True: Does human eat strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
+<span class="c1">//True: Is banana eaten by human?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
+<span class="c1">//True: Does the group fruit contain strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
+<span class="c1">//True: Is apple a fruit?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">));</span>
+<span class="c1">//True: Do apples fall from trees?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">));</span>
     
-<span class="c1">//False: Is strawberry a human?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
-<span class="c1">//False: Is fruit a strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span></code></pre></figure>
+<span class="c1">//False: Is strawberry a human?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
+<span class="c1">//False: Is fruit a strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span></code></pre></figure>
 
 <p>There are already more facts possible to extract from this ‘knowledge database’ than just the plain information I put in.</p>
 

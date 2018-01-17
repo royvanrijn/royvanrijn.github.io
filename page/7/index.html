@@ -115,6 +115,91 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/12/orchard-planting-greatest-common-divisor/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Orchard Planting: Greatest Common Divisor" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-12-30T13:21:59+01:00" class="date">
+            Dec 30, 2011 13:21:59
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/orchard-planting-greatest-common-divisor/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/12/orchard-planting-greatest-common-divisor/">Orchard Planting: Greatest Common Divisor</a></h1>
+
+        <span itemprop="articleBody">
+          <p>The <a href="http://infinitesearchspace.dyndns.org/orchardplanting">Orchard Planting</a> contest from infinite search space is over. So it is time for a quick write-up.</p>
+
+<p>The rules are simple, on a grid of integers, place N points on the grid to get as much 4 points on a line and never more then 4 points on a line.</p>
+
+<p>My big break-through was when I figured out a way to improve the calculation speed of a solution, and make it possible to extend existing solutions (going back and forwards). To do this I used a unique vector (greatest common divisor vector) which is the same for all point on the same line:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Calculate unique vector(hash):
+</span>
+<span class="n">doubleIntVector</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">stepx</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">stepy</span> <span class="o">=</span> <span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">gcd</span> <span class="o">=</span> <span class="n">gcd</span><span class="o">(</span><span class="n">abs</span><span class="o">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="o">),</span> <span class="n">abs</span><span class="o">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="o">));</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">gcd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">stepx</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+        <span class="n">stepy</span> <span class="o">/=</span> <span class="n">gcd</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="o">-</span><span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">stepx</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">stepy</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">stepy</span><span class="o">;</span> <span class="c1">//this looks curious... but fixed a bug
+</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="mi">10000</span> <span class="o">*</span> <span class="n">stepx</span><span class="o">)</span> <span class="o">+</span> <span class="n">stepy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we can evaluate the points:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span> <span class="n">point</span> <span class="n">A</span> <span class="n">in</span> <span class="n">points</span> <span class="mi">0</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+    <span class="n">create</span> <span class="n">list</span> <span class="n">vectorsA</span> 
+    <span class="k">for</span> <span class="n">point</span> <span class="n">B</span> <span class="n">in</span> <span class="n">points</span> <span class="n">A</span><span class="o">+</span><span class="mi">1</span><span class="o">....</span><span class="na">N</span> <span class="o">{</span>
+         <span class="n">vectorA</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">doubleIntVector</span><span class="o">(</span><span class="n">A</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">B</span><span class="o">.</span><span class="na">y</span><span class="o">)</span> <span class="o">)</span>
+    <span class="o">}</span>
+    <span class="n">sort</span><span class="o">(</span><span class="n">vectorsA</span><span class="o">)</span>
+    <span class="c1">//if vectorsA has three similair vectors you have 4 points on a line! 
+</span>
+    <span class="c1">//(3&gt; = invalid and 2 = candidate for extending!)
+</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If a point has three vectors that are the same, we have a line with four points! This can be checked easily if you sort the vectors and go through them once.</p>
+
+<p>Also adding and removing points becomes very easy. A lot of the GCD calculations can be cached. To remove a point, just remove the vectors it made. And to add a point, calculate all the new vectors. So in the end it basically all boils down to a lot of GCD calculations and sorting.</p>
+
+<p>Was this the fastest way to calculate solutions in this contest? I don’t know, but I was really pleased when I figured it out. With a better algorithm for picking possible numbers (instead of hill-climbing) and some more processor power I bet I could have ended a bit higher up the hill.</p>
+
+<p>Also: Keep an eye out for the next contest, it is going to be an interesting one! January the 13th.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/12/orchard-planting-greatest-common-divisor/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/12/parleys-devoxx-talk-published/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Parleys: Devoxx talk published" width="100" height="100" />
@@ -348,8 +433,8 @@ Wife: <em>“Screw you.”</em></p>
 
 <p>This simple loop has one variable, t (time). And every iteration we use t to calculate some output. Next, we take the output and pipe it into 8-bit 8-kHz PCM channel (for example /dev/audio!).</p>
 
-<p>A couple of examples in a YouTube video:<br />
-&lt;iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="http://www.youtube.com/embed/tCRPUv8V22o"&gt;&lt;/iframe&gt;</p>
+<p>A couple of examples in a YouTube video:</p>
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/tCRPUv8V22o"></iframe>
 
 <p>In Java you could do the following:</p>
 
@@ -359,7 +444,7 @@ Wife: <em>“Screw you.”</em></p>
 
 	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
 
-		<span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="mi">8000</span><span class="n">f</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+		<span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AudioFormat</span><span class="o">(</span><span class="mi">8000</span><span class="n">f</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
 		<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">SourceDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
 		<span class="n">SourceDataLine</span> <span class="n">soundLine</span> <span class="o">=</span> <span class="o">(</span><span class="n">SourceDataLine</span><span class="o">)</span><span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
 		<span class="n">soundLine</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">,</span> <span class="mi">32000</span><span class="o">);</span>
@@ -379,8 +464,10 @@ Wife: <em>“Screw you.”</em></p>
 	<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">f</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="o">(</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">7</span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">)*</span><span class="mi">10</span><span class="o">+</span><span class="mi">4</span><span class="o">*(</span><span class="n">t</span><span class="o">&amp;</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">13</span><span class="o">|</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="mi">6</span><span class="o">);</span>
 	<span class="o">}</span>
-	<span class="c1">//return (t*(t&gt;&gt;5|t&gt;&gt;8))&gt;&gt;(t&gt;&gt;16);</span>
-	<span class="c1">//return t*(((t&gt;&gt;12)|(t&gt;&gt;8))&amp;(63&amp;(t&gt;&gt;4)));</span>
+	<span class="c1">//return (t*(t&gt;&gt;5|t&gt;&gt;8))&gt;&gt;(t&gt;&gt;16);
+</span>
+	<span class="c1">//return t*(((t&gt;&gt;12)|(t&gt;&gt;8))&amp;(63&amp;(t&gt;&gt;4)));
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>These simple one-liners are able to produce amazing sounds and music!</p>
@@ -588,7 +675,7 @@ Here is one (including the best song I’ve created): <a href="http://t.co/9oogn
         <span itemprop="articleBody">
           <p>Last week I wrote a blogpost on <a href="/blog/2011/10/great-code-is-written-twice-or-more/">rewriting code</a> and improving quality. And now we have some great news that will support my claims. To verify our project and convince management we are doing it the right way, we’ve send a copy of our code to <a href="http://www.tuvit.de/english/Home.asp">TÜViT</a>.</p>
 
-<h1 id="tvit">TÜViT</h1>
+<h1 id="tÜvit">TÜViT</h1>
 
 <p>Most people from Europe will know TÜV. They test and certify cars, elevators and even nuclear power plants. They also verify IT security, quality, infrastructure, products, processes and their requirements. TÜViT is accredited by organisations and official bodies for the areas of IT security and IT quality.</p>
 
@@ -856,8 +943,8 @@ If you have this problem too, please let me know if this fix helps.</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/bitcoin-mining/">Bitcoin mining</a></h1>
 
         <span itemprop="articleBody">
-          <p>A couple of months ago I’ve started using and mining bitcoins. If you don’t know what bitcoin is yet, please watch the following video:<br />
-&lt;iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="http://www.youtube.com/embed/Um63OQz3bjo"&gt;&lt;/iframe&gt;</p>
+          <p>A couple of months ago I’ve started using and mining bitcoins. If you don’t know what bitcoin is yet, please watch the following video:</p>
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/Um63OQz3bjo"></iframe>
 
 <p>Mining for bitcoins has become harder and harder. But as a pro, the price of the bitcoin has also increased quite a lot. Since I’ve started mining I’ve mined about 40 bitcoins (in pools). This is now worth about 9 dollars per bitcoin: 360 dollars!</p>
 
@@ -907,7 +994,7 @@ If you have this problem too, please let me know if this fix helps.</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/android-application-1/">Android application #1</a></h1>
 
         <span itemprop="articleBody">
-          <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a>  </p>
+          <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a></p>
 
 <p>The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
 
@@ -916,33 +1003,33 @@ If you have this problem too, please let me know if this fix helps.</p>
   <li>“I hate it when”</li>
 </ul>
 
-<p>The application now displays some user information (username/profile picture) and shows parts of the tweet. The words “love” and “hate” are removed and the user has to guess which of the two words was in the original tweet.  </p>
+<p>The application now displays some user information (username/profile picture) and shows parts of the tweet. The words “love” and “hate” are removed and the user has to guess which of the two words was in the original tweet.</p>
 
 <h1 id="backend">Backend</h1>
 
-<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I’ve used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.  </p>
+<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I’ve used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.</p>
 
 <h1 id="frontend">Frontend</h1>
 
 <p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don’t have one… But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don’t have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
 
-<p>The next discovery was: Android isn’t at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.  </p>
+<p>The next discovery was: Android isn’t at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.</p>
 
-<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I’ve released my application in English (default), Dutch and French.  </p>
+<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I’ve released my application in English (default), Dutch and French.</p>
 
 <h1 id="releasing-to-the-market">Releasing to the Market</h1>
 
-<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on “Export as signed Android application” and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.  </p>
+<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on “Export as signed Android application” and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.</p>
 
-<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don’t think I’ll even see that return on investment, I’ve decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).  </p>
+<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don’t think I’ll even see that return on investment, I’ve decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).</p>
 
-<h1 id="adding-ads-from-admoblogoheaderadmoblogoheader">Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="ad_mob_logo_header" /></h1>
+<h1 id="adding-ads-from-">Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="ad_mob_logo_header" /></h1>
 
-<p>Now that I’ve invested 25 euro’s, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.  </p>
+<p>Now that I’ve invested 25 euro’s, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.</p>
 
 <h1 id="results">Results</h1>
 
-<p>After one day I’m pretty surprised: Already 350 people have downloaded the application and I’ve already earned &gt; 50 cents from AdMob (2% ROI).  </p>
+<p>After one day I’m pretty surprised: Already 350 people have downloaded the application and I’ve already earned &gt; 50 cents from AdMob (2% ROI).</p>
 
 <p>I’ve really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
 
@@ -954,47 +1041,6 @@ If you have this problem too, please let me know if this fix helps.</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/05/wedding-video/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Wedding video" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-05-23T10:52:16+02:00" class="date">
-            May 23, 2011 10:52:16
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
-
-        <span itemprop="articleBody">
-          <p>This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I’ve filmed something. I decided to edit everything together with some music. Here is the result:</p>
-
-<iframe type="text/html" src="http://player.vimeo.com/video/24091005?title=0&amp;byline=0&amp;portrait=0" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<p>It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard…</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

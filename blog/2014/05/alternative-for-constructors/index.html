@@ -175,7 +175,7 @@
 
 <p>If you want to create an <strong>immutable</strong> object in Java you need to have a constructor to initialise the final fields. Lets look at another example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="mi">1983</span><span class="o">,</span> <span class="mi">200</span><span class="o">,</span> <span class="mf">95.0</span><span class="o">,</span> <span class="mf">12.5</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="s">"Roy"</span><span class="o">,</span> <span class="s">"van Rijn"</span><span class="o">,</span> <span class="mi">1983</span><span class="o">,</span> <span class="mi">200</span><span class="o">,</span> <span class="mf">95.0</span><span class="o">,</span> <span class="mf">12.5</span><span class="o">);</span></code></pre></figure>
 
 <p>Immediately a problem becomes clear… if you read the code you have absolutely no idea what all the arguments mean. What is 200? What is 95.0? We have to look at the API or open the code of Person to see what arguments we can supply or have been supplied. Thankfully there is a design pattern that solves this problem, the Builder pattern.</p>
 
@@ -184,7 +184,7 @@
 <p>The <a href="http://en.wikipedia.org/wiki/Builder_pattern">builder pattern</a> is an ‘object creation software design pattern’. It can be used to create a immutable objects in a fluent, readable way.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span>
-		<span class="o">.</span><span class="na">PersonBuilder</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">PersonBuilder</span><span class="o">(</span><span class="s">"Roy"</span><span class="o">,</span> <span class="s">"van Rijn"</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">birthYear</span><span class="o">(</span><span class="mi">1983</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">length</span><span class="o">(</span><span class="mi">200</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">weight</span><span class="o">(</span><span class="mf">95.0</span><span class="o">)</span> <span class="c1">// This is what all these numbers mean!</span>
@@ -228,7 +228,7 @@
 			<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
 		<span class="o">}</span>
 		
-		<span class="c1">// All &#39;setters&#39; with a fluent interface:</span>
+		<span class="c1">// All 'setters' with a fluent interface:</span>
 		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">birthYear</span><span class="o">(</span><span class="kt">int</span> <span class="n">birthYear</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">this</span><span class="o">.</span><span class="na">birthYear</span> <span class="o">=</span> <span class="n">birthYear</span><span class="o">;</span>
 			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
@@ -282,8 +282,8 @@
 
 <span class="o">...</span>
 <span class="c1">// Made up syntax, similar to Moose, providing syntactic sugar.</span>
-<span class="c1">// Leaves the other fields null, compile error if final fields aren&#39;t set.</span>
-<span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">firstname</span> <span class="o">=&gt;</span> <span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="n">lastname</span> <span class="o">=&gt;</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="n">birthYear</span> <span class="o">=&gt;</span> <span class="mi">1983</span><span class="o">);</span></code></pre></figure>
+<span class="c1">// Leaves the other fields null, compile error if final fields aren't set.</span>
+<span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="n">firstname</span> <span class="o">=&gt;</span> <span class="s">"Roy"</span><span class="o">,</span> <span class="n">lastname</span> <span class="o">=&gt;</span> <span class="s">"van Rijn"</span><span class="o">,</span> <span class="n">birthYear</span> <span class="o">=&gt;</span> <span class="mi">1983</span><span class="o">);</span></code></pre></figure>
 
 <p>This has the readability advantage and has the flexibility of the Builder pattern (not needing dozens of overloaded constructors).</p>
 

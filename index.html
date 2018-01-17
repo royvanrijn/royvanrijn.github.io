@@ -115,6 +115,59 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2018/01/java-9-adoptation/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fear of upgrading to Java 9, is it justified?" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
+            Jan 17, 2018 10:28:12
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/java-9-adoptation/">Fear of upgrading to Java 9, is it justified?</a></h1>
+
+        <span itemprop="articleBody">
+          <p>It seems that the adoptation of Java 9 is slow, very slow. In a <a href="https://twitter.com/royvanrijn/status/950718660641017856">Twitter poll</a> this week I asked:
+“Which version of Java are you using in production?”</p>
+
+<p>The poll got almost 300 replies and to my surprise just 3% of the respondents are using Java 9 at the moment. Most are using Java 8 and there are even more people using Java 6… So what is holding people back? Why is almost no-one using Java 9?</p>
+
+<p>It turns out a lot of people are scared to upgrade to Java 9. They think it’ll be hard to do, libraries and tools will fail them. They are scared for another Jar-hell.</p>
+
+<p>That is why I took one of my larger projects, that has been running in production for a long time, and try to upgrade it to Java 9.</p>
+
+<h2 id="upgrading-walk-in-the-park-or-walk-in-jar-hell">Upgrading: Walk in the park or walk in jar-hell?</h2>
+
+<p>Here are my results and findings, in a new format: <strong>a vlog</strong></p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/tKUNMyZ9LEU"></iframe>
+
+<p>If you like the vlog and follow my website, please subscribe to my channel on YouTube!</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2017/06/inverse-conways-law/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Inverse Conway's law" width="100" height="100" />
@@ -284,27 +337,27 @@ nextVideo(0);
 <p>The first step in creating these videos was to get some actual freely available content. For this I chose to use Wikipedia. This can be accessed using JSON/REST, and to quickly hack this into place I decided to use a framework called ‘Unirest’. This makes the while prototype easy:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// API URI for the English Wikipedia</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">&quot;https://en.wikipedia.org/w/api.php&quot;</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">"https://en.wikipedia.org/w/api.php"</span><span class="o">;</span>
 
-<span class="c1">// Using a &#39;search query&#39;, name of the page, retrieve the content:</span>
+<span class="c1">// Using a 'search query', name of the page, retrieve the content:</span>
 <span class="kd">private</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getPageContent</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">query</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnirestException</span> <span class="o">{</span>
-    <span class="c1">//Example URI created for query &#39;Stack Overflow&#39;: https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
+    <span class="c1">//Example URI created for query 'Stack Overflow': https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
     <span class="n">HttpResponse</span><span class="o">&lt;</span><span class="n">JsonNode</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="n">Unirest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ENGLISH_WIKIPEDIA</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;format&quot;</span><span class="o">,</span> <span class="s">&quot;json&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;action&quot;</span><span class="o">,</span> <span class="s">&quot;query&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;prop&quot;</span><span class="o">,</span> <span class="s">&quot;extracts&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;titles&quot;</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;redirects&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"format"</span><span class="o">,</span> <span class="s">"json"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"action"</span><span class="o">,</span> <span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"prop"</span><span class="o">,</span> <span class="s">"extracts"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"titles"</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"redirects"</span><span class="o">,</span> <span class="s">"true"</span><span class="o">)</span>
             <span class="o">.</span><span class="na">asJson</span><span class="o">();</span>
 
     <span class="n">JSONObject</span> <span class="n">pagesObject</span> <span class="o">=</span> <span class="n">response</span>
             <span class="o">.</span><span class="na">getBody</span><span class="o">()</span>
             <span class="o">.</span><span class="na">getObject</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;query&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;pages&quot;</span><span class="o">);</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"pages"</span><span class="o">);</span>
     <span class="k">if</span><span class="o">(</span><span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">pageKey</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
-        <span class="n">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;extract&quot;</span><span class="o">);</span>
+        <span class="n">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">"extract"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
@@ -314,11 +367,11 @@ nextVideo(0);
 
 <p>This is the code I used to go from HTML to the first alinea of text:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Clean the HTML, get inner text of first alinea and break into sentences.</span>
-<span class="cm"> * @param htmlContent</span>
-<span class="cm"> * @return</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * Clean the HTML, get inner text of first alinea and break into sentences.
+ * @param htmlContent
+ * @return
+ */</span>
 <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">cleanAndBreakIntoSentences</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">htmlContent</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">Document</span> <span class="n">document</span> <span class="o">=</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
 
@@ -330,11 +383,11 @@ nextVideo(0);
         <span class="n">Element</span> <span class="n">elem</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
 
         <span class="c1">// All the text is contained in paragraph elements:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">&quot;p&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"p"</span><span class="o">))</span> <span class="o">{</span>
 
             <span class="n">String</span> <span class="n">source</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="na">text</span><span class="o">();</span>
 
-            <span class="c1">// Break the text into sentences using the smart JDK &#39;BreakIterator&#39;:</span>
+            <span class="c1">// Break the text into sentences using the smart JDK 'BreakIterator':</span>
             <span class="n">BreakIterator</span> <span class="n">breakIterator</span> <span class="o">=</span> <span class="n">BreakIterator</span><span class="o">.</span><span class="na">getSentenceInstance</span><span class="o">(</span><span class="n">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
             <span class="n">breakIterator</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
             <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">first</span><span class="o">();</span>
@@ -343,7 +396,7 @@ nextVideo(0);
             <span class="o">}</span>
         <span class="o">}</span>
         <span class="c1">// If we reach a header, stop processing, we only need the first section/alinea:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">&quot;h2&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"h2"</span><span class="o">))</span> <span class="o">{</span>
             <span class="c1">// We break on the first (sub-) title:</span>
             <span class="k">break</span><span class="o">;</span>
         <span class="o">}</span>
@@ -355,20 +408,20 @@ nextVideo(0);
 
 <p>We have some text, now how do we turn this into a video? We need visuals! I decided to cut the content into seperate lines, and for each line I have a single ‘slide’. This is an (buffered) image created using Java’s 2D API and saved to file.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * For each sentence, create a buffered image and paint some text on this.</span>
-<span class="cm"> * We need the text to be &#39;wrapped&#39;, for this I repurpose a JTextArea, on a JPanel.</span>
-<span class="cm"> * </span>
-<span class="cm"> * Also increase the font size so the text fits on the screen.</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * For each sentence, create a buffered image and paint some text on this.
+ * We need the text to be 'wrapped', for this I repurpose a JTextArea, on a JPanel.
+ * 
+ * Also increase the font size so the text fits on the screen.
+ */</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">paintText</span><span class="o">(</span><span class="n">Graphics2D</span> <span class="n">g2</span><span class="o">,</span> <span class="n">String</span> <span class="n">text</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JPanel</span><span class="o">();</span>
+    <span class="n">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JPanel</span><span class="o">();</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 
-    <span class="n">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JTextArea</span><span class="o">();</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
+    <span class="n">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JTextArea</span><span class="o">();</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="n">BorderFactory</span><span class="o">.</span><span class="na">createEmptyBorder</span><span class="o">(</span><span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">));</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setWrapStyleWord</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
@@ -377,12 +430,12 @@ nextVideo(0);
     <span class="n">area</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 
     <span class="kt">int</span> <span class="n">fontSize</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-    <span class="c1">// Increase the font size as long as it fits on screen (and don&#39;t go bigger than 100, looks ugly):</span>
+    <span class="c1">// Increase the font size as long as it fits on screen (and don't go bigger than 100, looks ugly):</span>
     <span class="k">while</span><span class="o">(</span><span class="n">area</span><span class="o">.</span><span class="na">getPreferredScrollableViewportSize</span><span class="o">().</span><span class="na">getHeight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">1080</span> <span class="o">&amp;&amp;</span> <span class="n">fontSize</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">fontSize</span> <span class="o">+=</span> <span class="mi">10</span><span class="o">;</span>
-        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nf">Font</span><span class="o">(</span><span class="s">&quot;Futura&quot;</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
+        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
     <span class="o">}</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nf">Font</span><span class="o">(</span><span class="s">&quot;Futura&quot;</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">area</span><span class="o">);</span>
 
     <span class="c1">// Print this panel on the Graphics2D object (which is a BufferedImage)</span>
@@ -392,15 +445,15 @@ nextVideo(0);
 <h1 id="step-3-text-to-speech">Step 3: Text-To-Speech</h1>
 
 <p>Instead of using a Java Text-To-Speech (TTS) library, which aren’t very clear or good, I decided to use the build-in OS/X command ‘say’.
-On the command line you can execute: <code>say Hello world!</code></p>
+On the command line you can execute: <code class="highlighter-rouge">say Hello world!</code></p>
 
 <p>The ‘say’ command supports different voices and also has the ability to store the output in a file. Which is perfect for us!</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Execute the say command with a given filename, voice and sentence to speak:</span>
-    <span class="kd">final</span> <span class="n">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">&quot;say -o &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot; -v &quot;</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">&quot; -r 210 &quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">"say -o "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">" -v "</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">" -r 210 "</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
 
     <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-        <span class="n">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nf">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+        <span class="n">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
         <span class="n">String</span> <span class="n">line1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 
         <span class="k">try</span> <span class="o">{</span>
@@ -424,23 +477,23 @@ The easiest way to do this is to use ffmpeg, a powerful command line video tool.
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="k">for</span><span class="o">(</span><span class="n">VikipediaSentence</span> <span class="n">sentence</span> <span class="o">:</span> <span class="n">sentences</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="na">getFilename</span><span class="o">();</span>
         <span class="c1">//Combine audio and image into a short video:</span>
-        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -loop 1 -y -i &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.png -i &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.mp4 -tune stillimage -shortest &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.mpg&quot;</span><span class="o">);</span>
+        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -loop 1 -y -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".png -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mp4 -tune stillimage -shortest "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mpg"</span><span class="o">);</span>
     <span class="o">}</span></code></pre></figure>
 
 <p>We now have a series of small MPG files. They need to be combined into a single video. For this we need a text file which contains a list of all the MPG files. This is stored on disc and next we execute the following command:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//merge all:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg"</span><span class="o">);</span></code></pre></figure>
 
 <p>Next we convert the video from one large MPG to MP4 file (which is a nicer, compressed format):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//convert to mp4:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4"</span><span class="o">);</span></code></pre></figure>
 
 <p>And to add a little more ‘production value’ I’ve gone online and found some soothing (free, creative commons) background music. This music is looped into a large audio file of 50 minutes (enough for all videos). Again using ffmpeg the audio is mixed in:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// add background music:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4"</span><span class="o">);</span></code></pre></figure>
 
 <p>There it is, we have a complete video with text audio, text visuals and background music! Only one thing left to do, uploading to YouTube!</p>
 
@@ -548,31 +601,31 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
 
-    <span class="c1">// Using extends we create an &#39;in&#39; variable:</span>
+    <span class="c1">// Using extends we create an 'in' variable:</span>
     <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="n">inAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the inAnimals we can read: Animal (not subclasses)</span>
     <span class="n">Animal</span> <span class="n">animal</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- reading Animal is fine</span>
-    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can&#39;t read Cat</span>
+    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can't read Cat</span>
 
     <span class="c1">// We can write: nothing (!) making it almost read-only</span>
-    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <p>There is also the ‘super’ keyword (not very common) to create an <strong>out</strong>-variable use side:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
 
-    <span class="c1">// Using super we create an &#39;out&#39; variable, setting an upper bound:</span>
+    <span class="c1">// Using super we create an 'out' variable, setting an upper bound:</span>
     <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Cat</span><span class="o">&gt;</span> <span class="n">outAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the outAnimals we can read: object (no superclasses!)</span>
     <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, illegal</span>
     <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- we can only read object</span>
 
-    <span class="c1">// On the write side, we&#39;ve set a bound to Cat:</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="c1">// On the write side, we've set a bound to Cat:</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <h2 id="so-what-is-jep-300">So what is JEP 300?</h2>
 
@@ -608,9 +661,9 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dog</span><span class="o">(</span><span class="s">&quot;Bella&quot;</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dog</span><span class="o">(</span><span class="s">&quot;Buddy&quot;</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="nf">Cat</span><span class="o">(</span><span class="s">&quot;Tigger&quot;</span><span class="o">));</span>
+    <span class="n">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="n">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="n">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
     <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
 
@@ -625,7 +678,7 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 
 <p>We have an enum with three pets. These pets have an instance of an animal inside them. And we have a way of retrieving them.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: &quot;Bella&quot;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: "Bella"</span></code></pre></figure>
 
 <p>But one thing we can’t do it call the method “.bark()” on BELLA, because we don’t know this is a Dog.</p>
 
@@ -633,9 +686,9 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span><span class="o">&lt;</span><span class="n">A</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nf">Dog</span><span class="o">(</span><span class="s">&quot;Bella&quot;</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nf">Dog</span><span class="o">(</span><span class="s">&quot;Buddy&quot;</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">&lt;</span><span class="n">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nf">Cat</span><span class="o">(</span><span class="s">&quot;Tigger&quot;</span><span class="o">));</span>
+    <span class="n">BELLA</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="n">BUDDY</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="n">TIGGER</span><span class="o">&lt;</span><span class="n">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
     <span class="n">A</span> <span class="n">animal</span><span class="o">;</span>
 
@@ -673,11 +726,11 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 
 <span class="n">apply</span><span class="o">(</span><span class="n">input</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">);</span> <span class="c1">// &lt;- compile error</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Ambiguous method call. Both:</span>
-<span class="cm"> * apply (Predicate&lt;Animal&gt;)        in classname and</span>
-<span class="cm"> * apply (Function&lt;Animal, String&gt;) in classname match</span>
-<span class="cm"> */</span>
+<span class="cm">/**
+ * Ambiguous method call. Both:
+ * apply (Predicate&lt;Animal&gt;)        in classname and
+ * apply (Function&lt;Animal, String&gt;) in classname match
+ */</span>
     </code></pre></figure>
 
 <p>Why are we having this problem? Both methods are possible candidates of the lambda. If we look further and see the return type ‘boolean’ it should be clear we wanted to call the Predicate method and not the Function (which should return a String). Right now this doesn’t work, but it is something the compiler could figure out for us.</p>
@@ -692,7 +745,7 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 <span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
 
 <span class="c1">// Even possible, ignore both:</span>
-<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">&quot;someString&quot;</span><span class="o">;</span>
+<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"someString"</span><span class="o">;</span>
     </code></pre></figure>
 
 <h2 id="shadowing-of-parameters">Shadowing of parameters</h2>
@@ -705,7 +758,7 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">key</span> <span class="o">-&gt;</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="c1">// compile error, key already defined</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>  <span class="c1">// compile error, can&#39;t redefine key inside this scope</span>
+    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>  <span class="c1">// compile error, can't redefine key inside this scope</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 
@@ -715,10 +768,10 @@ I’ve created a bot that generates music some years, maybe I should improve tha
 For example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;theInitialKey&quot;</span><span class="o">;</span>
+<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theInitialKey"</span><span class="o">;</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;theShadowKey&quot;</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
+    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theShadowKey"</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 
@@ -766,7 +819,7 @@ For example:</p>
         <span itemprop="articleBody">
           <p>Interruptions are a software developers worst nightmare. This is what you often hear. There is nothing worse than being interrupted while working hard on a problem, while you’re in <em>the zone</em>. You’ll lose your train of thought and the world collapses.</p>
 
-<p>The idea is that in software development you are sometimes very deep into a problem, analysing code: </p>
+<p>The idea is that in software development you are sometimes very deep into a problem, analysing code:</p>
 
 <p>This orchestrator calls that service, it is managed by this class and talks to that queue. So this generator has these parameters and it all depends on… “<strong>hey</strong> <em>I still need your time sheet</em>”</p>
 
@@ -961,11 +1014,11 @@ For example:</p>
 
 <p>But I have a problem with that… all those terms don’t reflect on what we do. Currently I’m sitting in a session at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> and I’m having the feeling people don’t realize what their job actually is.</p>
 
-<h1 id="so-what-does-a-software-coder-do">So, what does a software coder do?</h1>
+<p>#So, what does a software coder do?#</p>
 
-<p>When creating software <em>we instruct a computer what to do</em>. </p>
+<p>When creating software <em>we instruct a computer what to do</em>.</p>
 
-<p>That is it. </p>
+<p>That is it.</p>
 
 <p>We tell a machine how to respond. We don’t build things (develop), we don’t slay things (ninja!), we don’t rock, we just tell the computer what to do.</p>
 
@@ -977,29 +1030,29 @@ For example:</p>
 
 <p>We started out programming in binary, but this was way too complicated for humans. So we invented programming languages. First we created assembly. This made it easier for a human to tell the machine what to do. But assembly was still too complicated. Slowly the programming languages became closer and closer to human language.</p>
 
-<h1 id="alternatives">Alternatives</h1>
+<p>#Alternatives#</p>
 
 <p>My job is to write code, code that the machine understands. The code must also be pleasant to read and understand by other humans. Also, in this, I’m putting a lot of creativity.</p>
 
 <p>Maybe you are a <strong>software author</strong> or <strong>software writer</strong>:</p>
 
-<pre><code>wri•ter (rahy-ter)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wri•ter (rahy-ter)
 
 noun
 1. a person engaged in writing (books, articles, stories, etc.) as an occupation or profession; an author or journalist.
 2. a person who commits his or her thoughts, ideas, etc., to writing
-</code></pre>
+</code></pre></div></div>
 
 <p>This fits our job much better!</p>
 
 <p>If you want something more exotic, and your code has a good flow and shows creativity, you might call yourself a: <strong>software poet</strong>:</p>
 
-<pre><code>po•et (ˈpoʊ ɪt)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>po•et (ˈpoʊ ɪt)
 
 noun
 1. one who writes poetry.
 2. one who displays imagination and sensitivity along with eloquent expression.
-</code></pre>
+</code></pre></div></div>
 
 
         </span>
@@ -1055,13 +1108,13 @@ noun
 
 <p>I think my answer below won’t surprise you, but the reasoning behind it might. First lets look at <strong>four</strong> reasons this bug should never happen to me (or any other experienced programmer).</p>
 
-<h1 id="static-variablesglobal-state">1) Static variables/global state</h1>
+<h1 id="1-static-variablesglobal-state">1) Static variables/global state</h1>
 
 <p>The first obvious problem with the code is the usage of static state. The variable ‘isCrazyMurderingRobot’ is mutable and static, so anywhere in the code the value can be changed. This makes it very hard to reason about the variable and keep track of it. Any programmer can come along and change the value in some method. This is unacceptable, there is almost <strong>no</strong> reason to use mutable static variables.</p>
 
 <p>Top tip: If you have variables, especially mutable variables, keep their scope as small as possible!</p>
 
-<h1 id="final-method-arguments">2) Final method arguments</h1>
+<h1 id="2-final-method-arguments">2) Final method arguments</h1>
 
 <p>If you solve the global state problem you’ll probably end up with something like this (translated to Java):</p>
 
@@ -1079,11 +1132,11 @@ noun
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span><span class="n">isCrazyMurderingRobot</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Compilation error: &#39;Cannot assign a value to final variable &#39;isCrazyMurderingRobot&#39;</span></code></pre></figure>
+        <span class="c1">// Compilation error: 'Cannot assign a value to final variable 'isCrazyMurderingRobot'</span></code></pre></figure>
 
 <p>The code won’t even compile before telling me what is wrong, the world is saved!</p>
 
-<h1 id="static-code-analysis">3) Static code analysis</h1>
+<h1 id="3-static-code-analysis">3) Static code analysis</h1>
 
 <p>Another reason this bug will never happen in my code is because we have static code analysis on <em>all</em> our projects. A program like <a href="http://findbugs.sourceforge.net/">FindBugs</a> will immediately flag this as a major problem, assigning values inside an if-statement.</p>
 
@@ -1095,7 +1148,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 
 <p>Static code analysis is an essential tool in modern programming, it is just so convenient, never reads over certain bugs like a human would (spoiler: more on that in the final conclusion below).</p>
 
-<h1 id="yoda-conditions">4) Yoda conditions</h1>
+<h1 id="4-yoda-conditions">4) Yoda conditions</h1>
 
 <p>The final reason this bug will never happen in my code is: <a href="https://en.wikipedia.org/wiki/Yoda_conditions">Yoda conditions</a></p>
 
@@ -1107,7 +1160,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span><span class="kc">true</span> <span class="o">=</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Compilation error: &#39;Variable expected&#39;</span></code></pre></figure>
+        <span class="c1">// Compilation error: 'Variable expected'</span></code></pre></figure>
 
 <h1 id="conclusion--saving-the-world">Conclusion / saving the world</h1>
 
@@ -1157,7 +1210,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
         <span itemprop="articleBody">
           <p>Gender equality and discrimination in IT is a hot topic. More and more women are (rightfully) opening their mouth and point out problem areas. There are just <em>some</em> men who just don’t get it, those insensitive idiots, they are the reason IT is such a toxic harsh environment for women.</p>
 
-<p>So I thought… </p>
+<p>So I thought…</p>
 
 <p>This is a story about when I realized I am (unintentionally) one of those idiots.</p>
 
@@ -1188,7 +1241,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 <p>Her reply was simple, but blew my mind:</p>
 
 <blockquote>
-  <p>Hilary: </p>
+  <p>Hilary:</p>
 
   <p>Hey, have you seen this? <a href="http://larahogan.me/blog/on-unsolicited-criticism/">http://larahogan.me/blog/on-unsolicited-criticism/</a></p>
 </blockquote>
@@ -1217,7 +1270,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
   <p>pleasantly easy to approach and to talk to; friendly; cordial; warmly polite:</p>
 </blockquote>
 
-<p>This statement is also gender discrimination, but in a positive way. From my experience women are more affable. They are friendlier, easier to approach and to talk to. Male speakers can have a ‘macho’ attitude, I don’t want to go up to them and give them feedback. </p>
+<p>This statement is also gender discrimination, but in a positive way. From my experience women are more affable. They are friendlier, easier to approach and to talk to. Male speakers can have a ‘macho’ attitude, I don’t want to go up to them and give them feedback.</p>
 
 <p>This might also be a big part of why female speakers receive unsolicited feedback and male speakers don’t.</p>
 
@@ -1394,11 +1447,11 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
 
 <blockquote>
 
-  <p>I’m working as Software Engineer and as intend to grow up to architect position, now on I was wondering how to best way to get there , should be : </p>
+  <p>I’m working as Software Engineer and as intend to grow up to architect position, now on I was wondering how to best way to get there , should be :</p>
 
   <p>Java certifications</p>
 
-  <p>Masters </p>
+  <p>Masters</p>
 
   <p>Both ?</p>
 
@@ -1479,7 +1532,7 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/05/the-prettiest-code/">The Prettiest Code</a></h1>
 
         <span itemprop="articleBody">
-          <p>This afternoon I started to wonder… </p>
+          <p>This afternoon I started to wonder…</p>
 
 <blockquote>
   <p>I’ve been a programmer now for 20+ years, but what is the <em>best</em> piece of code I’ve written in all these years?</p>
@@ -1589,145 +1642,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2016/04/deprecating-optional-get/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Deprecating Optional.get()" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2016-04-28T14:10:09+02:00" class="date">
-            Apr 28, 2016 14:10:09
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/04/deprecating-optional-get/">Deprecating Optional.get()</a></h1>
-
-        <span itemprop="articleBody">
-          <p>On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a>.
-Before diving into that discussion, lets take a look at what Optional does and how you can use it.</p>
-
-<h2 id="checking-for-null">Checking for null</h2>
-
-<p>What do you do when your code calls an external service or <em>god forbid</em> a microservice, and the result isn’t always available?</p>
-
-<p>Most of the time the protocol you are using facilitates in the optional part, for example in REST you’ll get a <em>404</em> instead of JSON. Getting this <em>404</em> forces you to think about this scenario and do something when this happens.</p>
-
-<p>But what do you do when you’re calling a framework (on the boundary of your code) and the value isn’t always known?</p>
-
-<p>You either get the value or the result is a dreaded <strong>null</strong>. This causes a lot of null checks, or bugs where the code just crashes with a NullPointerException.</p>
-
-<p>Example (old skool, Java 7):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
-    <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.</p>
-
-<h2 id="javautiloptional">java.util.Optional</h2>
-
-<p>What happens when you are processing a <em>stream</em> and some values are <em>null</em>? You don’t want null checks inside a stream! This is where Java 8’s Optional comes in. If you’re not (yet!?) using Java 8, there are other implementations as well. For example <a href="https://github.com/google/guava">Google Guava</a> has an Optional as well.</p>
-
-<p>Optional is a class that ‘might’ have a given value in it, or not, it is optional. So how exactly is this helpful? Instead of checking for null this wrapper class can handle some situations for you.</p>
-
-<p>For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
-
-    <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
-
-<p>Or the shorter ‘fluid’ version:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
-        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
-        <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
-        <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
-
-<p>Even if the <em>Optional</em> is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.</p>
-
-<p>As you can see Optional can really clean up your code. You don’t need to worry about null checks anymore.</p>
-
-<p>So what is the problem with Optional.get()?</p>
-
-<h2 id="optionalget-deprecation-discussion">Optional.get() deprecation discussion</h2>
-
-<p>Pretty much out of the blue on the OpenJDK mailinglist <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040484.html">an email arrived</a> with a <a href="http://openjdk.java.net/guide/webrevHelp.html">webrev</a> (similar to a patch file) that contained the deprecation of <em>Optional.get()</em>.</p>
-
-<p>The get() method is too easy to find, and the name isn’t quite what you’d expect, and the webrev author claims there are a lot of cases online where people made the same mistakes.</p>
-
-<p>Many programmers, when they first encounter <em>Optional</em>, don’t know what to do. They look in their IDE and the first thing that pops up is <em>get()</em>.</p>
-
-<p>It is just an easy method to call:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
-
-<p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>
-
-<ul>
-  <li>If you want to do something with the result, use <em>filter</em>, <em>map</em>, <em>ifPresent</em> (and many others).</li>
-  <li>If you need to return something, either return an Optional yourself, or get a default value by calling <em>orElse</em>, <em>orElseGet</em> or <em>orElseThrow</em>.</li>
-</ul>
-
-<p>This is all you need, why have a <em>get</em>-method?</p>
-
-<p>The proposal on the mailinglist is to deprecate the <em>get()</em> method and rename it to <em>getWhenPresent()</em>. This name change should warn people that it might not be present and they should check <em>isPresent</em> before calling <em>get()</em>.</p>
-
-<p>Instead of embracing this change some people on the mailinglist argue against deprecation, some of their reasons:</p>
-
-<ul>
-  <li>Renaming will break a <em>LOT</em> of code, well, not really break the code, it will cause deprecation warnings</li>
-  <li><em>getWhenPresent()</em> instead of <em>get()</em> just adds noise to the code, it doesn’t solve anything</li>
-  <li>People should just read the JavaDoc, it clearly states what <em>get()</em> does and throws</li>
-  <li>Guava’s Optional also has the same <em>get()</em> method, they’ve never heard about the problem</li>
-</ul>
-
-<p>The most honest and one of the more powerful replies in the discussion was <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040531.html">from Brian Goetz</a> himself:</p>
-
-<blockquote>
-  <p>As the person who chose the original (terrible) name, let me weigh in…</p>
-
-  <p>……</p>
-
-  <p>I’d like to see it fixed, and the sooner the better.</p>
-</blockquote>
-
-<p>He is clearly in favor of deprecation… what is your opinion? Let me know in the comments!</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

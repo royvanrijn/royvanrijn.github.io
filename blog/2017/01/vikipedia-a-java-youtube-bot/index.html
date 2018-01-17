@@ -180,27 +180,27 @@ nextVideo(0);
 <p>The first step in creating these videos was to get some actual freely available content. For this I chose to use Wikipedia. This can be accessed using JSON/REST, and to quickly hack this into place I decided to use a framework called ‘Unirest’. This makes the while prototype easy:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// API URI for the English Wikipedia</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">&quot;https://en.wikipedia.org/w/api.php&quot;</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">"https://en.wikipedia.org/w/api.php"</span><span class="o">;</span>
 
-<span class="c1">// Using a &#39;search query&#39;, name of the page, retrieve the content:</span>
+<span class="c1">// Using a 'search query', name of the page, retrieve the content:</span>
 <span class="kd">private</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getPageContent</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">query</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnirestException</span> <span class="o">{</span>
-    <span class="c1">//Example URI created for query &#39;Stack Overflow&#39;: https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
+    <span class="c1">//Example URI created for query 'Stack Overflow': https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
     <span class="n">HttpResponse</span><span class="o">&lt;</span><span class="n">JsonNode</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="n">Unirest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ENGLISH_WIKIPEDIA</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;format&quot;</span><span class="o">,</span> <span class="s">&quot;json&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;action&quot;</span><span class="o">,</span> <span class="s">&quot;query&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;prop&quot;</span><span class="o">,</span> <span class="s">&quot;extracts&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;titles&quot;</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">&quot;redirects&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"format"</span><span class="o">,</span> <span class="s">"json"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"action"</span><span class="o">,</span> <span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"prop"</span><span class="o">,</span> <span class="s">"extracts"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"titles"</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"redirects"</span><span class="o">,</span> <span class="s">"true"</span><span class="o">)</span>
             <span class="o">.</span><span class="na">asJson</span><span class="o">();</span>
 
     <span class="n">JSONObject</span> <span class="n">pagesObject</span> <span class="o">=</span> <span class="n">response</span>
             <span class="o">.</span><span class="na">getBody</span><span class="o">()</span>
             <span class="o">.</span><span class="na">getObject</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;query&quot;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;pages&quot;</span><span class="o">);</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"pages"</span><span class="o">);</span>
     <span class="k">if</span><span class="o">(</span><span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">pageKey</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
-        <span class="n">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;extract&quot;</span><span class="o">);</span>
+        <span class="n">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">"extract"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
@@ -210,11 +210,11 @@ nextVideo(0);
 
 <p>This is the code I used to go from HTML to the first alinea of text:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * Clean the HTML, get inner text of first alinea and break into sentences.</span>
-<span class="cm"> * @param htmlContent</span>
-<span class="cm"> * @return</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * Clean the HTML, get inner text of first alinea and break into sentences.
+ * @param htmlContent
+ * @return
+ */</span>
 <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">cleanAndBreakIntoSentences</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">htmlContent</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">Document</span> <span class="n">document</span> <span class="o">=</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
 
@@ -226,11 +226,11 @@ nextVideo(0);
         <span class="n">Element</span> <span class="n">elem</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
 
         <span class="c1">// All the text is contained in paragraph elements:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">&quot;p&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"p"</span><span class="o">))</span> <span class="o">{</span>
 
             <span class="n">String</span> <span class="n">source</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="na">text</span><span class="o">();</span>
 
-            <span class="c1">// Break the text into sentences using the smart JDK &#39;BreakIterator&#39;:</span>
+            <span class="c1">// Break the text into sentences using the smart JDK 'BreakIterator':</span>
             <span class="n">BreakIterator</span> <span class="n">breakIterator</span> <span class="o">=</span> <span class="n">BreakIterator</span><span class="o">.</span><span class="na">getSentenceInstance</span><span class="o">(</span><span class="n">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
             <span class="n">breakIterator</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
             <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">first</span><span class="o">();</span>
@@ -239,7 +239,7 @@ nextVideo(0);
             <span class="o">}</span>
         <span class="o">}</span>
         <span class="c1">// If we reach a header, stop processing, we only need the first section/alinea:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">&quot;h2&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"h2"</span><span class="o">))</span> <span class="o">{</span>
             <span class="c1">// We break on the first (sub-) title:</span>
             <span class="k">break</span><span class="o">;</span>
         <span class="o">}</span>
@@ -251,20 +251,20 @@ nextVideo(0);
 
 <p>We have some text, now how do we turn this into a video? We need visuals! I decided to cut the content into seperate lines, and for each line I have a single ‘slide’. This is an (buffered) image created using Java’s 2D API and saved to file.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**</span>
-<span class="cm"> * For each sentence, create a buffered image and paint some text on this.</span>
-<span class="cm"> * We need the text to be &#39;wrapped&#39;, for this I repurpose a JTextArea, on a JPanel.</span>
-<span class="cm"> * </span>
-<span class="cm"> * Also increase the font size so the text fits on the screen.</span>
-<span class="cm"> */</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * For each sentence, create a buffered image and paint some text on this.
+ * We need the text to be 'wrapped', for this I repurpose a JTextArea, on a JPanel.
+ * 
+ * Also increase the font size so the text fits on the screen.
+ */</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">paintText</span><span class="o">(</span><span class="n">Graphics2D</span> <span class="n">g2</span><span class="o">,</span> <span class="n">String</span> <span class="n">text</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JPanel</span><span class="o">();</span>
+    <span class="n">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JPanel</span><span class="o">();</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 
-    <span class="n">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JTextArea</span><span class="o">();</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nf">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
+    <span class="n">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JTextArea</span><span class="o">();</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="n">BorderFactory</span><span class="o">.</span><span class="na">createEmptyBorder</span><span class="o">(</span><span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">));</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setWrapStyleWord</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
@@ -273,12 +273,12 @@ nextVideo(0);
     <span class="n">area</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 
     <span class="kt">int</span> <span class="n">fontSize</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-    <span class="c1">// Increase the font size as long as it fits on screen (and don&#39;t go bigger than 100, looks ugly):</span>
+    <span class="c1">// Increase the font size as long as it fits on screen (and don't go bigger than 100, looks ugly):</span>
     <span class="k">while</span><span class="o">(</span><span class="n">area</span><span class="o">.</span><span class="na">getPreferredScrollableViewportSize</span><span class="o">().</span><span class="na">getHeight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">1080</span> <span class="o">&amp;&amp;</span> <span class="n">fontSize</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">fontSize</span> <span class="o">+=</span> <span class="mi">10</span><span class="o">;</span>
-        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nf">Font</span><span class="o">(</span><span class="s">&quot;Futura&quot;</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
+        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
     <span class="o">}</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nf">Font</span><span class="o">(</span><span class="s">&quot;Futura&quot;</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
     <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">area</span><span class="o">);</span>
 
     <span class="c1">// Print this panel on the Graphics2D object (which is a BufferedImage)</span>
@@ -288,15 +288,15 @@ nextVideo(0);
 <h1 id="step-3-text-to-speech">Step 3: Text-To-Speech</h1>
 
 <p>Instead of using a Java Text-To-Speech (TTS) library, which aren’t very clear or good, I decided to use the build-in OS/X command ‘say’.
-On the command line you can execute: <code>say Hello world!</code></p>
+On the command line you can execute: <code class="highlighter-rouge">say Hello world!</code></p>
 
 <p>The ‘say’ command supports different voices and also has the ability to store the output in a file. Which is perfect for us!</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Execute the say command with a given filename, voice and sentence to speak:</span>
-    <span class="kd">final</span> <span class="n">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">&quot;say -o &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot; -v &quot;</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">&quot; -r 210 &quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">"say -o "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">" -v "</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">" -r 210 "</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
 
     <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-        <span class="n">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nf">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+        <span class="n">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
         <span class="n">String</span> <span class="n">line1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 
         <span class="k">try</span> <span class="o">{</span>
@@ -320,23 +320,23 @@ The easiest way to do this is to use ffmpeg, a powerful command line video tool.
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="k">for</span><span class="o">(</span><span class="n">VikipediaSentence</span> <span class="n">sentence</span> <span class="o">:</span> <span class="n">sentences</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="na">getFilename</span><span class="o">();</span>
         <span class="c1">//Combine audio and image into a short video:</span>
-        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -loop 1 -y -i &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.png -i &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.mp4 -tune stillimage -shortest &quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;.mpg&quot;</span><span class="o">);</span>
+        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -loop 1 -y -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".png -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mp4 -tune stillimage -shortest "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mpg"</span><span class="o">);</span>
     <span class="o">}</span></code></pre></figure>
 
 <p>We now have a series of small MPG files. They need to be combined into a single video. For this we need a text file which contains a list of all the MPG files. This is stored on disc and next we execute the following command:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//merge all:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg"</span><span class="o">);</span></code></pre></figure>
 
 <p>Next we convert the video from one large MPG to MP4 file (which is a nicer, compressed format):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//convert to mp4:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4"</span><span class="o">);</span></code></pre></figure>
 
 <p>And to add a little more ‘production value’ I’ve gone online and found some soothing (free, creative commons) background music. This music is looped into a large audio file of 50 minutes (enough for all videos). Again using ffmpeg the audio is mixed in:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// add background music:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">&quot;ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4&quot;</span><span class="o">);</span></code></pre></figure>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4"</span><span class="o">);</span></code></pre></figure>
 
 <p>There it is, we have a complete video with text audio, text visuals and background music! Only one thing left to do, uploading to YouTube!</p>
 

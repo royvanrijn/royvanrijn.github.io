@@ -205,16 +205,16 @@
 <p>When ‘var’ gets added it won’t be a keyword, it’ll be a ‘reserved type name’. This means that the following code for example would be working just fine:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// this compiles just fine:</span>
-    <span class="n">var</span> <span class="n">var</span> <span class="o">=</span> <span class="s">&quot;var&quot;</span><span class="o">;</span></code></pre></figure>
+    <span class="n">var</span> <span class="n">var</span> <span class="o">=</span> <span class="s">"var"</span><span class="o">;</span></code></pre></figure>
 
 <h2 id="con-rhs-versus-lhs"><strong>Con</strong>: RHS versus LHS</h2>
 
 <p>This JEP focusses on the LHS (left-hand side) declaration by removing the need to specify a type. But recently, in Java 7, Java has introduced the diamond operator to eliminate verbosity in the RHS (right-hand side) declaration. With JEP 286, these two collide:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before Java 7 &#39;diamond operator&#39;:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before Java 7 'diamond operator':</span>
     <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
 
-    <span class="c1">// With Java 7 &#39;diamond operator&#39;, removing generic type on RHS:</span>
+    <span class="c1">// With Java 7 'diamond operator', removing generic type on RHS:</span>
     <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// With JEP 286, we need to add the generic type again at the RHS...</span>

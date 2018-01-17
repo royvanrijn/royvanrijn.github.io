@@ -115,6 +115,74 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2015/05/microservices-creationism-versus-evolutionism/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/micro-islands.jpg" alt="Microservices: Creationism versus Evolutionism" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2015-05-14T12:43:00+02:00" class="date">
+            May 14, 2015 12:43:00
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/05/microservices-creationism-versus-evolutionism/">Microservices: Creationism versus Evolutionism</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This morning a friend (<a href="https://twitter.com/vgrgic/status/598791639784660994">@vgrgic</a>) tweeted the following quote from Martin Fowler:</p>
+
+<blockquote>
+  <p>“So if you can keep your system simple enough to avoid the need for microservices: do.”</p>
+</blockquote>
+
+<p>This is absolutely true I think, microservices are far from the silver bullet some people want you to believe. They do have a place in software architecture obviously, but there is always a ‘it depends’.</p>
+
+<h1 id="creationists">Creationists</h1>
+
+<p>A lot of microservices ‘experts’ I’ve met are creationists. When they start designing an application (the last two years), they break the requirements down into pieces. Once they start coding they instantly create small services and connect them. But in my experience, this has a major drawback. When doing this, you’ll need to make quite a lot of assumptions upfront on what the future of the service will hold and how it will grow. Once you’ve created small services they have very strong boundaries, those boundaries really dictate and limit how your application can and will grow. This can work well, only if all your assumptions turn out to be true, but really, how often does that happen?</p>
+
+<h1 id="evolutionists">Evolutionists</h1>
+
+<p>I’ve labelled myself as a design evolutionist. Always <strong>start</strong> with a monolith. Properly separate the concerns in your code, keep it really clean and tidy. Always be aware of what each piece of code does and if it belongs where you just wrote it. In the best scenario, you’ll end up with a simple, well build, working monolith! This is also what Martin Fowler describes in his piece on <a href="http://martinfowler.com/bliki/MicroservicePremium.html">MicroservicePremium</a>. There is a point where the monolith becomes a burden to manage. Once you reach that point, and you’ve payed proper attention to the separation of concerns, it should be trivial to cut loose a well defined microservice from your code.</p>
+
+<h1 id="rant-about-the-hype">Rant about the hype</h1>
+
+<p><strong>Warning:</strong> The following paragraph is full of nonsense.</p>
+
+<p>Until recently I couldn’t understand the microservices hype. Why is it suddenly this popular? But recently I’ve seen the light. I now know <em>why</em> so many people like it. Microservices has a wide appeal for many wrong reasons.</p>
+
+<ol>
+  <li>Architects (like me) like it because it solves one kind of problem really well, managing and maintaining a huge application.</li>
+  <li>The DevOps community likes it because they have a lot <strong>to do</strong> when you have heaps of services.</li>
+  <li>Large <strong>SOA/ESB</strong> companies like it, they almost went bankrupt and out of fashion, but now they can <strong>sell</strong> their crappy tooling again as it ‘enables microservices’.</li>
+  <li>The OSGi community likes it, they too can use the term microservices to sell <strong>OSGi</strong> tooling and knowledge.</li>
+  <li>Application servers like it because they can create tooling to enable microservices.</li>
+  <li>Monitoring companies found a new gap in the market, they can now sell microservices monitoring tools…</li>
+  <li>Etc etc et <em>fucking</em> cetera!</li>
+</ol>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2015/05/stop-the-conference-committees/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/stop-program-committees.jpg" alt="Stop the conference committees?" width="100" height="100" />
@@ -354,7 +422,7 @@ B = A × √2
 With our old pal Pythagoras we now know:
 diagonal² = A² + B² (= 2121320.34)
 
-Let&#39;s get rid of B²:
+Let's get rid of B²:
 diagonal² = A² + (A * √2)²
 
 Now we can simplify:
@@ -371,8 +439,8 @@ B = A × √2 ≅ 1189.20</code></pre></figure>
 <p>We started with just two simple numbers, ratio: √2 and area: 1m2 and now we’ve ended up with the A0 paper, 841 mm and 1189 mm!<br />
 To calculate the rest of the A-series you just take:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">A&#39; = B / 2
-B&#39; = A</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">A' = B / 2
+B' = A</code></pre></figure>
 
 <p>Mathematically folding it in half results in: 594 mm x 841 mm = exactly the A1 paper size!</p>
 
@@ -836,7 +904,7 @@ The big advantage was that we had a complete set of tests that:</p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="n">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Java</span> <span class="n">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="n">Version</span> <span class="mf">0.23</span>
 <span class="o">|</span>  <span class="n">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
 
-<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
 <span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
 
 <span class="o">-&gt;</span></code></pre></figure>
@@ -856,13 +924,13 @@ The big advantage was that we had a complete set of tests that:</p>
 
 <p>Suddenly our frame has a panel, and the panel has an empty button! You can prototype, do live coding and you have instant feedback.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.setText(&quot;Push me!&quot;);</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.setText("Push me!");</code></pre></figure>
 
 <p>Now the button has text, but pressing it still does nothing…</p>
 
 <p><a href="/images/Screen-Shot-2014-11-27-at-11.55.08.png"><img src="/images/Screen-Shot-2014-11-27-at-11.55.08-300x159.png" alt="Push me!" class="aligncenter" /></a></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.addActionListener(e -&gt; System.out.println(&quot;Hello World!&quot;));
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.addActionListener(e -&gt; System.out.println("Hello World!"));
 -&gt; 
 Hello World!
 Hello World!
@@ -957,14 +1025,18 @@ We all know why this is important:</p>
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:
+</span>
 <span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
+    <span class="c1">// .. do something ..
+</span>
 <span class="o">}</span>
 
-<span class="c1">// After:</span>
+<span class="c1">// After:
+</span>
 <span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
+    <span class="c1">// .. do something ..
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>For each mutant the unit tests are run and there are a couple of possible outcomes:<img src="/images/mutant_killed-300x225.png" alt="mutant_killed" class="alignright" /></p>
@@ -975,7 +1047,7 @@ We all know why this is important:</p>
 
 <p>If you are lucky a test will fail. This means we have ‘killed’ our mutant. This is a positive thing, we’ve actually checked that the mutated line of code is correctly asserted by a test. Now we immediately see the advantage of using mutation testing, we actually verify the assertions in our tests.</p>
 
-<h1 id="survivedmutantlivedmutantlived-alignright-">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
+<h1 id="survived">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
 
 <p>Another possible outcome is that our mutant has survived, meaning no test fails. This is scary, it means the logic we’ve changed isn’t verified by a test. If someone would (accidentally) make this change in your codebase, the automatic build won’t break.</p>
 
@@ -1090,7 +1162,7 @@ Thankfully a shareware version can be downloaded here: <a href="ftp://ftp.3dreal
 
 <p>Screenshot:</p>
 
-<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" class="aligncenter" /></a>  </p>
+<p><a href="/images/Screen-Shot-2014-09-18-at-20.32.40.png"><img src="/images/Screen-Shot-2014-09-18-at-20.32.40-300x198.png" alt="Screen Shot 2014-09-18 at 20.32.40" class="aligncenter" /></a></p>
 
 
         </span>
@@ -1276,7 +1348,7 @@ Also, voting is still open, if you have a Ludum Dare account (or sign up) you ca
 
 <p>However, during a work lunch discussion, I came up with some scary fundamental problems with teleportation.</p>
 
-<h1 id="transactionsteleporter-alignleft-">Transactions<img src="/images/Teleporter-170x300.png" alt="Teleporter" class="alignleft" /></h1>
+<h1 id="transactions">Transactions<img src="/images/Teleporter-170x300.png" alt="Teleporter" class="alignleft" /></h1>
 
 <p>What would happen if, during transmission, we get a failure? We don’t want to end up with a failed teleport… which would mean the person getting teleported is dead.</p>
 
@@ -1306,49 +1378,6 @@ Are you just a selection of atoms clumped together?</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/07/i-wont-enter-a-teleportation-device-ever/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx4Kids UK 2014: the video" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2014-06-22T15:03:44+02:00" class="date">
-            Jun 22, 2014 15:03:44
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The other thing I did while I was in London was volunteer and film at the first UK-based Devoxx4Kids.</p>
-
-<p>Here is my video that sums it all up:</p>
-
-<iframe type="text/html" src="http://player.vimeo.com/video/98852396" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<p>It was awesome being there, watching the kids play and learn at the same time. The volunteers were absolutely amazing (a lot of them!) and the atmosphere was very relaxed.</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

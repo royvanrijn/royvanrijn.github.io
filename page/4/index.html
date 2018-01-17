@@ -115,6 +115,49 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx4Kids UK 2014: the video" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2014-06-22T15:03:44+02:00" class="date">
+            Jun 22, 2014 15:03:44
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
+
+        <span itemprop="articleBody">
+          <p>The other thing I did while I was in London was volunteer and film at the first UK-based Devoxx4Kids.</p>
+
+<p>Here is my video that sums it all up:</p>
+
+<iframe type="text/html" src="http://player.vimeo.com/video/98852396" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>It was awesome being there, watching the kids play and learn at the same time. The volunteers were absolutely amazing (a lot of them!) and the atmosphere was very relaxed.</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2014/06/devoxx-uk-2014-the-video/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx UK 2014: the video" width="100" height="100" />
@@ -298,28 +341,28 @@
 
 <p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <strong>qemu.rb</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">require &#39;formula&#39;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">require 'formula'
 
 class Qemu &lt; Formula
-  homepage &#39;http://www.qemu.org/&#39;
-  url &#39;http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2&#39;
+  homepage 'http://www.qemu.org/'
+  url 'http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2'
 
-  depends_on &#39;jpeg&#39;
-  depends_on &#39;gnutls&#39;
-  depends_on &#39;glib&#39;
+  depends_on 'jpeg'
+  depends_on 'gnutls'
+  depends_on 'glib'
 
   fails_with :clang do
     build 318
   end
 
   def install
-    system &quot;./configure&quot;, &quot;--prefix=#{prefix}&quot;,
-                          &quot;--cc=#{ENV.cc}&quot;,
-                          &quot;--host-cc=#{ENV.cc}&quot;,
-                          &quot;--enable-cocoa&quot;,
-                          &quot;--disable-bsd-user&quot;,
-                          &quot;--disable-guest-agent&quot;
-    system &quot;make install&quot;
+    system "./configure", "--prefix=#{prefix}",
+                          "--cc=#{ENV.cc}",
+                          "--host-cc=#{ENV.cc}",
+                          "--enable-cocoa",
+                          "--disable-bsd-user",
+                          "--disable-guest-agent"
+    system "make install"
   end
 end</code></pre></figure>
 
@@ -350,7 +393,7 @@ In our case: 2014-01-07-wheezy-raspbian.img</p>
 
 <p>Now it is time to start the image in the emulator:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
 
 <p>This first boot is a bit special because we only initialize /bin/bash. This is because we need to make two changes to the system:</p>
 
@@ -368,9 +411,9 @@ In our case: 2014-01-07-wheezy-raspbian.img</p>
 
 <p>And put in the following content: <strong>90-qemu.rules</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL==&quot;sda&quot;, SYMLINK+=&quot;mmcblk0&quot;
-KERNEL==&quot;sda?&quot;, SYMLINK+=&quot;mmcblk0p%n&quot;
-KERNEL==&quot;sda2&quot;, SYMLINK+=&quot;root&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL=="sda", SYMLINK+="mmcblk0"
+KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
+KERNEL=="sda2", SYMLINK+="root"</code></pre></figure>
 
 <p>Now we can stop the emulator and make one final change, the image file is a bit small and we need to increase the size before we continue:</p>
 
@@ -378,7 +421,7 @@ KERNEL==&quot;sda2&quot;, SYMLINK+=&quot;root&quot;</code></pre></figure>
 
 <p>From now on we can do a normal boot (save this command) by removing the “init=/bin/bash” part:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append &quot;root=/dev/sda2 panic=1 rootfstype=ext4 rw&quot; -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
 
 <p>The last thing we need to do to get our virtual Raspberry Pi up and running is:</p>
 
@@ -467,7 +510,7 @@ pi$ sudo raspi-config</code></pre></figure>
 
 <p>If you want to create an <strong>immutable</strong> object in Java you need to have a constructor to initialise the final fields. Lets look at another example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="mi">1983</span><span class="o">,</span> <span class="mi">200</span><span class="o">,</span> <span class="mf">95.0</span><span class="o">,</span> <span class="mf">12.5</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="s">"Roy"</span><span class="o">,</span> <span class="s">"van Rijn"</span><span class="o">,</span> <span class="mi">1983</span><span class="o">,</span> <span class="mi">200</span><span class="o">,</span> <span class="mf">95.0</span><span class="o">,</span> <span class="mf">12.5</span><span class="o">);</span></code></pre></figure>
 
 <p>Immediately a problem becomes clear… if you read the code you have absolutely no idea what all the arguments mean. What is 200? What is 95.0? We have to look at the API or open the code of Person to see what arguments we can supply or have been supplied. Thankfully there is a design pattern that solves this problem, the Builder pattern.</p>
 
@@ -476,7 +519,7 @@ pi$ sudo raspi-config</code></pre></figure>
 <p>The <a href="http://en.wikipedia.org/wiki/Builder_pattern">builder pattern</a> is an ‘object creation software design pattern’. It can be used to create a immutable objects in a fluent, readable way.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span>
-		<span class="o">.</span><span class="na">PersonBuilder</span><span class="o">(</span><span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">)</span>
+		<span class="o">.</span><span class="na">PersonBuilder</span><span class="o">(</span><span class="s">"Roy"</span><span class="o">,</span> <span class="s">"van Rijn"</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">birthYear</span><span class="o">(</span><span class="mi">1983</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">length</span><span class="o">(</span><span class="mi">200</span><span class="o">)</span>
 		<span class="o">.</span><span class="na">weight</span><span class="o">(</span><span class="mf">95.0</span><span class="o">)</span> <span class="c1">// This is what all these numbers mean!</span>
@@ -520,7 +563,7 @@ pi$ sudo raspi-config</code></pre></figure>
 			<span class="k">this</span><span class="o">.</span><span class="na">lastname</span> <span class="o">=</span> <span class="n">lastname</span><span class="o">;</span>
 		<span class="o">}</span>
 		
-		<span class="c1">// All &#39;setters&#39; with a fluent interface:</span>
+		<span class="c1">// All 'setters' with a fluent interface:</span>
 		<span class="kd">public</span> <span class="n">PersonBuilder</span> <span class="nf">birthYear</span><span class="o">(</span><span class="kt">int</span> <span class="n">birthYear</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">this</span><span class="o">.</span><span class="na">birthYear</span> <span class="o">=</span> <span class="n">birthYear</span><span class="o">;</span>
 			<span class="k">return</span> <span class="k">this</span><span class="o">;</span>
@@ -574,8 +617,8 @@ pi$ sudo raspi-config</code></pre></figure>
 
 <span class="o">...</span>
 <span class="c1">// Made up syntax, similar to Moose, providing syntactic sugar.</span>
-<span class="c1">// Leaves the other fields null, compile error if final fields aren&#39;t set.</span>
-<span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">firstname</span> <span class="o">=&gt;</span> <span class="s">&quot;Roy&quot;</span><span class="o">,</span> <span class="n">lastname</span> <span class="o">=&gt;</span> <span class="s">&quot;van Rijn&quot;</span><span class="o">,</span> <span class="n">birthYear</span> <span class="o">=&gt;</span> <span class="mi">1983</span><span class="o">);</span></code></pre></figure>
+<span class="c1">// Leaves the other fields null, compile error if final fields aren't set.</span>
+<span class="n">Person</span> <span class="n">me</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="n">firstname</span> <span class="o">=&gt;</span> <span class="s">"Roy"</span><span class="o">,</span> <span class="n">lastname</span> <span class="o">=&gt;</span> <span class="s">"van Rijn"</span><span class="o">,</span> <span class="n">birthYear</span> <span class="o">=&gt;</span> <span class="mi">1983</span><span class="o">);</span></code></pre></figure>
 
 <p>This has the readability advantage and has the flexibility of the Builder pattern (not needing dozens of overloaded constructors).</p>
 
@@ -626,7 +669,7 @@ Thermite once in two hundred times. All I can imagine is that, that one
 time, I somehow scanned his code within its few cycles of life, and that
 then I crashed as a result. But how?
 
-Program &quot;Thermite II&quot; (length 100) by &quot;Robert Macrae&quot;
+Program "Thermite II" (length 100) by "Robert Macrae"
 ;strategy Same old strategy, but nastier...
 Killing Hazy Shade Of Winter III wins: 1
 Thermite II wins: 199
@@ -634,7 +677,7 @@ Ties: 0
 
 How did I get a win against Thermite?!?!
 Here is an EXACT copy of what I sent to Pizza...
-Thermite would&#39;ve had to die within 3 cycles! ... :/
+Thermite would've had to die within 3 cycles! ... :/
 
 ;redcode-94
 ;name Killing Hazy Shade Of Winter III
@@ -799,9 +842,11 @@ Hello.</p>
   &lt;template&gt;My name is Chatbot.&lt;/template&gt;
 &lt;/category&gt;</code></pre></figure>
 
-<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:<br />
-&gt; What is your name?<br />
-&gt; My name is Chatbot.</p>
+<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:</p>
+<blockquote>
+  <p>What is your name?<br />
+My name is Chatbot.</p>
+</blockquote>
 
 <p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don’t seem very ‘smart’ and AI to me; so I’m not going to make another AIML-like bot.</p>
 
@@ -815,13 +860,13 @@ Hello.</p>
 
 <p>To keep this (long) blog post within reasonable length I’m not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let’s for example say we store chains of length three.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;Let&#39;s store this sentence, let&#39;s store it in a markov chain.&quot;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">"Let's store this sentence, let's store it in a markov chain."
 
-1&gt; Let&#39;s store this
+1&gt; Let's store this
 2&gt; store this sentence
-3&gt; this sentence let&#39;s
-4&gt; sentence let&#39;s store
-5&gt; let&#39;s store it
+3&gt; this sentence let's
+4&gt; sentence let's store
+5&gt; let's store it
 6&gt; store it in
 7&gt; it in a
 8&gt; in a markov
@@ -860,32 +905,42 @@ Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (par
 
 <p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I’m in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I’ve got the following unit test working:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:</span>
-<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:
+</span>
+<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]
+</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
+<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">);</span>
     
-<span class="c1">//True: Does human eat banana?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;banana&quot;</span><span class="o">));</span>
-<span class="c1">//True: Does human eat strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;human&quot;</span><span class="o">,</span> <span class="s">&quot;eat&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
-<span class="c1">//True: Is banana eaten by human?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;banana&quot;</span><span class="o">,</span> <span class="s">&quot;eaten by&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
-<span class="c1">//True: Does the group fruit contain strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;food&quot;</span><span class="o">,</span> <span class="s">&quot;contains&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span>
-<span class="c1">//True: Is apple a fruit?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;food&quot;</span><span class="o">));</span>
-<span class="c1">//True: Do apples fall from trees?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">,</span> <span class="s">&quot;fall&quot;</span><span class="o">,</span> <span class="s">&quot;tree&quot;</span><span class="o">));</span>
+<span class="c1">//True: Does human eat banana?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"banana"</span><span class="o">));</span>
+<span class="c1">//True: Does human eat strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
+<span class="c1">//True: Is banana eaten by human?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
+<span class="c1">//True: Does the group fruit contain strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
+<span class="c1">//True: Is apple a fruit?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">));</span>
+<span class="c1">//True: Do apples fall from trees?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">));</span>
     
-<span class="c1">//False: Is strawberry a human?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;strawberry&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;human&quot;</span><span class="o">));</span>
-<span class="c1">//False: Is fruit a strawberry?</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">&quot;fruit&quot;</span><span class="o">,</span> <span class="s">&quot;be&quot;</span><span class="o">,</span> <span class="s">&quot;strawberry&quot;</span><span class="o">));</span></code></pre></figure>
+<span class="c1">//False: Is strawberry a human?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
+<span class="c1">//False: Is fruit a strawberry?
+</span>
+<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span></code></pre></figure>
 
 <p>There are already more facts possible to extract from this ‘knowledge database’ than just the plain information I put in.</p>
 
@@ -987,7 +1042,7 @@ com/royvanrijn/running/gpx/package-info.java</code></pre></figure>
 
 <p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">&quot;com.royvanrijn.running.gpx&quot;</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">"com.royvanrijn.running.gpx"</span><span class="o">);</span>
 <span class="n">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
 <span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
@@ -1001,17 +1056,20 @@ Those legs can be used to check for a record during longer runs, like this:</p>
 	
 	<span class="kt">double</span> <span class="n">runningDistance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
 	<span class="k">for</span><span class="o">(</span><span class="n">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">//Add next leg to the tail:</span>
+		<span class="c1">//Add next leg to the tail:
+</span>
 		<span class="n">cache</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">leg</span><span class="o">);</span>
 		<span class="n">runningDistance</span> <span class="o">+=</span> <span class="n">leg</span><span class="o">.</span><span class="na">getMeters</span><span class="o">();</span>
 		
-		<span class="c1">//If possible remove from head:</span>
+		<span class="c1">//If possible remove from head:
+</span>
 		<span class="k">while</span><span class="o">((</span><span class="n">runningDistance</span><span class="o">-</span><span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">())</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
 			<span class="n">runningDistance</span> <span class="o">-=</span> <span class="n">cache</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">();</span>
 		<span class="o">}</span>
 		
 		<span class="k">if</span><span class="o">(</span><span class="n">runningDistance</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
-			<span class="c1">//Check if the current target distance time is a record:</span>
+			<span class="c1">//Check if the current target distance time is a record:
+</span>
 			<span class="n">checkTime</span><span class="o">(</span><span class="n">cache</span><span class="o">);</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
@@ -1166,7 +1224,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
   <li>Spatial visualization</li>
 </ol>
 
-<h1 id="be-inquisitive">1: Be inquisitive</h1>
+<h1 id="1-be-inquisitive">1: Be inquisitive</h1>
 
 <p>Always be inquisitive, if you encounter a problem the first thing all the great programmers do:</p>
 
@@ -1176,7 +1234,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 <p>Most of the time the first hit on Google doesn’t provide you with an answer, don’t give up…! Keep on looking, try different search queries, dive into the source code. If non of the resources listed above yield an answer, ask the community, post a question on StackOverflow, ask on the mailing list or newsgroup.</p>
 
-<h1 id="share-answers">2: Share answers</h1>
+<h1 id="2-share-answers">2: Share answers</h1>
 
 <p>Once you’ve found the answer you’ve been looking for, done! Right?</p>
 
@@ -1188,7 +1246,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 <p>I’ve even had cases where I asked a StackOverflow question, found the answer myself, and answered the question myself. This sound silly, but helps other programmers! <a href="http://stackoverflow.com/questions/11323415/is-eclipse-juno-wrong-with-this-ambiguous-method-error">[example]</a></p>
 
-<h1 id="community-awareness">3: Community awareness</h1>
+<h1 id="3-community-awareness">3: Community awareness</h1>
 
 <p>It turns out there is a bug in Open Source framework N… what does a good programmer do?</p>
 
@@ -1208,7 +1266,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 <p>Also, an open source project isn’t <em>dead</em> because nobody has fixed your bug; it is dead because <strong>you</strong> didn’t fix the bug.<br />
 <strong>You are the community!</strong></p>
 
-<h1 id="programmer-pride">4: Programmer pride</h1>
+<h1 id="4-programmer-pride">4: Programmer pride</h1>
 
 <p>Programmers should be proud. Once you’ve made something you can’t wait to show the result to the clients and test your take on their ideas. If there a possible bug in a piece of code you wrote, touched or reviewed? Jump in there and help your colleagues!</p>
 
@@ -1216,7 +1274,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 <p>But beware, there is good pride and bad pride. Bad pride is when you think a code review isn’t needed because <strong>you</strong>‘ve made it. Bad pride is thinking you’ll solve it <em>alone</em> instead of pair programming. Good pride is being proud of what you’ve made and feeling the shared ownership and responsibility. Be proud of your team, your product. Be passionate, but don’t be proud of <em>yourself</em>. Embrace feedback, code reviews and pair programming!</p>
 
-<h1 id="embrace-laziness">5: Embrace laziness</h1>
+<h1 id="5-embrace-laziness">5: Embrace laziness</h1>
 
 <p>In almost all professions the best employees are diligent and hard working. Except programmers, the best and most celebrated programmers are lazy. It is probably the only profession where it is considered a good trait (except maybe mattress and pillow testers).</p>
 
@@ -1230,7 +1288,7 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
 <p>Also: Lazy people will quickly learn keyboard shortcuts, like every good programmer should (!!)</p>
 
-<h1 id="spatial-visualization">6: Spatial visualization</h1>
+<h1 id="6-spatial-visualization">6: Spatial visualization</h1>
 
 <p>To navigate an entire code base you’ll need a mental model in your head. To do this you need <a href="http://en.wikipedia.org/wiki/Spatial_visualization_ability">spatial visualization ability</a>. Mental models in programming are usually called ‘codespace’.</p>
 
@@ -1397,7 +1455,7 @@ A: “You’re drunk, go home.”</p>
 
 <p>Ah, a serious talk about Java EE by Arun Gupta. This for me was a bit of a disappointment. The talk itself was good, gave a lot of insight into the new features that you get from Websockets. But I got soon distracted. It reminded me about the small fight I had in 2009 about the new Servlet specification. The new websocket API again uses a LOT of annotations and yes, I understand there are some advantages for using them, there are also disadvantages. All the examples Arun showed used the annotations (and not the interfaces which are also there, yay!). For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServerEndpoint</span><span class="o">(</span><span class="s">&quot;/location&quot;</span><span class="o">)</span>  <span class="c1">//This is a good annotation, with meta information</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServerEndpoint</span><span class="o">(</span><span class="s">"/location"</span><span class="o">)</span>  <span class="c1">//This is a good annotation, with meta information</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeEndpoint</span> <span class="o">{</span>
 
    <span class="nd">@OnOpen</span> <span class="c1">//Awww no this is where is goes wrong... it already says onOpen below</span>
@@ -1417,7 +1475,7 @@ A: “You’re drunk, go home.”</p>
 
    <span class="nd">@OnMessage</span> <span class="c1">//...</span>
    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">textMessage</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Text message: &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Text message: "</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
    <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1570,7 +1628,7 @@ A: “You’re drunk, go home.”</p>
         <span itemprop="articleBody">
           <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
 
-<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<t>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<t>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</t></t></p>
+<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<T>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<T>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</T></T></p>
 
 <p>To find out more about how to use @Asynchronous and Future, read this page from <a href="http://tomee.apache.org/examples-trunk/async-methods/">TomEE</a>.</p>
 
@@ -1579,10 +1637,10 @@ A: “You’re drunk, go home.”</p>
 <p>If you create a new Thread yourself (see example below) it will print the RuntimeException:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    		<span class="kd">final</span> <span class="n">Runnable</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Runnable</span><span class="o">()</span> <span class="o">{</span>
+    		<span class="kd">final</span> <span class="n">Runnable</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
     			<span class="nd">@Override</span>
     			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-    				<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Log me!!&quot;</span><span class="o">);</span>
+    				<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"Log me!!"</span><span class="o">);</span>
     			<span class="o">}</span>
     		<span class="o">};</span>
     		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">t</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
@@ -1592,7 +1650,7 @@ A: “You’re drunk, go home.”</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Asynchronous</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
-    		<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Where am I?&quot;</span><span class="o">);</span>
+    		<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"Where am I?"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>This exception is swallowed, never to be seen again. Because this wasn’t what I expected it took me much longer then needed to find the actual bug!</p>
@@ -1607,76 +1665,6 @@ A: “You’re drunk, go home.”</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/runtimeexception-with-asynchronous-annotation/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2013/10/java-default-methods-future-problem/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java 'default' methods, future problem?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2013-10-17T12:33:20+02:00" class="date">
-            Oct 17, 2013 12:33:20
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/java-default-methods-future-problem/">Java 'default' methods, future problem?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>In Java there is one golden rule, we <strong>don’t break backwards compatibility</strong>. Not in the JVM interpreter/compiler and not in the JDK classes.</p>
-
-<h1 id="extending-interfaces">Extending interfaces</h1>
-
-<p>With the introduction of Lambda’s in Java there was a suddenly a big need to extend some of the Collections interfaces. And this is something that breaks backwards compatibility. If Java wants to add <em>List.forEach</em> all custom implementations of the List interface won’t compile anymore. This breaks one of the most treasured rules in JDK development, the backwards compatibility.</p>
-
-<h1 id="default">default</h1>
-
-<p>To counter this the ‘<em>default</em>’ keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn’t have to be). For example, see the following new ‘default’ method from the Iterable interface:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
-	<span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
-    	<span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>There are some important rules; the added code will operate on static data, it can’t and should never manipulate state!<br />
-Some more info, examples and other solutions can be found <a href="http://zeroturnaround.com/rebellabs/java-8-explained-default-methods/">here</a>.</p>
-
-<h1 id="possible-future-problems">Possible future problems…</h1>
-
-<p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
-
-<p>Now (crazy example) I’ve made something called <strong>MyListSet</strong> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <em>spilerator()</em> on the same level and will thus collide with the following exception:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">class MyListSet&lt;T&gt; inherits unrelated defaults for spliterator() from types Set and List
-  where T is a type-variable:
-    T extends Object declared in class MyListSet</code></pre></figure>
-
-<p>The more these ‘default’ methods are going to be used the higher the chance collisions like this will break backwards compatibility in the future. Personally I’m not yet convinced about the default methods.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

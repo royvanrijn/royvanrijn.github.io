@@ -156,29 +156,29 @@
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">OurSimulation</span> <span class="k">extends</span> <span class="nc">Simulation</span> <span class="o">{</span>
 
-  <span class="c1">// Define some basic HTTP protocol settings:</span>
-  <span class="k">val</span> <span class="n">baseHttpProtocol</span> <span class="k">=</span> <span class="n">http</span>
+  <span class="c1">// Define some basic HTTP protocol settings:
+</span>  <span class="k">val</span> <span class="n">baseHttpProtocol</span> <span class="k">=</span> <span class="n">http</span>
     <span class="o">.</span><span class="n">inferHtmlResources</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">acceptHeader</span><span class="o">(</span> <span class="s">&quot;&quot;&quot;*/*&quot;&quot;&quot;</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">acceptEncodingHeader</span><span class="o">(</span> <span class="s">&quot;&quot;&quot;gzip,deflate&quot;&quot;&quot;</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">acceptLanguageHeader</span><span class="o">(</span> <span class="s">&quot;&quot;&quot;nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4&quot;&quot;&quot;</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">contentTypeHeader</span><span class="o">(</span> <span class="s">&quot;&quot;&quot;text/xml&quot;&quot;&quot;</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">userAgentHeader</span><span class="o">(</span> <span class="s">&quot;&quot;&quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36&quot;&quot;&quot;</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">acceptHeader</span><span class="o">(</span> <span class="s">"""*/*"""</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">acceptEncodingHeader</span><span class="o">(</span> <span class="s">"""gzip,deflate"""</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">acceptLanguageHeader</span><span class="o">(</span> <span class="s">"""nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4"""</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">contentTypeHeader</span><span class="o">(</span> <span class="s">"""text/xml"""</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">userAgentHeader</span><span class="o">(</span> <span class="s">"""Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"""</span><span class="o">)</span>
 
-  <span class="c1">// Define a variables that is inserted into the SOAP template:</span>
-  <span class="k">val</span> <span class="n">incrementalId</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span>
+  <span class="c1">// Define a variables that is inserted into the SOAP template:
+</span>  <span class="k">val</span> <span class="n">incrementalId</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span>
 
-  <span class="c1">// Define the scenario, read from CSV file, add additional variable to the session and post to OurEndpoint:</span>
-  <span class="k">val</span> <span class="n">scn</span> <span class="k">=</span> <span class="n">scenario</span><span class="o">(</span><span class="s">&quot;Our scenario&quot;</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">feed</span><span class="o">(</span><span class="n">csv</span><span class="o">(</span><span class="s">&quot;data.csv&quot;</span><span class="o">).</span><span class="n">circular</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="n">session</span> <span class="k">=&gt;</span> <span class="n">session</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;idField&quot;</span><span class="o">,</span> <span class="n">incrementalId</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="nc">OurEndpoint</span><span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">&quot;SoapMessageTemplate.txt&quot;</span><span class="o">))</span>
+  <span class="c1">// Define the scenario, read from CSV file, add additional variable to the session and post to OurEndpoint:
+</span>  <span class="k">val</span> <span class="n">scn</span> <span class="k">=</span> <span class="n">scenario</span><span class="o">(</span><span class="s">"Our scenario"</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">feed</span><span class="o">(</span><span class="n">csv</span><span class="o">(</span><span class="s">"data.csv"</span><span class="o">).</span><span class="n">circular</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="n">session</span> <span class="k">=&gt;</span> <span class="n">session</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">"idField"</span><span class="o">,</span> <span class="n">incrementalId</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">))</span>
+    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="nc">OurEndpoint</span><span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">"SoapMessageTemplate.txt"</span><span class="o">))</span>
 <span class="o">}</span>
 
 <span class="k">object</span> <span class="nc">OurEndpoint</span> <span class="o">{</span>
 
-  <span class="k">def</span> <span class="n">post</span><span class="o">(</span><span class="n">soapMessage</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">exec</span><span class="o">(</span><span class="n">http</span><span class="o">(</span><span class="s">&quot;RequestName&quot;</span><span class="o">)</span>
-      <span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">&quot;&quot;&quot;/ourapplication/webservices/OurSoapEndpoint&quot;&quot;&quot;</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">post</span><span class="o">(</span><span class="n">soapMessage</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">exec</span><span class="o">(</span><span class="n">http</span><span class="o">(</span><span class="s">"RequestName"</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">"""/ourapplication/webservices/OurSoapEndpoint"""</span><span class="o">)</span>
       <span class="o">.</span><span class="n">body</span><span class="o">(</span><span class="nc">ELFileBody</span><span class="o">(</span><span class="n">soapMessage</span><span class="o">))</span>
       <span class="o">.</span><span class="n">check</span><span class="o">(</span><span class="n">status</span><span class="o">.</span><span class="n">is</span><span class="o">(</span><span class="mi">200</span><span class="o">))</span>
     <span class="o">)</span>
@@ -186,11 +186,11 @@
 
 <span class="k">class</span> <span class="nc">OurSimulationLocal</span> <span class="k">extends</span> <span class="nc">OurSimulation</span> <span class="o">{</span>
 
-  <span class="c1">// The instance we want to run, against localhost (we also have these for other servers)</span>
-  <span class="k">val</span> <span class="n">httpProtocol</span> <span class="k">=</span> <span class="n">baseHttpProtocol</span><span class="o">.</span><span class="n">baseURL</span><span class="o">(</span><span class="s">&quot;http://localhost:1234&quot;</span><span class="o">)</span>
+  <span class="c1">// The instance we want to run, against localhost (we also have these for other servers)
+</span>  <span class="k">val</span> <span class="n">httpProtocol</span> <span class="k">=</span> <span class="n">baseHttpProtocol</span><span class="o">.</span><span class="n">baseURL</span><span class="o">(</span><span class="s">"http://localhost:1234"</span><span class="o">)</span>
 
-  <span class="c1">// Setup the test, ramp up 10 users over a period of 20 seconds</span>
-  <span class="n">setUp</span><span class="o">(</span><span class="n">scn</span><span class="o">.</span><span class="n">inject</span><span class="o">(</span><span class="n">rampUsers</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="n">over</span> <span class="o">(</span><span class="mi">20</span> <span class="n">seconds</span><span class="o">))).</span><span class="n">protocols</span><span class="o">(</span><span class="n">httpProtocol</span><span class="o">)</span>
+  <span class="c1">// Setup the test, ramp up 10 users over a period of 20 seconds
+</span>  <span class="n">setUp</span><span class="o">(</span><span class="n">scn</span><span class="o">.</span><span class="n">inject</span><span class="o">(</span><span class="n">rampUsers</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="n">over</span> <span class="o">(</span><span class="mi">20</span> <span class="n">seconds</span><span class="o">))).</span><span class="n">protocols</span><span class="o">(</span><span class="n">httpProtocol</span><span class="o">)</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>The <em>SoapMessageTemplate.txt</em> is just a plain text file containing one SOAP call, instead of data it contains tags like: ${field1}. There is also <em>data.csv</em> which is a CSV file with the field names in the first row, comma separated values in the following rows. The tags in the SOAP call get replaced by the values from the selected CSV row.</p>
@@ -209,23 +209,23 @@
 
   <span class="k">def</span> <span class="n">apply</span><span class="o">()</span><span class="k">:</span>  <span class="kt">Feeder</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
     <span class="nc">Iterator</span><span class="o">.</span><span class="n">continually</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-      <span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="nc">Random</span><span class="o">.</span><span class="n">alphanumeric</span><span class="o">.</span><span class="n">take</span><span class="o">(</span><span class="mi">5</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">),</span>
-      <span class="o">(</span><span class="s">&quot;country&quot;</span><span class="o">,</span> <span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="n">percentageBuitenlands</span><span class="o">)</span> <span class="s">&quot;B&quot;</span> <span class="k">else</span> <span class="s">&quot;NL&quot;</span><span class="o">))</span>
+      <span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="nc">Random</span><span class="o">.</span><span class="n">alphanumeric</span><span class="o">.</span><span class="n">take</span><span class="o">(</span><span class="mi">5</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">),</span>
+      <span class="o">(</span><span class="s">"country"</span><span class="o">,</span> <span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="n">percentageBuitenlands</span><span class="o">)</span> <span class="s">"B"</span> <span class="k">else</span> <span class="s">"NL"</span><span class="o">))</span>
     <span class="o">)</span>
   <span class="o">}</span>
 <span class="o">}</span>
 
 <span class="k">class</span> <span class="nc">OurSimulation</span> <span class="k">extends</span> <span class="nc">Simulation</span> <span class="o">{</span>
 
-  <span class="c1">//... snip ....</span>
+  <span class="c1">//... snip ....
+</span>
+  <span class="c1">// The same scenario, now using our own feeder:
+</span>  <span class="k">val</span> <span class="n">feeder</span> <span class="k">=</span> <span class="nc">MyFeeder</span><span class="o">()</span>
 
-  <span class="c1">// The same scenario, now using our own feeder:</span>
-  <span class="k">val</span> <span class="n">feeder</span> <span class="k">=</span> <span class="nc">MyFeeder</span><span class="o">()</span>
-
-  <span class="k">val</span> <span class="n">scn</span> <span class="k">=</span> <span class="n">scenario</span><span class="o">(</span><span class="s">&quot;Our scenario&quot;</span><span class="o">)</span>
+  <span class="k">val</span> <span class="n">scn</span> <span class="k">=</span> <span class="n">scenario</span><span class="o">(</span><span class="s">"Our scenario"</span><span class="o">)</span>
     <span class="o">.</span><span class="n">feed</span><span class="o">(</span><span class="n">feeder</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="n">session</span> <span class="k">=&gt;</span> <span class="n">session</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;idField&quot;</span><span class="o">,</span> <span class="n">incrementalId</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="nc">OurEndpoint</span><span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">&quot;SoapMessageTemplate.txt&quot;</span><span class="o">))</span>
+    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="n">session</span> <span class="k">=&gt;</span> <span class="n">session</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">"idField"</span><span class="o">,</span> <span class="n">incrementalId</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">))</span>
+    <span class="o">.</span><span class="n">exec</span><span class="o">(</span><span class="nc">OurEndpoint</span><span class="o">.</span><span class="n">post</span><span class="o">(</span><span class="s">"SoapMessageTemplate.txt"</span><span class="o">))</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Writing a custom feeder is pretty easy to do. The apply() function creates an instance of a Feeder[String] which in turn returns a Map containing [String, String] key value pairs. These are then used to fill the SOAP template!</p>

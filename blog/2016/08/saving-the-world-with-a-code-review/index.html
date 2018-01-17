@@ -162,13 +162,13 @@
 
 <p>I think my answer below won’t surprise you, but the reasoning behind it might. First lets look at <strong>four</strong> reasons this bug should never happen to me (or any other experienced programmer).</p>
 
-<h1 id="static-variablesglobal-state">1) Static variables/global state</h1>
+<h1 id="1-static-variablesglobal-state">1) Static variables/global state</h1>
 
 <p>The first obvious problem with the code is the usage of static state. The variable ‘isCrazyMurderingRobot’ is mutable and static, so anywhere in the code the value can be changed. This makes it very hard to reason about the variable and keep track of it. Any programmer can come along and change the value in some method. This is unacceptable, there is almost <strong>no</strong> reason to use mutable static variables.</p>
 
 <p>Top tip: If you have variables, especially mutable variables, keep their scope as small as possible!</p>
 
-<h1 id="final-method-arguments">2) Final method arguments</h1>
+<h1 id="2-final-method-arguments">2) Final method arguments</h1>
 
 <p>If you solve the global state problem you’ll probably end up with something like this (translated to Java):</p>
 
@@ -186,11 +186,11 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span><span class="n">isCrazyMurderingRobot</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Compilation error: &#39;Cannot assign a value to final variable &#39;isCrazyMurderingRobot&#39;</span></code></pre></figure>
+        <span class="c1">// Compilation error: 'Cannot assign a value to final variable 'isCrazyMurderingRobot'</span></code></pre></figure>
 
 <p>The code won’t even compile before telling me what is wrong, the world is saved!</p>
 
-<h1 id="static-code-analysis">3) Static code analysis</h1>
+<h1 id="3-static-code-analysis">3) Static code analysis</h1>
 
 <p>Another reason this bug will never happen in my code is because we have static code analysis on <em>all</em> our projects. A program like <a href="http://findbugs.sourceforge.net/">FindBugs</a> will immediately flag this as a major problem, assigning values inside an if-statement.</p>
 
@@ -202,7 +202,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 
 <p>Static code analysis is an essential tool in modern programming, it is just so convenient, never reads over certain bugs like a human would (spoiler: more on that in the final conclusion below).</p>
 
-<h1 id="yoda-conditions">4) Yoda conditions</h1>
+<h1 id="4-yoda-conditions">4) Yoda conditions</h1>
 
 <p>The final reason this bug will never happen in my code is: <a href="https://en.wikipedia.org/wiki/Yoda_conditions">Yoda conditions</a></p>
 
@@ -214,7 +214,7 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">interact_with_humans</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span><span class="kc">true</span> <span class="o">=</span> <span class="n">isCrazyMurderingRobot</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Compilation error: &#39;Variable expected&#39;</span></code></pre></figure>
+        <span class="c1">// Compilation error: 'Variable expected'</span></code></pre></figure>
 
 <h1 id="conclusion--saving-the-world">Conclusion / saving the world</h1>
 

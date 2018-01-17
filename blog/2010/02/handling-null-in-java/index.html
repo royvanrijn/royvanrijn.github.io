@@ -213,34 +213,41 @@
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
 	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
 	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! </span>
+	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! 
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>It also helps you to clearly state your assumed preconditions:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-	<span class="c1">//Very good, we know we won&#39;t get a NPE here! </span>
+	<span class="c1">//Very good, we know we won't get a NPE here! 
+</span>
 <span class="o">}</span>
     
     
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeThis</span><span class="o">()</span> <span class="o">{</span>
 	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="n">printPersonName</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
-	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!</span>
-	<span class="c1">//Code analysis tools and/or IDE will warn you about this.</span>
+	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!
+</span>
+	<span class="c1">//Code analysis tools and/or IDE will warn you about this.
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>It will also help you correct possible coding errors:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
 <span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-	<span class="c1">//Use JPQL</span>
-	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;SELECT p FROM Person p WHERE p.id = :value&quot;</span><span class="o">);</span>
-	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+	<span class="c1">//Use JPQL
+</span>
+	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT p FROM Person p WHERE p.id = :value"</span><span class="o">);</span>
+	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"value"</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
 	<span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
-	<span class="c1">//The IDE will complain about this. </span>
-	<span class="c1">//The database might return null, we don&#39;t allow returning null in this method.</span>
+	<span class="c1">//The IDE will complain about this. 
+</span>
+	<span class="c1">//The database might return null, we don't allow returning null in this method.
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Using this method you have some more certainties. But it isn’t a silver-bullet on its own. We have to stop and think, where do the null-values come from?</p>
@@ -271,13 +278,14 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 	<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
 	
-	<span class="c1">//..etc..</span>
+	<span class="c1">//..etc..
+</span>
 <span class="o">}</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
 	
 	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
@@ -291,7 +299,8 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-                <span class="c1">//NullPerson returns empty list, no more NPE!</span>
+                <span class="c1">//NullPerson returns empty list, no more NPE!
+</span>
     <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
     <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
@@ -304,7 +313,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
 	
 	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
@@ -317,7 +326,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
 	
 	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
@@ -364,7 +373,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 <p>You could also give a default value:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">&quot;Anonymous&quot;</span><span class="o">);</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">"Anonymous"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>If person or getName() produce a null the “?:” operator will return the default String.</p>

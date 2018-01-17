@@ -182,31 +182,33 @@
 
 <p>For a programmer the code is very easy to understand, and the <a href="http://arduino.cc/en/Reference/HomePage">Arduino Programming Language</a> used is closely related to the C/Java family.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*</span>
-<span class="cm">  keyboard</span>
-<span class="cm"> </span>
-<span class="cm"> Plays a pitch that changes based on a changing analog input</span>
-<span class="cm"> </span>
-<span class="cm"> circuit:</span>
-<span class="cm"> * 3 force-sensing resistors from +5V to analog in 0 through 5</span>
-<span class="cm"> * 3 10K resistors from analog in 0 through 5 to ground</span>
-<span class="cm"> * 8-ohm speaker on digital pin 8</span>
-<span class="cm"> </span>
-<span class="cm"> created 21 Jan 2010</span>
-<span class="cm"> modified 9 Apr 2012</span>
-<span class="cm"> by Tom Igoe </span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*
+  keyboard
+ 
+ Plays a pitch that changes based on a changing analog input
+ 
+ circuit:
+ * 3 force-sensing resistors from +5V to analog in 0 through 5
+ * 3 10K resistors from analog in 0 through 5 to ground
+ * 8-ohm speaker on digital pin 8
+ 
+ created 21 Jan 2010
+ modified 9 Apr 2012
+ by Tom Igoe 
 
-<span class="cm">This example code is in the public domain.</span>
-<span class="cm"> </span>
-<span class="cm"> http://arduino.cc/en/Tutorial/Tone3</span>
-<span class="cm"> </span>
-<span class="cm"> */</span>
+This example code is in the public domain.
+ 
+ http://arduino.cc/en/Tutorial/Tone3
+ 
+ */</span>
 
-<span class="err">#</span><span class="n">include</span> <span class="s">&quot;pitches.h&quot;</span>
+<span class="err">#</span><span class="n">include</span> <span class="s">"pitches.h"</span>
 
-<span class="kd">const</span> <span class="kt">int</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// minimum reading of the sensors that generates a note</span>
+<span class="kd">const</span> <span class="kt">int</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// minimum reading of the sensors that generates a note
+</span>
 
-<span class="c1">// notes to play, corresponding to the 3 sensors:</span>
+<span class="c1">// notes to play, corresponding to the 3 sensors:
+</span>
 <span class="kt">int</span> <span class="n">notes</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span>
   <span class="n">NOTE_A4</span><span class="o">,</span> <span class="n">NOTE_B4</span><span class="o">,</span><span class="n">NOTE_C3</span> <span class="o">};</span>
 
@@ -216,12 +218,15 @@
 
 <span class="kt">void</span> <span class="nf">loop</span><span class="o">()</span> <span class="o">{</span>
   <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">thisSensor</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">thisSensor</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">thisSensor</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="c1">// get a sensor reading:</span>
+    <span class="c1">// get a sensor reading:
+</span>
     <span class="kt">int</span> <span class="n">sensorReading</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">thisSensor</span><span class="o">);</span>
 
-    <span class="c1">// if the sensor is pressed hard enough:</span>
+    <span class="c1">// if the sensor is pressed hard enough:
+</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">sensorReading</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">)</span> <span class="o">{</span>
-      <span class="c1">// play the note corresponding to this sensor:</span>
+      <span class="c1">// play the note corresponding to this sensor:
+</span>
       <span class="n">tone</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">notes</span><span class="o">[</span><span class="n">thisSensor</span><span class="o">],</span> <span class="mi">20</span><span class="o">);</span>
     <span class="o">}</span> 
   <span class="o">}</span>
@@ -230,13 +235,13 @@
 <p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
-<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">&quot;Sensor value: &quot;</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
+<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">"Sensor value: "</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
 <span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
 
 <p>This little piece of code above gives unpredictable results because ‘stringThree’ never got an initial value before you started concatenating different data types. Instead you’ll have to do:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
-<span class="n">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">&quot;Sensor value: &quot;</span><span class="o">;</span>
+<span class="n">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">"Sensor value: "</span><span class="o">;</span>
 <span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="n">stringOne</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
 <span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
 

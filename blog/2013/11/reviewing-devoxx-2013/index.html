@@ -202,7 +202,7 @@
 
 <p>Ah, a serious talk about Java EE by Arun Gupta. This for me was a bit of a disappointment. The talk itself was good, gave a lot of insight into the new features that you get from Websockets. But I got soon distracted. It reminded me about the small fight I had in 2009 about the new Servlet specification. The new websocket API again uses a LOT of annotations and yes, I understand there are some advantages for using them, there are also disadvantages. All the examples Arun showed used the annotations (and not the interfaces which are also there, yay!). For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServerEndpoint</span><span class="o">(</span><span class="s">&quot;/location&quot;</span><span class="o">)</span>  <span class="c1">//This is a good annotation, with meta information</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServerEndpoint</span><span class="o">(</span><span class="s">"/location"</span><span class="o">)</span>  <span class="c1">//This is a good annotation, with meta information</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeEndpoint</span> <span class="o">{</span>
 
    <span class="nd">@OnOpen</span> <span class="c1">//Awww no this is where is goes wrong... it already says onOpen below</span>
@@ -222,7 +222,7 @@
 
    <span class="nd">@OnMessage</span> <span class="c1">//...</span>
    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">textMessage</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Text message: &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Text message: "</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
    <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 

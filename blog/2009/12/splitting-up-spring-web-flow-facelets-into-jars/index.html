@@ -153,10 +153,10 @@
 <p>The first thing I did was changing our flowRegistry:</p>
 
 <figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- The registry of executable flow definitions --&gt;</span>
-<span class="nt">&lt;webflow:flow-registry</span> <span class="na">id=</span><span class="s">&quot;flowRegistry&quot;</span> 
-   <span class="na">flow-builder-services=</span><span class="s">&quot;facesFlowBuilderServices&quot;</span> 
-   <span class="na">base-path=</span><span class="s">&quot;classpath*:flows&quot;</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;webflow:flow-location-pattern</span> <span class="na">value=</span><span class="s">&quot;/**/*-flow.xml&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;webflow:flow-registry</span> <span class="na">id=</span><span class="s">"flowRegistry"</span> 
+   <span class="na">flow-builder-services=</span><span class="s">"facesFlowBuilderServices"</span> 
+   <span class="na">base-path=</span><span class="s">"classpath*:flows"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;webflow:flow-location-pattern</span> <span class="na">value=</span><span class="s">"/**/*-flow.xml"</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/webflow:flow-registry&gt;</span></code></pre></figure>
 
 <p>The <em>classpath*:</em> allows SWF to search the whole classpath for flow-directories containing a flow definition.<br />
@@ -258,19 +258,19 @@ Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t 
         <span class="o">}</span>
     <span class="o">}</span>
     
-    <span class="cm">/**</span>
-<span class="cm">     * Override the ResourceLoader:</span>
-<span class="cm">     * We know our flow is always defined as &quot;flows/module1&quot;.</span>
-<span class="cm">     * From the context we can derive the name of the flow (module1)</span>
-<span class="cm">     * So we build up the ClassPathResource base as:</span>
-<span class="cm">     * &quot;flows/&quot;+ ctx.getResource(&quot;&quot;)+ &quot;/&quot;</span>
-<span class="cm">     * </span>
-<span class="cm">     * @param ctx</span>
-<span class="cm">     */</span>
+    <span class="cm">/**
+     * Override the ResourceLoader:
+     * We know our flow is always defined as "flows/module1".
+     * From the context we can derive the name of the flow (module1)
+     * So we build up the ClassPathResource base as:
+     * "flows/"+ ctx.getResource("")+ "/"
+     * 
+     * @param ctx
+     */</span>
     <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">overrideResourceLoader</span><span class="o">(</span><span class="n">GenericApplicationContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
-    	<span class="kd">final</span> <span class="n">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ClassPathResource</span><span class="o">(</span><span class="s">&quot;flows/&quot;</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">&quot;/&quot;</span><span class="o">);</span>
+    	<span class="kd">final</span> <span class="n">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">"flows/"</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">""</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">"/"</span><span class="o">);</span>
 
-    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="nf">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
         	
         	<span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getClassLoader</span><span class="o">()</span> <span class="o">{</span>
         		<span class="k">return</span> <span class="n">cpr</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">();</span>
@@ -287,7 +287,7 @@ Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t 
 
 <p>To register this post processor add it to your project-servlet.xml:</p>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;flowRegistryClassPathPostProcessor&quot;</span> <span class="na">class=</span><span class="s">&quot;nl.redcode.FlowRegistryClassPathPostProcessor&quot;</span> <span class="nt">/&gt;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"flowRegistryClassPathPostProcessor"</span> <span class="na">class=</span><span class="s">"nl.redcode.FlowRegistryClassPathPostProcessor"</span> <span class="nt">/&gt;</span></code></pre></figure>
 
 <h1 id="how-to-use-it">How to use it</h1>
 
@@ -301,13 +301,13 @@ etc…</p>
 
 <p>In the flow we can now use the following view-id’s:</p>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="nt">&lt;flow</span> 	<span class="na">xmlns=</span><span class="s">&quot;http://www.springframework.org/schema/webflow&quot;</span>
-		<span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-		<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.springframework.org/schema/webflow</span>
-<span class="s">							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd&quot;</span><span class="nt">&gt;</span>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;flow</span> 	<span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/webflow"</span>
+		<span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+		<span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/webflow
+							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"</span><span class="nt">&gt;</span>
 
-    <span class="nt">&lt;view-state</span> <span class="na">id=</span><span class="s">&quot;start&quot;</span> <span class="na">view=</span><span class="s">&quot;page1.xhtml&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;view-state</span> <span class="na">id=</span><span class="s">"start"</span> <span class="na">view=</span><span class="s">"page1.xhtml"</span><span class="nt">/&gt;</span>
 
 <span class="nt">&lt;/flow&gt;</span></code></pre></figure>
 

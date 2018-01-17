@@ -181,14 +181,18 @@ We all know why this is important:</p>
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:
+</span>
 <span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
+    <span class="c1">// .. do something ..
+</span>
 <span class="o">}</span>
 
-<span class="c1">// After:</span>
+<span class="c1">// After:
+</span>
 <span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// .. do something ..</span>
+    <span class="c1">// .. do something ..
+</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>For each mutant the unit tests are run and there are a couple of possible outcomes:<img src="/images/mutant_killed-300x225.png" alt="mutant_killed" class="alignright" /></p>
@@ -199,7 +203,7 @@ We all know why this is important:</p>
 
 <p>If you are lucky a test will fail. This means we have ‘killed’ our mutant. This is a positive thing, we’ve actually checked that the mutated line of code is correctly asserted by a test. Now we immediately see the advantage of using mutation testing, we actually verify the assertions in our tests.</p>
 
-<h1 id="survivedmutantlivedmutantlived-alignright-">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
+<h1 id="survived">Survived<img src="/images/mutant_lived-225x300.png" alt="mutant_lived" class="alignright" /></h1>
 
 <p>Another possible outcome is that our mutant has survived, meaning no test fails. This is scary, it means the logic we’ve changed isn’t verified by a test. If someone would (accidentally) make this change in your codebase, the automatic build won’t break.</p>
 

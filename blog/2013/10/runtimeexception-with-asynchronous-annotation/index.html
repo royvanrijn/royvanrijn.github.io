@@ -146,7 +146,7 @@
     <span itemprop="articleBody">
     <p>Since the introduction of EJB 3.1 we can use the <a href="http://docs.oracle.com/javaee/7/api/javax/ejb/Asynchronous.html">@Asynchronous</a> annotation. It provides a simple way to create a new asynchronous process in your application.</p>
 
-<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<t>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<t>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</t></t></p>
+<p>If a method with the @Asynchronous is invoked it will spawn a new thread and return immediately. The invocation can return either a <strong>void</strong> or a [Future<T>][Future_T]. When returning a **Future** it starts out completely empty, but the @Asynchronous can return something called **AsyncResult<T>** to fill the **Future** with a value. The original method can, at a later moment in time, call .get() or .get(long timeout, TimeUnit unit) to see the result of the Future. If needed it will stop and wait for the result. But in the mean time it could have executed some other pieces of code in parallel.</T></T></p>
 
 <p>To find out more about how to use @Asynchronous and Future, read this page from <a href="http://tomee.apache.org/examples-trunk/async-methods/">TomEE</a>.</p>
 
@@ -155,10 +155,10 @@
 <p>If you create a new Thread yourself (see example below) it will print the RuntimeException:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    		<span class="kd">final</span> <span class="n">Runnable</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Runnable</span><span class="o">()</span> <span class="o">{</span>
+    		<span class="kd">final</span> <span class="n">Runnable</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
     			<span class="nd">@Override</span>
     			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-    				<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Log me!!&quot;</span><span class="o">);</span>
+    				<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"Log me!!"</span><span class="o">);</span>
     			<span class="o">}</span>
     		<span class="o">};</span>
     		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">t</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
@@ -168,7 +168,7 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Asynchronous</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
-    		<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Where am I?&quot;</span><span class="o">);</span>
+    		<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"Where am I?"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>This exception is swallowed, never to be seen again. Because this wasn’t what I expected it took me much longer then needed to find the actual bug!</p>

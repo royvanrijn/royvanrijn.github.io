@@ -144,14 +144,14 @@
     </div>
 
     <span itemprop="articleBody">
-    <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!  </p>
+    <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!</p>
 
 <h1 id="hashing">Hashing</h1>
 
 <p>First off, lets talk about ‘hashing’, what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example… passwords:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;test&quot;     -&gt; &quot;098f6bcd4621d373cade4e832627b4f6&quot;
-&quot;password&quot; -&gt; &quot;5f4dcc3b5aa765d61d8327deb882cf99&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">"test"     -&gt; "098f6bcd4621d373cade4e832627b4f6"
+"password" -&gt; "5f4dcc3b5aa765d61d8327deb882cf99"</code></pre></figure>
 
 <p>Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don’t have anything, because the hash-function is only one-way.</p>
 
@@ -175,11 +175,11 @@
 
 <p>Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We’ll end up with:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   &quot;random&quot;                           -&gt; &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot;
-Reduce: &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot; -&gt; &quot;ienw3&quot;
-Hash:   &quot;ienw3&quot;                            -&gt; &quot;b9322e367ad002d5adf7ca60b8b61e86&quot;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   "random"                           -&gt; "7ddf32e17a6ac5ce04a8ecbf782ca509"
+Reduce: "7ddf32e17a6ac5ce04a8ecbf782ca509" -&gt; "ienw3"
+Hash:   "ienw3"                            -&gt; "b9322e367ad002d5adf7ca60b8b61e86"
         ... (1000 times) ...
-Hash:   &quot;o1gti&quot;                            -&gt; &quot;27aa4cbd3653a4617e0aec76ba3af9a4&quot;</code></pre></figure>
+Hash:   "o1gti"                            -&gt; "27aa4cbd3653a4617e0aec76ba3af9a4"</code></pre></figure>
 
 <p>The trick is, we throw away everything except the first input “random” and the final hash “27aa4cbd3653a4617e0aec76ba3af9a4”! This is the only part we need to store.</p>
 

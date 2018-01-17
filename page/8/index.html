@@ -115,6 +115,47 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/05/wedding-video/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Wedding video" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-05-23T10:52:16+02:00" class="date">
+            May 23, 2011 10:52:16
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/wedding-video/">Wedding video</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This weekend I was invited to a friends wedding. She asked if I could film everything that happened. This was basically the first time I’ve filmed something. I decided to edit everything together with some music. Here is the result:</p>
+
+<iframe type="text/html" src="http://player.vimeo.com/video/24091005?title=0&amp;byline=0&amp;portrait=0" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>It was a very nice day and I had a blast filming and editing everything. It is very rewarding! I really have to do this more often, but coming up with ideas to film is hard…</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/wedding-video/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/05/gods-dice/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="God's Dice" width="100" height="100" />
@@ -419,10 +460,10 @@ The source code can be found here: <a href="https://github.com/markolson/js-sqli
 <p>To run the program, extract the three JAR-files and type:</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">Usage:
-java -jar iPhoneJTrack.jar &quot;&lt;location of backup directory&gt;&quot;
+java -jar iPhoneJTrack.jar "&lt;location of backup directory&gt;"
 
 For example:
-java -jar iPhoneTracker.jar &quot;C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590&quot;</code></pre></figure>
+java -jar iPhoneTracker.jar "C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590"</code></pre></figure>
 
 <p>This outputs a file named iPhoneData.kml, which can be loaded for example in Google Earth.</p>
 
@@ -474,7 +515,7 @@ java -jar iPhoneTracker.jar &quot;C:\Users\roy\AppData\Roaming\Apple Computer\Mo
 
 <p>Quickly I looked around and went into overdrive mode:<br />
 <em>I need to fix this bug before somebody sees it!<br />
-I’m always yelling at people who break the build, and now it has happend to me…!</em>  </p>
+I’m always yelling at people who break the build, and now it has happend to me…!</em></p>
 
 <p>Looking at the SVN comment it only said: “cleaned up some code” (or something)<br />
 That isn’t very helpfull of myself…</p>
@@ -552,7 +593,7 @@ That isn’t very helpfull of myself…</p>
 checked exceptions are “the embodiment of evil”?’</p>
 </blockquote>
 
-<p>So here it is.  </p>
+<p>So here it is.</p>
 
 <p>As you can see I haven’t written a post in a long time (sorry). This post is also not going to be very comprehensive. Of course I could explain everything, but I’d rather link to another site which sums it up very nicely:<br />
 <a href="http://c2.com/cgi/wiki?TheProblemWithCheckedExceptions">http://c2.com/cgi/wiki?TheProblemWithCheckedExceptions</a></p>
@@ -608,7 +649,7 @@ checked exceptions are “the embodiment of evil”?’</p>
 <p>This is the program I ended up with. It is very very small. One of my most beautiful pieces of code. And it even supports non-binary alphabets (use the k-parameter).</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">generateDeBruijnSequence</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="o">();</span>
+	<span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
 	<span class="n">generateLyndonWords</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">],</span> <span class="n">sequence</span><span class="o">);</span>
 	<span class="k">return</span> <span class="n">sequence</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
 <span class="o">}</span>
@@ -697,7 +738,7 @@ For example: B(2,4)</p>
 <p>Pseudo:</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">lastLyndon = -1
-for all possible N&#39;s {
+for all possible N's {
     currentSmallestLyndon = smallestLyndonRotation(N)
     if( currentSmallestLyndon &gt; lastLyndon ) {
         lastLyndon = currentSmallestLyndon
@@ -985,7 +1026,8 @@ For example:</p>
 
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="kd">final</span> <span class="n">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">//do something here!    </span>
+        <span class="c1">//do something here!    
+</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -999,9 +1041,9 @@ For example:</p>
 
 <p>In Java there are actually two methods of creating a screenshot. The first method is the easiest, using the Java Robot:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Robot</span> <span class="n">robot</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Robot</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Robot</span> <span class="n">robot</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Robot</span><span class="o">();</span>
  
-<span class="n">BufferedImage</span> <span class="n">screenShot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="na">createScreenCapture</span><span class="o">(</span><span class="k">new</span> <span class="nf">Rectangle</span><span class="o">(</span><span class="n">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getScreenSize</span><span class="o">()));</span></code></pre></figure>
+<span class="n">BufferedImage</span> <span class="n">screenShot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="na">createScreenCapture</span><span class="o">(</span><span class="k">new</span> <span class="n">Rectangle</span><span class="o">(</span><span class="n">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getScreenSize</span><span class="o">()));</span></code></pre></figure>
 
 <p>Very easy, but this can contain a LOT of information about the moment the exception occurs. It may provide valuable information. But we encountered a major security problem with the above method. Java will create an actual screenshot, the size of your application. But it doesn’t know if your application is currently the active window..! When we did tests we saw screenshots with Skype messages in screen and browsers being active… We can’t invade the lives of our users and send this information over the mail!</p>
 
@@ -1009,15 +1051,18 @@ For example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">BufferedImage</span> <span class="nf">createScreenshot</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
-        <span class="c1">// Try to repaint the main frame of our application:</span>
+        <span class="c1">// Try to repaint the main frame of our application:
+</span>
         <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getWidth</span><span class="o">();</span>
         <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getHeight</span><span class="o">();</span>
-        <span class="n">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BufferedImage</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">BufferedImage</span><span class="o">.</span><span class="na">TYPE_INT_RGB</span><span class="o">);</span>
+        <span class="n">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedImage</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">BufferedImage</span><span class="o">.</span><span class="na">TYPE_INT_RGB</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">paintAll</span><span class="o">(</span><span class="n">image</span><span class="o">.</span><span class="na">getGraphics</span><span class="o">());</span>
-        <span class="c1">// We can&#39;t use Robot, it might capture a bit too much information</span>
+        <span class="c1">// We can't use Robot, it might capture a bit too much information
+</span>
         <span class="k">return</span> <span class="n">image</span><span class="o">;</span>
     <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Screen can&#39;t be captured, don&#39;t throw exception, else we&#39;ll end up in a loop :-)</span>
+        <span class="c1">// Screen can't be captured, don't throw exception, else we'll end up in a loop :-)
+</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1041,25 +1086,26 @@ For example:</p>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
     
-	<span class="n">MimeBodyPart</span> <span class="n">imagePart</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MimeBodyPart</span><span class="o">();</span>
-	<span class="n">ByteArrayOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+	<span class="n">MimeBodyPart</span> <span class="n">imagePart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MimeBodyPart</span><span class="o">();</span>
+	<span class="n">ByteArrayOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
 	<span class="k">try</span> <span class="o">{</span>
-		<span class="n">ImageIO</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">screenshot</span><span class="o">,</span> <span class="s">&quot;jpg&quot;</span><span class="o">,</span> <span class="n">outputStream</span><span class="o">);</span>
+		<span class="n">ImageIO</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">screenshot</span><span class="o">,</span> <span class="s">"jpg"</span><span class="o">,</span> <span class="n">outputStream</span><span class="o">);</span>
 	<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ioException</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">// Impossible to get the screenshot, return null and continue without it</span>
+		<span class="c1">// Impossible to get the screenshot, return null and continue without it
+</span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
     
-	<span class="n">DataSource</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayDataSource</span><span class="o">(</span><span class="n">outputStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">&quot;image/jpeg&quot;</span><span class="o">);</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setDataHandler</span><span class="o">(</span><span class="k">new</span> <span class="nf">DataHandler</span><span class="o">(</span><span class="n">source</span><span class="o">));</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setFileName</span><span class="o">(</span><span class="s">&quot;screenshot.jpg&quot;</span><span class="o">);</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setContentID</span><span class="o">(</span><span class="s">&quot;&lt;screenshot&gt;&quot;</span><span class="o">);</span>
+	<span class="n">DataSource</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayDataSource</span><span class="o">(</span><span class="n">outputStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">"image/jpeg"</span><span class="o">);</span>
+	<span class="n">imagePart</span><span class="o">.</span><span class="na">setDataHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">DataHandler</span><span class="o">(</span><span class="n">source</span><span class="o">));</span>
+	<span class="n">imagePart</span><span class="o">.</span><span class="na">setFileName</span><span class="o">(</span><span class="s">"screenshot.jpg"</span><span class="o">);</span>
+	<span class="n">imagePart</span><span class="o">.</span><span class="na">setContentID</span><span class="o">(</span><span class="s">"&lt;screenshot&gt;"</span><span class="o">);</span>
 	<span class="k">return</span> <span class="n">imagePart</span><span class="o">;</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>The only non-obvious line in the code above is setting the ContentID, this can be used to refer to the image-data in case of an HTML email. In the main email content I added the following line:</p>
 
-<figure class="highlight"><pre><code class="language-html" data-lang="html">Screenshot: <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;/images/cid:screenshot&quot;</span> <span class="na">alt=</span><span class="s">&quot;Screenshot of the moment the exception occured.&quot;</span> <span class="nt">/&gt;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-html" data-lang="html">Screenshot: <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"/images/cid:screenshot"</span> <span class="na">alt=</span><span class="s">"Screenshot of the moment the exception occured."</span> <span class="nt">/&gt;</span></code></pre></figure>
 
 <p>The <em>src=”cid:screenshot”</em> will cause the email to show the screenshot embedded inside the email. This makes the exception-email look very pretty.</p>
 
@@ -1107,14 +1153,14 @@ For example:</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
 
         <span itemprop="articleBody">
-          <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!  </p>
+          <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!</p>
 
 <h1 id="hashing">Hashing</h1>
 
 <p>First off, lets talk about ‘hashing’, what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example… passwords:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;test&quot;     -&gt; &quot;098f6bcd4621d373cade4e832627b4f6&quot;
-&quot;password&quot; -&gt; &quot;5f4dcc3b5aa765d61d8327deb882cf99&quot;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">"test"     -&gt; "098f6bcd4621d373cade4e832627b4f6"
+"password" -&gt; "5f4dcc3b5aa765d61d8327deb882cf99"</code></pre></figure>
 
 <p>Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don’t have anything, because the hash-function is only one-way.</p>
 
@@ -1138,11 +1184,11 @@ For example:</p>
 
 <p>Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We’ll end up with:</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   &quot;random&quot;                           -&gt; &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot;
-Reduce: &quot;7ddf32e17a6ac5ce04a8ecbf782ca509&quot; -&gt; &quot;ienw3&quot;
-Hash:   &quot;ienw3&quot;                            -&gt; &quot;b9322e367ad002d5adf7ca60b8b61e86&quot;
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   "random"                           -&gt; "7ddf32e17a6ac5ce04a8ecbf782ca509"
+Reduce: "7ddf32e17a6ac5ce04a8ecbf782ca509" -&gt; "ienw3"
+Hash:   "ienw3"                            -&gt; "b9322e367ad002d5adf7ca60b8b61e86"
         ... (1000 times) ...
-Hash:   &quot;o1gti&quot;                            -&gt; &quot;27aa4cbd3653a4617e0aec76ba3af9a4&quot;</code></pre></figure>
+Hash:   "o1gti"                            -&gt; "27aa4cbd3653a4617e0aec76ba3af9a4"</code></pre></figure>
 
 <p>The trick is, we throw away everything except the first input “random” and the final hash “27aa4cbd3653a4617e0aec76ba3af9a4”! This is the only part we need to store.</p>
 
@@ -1409,70 +1455,6 @@ TERMINATOR ^ (PTR TO 39)</li>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/11/patent-infrigement-part-2/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent infringement (part 2)" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-11-24T09:56:46+01:00" class="date">
-            Nov 24, 2010 09:56:46
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/11/patent-infrigement-part-2/">Patent infringement (part 2)</a></h1>
-
-        <span itemprop="articleBody">
-          <p>After a lot of comments on my blog asking about the code I decided to try getting it released one more time. Thus I mailed Digital Landmark Services again, telling them this is just a hobby project, and will (in its current form) never be a replacement for Shazam. Also, I explained a lot of people hated Shazam and deleted the application after reading this blog… the only thing they got out of it is bad marketing.</p>
-
-<p>So I asked them for a peaceful solution, I’ll release the code, tell everybody Landmark Digital Services is a good company after all, and that’s it, both will benefit.</p>
-
-<p>This is the reply I got:</p>
-
-<blockquote>
-  <p>Dear Mr. Van Rijn,</p>
-
-  <p>I am an attorney for Landmark Digital Services. Thank you for your response and attention to this important matter. As we have stated in detail in previous communications, we would like you to refrain from releasing the code and to remove the blogpost explaining the algorithm. While we appreciate your thoughtful comments and questions, we have already made our position clear and hope you will respect our interest in our IP.</p>
-
-  <p>Sincerely,<br />
-XXX<br />
-Attorney<br />
-Woodcock Washburn</p>
-</blockquote>
-
-<p>WHAT!? They tell me again to remove the blogpost, this is crazy! A blogpost describing an algorithm can never be infrigement of intellectual property. The whole idea of a patent is to preserve an idea, to write down what it does and how it works for future generations. A patent has to be publicly available for this sole reason. This isn’t protecting their intellectual property, this is plain censorship.</p>
-
-<p>My reply to the email was short an concise:</p>
-
-<blockquote>
-  <p>I’m sorry, but I can’t comply.</p>
-
-  <p>Good luck.</p>
-</blockquote>
-
-<p>This was a week ago, lets see what they come up with this time…</p>
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

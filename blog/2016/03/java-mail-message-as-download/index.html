@@ -162,12 +162,12 @@
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
 
     <span class="c1">// Retrieve the entire message as byte[]:</span>
-    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
     <span class="n">message</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
     <span class="kt">byte</span><span class="o">[]</span> <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
 
     <span class="c1">// Next we store the byte[] in our database (JPA) entity:</span>
-    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
     <span class="n">mailArchive</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">archivedMail</span><span class="o">);</span>
 
     <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
@@ -177,11 +177,11 @@
 <p>We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Add the Wicket link-component to our page:</span>
-    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">&quot;wicketLinkId&quot;</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">"wicketLinkId"</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
 
         <span class="nd">@Override</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
                 <span class="nd">@Override</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
                     <span class="c1">// When clicked output a stream which contains the raw byte[]:</span>
@@ -191,13 +191,13 @@
                 <span class="nd">@Override</span>
                 <span class="kd">public</span> <span class="n">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
                     <span class="c1">// Add the content type for an EML file:</span>
-                    <span class="k">return</span> <span class="s">&quot;message/rfc822&quot;</span><span class="o">;</span>
+                    <span class="k">return</span> <span class="s">"message/rfc822"</span><span class="o">;</span>
                 <span class="o">}</span>
             <span class="o">};</span>
 
             <span class="c1">// Schedule the handler to return our resource stream (with a fancy name):</span>
             <span class="n">getRequestCycle</span><span class="o">().</span><span class="na">scheduleRequestHandlerAfterCurrent</span><span class="o">(</span>
-                <span class="k">new</span> <span class="nf">ResourceStreamRequestHandler</span><span class="o">(</span><span class="n">resourceStream</span><span class="o">).</span><span class="na">setFileName</span><span class="o">(</span><span class="s">&quot;mail.eml&quot;</span><span class="o">));</span>
+                <span class="k">new</span> <span class="nf">ResourceStreamRequestHandler</span><span class="o">(</span><span class="n">resourceStream</span><span class="o">).</span><span class="na">setFileName</span><span class="o">(</span><span class="s">"mail.eml"</span><span class="o">));</span>
         <span class="o">}</span>
     <span class="o">});</span></code></pre></figure>
 

@@ -161,7 +161,8 @@ Wouldn’t it be great if we can program something of our own that gives that sa
 
 <p>But it turned out it was very easy:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings
+</span>
 <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">TargetDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
 <span class="kd">final</span> <span class="n">TargetDataLine</span> <span class="n">line</span> <span class="o">=</span> <span class="o">(</span><span class="n">TargetDataLine</span><span class="o">)</span> <span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
 <span class="n">line</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">);</span>
@@ -169,9 +170,10 @@ Wouldn’t it be great if we can program something of our own that gives that sa
 
 <p>Now we can read the data from the TargetDataLine just like a normal InputStream:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// In another thread I start:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// In another thread I start:
+</span>
 
-<span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">();</span>
+<span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
 <span class="n">running</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
 
 <span class="k">try</span> <span class="o">{</span>
@@ -183,7 +185,7 @@ Wouldn’t it be great if we can program something of our own that gives that sa
     <span class="o">}</span>
     <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;I/O problems: &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"I/O problems: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
     <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -192,7 +194,8 @@ Wouldn’t it be great if we can program something of our own that gives that sa
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">AudioFormat</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
     <span class="kt">float</span> <span class="n">sampleRate</span> <span class="o">=</span> <span class="mi">44100</span><span class="o">;</span>
     <span class="kt">int</span> <span class="n">sampleSizeInBits</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
-    <span class="kt">int</span> <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//mono</span>
+    <span class="kt">int</span> <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//mono
+</span>
     <span class="kt">boolean</span> <span class="n">signed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
     <span class="kt">boolean</span> <span class="n">bigEndian</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
     <span class="k">return</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="n">sampleRate</span><span class="o">,</span> <span class="n">sampleSizeInBits</span><span class="o">,</span> <span class="n">channels</span><span class="o">,</span> <span class="n">signed</span><span class="o">,</span> <span class="n">bigEndian</span><span class="o">);</span>
@@ -249,17 +252,21 @@ There is just one problem, if you transform the data into the frequency domain y
 
 <span class="kt">int</span> <span class="n">amountPossible</span> <span class="o">=</span> <span class="n">totalSize</span><span class="o">/</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span>
 
-<span class="c1">//When turning into frequency domain we&#39;ll need complex numbers:</span>
+<span class="c1">//When turning into frequency domain we'll need complex numbers:
+</span>
 <span class="n">Complex</span><span class="o">[][]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">amountPossible</span><span class="o">][];</span>
 
-<span class="c1">//For all the chunks:</span>
+<span class="c1">//For all the chunks:
+</span>
 <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">times</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">times</span> <span class="o">&lt;</span> <span class="n">amountPossible</span><span class="o">;</span> <span class="n">times</span><span class="o">++)</span> <span class="o">{</span>
     <span class="n">Complex</span><span class="o">[]</span> <span class="n">complex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">];</span>
     <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-        <span class="c1">//Put the time domain data into a complex number with imaginary part as 0:</span>
-        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="c1">//Put the time domain data into a complex number with imaginary part as 0:
+</span>
+        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
     <span class="o">}</span>
-    <span class="c1">//Perform FFT analysis on the chunk:</span>
+    <span class="c1">//Perform FFT analysis on the chunk:
+</span>
     <span class="n">results</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="n">FFT</span><span class="o">.</span><span class="na">fft</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span>
 <span class="o">}</span>
 
@@ -271,17 +278,23 @@ To show the data I hacked this together:</p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">results</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
     <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">line</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">line</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">line</span><span class="o">++)</span> <span class="o">{</span>
-        <span class="c1">// To get the magnitude of the sound at a given frequency slice</span>
-        <span class="c1">// get the abs() from the complex number.</span>
-        <span class="c1">// In this case I use Math.log to get a more managable number (used for color)</span>
+        <span class="c1">// To get the magnitude of the sound at a given frequency slice
+</span>
+        <span class="c1">// get the abs() from the complex number.
+</span>
+        <span class="c1">// In this case I use Math.log to get a more managable number (used for color)
+</span>
         <span class="kt">double</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()+</span><span class="mi">1</span><span class="o">);</span>
 
-        <span class="c1">// The more blue in the color the more intensity for a given frequency point:</span>
-        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nf">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
-        <span class="c1">// Fill:</span>
+        <span class="c1">// The more blue in the color the more intensity for a given frequency point:
+</span>
+        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="n">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
+        <span class="c1">// Fill:
+</span>
         <span class="n">g2d</span><span class="o">.</span><span class="na">fillRect</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="n">blockSizeX</span><span class="o">,</span> <span class="o">(</span><span class="n">size</span><span class="o">-</span><span class="n">line</span><span class="o">)*</span><span class="n">blockSizeY</span><span class="o">,</span><span class="n">blockSizeX</span><span class="o">,</span><span class="n">blockSizeY</span><span class="o">);</span>
 		
-        <span class="c1">// I used a improviced logarithmic scale and normal scale:</span>
+        <span class="c1">// I used a improviced logarithmic scale and normal scale:
+</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">logModeEnabled</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">freq</span> <span class="o">+=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">));</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -309,34 +322,41 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 
 <p>For each line the in spectrum analysis I take the points with the highest magnitude from certain ranges. In my case: 40-80, 80-120, 120-180, 180-300.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//For every line of data:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//For every line of data:
+</span>
 
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">LOWER_LIMIT</span><span class="o">;</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="n">UPPER_LIMIT</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">freq</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="c1">//Get the magnitude:</span>
+    <span class="c1">//Get the magnitude:
+</span>
     <span class="kt">double</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
 
-    <span class="c1">//Find out which range we are in:</span>
+    <span class="c1">//Find out which range we are in:
+</span>
     <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">getIndex</span><span class="o">(</span><span class="n">freq</span><span class="o">);</span>
 
-    <span class="c1">//Save the highest magnitude and corresponding frequency:</span>
+    <span class="c1">//Save the highest magnitude and corresponding frequency:
+</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">mag</span> <span class="o">&gt;</span> <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">])</span> <span class="o">{</span>
         <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">mag</span><span class="o">;</span>
         <span class="n">recordPoints</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">freq</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 
-<span class="c1">//Write the points to a file:</span>
+<span class="c1">//Write the points to a file:
+</span>
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">AMOUNT_OF_POINTS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">recordPoints</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot;\t&quot;</span><span class="o">);</span>
+    <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">recordPoints</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">"\t"</span><span class="o">);</span>
 <span class="o">}</span>
-<span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+<span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
 
-<span class="c1">// ... snip ...</span>
+<span class="c1">// ... snip ...
+</span>
 
 
 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">RANGE</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">40</span><span class="o">,</span><span class="mi">80</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span><span class="mi">180</span><span class="o">,</span> <span class="n">UPPER_LIMIT</span><span class="o">+</span><span class="mi">1</span><span class="o">};</span>
 
-<span class="c1">//Find out in which range</span>
+<span class="c1">//Find out in which range
+</span>
 <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">(</span><span class="kt">int</span> <span class="n">freq</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="k">while</span><span class="o">(</span><span class="n">RANGE</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">freq</span><span class="o">)</span> <span class="n">i</span><span class="o">++;</span>
@@ -381,11 +401,12 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 
 <p>Example hash-code using 4 points per line:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Using a little bit of error-correction, damping</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Using a little bit of error-correction, damping
+</span>
 <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">FUZ_FACTOR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
 
 <span class="kd">private</span> <span class="kt">long</span> <span class="nf">hash</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+    <span class="n">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\t"</span><span class="o">);</span>
     <span class="kt">long</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
     <span class="kt">long</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
     <span class="kt">long</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
@@ -395,8 +416,8 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 
 <p>Now I create two data sets:</p>
 
-<p>- A list of songs, List<string> (List index is Song-ID, String is songname)  
-\- Database of hashes: Map&lt;Long, List<datapoint>&gt;</datapoint></string></p>
+<p>- A list of songs, List<String> (List index is Song-ID, String is songname)  
+\- Database of hashes: Map&lt;Long, List<DataPoint>&gt;</DataPoint></String></p>
 
 <p>The long in the database of hashes represents the hash itself, and it has a bucket of DataPoints.</p>
 
@@ -462,7 +483,7 @@ Top 20 matches:
 13: 04 Röyksopp - In Space.mp3 with 6 matches.
 14: 04 Track04.mp3 with 6 matches.
 15: 05 - Dress Up In You.mp3 with 6 matches.
-16: 05 Supergrass - Can&#39;t Get Up.mp3 with 6 matches.
+16: 05 Supergrass - Can't Get Up.mp3 with 6 matches.
 17: 05 Track05.mp3 with 6 matches.
 18: 05The Fox In The Snow.mp3 with 6 matches.
 19: 05_athlete_-_wires.mp3 with 6 matches.
