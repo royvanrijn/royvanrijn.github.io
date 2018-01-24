@@ -115,6 +115,226 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2012/02/levenshtein-distance-challenge-causes/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Levenshtein Distance Challenge: Causes" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2012-02-07T23:54:54+01:00" class="date">
+            Feb 7, 2012 23:54:54
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2012/02/levenshtein-distance-challenge-causes/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/02/levenshtein-distance-challenge-causes/">Levenshtein Distance Challenge: Causes</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today I’ve been playing around with the <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a>. The Levenshtein distance is a number which measures the ‘distance’ between two strings. For example, the distance between “test” and “rest” is one.</p>
+
+<h1 id="the-challenge">The challenge</h1>
+
+<p>A Levenshtein distance of one is the key element in a challenge I’ve been reading about. I first encountered it on <a href="http://williamedwardscoder.tumblr.com/post/16756548314/causes-levenshtein-distance-challenge">williamedwardscoder</a>’s blog.</p>
+
+<p>The problem description:</p>
+
+<p><em>Two words are friends if they have a <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a> of 1. That is, you can add, remove, or substitute exactly one letter in word X to create word Y. A word’s social network consists of all of its friends, plus all of their friends, and all of their friends’ friends, and so on. Write a program to tell us how big the social network for the word “causes” is, using this <a href="https://raw.github.com/causes/puzzles/master/word_friends/word.list">word list</a>. Have fun!</em></p>
+
+<h1 id="java-solution-81-sec">Java solution (8.1 sec)</h1>
+
+<p>After some Googling and tweaking I decided to make an implementation based on the <a href="http://en.wikipedia.org/wiki/Trie">Trie</a> structure. How this helps is excellently described by <a href="http://stevehanov.ca/blog/index.php?id=114">Steve Hanov</a>. I’ve also had a peek in another Java based Trie implementation by <a href="https://github.com/ximus/Causes-Challenge">Ximus</a>.</p>
+
+<p>I’ve been able to get the code below run in 8.1 seconds, which is pretty good. But I’ve read that there are Java implementations running in just 4 seconds…!? Maybe based on Levenshtein Automata?</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.LinkedList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriendlyCauses</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+		<span class="n">FriendlyCauses</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriendlyCauses</span><span class="o">();</span>
+		<span class="n">s</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="n">TrieNode</span><span class="o">[]</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
+
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+		<span class="kt">long</span> <span class="n">timeBefore</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+		<span class="n">File</span> <span class="n">wordList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"word.list"</span><span class="o">);</span>
+		<span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">wordList</span><span class="o">));</span>
+
+		<span class="kt">int</span> <span class="n">wordsAdded</span> <span class="o">=</span> <span class="n">buildTrie</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Done building the Trie; "</span> <span class="o">+</span> <span class="n">wordsAdded</span> <span class="o">+</span> <span class="s">" words added."</span><span class="o">);</span>
+		<span class="n">findFriends</span><span class="o">(</span><span class="s">"causes"</span><span class="o">);</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Amount of friends found: "</span> <span class="o">+</span> <span class="n">countWords</span><span class="o">(</span><span class="n">root</span><span class="o">));</span>
+		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Total time: "</span> <span class="o">+</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">timeBefore</span><span class="o">)</span> <span class="o">+</span> <span class="s">"ms"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * This method builds the complete trie with all the words.
+	 */</span>
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">buildTrie</span><span class="o">(</span><span class="n">BufferedReader</span> <span class="n">reader</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">wordsAdded</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span> <span class="o">(</span><span class="n">reader</span><span class="o">.</span><span class="na">ready</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">String</span> <span class="n">next</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+			<span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">next</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">-</span> <span class="mi">97</span><span class="o">;</span>
+			<span class="n">TrieNode</span> <span class="n">current</span> <span class="o">=</span> <span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">];</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">current</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">]</span> <span class="o">=</span> <span class="n">current</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">();</span>
+			<span class="o">}</span>
+			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">next</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">nextIndex</span> <span class="o">=</span> <span class="n">next</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="mi">97</span><span class="o">;</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">current</span><span class="o">.</span><span class="na">children</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">current</span><span class="o">.</span><span class="na">children</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
+				<span class="o">}</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">TrieNode</span> <span class="n">deeper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">();</span>
+					<span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">]</span> <span class="o">=</span> <span class="n">deeper</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">];</span>
+			<span class="o">}</span>
+			<span class="n">current</span><span class="o">.</span><span class="na">word</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+			<span class="n">wordsAdded</span><span class="o">++;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">wordsAdded</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="kd">private</span> <span class="kd">class</span> <span class="nc">TrieNode</span> <span class="o">{</span>
+		<span class="c1">// The children:
+</span>
+		<span class="n">TrieNode</span><span class="o">[]</span> <span class="n">children</span><span class="o">;</span>
+		<span class="c1">// If this node is the end of a word, store the word here:
+</span>
+		<span class="n">String</span> <span class="n">word</span><span class="o">;</span>
+		<span class="c1">// This boolean indicates that the current node is a friend.
+</span>
+		<span class="kt">boolean</span> <span class="n">isFriend</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="c1">// Temporary buffer of friends to investigate further:
+</span>
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">friendsToFind</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">findFriends</span><span class="o">(</span><span class="n">String</span> <span class="n">word</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">friendsToFind</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+
+		<span class="k">while</span> <span class="o">(</span><span class="n">friendsToFind</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">String</span> <span class="n">friend</span> <span class="o">=</span> <span class="n">friendsToFind</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+
+			<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">friend</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+
+			<span class="kt">byte</span><span class="o">[]</span> <span class="n">currentRow</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">currentRow</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">i</span><span class="o">;</span>
+			<span class="o">}</span>
+
+			<span class="c1">// Search the Trie for the given friend:
+</span>
+			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">26</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">root</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">searchTrieForWord</span><span class="o">(</span><span class="n">root</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">97</span><span class="o">,</span> <span class="n">friend</span><span class="o">,</span> <span class="n">currentRow</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * Walk the complete Trie again finding all the friends
+	 */</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="nf">countWords</span><span class="o">(</span><span class="n">TrieNode</span><span class="o">[]</span> <span class="n">ts</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">amount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">26</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">TrieNode</span> <span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">isFriend</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">amount</span><span class="o">++;</span>
+					<span class="c1">// Print/add t.word
+</span>
+				<span class="o">}</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">children</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">amount</span> <span class="o">+=</span> <span class="n">countWords</span><span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">children</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">amount</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * Recursively walk the Trie calculating the Levenshtein distance to the
+	 * given word. When a friend is found, mark it and add it to a list. The new
+	 * friend needs to be processed further on.
+	 */</span>
+	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">searchTrieForWord</span><span class="o">(</span><span class="n">TrieNode</span> <span class="n">node</span><span class="o">,</span> <span class="kt">int</span> <span class="n">letter</span><span class="o">,</span> <span class="n">String</span> <span class="n">word</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">previousRow</span><span class="o">)</span> <span class="o">{</span>
+
+		<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">previousRow</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+		<span class="kt">byte</span><span class="o">[]</span> <span class="n">currentRow</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
+		<span class="n">currentRow</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">previousRow</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+
+		<span class="kt">int</span> <span class="n">minElement</span> <span class="o">=</span> <span class="n">currentRow</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">currentRow</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+					<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+
+			<span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">letter</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+						<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+						<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">newCurrentRowValue</span> <span class="o">&lt;</span> <span class="n">minElement</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">minElement</span> <span class="o">=</span> <span class="n">newCurrentRowValue</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">currentRow</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="n">newCurrentRowValue</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="c1">// If the Levenshtein distance is 1 and the node at current depth is a
+</span>
+		<span class="c1">// word (and not yet friend):
+</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">currentRow</span><span class="o">[</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="o">.</span><span class="na">word</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">node</span><span class="o">.</span><span class="na">isFriend</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">node</span><span class="o">.</span><span class="na">isFriend</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="n">friendsToFind</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">word</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="k">if</span> <span class="o">(</span><span class="n">minElement</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">TrieNode</span> <span class="n">child</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">searchTrieForWord</span><span class="o">(</span><span class="n">child</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">97</span><span class="o">,</span> <span class="n">word</span><span class="o">,</span> <span class="n">currentRow</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2012/02/levenshtein-distance-challenge-causes/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/12/orchard-planting-greatest-common-divisor/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Orchard Planting: Greatest Common Divisor" width="100" height="100" />
@@ -964,83 +1184,6 @@ If you have this problem too, please let me know if this fix helps.</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2011/05/android-application-1/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Android application #1" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2011-05-29T18:22:14+02:00" class="date">
-            May 29, 2011 18:22:14
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/android-application-1/">Android application #1</a></h1>
-
-        <span itemprop="articleBody">
-          <p>This weekend I wrote my first Android application: <a href="https://market.android.com/details?id=com.royvanrijn.android.lovehate">Love or Hate</a></p>
-
-<p>The idea behind the game is very simple. When you start it the application goes online and looks at the most recent tweets containing the following phrases:</p>
-
-<ul>
-  <li>“I love it when”</li>
-  <li>“I hate it when”</li>
-</ul>
-
-<p>The application now displays some user information (username/profile picture) and shows parts of the tweet. The words “love” and “hate” are removed and the user has to guess which of the two words was in the original tweet.</p>
-
-<h1 id="backend">Backend</h1>
-
-<p>The backend of this is only Twitter itself. And connecting to Twitter was really easy. I’ve used <a href="http://www.winterwell.com/software/jtwitter.php">JTwitter</a>, a small API that helps searching Twitter. The code itself to find the tweets was only about 20 lines.</p>
-
-<h1 id="frontend">Frontend</h1>
-
-<p>So that leaves me with the Android/telephone part. The first problem is the lack of Android phone. I don’t have one… But luckely when you install the Android SDK and Eclipse with the Android plugin, everything is ready, including an emulator. The first important thing I learned was to leave the emulator running. You don’t have to close the emulator to deploy a new version. This will greatly improve development speed. But as I learned when teaming up with two colleagues Ron and Jan-Kees, having an Android device is much easier still.</p>
-
-<p>The next discovery was: Android isn’t at all like Swing. It mostly evolves around XML layouts. So creating a GUI feels much more like creating an XHTML web application then working with a Java GUI. Creating the GUI was much harder then I thought it would be. And this application still has a very bad GUI. It must be a disaster creating applications that run correctly fullscreen on all different devices! This is probably an area where Apple has a huge advantage offering only two different screen sizes (iPhone/iPad). After fiddling a long time I got the application looking like I could get away with it. Not great, but everything was on it.</p>
-
-<p>One good thing about Android development is the use of externalized Strings. If you follow their advice and put all text in the string.xml file it becomes very easy to release the application in multiple languages. As a quick test I’ve released my application in English (default), Dutch and French.</p>
-
-<h1 id="releasing-to-the-market">Releasing to the Market</h1>
-
-<p>Of course I could have stopped here, but I wanted to release something to the Android Market. Even though the application looks ugly, it is playable and my colleagues even enjoyed playing it for a short while. The first step is creating a signed zipaligned APK file. This was very easy using the Eclipse plugin. Just click on “Export as signed Android application” and you are done. It even performs the zipalign step, in which it optimizes the APK file for the release.</p>
-
-<p>To get you application in the market you need to have a Android Market account. Opening one costs 25 euro (only one time, not per application), and although I don’t think I’ll even see that return on investment, I’ve decided to do it anyway. The only thing left for me was to upload the application, including a lot of artwork (screenshots/icons/thumbnails/misc descriptions).</p>
-
-<h1 id="adding-ads-from-">Adding ads from <img src="/images/ad_mob_logo_header.gif" alt="ad_mob_logo_header" /></h1>
-
-<p>Now that I’ve invested 25 euro’s, I decided I need some way to try and earn some money back. This actually proved to be the easiest thing in the whole project. With just 5 or 6 lines of code you can add <a href="http://www.admob.com/">AdMob</a> ads in your application. You can read about it <a href="http://code.google.com/intl/nl/mobile/ads/docs/android/fundamentals.html">here</a>.</p>
-
-<h1 id="results">Results</h1>
-
-<p>After one day I’m pretty surprised: Already 350 people have downloaded the application and I’ve already earned &gt; 50 cents from AdMob (2% ROI).</p>
-
-<p>I’ve really enjoyed doing something new, and I might do more Android hobby-projects in the future. If you have any ideas, please tell me :-)</p>
-
-<p>(p.s. No, I’m not going to port my <a href="/blog/2010/06/creating-shazam-in-java/">music matching algorithm</a> to Android and get <a href="/blog/2010/07/patent-infringement/">sued</a>)</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/android-application-1/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

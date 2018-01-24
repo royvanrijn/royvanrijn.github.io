@@ -115,6 +115,73 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2018/01/updating-dependencies-in-microservices/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="In a microservices landscape; When do you update?" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
+            Jan 17, 2018 10:28:12
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/updating-dependencies-in-microservices/">In a microservices landscape; When do you update?</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This week I’ve been stuggling with the following question:</p>
+
+<blockquote>
+  <p>When is the right time to upgrade?</p>
+</blockquote>
+
+<p>By upgrading, I mean everything: libraries, tools, Java versions, application servers, MQ servers…</p>
+
+<p>My current project uses a reactive upgrade policy, we upgrade for four reasons:</p>
+
+<ol>
+  <li>Something is broken and fixed in a later version</li>
+  <li>We need or want to use a new feature</li>
+  <li>Support for a version we’re using is being dropped</li>
+  <li>The old version we’re using has a known security issue/CVE</li>
+</ol>
+
+<p>The first two reasons are entirely up to the programmers to decide. The third reason is up to the company that gives us support. For the fourth upgrade reason, security, we have some automation in place. We are using the <a href="https://www.owasp.org/index.php/OWASP_Dependency_Check">OWASP dependency checker</a> Maven plugin for our libraries.</p>
+
+<p>But:</p>
+<ul>
+  <li>Is a reactive update policy good enough?</li>
+  <li>Are there any pro-active strategies?</li>
+  <li>Do you want to invest in keeping your microservices up-to-date?</li>
+  <li>Do you let your services deteriorate and dispose, replace them in the future with new technologies?</li>
+</ul>
+
+<p>More on this in my (kind-of-weekly) vlog:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/LRE-feZWmlM"></iframe>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2018/01/java-9-adoptation/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fear of upgrading to Java 9, is it justified?" width="100" height="100" />
@@ -1578,70 +1645,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/the-prettiest-code/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2016/05/biometric-passwords/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/fingerprint.png" alt="Biometric passwords: No!" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2016-05-02T10:03:01+02:00" class="date">
-            May 2, 2016 10:03:01
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/05/biometric-passwords/">Biometric passwords: No!</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Please sit down, we need to have a talk, programmer to programmer.</p>
-
-<p>Over the last decade we’ve had a lot of problems with authentication. For example, we’ve stored plain text passwords in the database. We’ve learned from this and nobody is doing this anymore right? If you are, please deposit your programming-license in the nearest trash can.</p>
-
-<h2 id="latest-challenge-biometrics">Latest challenge: Biometrics</h2>
-
-<p>It is time to talk about the latest problem in IT: biometric data.</p>
-
-<p>Some websites are using biometrics, such as your <em>fingerprint</em>, as your <em>password</em>. This sounds great, very hard to fake, unique to you. But there is a problem… what happens when there is a data leak?</p>
-
-<p>If you store passwords in the database (hashed or not), and they get leaked, it is bad. You need to tell all the users to change their passwords immediately. But what happens when you store biometric data and it gets leaked?</p>
-
-<p>The only way to change your fingerprint is this:</p>
-
-<p><img src="/images/fingerprint_remover.jpg" alt="Fingerprint removal tool" class="aligncenter" /></p>
-
-<p>Rather painful… and even worse, all devices and websites that use your fingerprint have the <em>same</em> password.</p>
-
-<p>We don’t want to share passwords on multiple websites/devices!</p>
-
-<h2 id="not-a-password">Not a password</h2>
-
-<p>There is no real solution, as long as you ensist of using biometric data as a password. Even if you use a nice salted hash, it will eventually be leaked, with big consequences.</p>
-
-<p>A better way to use biometrics in authentication is to treat it as a username. It is a great match, it identifies <strong>you</strong>. It is not your secret password, it is your username. That means you still need to provide a password, but having the added biometric username does increase security a lot. Of course if there is a database leak, your fingerprint can still be stolen, but that is the entire point. If you touch a glass door you’re also leaving your fingerprint. Using fingerprints as password is like dropping pieces of paper with your secret password all over the place.</p>
-
-<p>Fingerprints (and other biometrics) are not secure, you can never change them once compromised, not suited as passwords. If you really want to use it, use them as usernames.</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

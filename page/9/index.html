@@ -115,6 +115,153 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2010/11/xor-doubly-linked-list/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="XOR doubly linked list" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-11-24T10:50:02+01:00" class="date">
+            Nov 24, 2010 10:50:02
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/11/xor-doubly-linked-list/">XOR doubly linked list</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Since a couple of days I’ve been working hard on the new Al Zimmermann’s Programming Contest: <a href="http://azspcs.net/Contest/Cards">Cards</a> (also called Topswops).</p>
+
+<h1 id="the-challenge">The challenge</h1>
+
+<p>The idea is very easy, you take a series of numbers, from 1 to N. You shuffle the numbers around, for example:</p>
+
+<ul>
+  <li>5,3,1,2,4</li>
+</ul>
+
+<p>Now we reverse the amount of numbers as stated by the first entry in the list. So in this case we reverse 5, and we get:</p>
+
+<ul>
+  <li>4,2,1,3,5</li>
+</ul>
+
+<p>We keep doing this, now reversing 4:</p>
+
+<ul>
+  <li>3,1,2,4,5</li>
+  <li>2,1,3,4,5</li>
+  <li>1,2,3,4,5</li>
+</ul>
+
+<p>At this point, 1 is in front, we are done! No more reversals are possible.</p>
+
+<h1 id="the-problems">The problems</h1>
+
+<p>When implementing this the first thing I did was to create an array and reverse parts of the array by swapping the items around. The problem is that the amount of swaps is pretty big!</p>
+
+<p>So I started thinking about other ways to save the numbers in this challenge.. how about a linked list? This won’t work because when updating the linked list you’ll have to reverse all the pointers in the part you are reversing.</p>
+
+<p>So how about using a doubly linked list? This won’t work because we have to swap the next/previous pointers for all the nodes we reverse.</p>
+
+<h1 id="xor-doubly-linked-list">XOR doubly linked list</h1>
+
+<p>Then I learned about the XOR doubly linked list. Let me explain how it works. The idea is that you don’t have next and previous pointers, but you just have one pointer. This pointer is both the next AND the previous pointer! How is this possible you might ask?</p>
+
+<p>Well, this is where the XOR comes into play. Lets do a tiny bit of math:<br />
+A ^ B = C<br />
+Now:<br />
+C ^ A = B<br />
+C ^ B = A</p>
+
+<p>A property of the XOR is, if we have one value, we can calculate what the other value is!</p>
+
+<p>When we create the list we XOR the next and previous together, and we save the pointer to the first element in a seperate pointer. Lets say A = previous, B = next, C = stored value:</p>
+
+<ul>
+  <li>previous ^ next = stored value</li>
+  <li>stored value ^ previous = next</li>
+  <li>stored value ^ next = previous</li>
+</ul>
+
+<p>If we traverse our XOR doubly linked list we know the current element and the one before that (previous), so we can always calculate the pointer to the next element!</p>
+
+<h1 id="the-advantages">The advantages</h1>
+
+<p>So why would we do this? It involves a bit more processing power and will obviously save you half of the pointer-memory compared to a normal doubly linked list. We now keep one XOR-ed value instead of two pointers.</p>
+
+<p>But there is another great advantage which might be usefull in the competition I mentioned above, reversability! As stated above using a doubly linked list wasn’t helpfull because when we reverse a part all the previous and next pointers have to be swapped. But we don’t have these pointers anymore, they are XOR-ed into one value! That means that we don’t have to change anything!</p>
+
+<p>Lets assume we have a list of 80 items, and we want to reverse the first 40, what do we need to do now?</p>
+
+<ol>
+  <li>Traverse to the 40th element</li>
+  <li>Adjust the value of the 40th pointer, now the first element:<br />
+TERMINATOR ^ (PTR TO 39)</li>
+  <li>Adjust the value of the 1st pointer, it must have<br />
+(PTR TO 2) ^ (PTR TO 41)</li>
+  <li>Adjust the value of the 41th pointer, it must have<br />
+(PTR TO 1) ^ (PTR TO 42)</li>
+  <li>Pointer to the first element is now 40 (this has become our first element)</li>
+</ol>
+
+<p>Done! We have adjusted three pointers and nothing in the middle. B.t.w. TERMINATOR is a value which indicates the boundaries of the first and last elements, I’ve used -1 for this. When traversing we use this to check if we are done.</p>
+
+<p>Lets traverse the above reversed list, first we go to the first element (40) and perform the following XOR:</p>
+
+<ul>
+  <li>stored_value (40) ^ TERMINATOR = next (39)</li>
+</ul>
+
+<p>This will result in 39, now we continue:</p>
+
+<ul>
+  <li>stored_value (39) ^ previous (40) = next (38)</li>
+  <li>stored_value (38) ^ previous (39) = next (37)</li>
+  <li>…</li>
+  <li>stored_value (2) ^ previous (3) = next (1)</li>
+  <li>stored_value (1) ^ previous (2) = next (41) !!</li>
+  <li>stored_value (41) ^ previous (1) = next (42) !!</li>
+  <li>stored_value (42) ^ previous (41) = next (43) etc etc</li>
+</ul>
+
+<p>It works!</p>
+
+<h1 id="a-bit-of-dissapointment">A bit of dissapointment</h1>
+
+<p>After implementing this it doesn’t seem to be faster then using swaps to reverse everything in the whole array. This is probably due to a couple of things:</p>
+
+<ul>
+  <li>The locality of a normal array is faster in memory</li>
+  <li>You’ll have to traverse N-nodes to reach the target to reverse</li>
+  <li>The competition has max 97 elements, this might be too small to see the advantage</li>
+</ul>
+
+<p>My algorithm until now only used a single pointer to keep track of the first element, but it might be usefull to also keep a pointer to the last element. For example if we need to reverse everything up to N-1, I need to traverse from 1 to N-1. But if you have a last-element pointer, using the doubly in the XOR doubly linked list, we can just go backwards from N.</p>
+
+<p>Ah well, it might not have been usefull (yet?) but it is a beautiful algorithm!</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2010/11/patent-infrigement-part-2/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent infringement (part 2)" width="100" height="100" />
@@ -1859,146 +2006,6 @@ If you do this to the Person object above, and all its fields, you will end up w
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/01/placement-of-circle-over-points/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Placement of circle over points" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-01-27T15:02:57+01:00" class="date">
-            Jan 27, 2010 15:02:57
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/placement-of-circle-over-points/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/placement-of-circle-over-points/">Placement of circle over points</a></h1>
-
-        <span itemprop="articleBody">
-          <p>For the Queue ICPC programming game <a href="http://queue.acm.org/icpc/index.cfm">Capture</a> I ran into a geometrical problem.<br />
-While programming my little robot I wanted to have an algorithm calculate this for me:</p>
-
-<ol>
-  <li>I have a field with 122 points</li>
-  <li>I have a circle of fixed size</li>
-</ol>
-
-<p>How do I calculate where to put the circle so it encapsulates the most points?</p>
-
-<p>This is what I came up with, three algorithms:</p>
-
-<h1 id="algorithm-1-centerpoint">Algorithm #1: Centerpoint</h1>
-
-<p>The first algorithm was created as a test. It doesn’t find the perfect solution, but gives a decent solution.<br />
-First I loop over all the points, and I check if there are points located at <strong>CIRCLE_RADIUS</strong> length from our point. This returns a score. The best point has a lot of other points nearby.</p>
-
-<p>This algorithm is very quick, but it has a huge disadvantage, the circle will always have one of our points as center.</p>
-
-<p>It will never yield the perfect solution… In the following picture this algorithm produces the green circle:</p>
-
-<p><a href="/images/clusterCalculations.png"><img src="/images/clusterCalculations.png" alt="Picture of points and three calculated circles" /></a></p>
-
-<h1 id="algorithm-2-heatmap">Algorithm #2: Heatmap</h1>
-
-<p>The next idea I got was based on a heatmap. It is very computer heavy, but it will generate the best solution.</p>
-
-<p>It works like this (psuedocode):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
-		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
-			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
-				<span class="n">pixelScore</span><span class="o">++;</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The pixel with the best score is used in most circles. Thus, this would need to be the center of our circle!</p>
-
-<p>In the image above you can see the resulting heatmap, and the cyan circle is placed on the best possible pixel.</p>
-
-<p>(In most cases, there are more then one ‘best pixels’, which one you choose doesn’t matter)</p>
-
-<h1 id="algorithm-3-bron-kerbosch-myself">Algorithm #3: Bron-Kerbosch-myself</h1>
-
-<p>The heatmap algorithm, mentioned above, takes a LOT of processing time and is far from the most efficient algorithm. For the Queue ICPC contest there is a time limit for each calculation, and I need it to speed up!</p>
-
-<p>So I started to wonder:</p>
-
-<p>- What do all the points in the perfect circle have in common?</p>
-
-<p>Well, they all have a maximum distance to each other of <strong>CIRCLE_RADIUS * 2</strong>.</p>
-
-<p>So I started to play with graph algorithms.</p>
-
-<p>The lines you see in the image above are all the points that can be connected with a maximum length of <strong>CIRCLE_RADIUS * 2</strong>. All the lines show points that could possibly be in the same circle together.<br />
-Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki/Clique_%28graph_theory%29">clique</a>’. A clique is a group of points that all point to each other, just what we want with the graph shown in the picture!</p>
-
-<p>When I searched a little further I came across the <a href="http://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm">Bron-Kerbosch algorithm</a>. It finds the perfect maximum clique for a given undirected graph! Again, just what we want!</p>
-
-<p>Here is the pseudocode (from Wikipedia):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
-    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="n">X</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
-
-<p>But I ran into a little problem, I’d made a false assumption… If you have a triangle of three points, with all legs size N, and then draw a circle from the center… none of the points fall into the circle.</p>
-
-<p><img src="/images/triangleFailure.png" alt="Picture of a circle inside a triangle, where the legs of the triangle are the circle's diameter. This causes all the corners to fall outside the circle." /></p>
-
-<p>Now I tried two ways to solve this, the first one is to use a smaller distance in the graph. If you only select points that are located <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong> every point will eventually fall into our circle. But this could eliminate the perfect circle obviously if two points in the perfect solution are further apart then <strong>(cosine(30) * CIRCLE_RADIUS * 2)</strong>.</p>
-
-<p>Then I desected the Bron-Kerbosch algorithm, and decided to change it a bit. This is what I ended up with:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerboschVanRijn</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
-    <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span><span class="o">),</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">X</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        
-<span class="n">InCircle</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">):</span>
-    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="n">A</span>
-    <span class="k">return</span> <span class="n">all</span> <span class="n">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="n">A</span></code></pre></figure>
-
-<p>This returns all the maximal cliques that fall into our circle, and we are always sure they fall into our circle..! I think this will always generate the perfect solution, just as the heat map. In this the above picture, this algorithm produces the red circle.</p>
-
-<p>It already is light years faster then the heat map algorithm, but I still need a bit more speed. I’m still struggling to improve my implementation, like trying to use a pivot as bronKerbosch2 (see wikipedia again) does.</p>
-
-<h1 id="algorithm-4-">Algorithm #4: ???</h1>
-
-<p>For some reason I still fail to believe I’m the first person in the world to tackle this problem. But I haven’t been able to find an algorithm for this. Some people recommended using a <a href="http://en.wikipedia.org/wiki/Sweep_line_algorithm">sweeping algorithm</a> but I don’t understand how this is used to find the circle’s location. Others pointed me to Voronoi maps…</p>
-
-<p>So if you have any suggestions, or know the algorithm I’m looking for, please add a comment :-)</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/01/placement-of-circle-over-points/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

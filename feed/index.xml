@@ -5,9 +5,62 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 17 Jan 2018 11:31:25 +0100</pubDate>
-    <lastBuildDate>Wed, 17 Jan 2018 11:31:25 +0100</lastBuildDate>
+    <pubDate>Wed, 24 Jan 2018 10:28:55 +0100</pubDate>
+    <lastBuildDate>Wed, 24 Jan 2018 10:28:55 +0100</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>In a microservices landscape; When do you update?</title>
+        <description>&lt;p&gt;This week I’ve been stuggling with the following question:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;When is the right time to upgrade?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;By upgrading, I mean everything: libraries, tools, Java versions, application servers, MQ servers…&lt;/p&gt;
+
+&lt;p&gt;My current project uses a reactive upgrade policy, we upgrade for four reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Something is broken and fixed in a later version&lt;/li&gt;
+  &lt;li&gt;We need or want to use a new feature&lt;/li&gt;
+  &lt;li&gt;Support for a version we’re using is being dropped&lt;/li&gt;
+  &lt;li&gt;The old version we’re using has a known security issue/CVE&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The first two reasons are entirely up to the programmers to decide. The third reason is up to the company that gives us support. For the fourth upgrade reason, security, we have some automation in place. We are using the &lt;a href=&quot;https://www.owasp.org/index.php/OWASP_Dependency_Check&quot;&gt;OWASP dependency checker&lt;/a&gt; Maven plugin for our libraries.&lt;/p&gt;
+
+&lt;p&gt;But:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Is a reactive update policy good enough?&lt;/li&gt;
+  &lt;li&gt;Are there any pro-active strategies?&lt;/li&gt;
+  &lt;li&gt;Do you want to invest in keeping your microservices up-to-date?&lt;/li&gt;
+  &lt;li&gt;Do you let your services deteriorate and dispose, replace them in the future with new technologies?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;More on this in my (kind-of-weekly) vlog:&lt;/p&gt;
+
+&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;http://www.youtube.com/embed/LRE-feZWmlM&quot;&gt;&lt;/iframe&gt;
+
+</description>
+        <pubDate>Wed, 17 Jan 2018 10:28:12 +0100</pubDate>
+        <link>http://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/</guid>
+        
+        <category>YouTube</category>
+        
+        <category>Programming</category>
+        
+        <category>Vlog</category>
+        
+        <category>Update</category>
+        
+        <category>Microservices</category>
+        
+        
+        <category>Java</category>
+        
+      </item>
     
       <item>
         <title>Fear of upgrading to Java 9, is it justified?</title>
@@ -955,110 +1008,6 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
         <category>state</category>
         
         <category>encapsulation</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Gender (in-)equality: my honest mistake</title>
-        <description>&lt;p&gt;Gender equality and discrimination in IT is a hot topic. More and more women are (rightfully) opening their mouth and point out problem areas. There are just &lt;em&gt;some&lt;/em&gt; men who just don’t get it, those insensitive idiots, they are the reason IT is such a toxic harsh environment for women.&lt;/p&gt;
-
-&lt;p&gt;So I thought…&lt;/p&gt;
-
-&lt;p&gt;This is a story about when I realized I am (unintentionally) one of those idiots.&lt;/p&gt;
-
-&lt;h1 id=&quot;joy-of-coding&quot;&gt;Joy of Coding&lt;/h1&gt;
-
-&lt;p&gt;This friday I spoke at &lt;a href=&quot;http://joyofcoding.org/&quot;&gt;Joy of Coding&lt;/a&gt; in Rotterdam. An awesome conference and a real example for other conferences regarding gender equality. The main organizer is female (Hi &lt;a href=&quot;http://felienne.com&quot;&gt;Felienne&lt;/a&gt;!), she’s the face of the conference, presented the opening and announced the speakers on the main stage. They have a very good rule of conduct: Don’t make &lt;em&gt;any&lt;/em&gt; assumptions. Also the line-up of speakers was almost 50/50 male and female.&lt;/p&gt;
-
-&lt;p&gt;And of all the conferences: &lt;strong&gt;This&lt;/strong&gt; is the conference I made my mistake.&lt;/p&gt;
-
-&lt;h1 id=&quot;hilary-parker&quot;&gt;Hilary Parker&lt;/h1&gt;
-
-&lt;p&gt;The last speaker at the conference was &lt;a href=&quot;https://twitter.com/hspter&quot;&gt;Hilary Parker&lt;/a&gt;. She’s a Data Scientist at &lt;a href=&quot;https://www.stitchfix.com/&quot;&gt;Stitch Fix&lt;/a&gt; and talked about how programming in data science is maturing. No longer are the scientists tweaking Excel sheets, they’ve started to use tools and languages (like &lt;a href=&quot;https://www.r-project.org/&quot;&gt;R&lt;/a&gt;) to do all the analysis.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/hilary_parker.jpg&quot; alt=&quot;Hilary Parker talking about The Joy of Analysis Development&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;I loved the presentation and I also love the fact more and more women are taking the step and talking on stage at conferences. We should totally cherish them! There were however two small things that I noticed though, first: on two occasions her screen went ‘asleep’ and the had to dash to her laptop and wiggle the cursor. The other thing was, Hilary talks with a very obvious ‘Silicon Valley’-accent. She has the habbit of putting ‘like’ multiple times in every sentence as a filler word.&lt;/p&gt;
-
-&lt;p&gt;It sounded like this:&lt;/p&gt;
-
-&lt;p&gt;“So &lt;em&gt;like&lt;/em&gt;, when you &lt;em&gt;like&lt;/em&gt; load all the data files, and &lt;em&gt;like&lt;/em&gt; you run a tool &lt;em&gt;like&lt;/em&gt; R, you &lt;em&gt;like&lt;/em&gt; immediately … etc”. This got a little annoying once I noticed it. It kind of takes the focus away from the content.&lt;/p&gt;
-
-&lt;h1 id=&quot;twitter&quot;&gt;Twitter&lt;/h1&gt;
-
-&lt;p&gt;After the conference I didn’t have time to talk to Hilary in person. But I wanted to help her, I want to see more female speakers at conferences. So I went on Twitter, send her a DM (direct message) and gave her some unsolicited feedback in private.&lt;/p&gt;
-
-&lt;p&gt;What I said came down to: Have you considered installing ‘&lt;a href=&quot;http://lightheadsw.com/caffeine/&quot;&gt;caffeine&lt;/a&gt;’? It is the perfect tool for public speakers to stop the screensaver from kicking in on OS/X. Also, I’ve noticed you are using the word ‘like’ a lot, up to the point it becomes a distraction. I think you could become an even awesomer speaker if you lessen the usage of the word ‘like’.&lt;/p&gt;
-
-&lt;p&gt;Her reply was simple, but blew my mind:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Hilary:&lt;/p&gt;
-
-  &lt;p&gt;Hey, have you seen this? &lt;a href=&quot;http://larahogan.me/blog/on-unsolicited-criticism/&quot;&gt;http://larahogan.me/blog/on-unsolicited-criticism/&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h1 id=&quot;unsolicited-criticism&quot;&gt;Unsolicited criticism&lt;/h1&gt;
-
-&lt;p&gt;It turns out that unsolicited feedback almost exclusively happens with female speakers. Reading that article I realized that I never have this. People do sometimes come up to me after giving a talk, but only to say ‘nice talk’ or something similar.&lt;/p&gt;
-
-&lt;p&gt;This is the moment I realized I’m biased too. I never thought about this being a problem, but I can understand this can be &lt;strong&gt;extremely&lt;/strong&gt; annoying as a female speaker. It was obviously not my intention to &lt;strong&gt;be a jerk&lt;/strong&gt; giving unsolicited advice…&lt;/p&gt;
-
-&lt;h1 id=&quot;so-why-did-you-do-it&quot;&gt;So why did you do it?&lt;/h1&gt;
-
-&lt;p&gt;So what is the reason I made this mistake? I’ve been thinking about this for a couple of days now. In Lara’s article she mentions some possible reasons it happens, but I have some additional ones:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Cherish female speakers&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;If you’re reading this you might think I’m just one of those insensitive men at conferences, but trust me, I’m trying not to be! The last couple of years I’ve been &lt;em&gt;actively&lt;/em&gt; involved in changing our community to be a better place for &lt;em&gt;everyone&lt;/em&gt;. I’ve helped organize and volunteer at various Devoxx4Kids events. I’ve been in CFP committees and have fought for more female speakers there….&lt;/p&gt;
-
-&lt;p&gt;One of the reasons I gave my feedback was because I want to see more female speakers. If a men fails, there are dozens of other men waiting to replace him. I thought that with my advice Hilary could become an even better public speaker, increasing her chance to speak at events and being an example to more women.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Women are more affable?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Affable:&lt;/p&gt;
-
-  &lt;p&gt;pleasantly easy to approach and to talk to; friendly; cordial; warmly polite:&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;This statement is also gender discrimination, but in a positive way. From my experience women are more affable. They are friendlier, easier to approach and to talk to. Male speakers can have a ‘macho’ attitude, I don’t want to go up to them and give them feedback.&lt;/p&gt;
-
-&lt;p&gt;This might also be a big part of why female speakers receive unsolicited feedback and male speakers don’t.&lt;/p&gt;
-
-&lt;h1 id=&quot;lessons-learned&quot;&gt;Lessons learned&lt;/h1&gt;
-
-&lt;p&gt;For me this experience was a real eye-openener, if you’ve made it this far and haven’t read &lt;a href=&quot;http://larahogan.me/blog/on-unsolicited-criticism/&quot;&gt;Lara’s post&lt;/a&gt; yet, please do!&lt;/p&gt;
-
-&lt;p&gt;She writes:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Ask yourself some questions. When’s the right time? Is it constructive? What’s moving you to give feedback to them right now? And is it possible that your brain was itched by them not in a bad way, but in a potentially eye-opening way for you? It may reveal some unconscious biases in yourself that would be worthwhile for you to explore&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;It is very easy to fall into the gender trap. In my case it was a completely honest mistake, I wanted to help. But Hilary did nothing wrong, she talked the way she always does, with a ‘Valley’ accent… so what? Why was &lt;em&gt;this&lt;/em&gt; the time I had to give some feedback?&lt;/p&gt;
-
-&lt;p&gt;I never thought that unsolicited feedback would be a problem female speakers have to deal with. I’d like to apologize and thank Hilary, she opened my eyes to this problem and allowed me mention her in this blogpost.&lt;/p&gt;
-
-&lt;p&gt;So next time &lt;strong&gt;you&lt;/strong&gt; feel the urge to give some unsolicited feedback, stop and think about it…&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 20 Jun 2016 09:25:02 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/06/gender-inqeuality-my-honest-mistake/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/06/gender-inqeuality-my-honest-mistake/</guid>
-        
-        <category>jofofcoding</category>
-        
-        <category>joy</category>
-        
-        <category>public speaking</category>
-        
-        <category>feedback</category>
-        
-        <category>gender equality</category>
         
         
         <category>Programming</category>
