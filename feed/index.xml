@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 16:19:42 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 16:19:42 +0200</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 23:26:33 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 23:26:33 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -14,14 +14,6 @@
         <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR;&lt;/h1&gt;
 
 &lt;p&gt;Java and Docker aren’t friends out of the box. Docker can set memory and CPU limitations that Java can’t automatically detect. Using either Java Xmx flags (cumbersome/duplicated) &lt;em&gt;or&lt;/em&gt; the new experimental JVM flags we can solve this issue.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;A hacky solution for older JVMs/OpenJ9 could be to use the following -Xmx option:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-Xmx`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This takes the cgroup setting (in bytes) and uses it as Xmx option. Now Java can see the limit, but if you change it in Docker you don’t have to change the configuration inside your container.&lt;/p&gt;
 
 &lt;h1 id=&quot;mismatch-in-virtualization&quot;&gt;Mismatch in virtualization&lt;/h1&gt;
 
@@ -158,8 +150,9 @@ Killed&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;I really hope a similar option will be added soon to OpenJ9, because I’d love to run this in production without having to specify the maximum memory twice. Eclipse/IBM is working on a fix for this, there are already issues and even pull requests for this issue.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt;
-A slightly ugly/hacky way to fix this is using the following flag:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;UPDATE: (not recommended hack)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;A slightly ugly/hacky way to fix this is using the following composed flag:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;java -Xmx`cat /sys/fs/cgroup/memory/memory.limit_in_bytes` MemEat
 ...
@@ -180,7 +173,9 @@ JVMDUMP013I Processed dump event &quot;systhrow&quot;, detail &quot;java/lang/Ou
 Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
   at MemEat.main(MemEat.java:8)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Now OpenJ9 does see the cgroup limit because it is defined as -Xmx flag.&lt;/p&gt;
+&lt;p&gt;In this case the heap size is limited to the memory allocated to the Docker instance, this works for older JVMs and OpenJ9. This is of course &lt;em&gt;wrong&lt;/em&gt; because the container itself and other parts of the JVM off the heap also use memory. But it seems to work, appearantly Docker is lenient in this case. Maybe some bash-guru will make a better version subtracting a portion from the bytes for other processes.&lt;/p&gt;
+
+&lt;p&gt;Anyway, &lt;strong&gt;don’t&lt;/strong&gt; do this, it might not work.&lt;/p&gt;
 
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 
