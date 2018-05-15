@@ -138,6 +138,8 @@
 
 <p>Java and Docker aren’t friends out of the box. Docker can set memory and CPU limitations that Java can’t automatically detect. Using either Java Xmx flags (cumbersome/duplicated) <em>or</em> the new experimental JVM flags we can solve this issue.</p>
 
+<p><a href="https://blog.docker.com/2018/04/improved-docker-container-integration-with-java-10/">Docker love</a> for Java is in its way in newer versions of both OpenJ9 and OpenJDK 10!</p>
+
 <h1 id="mismatch-in-virtualization">Mismatch in virtualization</h1>
 
 <p>The combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, the whole premise of the JVM, Java Virtual Machine, was that having a Virtual Machine makes the underlying hardware irrelevant from the program’s point of view.</p>
@@ -349,6 +351,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 <p>If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker <strong>and</strong> JVM memory limits with -Xmx.</p>
 
 <p>Soon both Java 10 and OpenJ9 will have correct fixes in place, probably as a default (with the -XX:+UseContainerSupport flag).</p>
+
 
         </span>
 
