@@ -300,6 +300,39 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 <p>Anyway, <strong>don’t</strong> do this, it might not work.</p>
 
+<p><strong>UPDATE 2: FIXED IN NIGHYLY</strong></p>
+
+<p>If you run the following image:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk9-openj9:nightly /bin/bash</code></pre></figure>
+
+<p>You’ll get the latest nightly build of OpenJ9. In this image it has two things:</p>
+
+<ol>
+  <li>The PATH parameter is broken, fix that</li>
+  <li>The JVM has a new flag that fixes everything for OpenJ9 (like Java 10 will)</li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">/opt/java/openjdk/jdk-9.0.4+12/bin/java -XX:+UseContainerSupport MemEat
+...
+free memory: 5864464
+free memory: 4815880
+free memory: 3443712
+free memory: 2391032
+JVMDUMP039I Processing dump event "systhrow", detail "java/lang/OutOfMemoryError" at 2018/05/15 21:32:07 - please wait.
+JVMDUMP032I JVM requested System dump using '//core.20180515.213207.62.0001.dmp' in response to an event
+JVMDUMP010I System dump written to //core.20180515.213207.62.0001.dmp
+JVMDUMP032I JVM requested Heap dump using '//heapdump.20180515.213207.62.0002.phd' in response to an event
+JVMDUMP010I Heap dump written to //heapdump.20180515.213207.62.0002.phd
+JVMDUMP032I JVM requested Java dump using '//javacore.20180515.213207.62.0003.txt' in response to an event
+JVMDUMP010I Java dump written to //javacore.20180515.213207.62.0003.txt
+JVMDUMP032I JVM requested Snap dump using '//Snap.20180515.213207.62.0004.trc' in response to an event
+JVMDUMP010I Snap dump written to //Snap.20180515.213207.62.0004.trc
+JVMDUMP013I Processed dump event "systhrow", detail "java/lang/OutOfMemoryError".
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></pre></figure>
+
+<p><strong>TADAAA</strong>, a fix is on the way!</p>
+
 <h1 id="conclusion">Conclusion</h1>
 
 <p>If you are running Java inside a Docker container, make sure that you have:</p>
@@ -314,6 +347,8 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 <p>If you have the option, go for JDK 10 which has better CPU calculation support.</p>
 
 <p>If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker <strong>and</strong> JVM memory limits with -Xmx.</p>
+
+<p>Soon both Java 10 and OpenJ9 will have correct fixes in place, probably as a default (with the -XX:+UseContainerSupport flag).</p>
 
         </span>
 
