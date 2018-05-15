@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 16:10:14 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 16:10:14 +0200</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 16:15:42 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 16:15:42 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -39,13 +39,13 @@
 
 &lt;p&gt;To fix this you will &lt;strong&gt;also&lt;/strong&gt; need to specify to Java there is a maximum memory limit. You’ll need to specify this &lt;em&gt;inside&lt;/em&gt; your container, at the wrong abstraction if you ask me. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem. Docker will take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…&lt;/p&gt;
 
-&lt;p&gt;From Java 9 onwards there have been extra options added to the JVM:&lt;/p&gt;
+&lt;p&gt;From Java 9 onwards (and from 8u131+, this was backported) there have been extra options added to the JVM:&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;If you add these flags the JVM will look at the Linux &lt;em&gt;cgroup&lt;/em&gt; configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; These flags have been backported to earlier Java versions, latest updates, for example 8u121+&lt;/p&gt;
+&lt;p&gt;In the future Oracle wants to make these properties the new default.&lt;/p&gt;
 
 &lt;h2 id=&quot;problem-2-cpu&quot;&gt;Problem 2: CPU&lt;/h2&gt;
 

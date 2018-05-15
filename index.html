@@ -162,13 +162,13 @@
 
 <p>To fix this you will <strong>also</strong> need to specify to Java there is a maximum memory limit. You’ll need to specify this <em>inside</em> your container, at the wrong abstraction if you ask me. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem. Docker will take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…</p>
 
-<p>From Java 9 onwards there have been extra options added to the JVM:</p>
+<p>From Java 9 onwards (and from 8u131+, this was backported) there have been extra options added to the JVM:</p>
 
 <p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
 
 <p>If you add these flags the JVM will look at the Linux <em>cgroup</em> configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.</p>
 
-<p><strong>UPDATE:</strong> These flags have been backported to earlier Java versions, latest updates, for example 8u121+</p>
+<p>In the future Oracle wants to make these properties the new default.</p>
 
 <h2 id="problem-2-cpu">Problem 2: CPU</h2>
 
