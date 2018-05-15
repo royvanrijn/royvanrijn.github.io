@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 13:09:42 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 13:09:42 +0200</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 13:16:02 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 13:16:02 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -21,9 +21,11 @@
 
 &lt;h2 id=&quot;problem-1-memory&quot;&gt;Problem 1: Memory&lt;/h2&gt;
 
-&lt;p&gt;Most applications in production today are still using Java 8 and this might give you problems. Java 8 doesn’t work well with Docker. The problem is the amount of memory and CPUs your application is allowed to use isn’t the &lt;strong&gt;actual&lt;/strong&gt; amount of memory and CPU of your machine, it is what Docker is allowing you to use (duh).&lt;/p&gt;
+&lt;p&gt;Most applications in production today are still using Java 8 and this might give you problems. Java 8 doesn’t work well with Docker. The problem is the amount of memory and CPUs available isn’t the amount of memory and CPU of &lt;em&gt;your machine&lt;/em&gt;, it is what &lt;em&gt;Docker&lt;/em&gt; is allowing you to use (duh).&lt;/p&gt;
 
-&lt;p&gt;For example if you limit your Docker container to have 500MB of memory, this is something Java isn’t aware of. So if you &lt;strong&gt;also&lt;/strong&gt; have to specify that Java has a maximum memory limit. The problem is that you’ll need to specify this &lt;em&gt;inside&lt;/em&gt; your container. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem, Docker will take action into his own hands and kill the process inside the container if too much memory is used!. ‘Killed’. This is not what we want…&lt;/p&gt;
+&lt;p&gt;For example if you limit your Docker container to have 500MB of memory, this isn’t something Java is aware of. Java doesn’t see this limit.&lt;/p&gt;
+
+&lt;p&gt;To fix this you will &lt;strong&gt;also&lt;/strong&gt; need to specify to Java there is a maximum memory limit. You’ll need to specify this &lt;em&gt;inside&lt;/em&gt; your container, at the wrong abstraction if you ask me. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem. Docker will take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…&lt;/p&gt;
 
 &lt;p&gt;From Java 9 onwards there have been extra options added to the JVM:&lt;/p&gt;
 
@@ -31,7 +33,7 @@
 
 &lt;p&gt;If you add these flags the JVM will look at the Linux &lt;em&gt;cgroup&lt;/em&gt; configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; These flags have been backported to earlier Java versions, for example 8u121+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; These flags have been backported to earlier Java versions, latest updates, for example 8u121+&lt;/p&gt;
 
 &lt;h2 id=&quot;problem-2-cpu&quot;&gt;Problem 2: CPU&lt;/h2&gt;
 
@@ -39,11 +41,11 @@
 
 &lt;p&gt;From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem.&lt;/p&gt;
 
-&lt;h2 id=&quot;testing-java--docker-memory&quot;&gt;Testing Java + Docker memory&lt;/h2&gt;
+&lt;h1 id=&quot;testing-java-and-docker-memory-handling&quot;&gt;Testing Java and Docker memory handling&lt;/h1&gt;
 
-&lt;p&gt;As a fun exercise, lets verify and test how Docker handles OutOfMemory using a couple of different JVM versions/flags and even a different JVM.&lt;/p&gt;
+&lt;p&gt;As a fun exercise, lets verify and test how Docker handles out of memory using a couple of different JVM versions/flags and even a different JVM.&lt;/p&gt;
 
-&lt;p&gt;First we create a test application, one that simple ‘eats’ memory and doesn’t free it.&lt;/p&gt;
+&lt;p&gt;First we create a test application, one that simply ‘eats’ memory and doesn’t free it.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
@@ -60,14 +62,16 @@
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Now we can start Docker containers and run the application to see what will happen.
-First we’ll start with a container that has an older version of Java 8 (update 111).&lt;/p&gt;
+&lt;p&gt;We can start Docker containers and run this application to see what will happen.&lt;/p&gt;
+
+&lt;p&gt;First we’ll start with a container that has an older version of Java 8 (update 111).&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it java:openjdk-8u111 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Next we compile and run the MemEat.java file:&lt;/p&gt;
+&lt;p&gt;We compile and run the MemEat.java file:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+
 java MemEat
 ...
 free memory: 67194416
@@ -79,7 +83,9 @@ Killed&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;We can fix this by providing Java with a maximum memory using the &lt;em&gt;-Xmx&lt;/em&gt; flag:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;java -Xmx100m MemEat
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+
+java -Xmx100m MemEat
 ...
 free memory: 1155664
 free memory: 1679936
@@ -99,6 +105,7 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 &lt;p&gt;Next we compile and run the MemEat.java file again without any flags:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+
 java MemEat
 ...
 free memory: 67194416
