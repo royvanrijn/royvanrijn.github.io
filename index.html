@@ -134,7 +134,7 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/java-and-docker-memory-limits/">Java and Docker, the limitations</a></h1>
 
         <span itemprop="articleBody">
-          <h1 id="tldr">TLDR</h1>
+          <h1 id="tldr">TLDR;</h1>
 
 <p>Java and Docker aren’t friends out of the box. Docker can set memory and CPU limitations that Java can’t automatically detect. Using either Java Xmx flags (cumbersome/duplicated) <em>or</em> the new experimental JVM flags we can solve this issue.</p>
 
@@ -142,7 +142,7 @@
 
 <p>A hacky solution for older JVMs/OpenJ9 could be to use the following -Xmx option:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">-</span><span class="n">Xmx</span><span class="err">`</span><span class="n">cat</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">cgroup</span><span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">memory</span><span class="o">.</span><span class="na">limit_in_bytes</span><span class="err">`</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-Xmx`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`</code></pre></figure>
 
 <p>This takes the cgroup setting (in bytes) and uses it as Xmx option. Now Java can see the limit, but if you change it in Docker you don’t have to change the configuration inside your container.</p>
 

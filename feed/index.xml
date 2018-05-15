@@ -5,13 +5,13 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 16:15:42 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 16:15:42 +0200</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 16:19:42 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 16:19:42 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
         <title>Java and Docker, the limitations</title>
-        <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR&lt;/h1&gt;
+        <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR;&lt;/h1&gt;
 
 &lt;p&gt;Java and Docker aren’t friends out of the box. Docker can set memory and CPU limitations that Java can’t automatically detect. Using either Java Xmx flags (cumbersome/duplicated) &lt;em&gt;or&lt;/em&gt; the new experimental JVM flags we can solve this issue.&lt;/p&gt;
 
@@ -19,7 +19,7 @@
 
 &lt;p&gt;A hacky solution for older JVMs/OpenJ9 could be to use the following -Xmx option:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Xmx&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgroup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;memory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;memory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;limit_in_bytes&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-Xmx`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;This takes the cgroup setting (in bytes) and uses it as Xmx option. Now Java can see the limit, but if you change it in Docker you don’t have to change the configuration inside your container.&lt;/p&gt;
 
