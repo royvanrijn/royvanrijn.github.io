@@ -5,9 +5,173 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 24 Jan 2018 10:28:55 +0100</pubDate>
-    <lastBuildDate>Wed, 24 Jan 2018 10:28:55 +0100</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 12:53:57 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 12:53:57 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>Java and Docker, the limitations</title>
+        <description>&lt;h1 id=&quot;mismatch-in-virtualization&quot;&gt;Mismatch in virtualization&lt;/h1&gt;
+
+&lt;p&gt;The combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, the whole premise of the JVM, Java Virtual Machine, was that having a Virtual Machine makes the underlying hardware irrelevant from the program’s point of view.&lt;/p&gt;
+
+&lt;p&gt;So what do we gain by packaging our Java application inside a JVM (Virtual Machine) inside a Docker container? Not a lot, for the most part you are duplicating JVMs and Linux containers, which kills memory usage. This just sounds silly.&lt;/p&gt;
+
+&lt;p&gt;It does make it easy to bundle together your program, the settings, a specific JDK, Linux settings and (if needed) an application server and other tools as one ‘thing’. This complete container has a better level of encapsulation from a devops/cloud point of view.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-1-memory&quot;&gt;Problem 1: Memory&lt;/h2&gt;
+
+&lt;p&gt;Most applications in production today are still using Java 8, and this poses a problem. Java 8 doesn’t work well with Docker CPU and memory-wise. The problem is that both the CPU and memory your application is allowed to use isn’t what Docker is allowing you to use.&lt;/p&gt;
+
+&lt;p&gt;For example if you limit your Docker image to 500MB of memory, this is something Java isn’t aware of. So if you don’t &lt;strong&gt;also&lt;/strong&gt; specify that Java should have a maximum memory limit, the JVM could allocate more memory than Docker allows. If this happens Docker will have to take actions into his own hands and kill the process inside the container ‘Killed’. This is not what we want…&lt;/p&gt;
+
+&lt;p&gt;From Java 9 onwards there have been extra options added to the JVM:&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;If you add these flags the JVM will look at the Linux &lt;em&gt;cgroup&lt;/em&gt; configuration. This is what Docker containers use for their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit it is reaching.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; These flags have been backported to earlier Java versions, for example 8u121+&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-2-cpu&quot;&gt;Problem 2: CPU&lt;/h2&gt;
+
+&lt;p&gt;The second problem is that Java doesn’t understand Docker’s memory settings is solved in Java 9, but there is a similar problem with the CPU. In short, the JVM will look at the hardware and detect the amount of CPU’s and it’ll optimize to use those CPU’s. But again, Docker won’t allow you to &lt;strong&gt;use&lt;/strong&gt; all these CPU’s, there is a mismatch here. Sadly this isn’t fixed in Java 9, but was tackled in Java 10.&lt;/p&gt;
+
+&lt;p&gt;From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem.&lt;/p&gt;
+
+&lt;h2 id=&quot;testing-java--docker-memory&quot;&gt;Testing Java + Docker memory&lt;/h2&gt;
+
+&lt;p&gt;As a fun exercise, lets verify and test how Docker handles OutOfMemory using a couple of different JVM versions/flags and even a different JVM.&lt;/p&gt;
+
+&lt;p&gt;First we create a test application, one that simple ‘eats’ memory and doesn’t free it.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MemEat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1048576&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Runtime&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRuntime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;free memory: &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;freeMemory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we can start Docker containers and run the application to see what will happen.
+First we’ll start with a container that has an older version of Java 8 (update 111).&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it java:openjdk-8u111 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next we compile and run the MemEat.java file:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+java MemEat
+...
+free memory: 67194416
+free memory: 66145824
+free memory: 65097232
+Killed&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As expected, Docker has killed the our Java process. Not what we want (!). Also you can see the output, Java thinks it still has a lot of memory left to allocate.&lt;/p&gt;
+
+&lt;p&gt;We can fix this by providing Java with a maximum memory using the &lt;em&gt;-Xmx&lt;/em&gt; flag:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;java -Xmx100m MemEat
+...
+free memory: 1155664
+free memory: 1679936
+free memory: 2204208
+free memory: 1315752
+Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
+	at MemEat.main(MemEat.java:8)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;After providing our own memory limits, the process is halted correctly, the JVM understands the limits it is operating under. The &lt;strong&gt;problem&lt;/strong&gt; is however that you are now setting these memory limits &lt;strong&gt;twice&lt;/strong&gt;, for Docker &lt;em&gt;AND&lt;/em&gt; for the JVM.&lt;/p&gt;
+
+&lt;p&gt;As mentioned, with the new flags this has been fixed, the JVM will now follow the settings provided by Docker. We can test this using a newer JVM.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk8 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;(this OpenJDK Java image currently contains, at the time of writing, Java 8u144)&lt;/p&gt;
+
+&lt;p&gt;Next we compile and run the MemEat.java file again without any flags:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+java MemEat
+...
+free memory: 67194416
+free memory: 66145824
+free memory: 65097232
+Killed&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The same problem exists. But we can now supply the experimental flags mentioned above:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
+...
+free memory: 1679936
+free memory: 2204208
+free memory: 1155616
+free memory: 1155600
+Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
+	at MemEat.main(MemEat.java:8)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This time we didn’t set any limits on the JVM by telling it what the limits &lt;em&gt;are&lt;/em&gt;, we just told the JVM to look at the correct settings! Much better.&lt;/p&gt;
+
+&lt;p&gt;I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse. It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.&lt;/p&gt;
+
+&lt;p&gt;To my surprise however, OpenJ9 doesn’t yet have an option similar to the flags currently (backported) in Java 8/9/10+ for cgroup memory limits. For example if we apply the previous testcase to the latest AdoptAJDK OpenJDK 9 + OpenJ9 build:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk9-openj9 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And we add the OpenJDK flags (which are ignored by OpenJ9) we get:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
+...
+free memory: 83988984
+free memory: 82940400
+free memory: 81891816
+Killed&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Oops, the JVM is killed by Docker again.&lt;/p&gt;
+
+&lt;p&gt;I really hope a similar option will be added soon to OpenJ9, because I’d love to run this in production without having to specify the maximum memory twice. Eclipse/IBM is working on a fix for this, there are already issues and even pull requests for this issue.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;If you are running Java inside a Docker container, make sure that you have:&lt;/p&gt;
+
+&lt;p&gt;Dockers memory limits defined &lt;strong&gt;AND:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The proper Java -Xmx flags &lt;strong&gt;OR&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;A JDK that knows about cgroups and use the UseCGroupMemoryLimitForHeap flags&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If you have the option, go for JDK 10 which has better CPU calculation support.&lt;/p&gt;
+
+&lt;p&gt;If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker &lt;strong&gt;and&lt;/strong&gt; JVM memory limits with -Xmx.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 02 May 2018 16:14:11 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2018/05/trying-a-different-jvm-openj9/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/05/trying-a-different-jvm-openj9/</guid>
+        
+        <category>Java</category>
+        
+        <category>Memory</category>
+        
+        <category>OpenJDK</category>
+        
+        <category>Docker</category>
+        
+        <category>Microservices</category>
+        
+        
+        <category>Java</category>
+        
+      </item>
     
       <item>
         <title>In a microservices landscape; When do you update?</title>
@@ -904,110 +1068,6 @@ noun
         <category>language</category>
         
         <category>communication</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Saving the world with a code review</title>
-        <description>&lt;p&gt;This morning I noticed the following tweet by fellow programmer (and runner) Arun Gupta:&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot; data-cards=&quot;hidden&quot; data-lang=&quot;en&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;Why code reviews are important? &lt;a href=&quot;https://t.co/8KyMo7Syis&quot;&gt;pic.twitter.com/8KyMo7Syis&lt;/a&gt;&lt;/p&gt;&amp;mdash; Arun Gupta (@arungupta) &lt;a href=&quot;https://twitter.com/arungupta/status/769886902090539008&quot;&gt;August 28, 2016&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async=&quot;&quot; src=&quot;//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;The tweet contained the following cartoon by &lt;a href=&quot;http://oppressive-silence.com/comics/oh-no-the-robots&quot;&gt;‘Oppressive Silence’&lt;/a&gt;, check out their website for more laughs!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/oh-no-the-robots.jpg&quot; alt=&quot;Oh no the robots&quot; class=&quot;aligncenter&quot; /&gt;
-&lt;sub&gt;(&lt;a href=&quot;http://oppressive-silence.com/comics/oh-no-the-robots&quot;&gt;Source of the comic&lt;/a&gt;)&lt;/sub&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;solved-by-a-code-review&quot;&gt;Solved by a code review?&lt;/h1&gt;
-
-&lt;p&gt;The main question I’d like to ask:&lt;/p&gt;
-
-&lt;p&gt;Is this really something that you’ll find during a code review?&lt;/p&gt;
-
-&lt;p&gt;I think my answer below won’t surprise you, but the reasoning behind it might. First lets look at &lt;strong&gt;four&lt;/strong&gt; reasons this bug should never happen to me (or any other experienced programmer).&lt;/p&gt;
-
-&lt;h1 id=&quot;1-static-variablesglobal-state&quot;&gt;1) Static variables/global state&lt;/h1&gt;
-
-&lt;p&gt;The first obvious problem with the code is the usage of static state. The variable ‘isCrazyMurderingRobot’ is mutable and static, so anywhere in the code the value can be changed. This makes it very hard to reason about the variable and keep track of it. Any programmer can come along and change the value in some method. This is unacceptable, there is almost &lt;strong&gt;no&lt;/strong&gt; reason to use mutable static variables.&lt;/p&gt;
-
-&lt;p&gt;Top tip: If you have variables, especially mutable variables, keep their scope as small as possible!&lt;/p&gt;
-
-&lt;h1 id=&quot;2-final-method-arguments&quot;&gt;2) Final method arguments&lt;/h1&gt;
-
-&lt;p&gt;If you solve the global state problem you’ll probably end up with something like this (translated to Java):&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;kill&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;be_nice_to&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Whenever an argument is passed to a method I have the habit (and my IDE-settings enforce this for me) to make them final. Method arguments should never change inside a method. It is just strange if you need to do this when you think about it. It probably means the method should have its own (scoped) mutable variable.&lt;/p&gt;
-
-&lt;p&gt;In the code the following would happen:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Compilation error: 'Cannot assign a value to final variable 'isCrazyMurderingRobot'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;The code won’t even compile before telling me what is wrong, the world is saved!&lt;/p&gt;
-
-&lt;h1 id=&quot;3-static-code-analysis&quot;&gt;3) Static code analysis&lt;/h1&gt;
-
-&lt;p&gt;Another reason this bug will never happen in my code is because we have static code analysis on &lt;em&gt;all&lt;/em&gt; our projects. A program like &lt;a href=&quot;http://findbugs.sourceforge.net/&quot;&gt;FindBugs&lt;/a&gt; will immediately flag this as a major problem, assigning values inside an if-statement.&lt;/p&gt;
-
-&lt;p&gt;Look at this particular check in FindBugs:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;QBA: Method assigns boolean literal in boolean expression (QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)
-
-This method assigns a literal boolean value (true or false) to a boolean variable inside an if or while expression. Most probably this was supposed to be a boolean comparison using ==, not an assignment using =.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Static code analysis is an essential tool in modern programming, it is just so convenient, never reads over certain bugs like a human would (spoiler: more on that in the final conclusion below).&lt;/p&gt;
-
-&lt;h1 id=&quot;4-yoda-conditions&quot;&gt;4) Yoda conditions&lt;/h1&gt;
-
-&lt;p&gt;The final reason this bug will never happen in my code is: &lt;a href=&quot;https://en.wikipedia.org/wiki/Yoda_conditions&quot;&gt;Yoda conditions&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;A habit I learned a long time ago (in older languages) is writing my if-statements like Yoda. Good it is, mistakes you won’t make. The reason behind doing this is that it’ll prevent exactly the bug in the cartoon.&lt;/p&gt;
-
-&lt;p&gt;In the cartoon the if-statement would change from: &lt;em&gt;‘is crazy murdering robot true?’&lt;/em&gt; to &lt;em&gt;‘true is crazy murdering robot?’&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;If you do this, the following happens:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;interact_with_humans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isCrazyMurderingRobot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Compilation error: 'Variable expected'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h1 id=&quot;conclusion--saving-the-world&quot;&gt;Conclusion / saving the world&lt;/h1&gt;
-
-&lt;p&gt;So, do I think Arun is right? Will code reviews find the bug in the cartoon? Yes and no.&lt;/p&gt;
-
-&lt;p&gt;Humans are good at reasoning, thinking, being creative, finding bugs, but there is one thing we are horrible at: syntax parsing.&lt;/p&gt;
-
-&lt;p&gt;During a code review you are just as likely (maybe even &lt;em&gt;more&lt;/em&gt; likely) to read over this typo and don’t notice it. A second pair of eyes won’t save the world here just yet.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;But&lt;/strong&gt;: when reviewing this piece of code, I &lt;strong&gt;will&lt;/strong&gt; complain about the global state! If you start to refactor, encapsulating the logic and remove the mutable static variable the bug will be noticed and solved. So &lt;strong&gt;yes&lt;/strong&gt;, if you do a code review, the code would have be been fixed and humans will be safe for just a little bit longer.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 29 Aug 2016 09:45:12 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/08/saving-the-world-with-a-code-review/</guid>
-        
-        <category>code review</category>
-        
-        <category>programming</category>
-        
-        <category>yoda conditions</category>
-        
-        <category>state</category>
-        
-        <category>encapsulation</category>
         
         
         <category>Programming</category>

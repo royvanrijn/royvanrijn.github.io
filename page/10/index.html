@@ -115,6 +115,280 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2010/02/handling-null-in-java/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Handling null in Java" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2010-02-01T11:46:13+01:00" class="date">
+            Feb 1, 2010 11:46:13
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/02/handling-null-in-java/">Handling null in Java</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Its a problem I encouter in most JEE projects I’ve worked on so far. Handling null-values. But why is this a problem? And what strategies can we follow to reduce the problem? That is what I’m trying to find out in this post.</p>
+
+<p>Lets start with a piece of business logic, in a world where we don’t have null-values:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This looks good and understandable! But this isn’t what I see in most projects. Usually I see code like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+	    <span class="k">if</span><span class="o">(</span><span class="n">accounts</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+	    		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	    			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+	    		<span class="o">}</span>
+	    	<span class="o">}</span>
+	    <span class="o">}</span>
+	    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Wow, that is not a pretty sight, not at all! What can we do about it and how did it happen?</p>
+
+<h1 id="inversion-of-logic">Inversion of logic</h1>
+
+<p>The first strategy we can follow is based on <a href="/blog/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+   	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+   	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+   		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+   			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+   		<span class="o">}</span>
+   	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This is somewhat better, a bit shorter, but we still have all the ‘!= null’ and ‘== null’ checks we don’t want.</p>
+
+<h1 id="code-by-contract">Code by contract</h1>
+
+<p>The best way to get rid of null-checks is to get rid of nulls in your applicaties. Just don’t return a null in all of the methods…! This sounds very easy and straight forward, but it is a bit harder then it sounds because it has become such a habbit.</p>
+
+<p>The good thing is that current IDE’s are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
+<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPerson</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="n">something</span><span class="o">.</span><span class="na">retrievePerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+    
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! 
+</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>It also helps you to clearly state your assumed preconditions:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+	<span class="c1">//Very good, we know we won't get a NPE here! 
+</span>
+<span class="o">}</span>
+    
+    
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeThis</span><span class="o">()</span> <span class="o">{</span>
+	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="n">printPersonName</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
+	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!
+</span>
+	<span class="c1">//Code analysis tools and/or IDE will warn you about this.
+</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>It will also help you correct possible coding errors:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
+<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">//Use JPQL
+</span>
+	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT p FROM Person p WHERE p.id = :value"</span><span class="o">);</span>
+	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"value"</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
+	<span class="c1">//The IDE will complain about this. 
+</span>
+	<span class="c1">//The database might return null, we don't allow returning null in this method.
+</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Using this method you have some more certainties. But it isn’t a silver-bullet on its own. We have to stop and think, where do the null-values come from?</p>
+
+<p>Actually, when you stop returning null (which is entirely up to you and your team) there are still situations which are ‘unchecked’. Namely external API’s, frameworks, the ORM-mapper you are using. So everywhere where you execute methods that you haven’t written, you still have to do manual checks. But make sure you do this right away. Then further on in the code, you don’t have to check anything because of your @NotNull-contracts.<br />
+If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
+<span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In my experience this works very well, I’ve done this a couple of times, even before the @NotNull and @Nullable existed. Before this we would just add the information in our Javadoc. But with the IDE checking for it this has become a lot easier to use.</p>
+
+<h1 id="null-object-pattern">Null object pattern</h1>
+
+<p>A whole different approach then coding-by-contract is the use of a null-object. The idea behind this pattern is that you don’t return null, but instead you return a real object. In our example we would do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Person</span> <span class="o">{</span>
+
+	<span class="n">String</span> <span class="nf">getName</span><span class="o">();</span>
+	<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
+	
+	<span class="c1">//..etc..
+</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The huge advantage is that you can always safely call “person.getName()” and “person.getAccounts()” because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+                <span class="c1">//NullPerson returns empty list, no more NPE!
+</span>
+    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+	
+	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+
+	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now you can return much more information then just a meaningless “null”!</p>
+
+<p>There is just one problem with this pattern. It also doesn’t just solve your problems. Why do we want to calculate the total balance of a NullPerson? The moment you retrieve a person and it is an instance of NullPerson, catch it and handle the situation appropiatly, don’t just continue.</p>
+
+<h1 id="safe-null-operator">Safe null operator</h1>
+
+<p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you’ve programmed in Groovy you might have seen it before:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()?.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The idea is that you use “?.” instead of “.”. The questionmark means: “If the variable we’re calling is null, the result is null, else, call the next method”.</p>
+
+<p>So in this case:</p>
+
+<ul>
+  <li>If person is null: return null, else:</li>
+  <li>If getName() is null: return null, else:</li>
+  <li>Return result of substring(0, 1)</li>
+</ul>
+
+<p>If you would now write this code it would be:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>You could also give a default value:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">"Anonymous"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If person or getName() produce a null the “?:” operator will return the default String.</p>
+
+<p>Sounds pretty good eh? The only problem is that this new operator didn’t make the final list of changes for Java 7.</p>
+
+<p>Fun fact: Do you know why the “?:”-operator is called the “Elvis”-operator? When viewed from the side, as smiley , it looks like Elvis. Including the big curl in his hair.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/handling-null-in-java/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2010/01/placement-of-circle-over-points/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Placement of circle over points" width="100" height="100" />
@@ -1929,55 +2203,6 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2009/12/vmware-on-your-phone/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="VMWare on your phone?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2009-12-07T11:47:56+01:00" class="date">
-            Dec 7, 2009 11:47:56
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/vmware-on-your-phone/">VMWare on your phone?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Recently VMWare, known from its computer virtualization software, has announced they are developing a dual-boot mobile version. This would allow you to run both Windows Mobile and Android on your phone.</p>
-
-<p>But it isn’t going to be a dual-boot you know from your computer, they are planning on running the OS’es at the same time. This would allow you to switch between OS on-the-fly.</p>
-
-<ul>
-  <li>You want to use a Windows Mobile app? <em>*click*</em></li>
-  <li>Oh, you want to use something on the Andriod platform? <em>*click*.</em></li>
-</ul>
-
-<p>I’m very curious how this will work out performance-wise, but the idea itself is great!</p>
-
-<p>Via: <a href="http://www.computerworld.com.au/article/328811/vmware_developing_dual_os_smartphone_virtualisation">computerworld.com.au</a></p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

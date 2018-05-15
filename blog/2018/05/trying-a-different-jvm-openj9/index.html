@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Java and Docker, the limitations</title>
+  <meta name="description" content="Mismatch in virtualizationThe combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, the whole premise of t...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Java,Memory,OpenJDK,Docker,Microservices,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2018/05/trying-a-different-jvm-openj9/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Java and Docker, the limitations" />
+  <meta name="twitter:description" content="Mismatch in virtualizationThe combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, th..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/docker.png"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2018/01/updating-dependencies-in-microservices/" title="Previous Post: In a microservices landscape; When do you update?">&laquo; In a microservices landscape; When do you update?</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/docker.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2018-05-02T16:14:11+02:00" class="date">
+          May 2, 2018 16:14:11
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/trying-a-different-jvm-openj9/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Java and Docker, the limitations</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <h1 id="mismatch-in-virtualization">Mismatch in virtualization</h1>
+
+<p>The combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, the whole premise of the JVM, Java Virtual Machine, was that having a Virtual Machine makes the underlying hardware irrelevant from the program’s point of view.</p>
+
+<p>So what do we gain by packaging our Java application inside a JVM (Virtual Machine) inside a Docker container? Not a lot, for the most part you are duplicating JVMs and Linux containers, which kills memory usage. This just sounds silly.</p>
+
+<p>It does make it easy to bundle together your program, the settings, a specific JDK, Linux settings and (if needed) an application server and other tools as one ‘thing’. This complete container has a better level of encapsulation from a devops/cloud point of view.</p>
+
+<h2 id="problem-1-memory">Problem 1: Memory</h2>
+
+<p>Most applications in production today are still using Java 8, and this poses a problem. Java 8 doesn’t work well with Docker CPU and memory-wise. The problem is that both the CPU and memory your application is allowed to use isn’t what Docker is allowing you to use.</p>
+
+<p>For example if you limit your Docker image to 500MB of memory, this is something Java isn’t aware of. So if you don’t <strong>also</strong> specify that Java should have a maximum memory limit, the JVM could allocate more memory than Docker allows. If this happens Docker will have to take actions into his own hands and kill the process inside the container ‘Killed’. This is not what we want…</p>
+
+<p>From Java 9 onwards there have been extra options added to the JVM:</p>
+
+<p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
+
+<p>If you add these flags the JVM will look at the Linux <em>cgroup</em> configuration. This is what Docker containers use for their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit it is reaching.</p>
+
+<p><strong>UPDATE:</strong> These flags have been backported to earlier Java versions, for example 8u121+</p>
+
+<h2 id="problem-2-cpu">Problem 2: CPU</h2>
+
+<p>The second problem is that Java doesn’t understand Docker’s memory settings is solved in Java 9, but there is a similar problem with the CPU. In short, the JVM will look at the hardware and detect the amount of CPU’s and it’ll optimize to use those CPU’s. But again, Docker won’t allow you to <strong>use</strong> all these CPU’s, there is a mismatch here. Sadly this isn’t fixed in Java 9, but was tackled in Java 10.</p>
+
+<p>From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem.</p>
+
+<h2 id="testing-java--docker-memory">Testing Java + Docker memory</h2>
+
+<p>As a fun exercise, lets verify and test how Docker handles OutOfMemory using a couple of different JVM versions/flags and even a different JVM.</p>
+
+<p>First we create a test application, one that simple ‘eats’ memory and doesn’t free it.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemEat</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span> <span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">byte</span> <span class="n">b</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1048576</span><span class="o">];</span>
+            <span class="n">l</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+            <span class="n">Runtime</span> <span class="n">rt</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">();</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"free memory: "</span> <span class="o">+</span> <span class="n">rt</span><span class="o">.</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we can start Docker containers and run the application to see what will happen.
+First we’ll start with a container that has an older version of Java 8 (update 111).</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it java:openjdk-8u111 /bin/bash</code></pre></figure>
+
+<p>Next we compile and run the MemEat.java file:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
+java MemEat
+...
+free memory: 67194416
+free memory: 66145824
+free memory: 65097232
+Killed</code></pre></figure>
+
+<p>As expected, Docker has killed the our Java process. Not what we want (!). Also you can see the output, Java thinks it still has a lot of memory left to allocate.</p>
+
+<p>We can fix this by providing Java with a maximum memory using the <em>-Xmx</em> flag:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">java -Xmx100m MemEat
+...
+free memory: 1155664
+free memory: 1679936
+free memory: 2204208
+free memory: 1315752
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at MemEat.main(MemEat.java:8)</code></pre></figure>
+
+<p>After providing our own memory limits, the process is halted correctly, the JVM understands the limits it is operating under. The <strong>problem</strong> is however that you are now setting these memory limits <strong>twice</strong>, for Docker <em>AND</em> for the JVM.</p>
+
+<p>As mentioned, with the new flags this has been fixed, the JVM will now follow the settings provided by Docker. We can test this using a newer JVM.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk8 /bin/bash</code></pre></figure>
+
+<p>(this OpenJDK Java image currently contains, at the time of writing, Java 8u144)</p>
+
+<p>Next we compile and run the MemEat.java file again without any flags:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
+java MemEat
+...
+free memory: 67194416
+free memory: 66145824
+free memory: 65097232
+Killed</code></pre></figure>
+
+<p>The same problem exists. But we can now supply the experimental flags mentioned above:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
+java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
+...
+free memory: 1679936
+free memory: 2204208
+free memory: 1155616
+free memory: 1155600
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at MemEat.main(MemEat.java:8)</code></pre></figure>
+
+<p>This time we didn’t set any limits on the JVM by telling it what the limits <em>are</em>, we just told the JVM to look at the correct settings! Much better.</p>
+
+<p>I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse. It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.</p>
+
+<p>To my surprise however, OpenJ9 doesn’t yet have an option similar to the flags currently (backported) in Java 8/9/10+ for cgroup memory limits. For example if we apply the previous testcase to the latest AdoptAJDK OpenJDK 9 + OpenJ9 build:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk9-openj9 /bin/bash</code></pre></figure>
+
+<p>And we add the OpenJDK flags (which are ignored by OpenJ9) we get:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
+...
+free memory: 83988984
+free memory: 82940400
+free memory: 81891816
+Killed</code></pre></figure>
+
+<p>Oops, the JVM is killed by Docker again.</p>
+
+<p>I really hope a similar option will be added soon to OpenJ9, because I’d love to run this in production without having to specify the maximum memory twice. Eclipse/IBM is working on a fix for this, there are already issues and even pull requests for this issue.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>If you are running Java inside a Docker container, make sure that you have:</p>
+
+<p>Dockers memory limits defined <strong>AND:</strong></p>
+
+<ol>
+  <li>The proper Java -Xmx flags <strong>OR</strong></li>
+  <li>A JDK that knows about cgroups and use the UseCGroupMemoryLimitForHeap flags</li>
+</ol>
+
+<p>If you have the option, go for JDK 10 which has better CPU calculation support.</p>
+
+<p>If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker <strong>and</strong> JVM memory limits with -Xmx.</p>
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

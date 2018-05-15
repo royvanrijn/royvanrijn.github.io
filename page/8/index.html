@@ -115,6 +115,57 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/05/bitcoin-mining/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Bitcoin mining" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-05-30T20:07:09+02:00" class="date">
+            May 30, 2011 20:07:09
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/05/bitcoin-mining/">Bitcoin mining</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of months ago I’ve started using and mining bitcoins. If you don’t know what bitcoin is yet, please watch the following video:</p>
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/Um63OQz3bjo"></iframe>
+
+<p>Mining for bitcoins has become harder and harder. But as a pro, the price of the bitcoin has also increased quite a lot. Since I’ve started mining I’ve mined about 40 bitcoins (in pools). This is now worth about 9 dollars per bitcoin: 360 dollars!</p>
+
+<p>Mostly I’ve used my GPU for mining, this gives me the greatest speed. I found the Diablo Miner works best in my case, I even <a href="https://github.com/Diablo-D3/DiabloMiner/archives/master">pushed</a> some improvements into the codebase to let it work through proxies. But since a couple of days I’ve had a bitcoin miner in Java applet form running on this website! This is currently giving me about the same amount of bitcoins. Still, it is only about 0.01 bitcoin per day. Which comes down to 10 dollar cents a day. But still this is more then I earn for ads!</p>
+
+<p>I’ve removed the bitcoin applet from my main page (it can scare visitors if the CPU runs to 100%). But you can still use it on this website:</p>
+
+<p><strong>SCRIPT DISABELED</strong></p>
+
+<p>So, don’t hesitate to hang around here for a while, with this page open :-) Lets see how much bitcoins my visitors can generate!</p>
+
+<p>Oh, to see the current ‘exchange rate’ of the Bitcoin, you can always view it on <a href="https://mtgox.com/trade/megaChart">Mt Gox</a>.</p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/05/bitcoin-mining/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2011/05/android-application-1/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Android application #1" width="100" height="100" />
@@ -1335,56 +1386,6 @@ reduce998 -&gt; hash -&gt; reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/12/finding-performance-problems/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Finding performance problems" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-12-14T13:19:08+01:00" class="date">
-            Dec 14, 2010 13:19:08
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/12/finding-performance-problems/">Finding performance problems</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Many projects I’ve worked on, especially the projects using micro-optimization, had memory leaks and surprising performance hits. Most coders who work on for example Al Zimmermann’s programming contests use C/C++ and maybe even CUDA to get the most out of their system.</p>
-
-<p>I’m usually using Java, just because I’m most at home in this language. It allows me to quickly get some working code and test some algorithms. But when I reach the final phase of the project it is time to micro-optimize everything.</p>
-
-<p>The first tool I’ve tried it <a href="http://download.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html">Java Visual VM</a>. This tool is available in all the new Sun Oracle JVM’s. Just go to the bin-directory and type <em>jvisualvm</em>. This program will attach to your running code and tries to extract all the information. The good part of this tool is the price, it is free!</p>
-
-<p>But if you really need to know what it going on inside your project, you should try YourKit. YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit’s leading software products: <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.</p>
-
-<p>If you readers are interested I’ll write a blog with some simple examples on how to fix performance issues in your program, and how to detect these issues using Visual VM and YourKit.</p>
-
-<p>Or I can do a comparison between the leading profilers (YourKit/JProfiler/Visual VM/etc)..?</p>
-
-<p>Let me know!</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
