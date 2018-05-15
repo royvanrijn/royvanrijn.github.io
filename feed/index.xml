@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 13:01:41 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 13:01:41 +0200</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 13:09:42 +0200</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 13:09:42 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -21,15 +21,15 @@
 
 &lt;h2 id=&quot;problem-1-memory&quot;&gt;Problem 1: Memory&lt;/h2&gt;
 
-&lt;p&gt;Most applications in production today are still using Java 8, and this poses a problem. Java 8 doesn’t work well with Docker CPU and memory-wise. The problem is that both the CPU and memory your application is allowed to use isn’t what Docker is allowing you to use.&lt;/p&gt;
+&lt;p&gt;Most applications in production today are still using Java 8 and this might give you problems. Java 8 doesn’t work well with Docker. The problem is the amount of memory and CPUs your application is allowed to use isn’t the &lt;strong&gt;actual&lt;/strong&gt; amount of memory and CPU of your machine, it is what Docker is allowing you to use (duh).&lt;/p&gt;
 
-&lt;p&gt;For example if you limit your Docker image to 500MB of memory, this is something Java isn’t aware of. So if you don’t &lt;strong&gt;also&lt;/strong&gt; specify that Java should have a maximum memory limit, the JVM could allocate more memory than Docker allows. If this happens Docker will have to take actions into his own hands and kill the process inside the container ‘Killed’. This is not what we want…&lt;/p&gt;
+&lt;p&gt;For example if you limit your Docker container to have 500MB of memory, this is something Java isn’t aware of. So if you &lt;strong&gt;also&lt;/strong&gt; have to specify that Java has a maximum memory limit. The problem is that you’ll need to specify this &lt;em&gt;inside&lt;/em&gt; your container. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem, Docker will take action into his own hands and kill the process inside the container if too much memory is used!. ‘Killed’. This is not what we want…&lt;/p&gt;
 
 &lt;p&gt;From Java 9 onwards there have been extra options added to the JVM:&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;If you add these flags the JVM will look at the Linux &lt;em&gt;cgroup&lt;/em&gt; configuration. This is what Docker containers use for their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit it is reaching.&lt;/p&gt;
+&lt;p&gt;If you add these flags the JVM will look at the Linux &lt;em&gt;cgroup&lt;/em&gt; configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; These flags have been backported to earlier Java versions, for example 8u121+&lt;/p&gt;
 
