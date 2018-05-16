@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 May 2018 09:26:08 +0200</pubDate>
-    <lastBuildDate>Wed, 16 May 2018 09:26:08 +0200</lastBuildDate>
+    <pubDate>Wed, 16 May 2018 09:35:50 +0200</pubDate>
+    <lastBuildDate>Wed, 16 May 2018 09:35:50 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -236,20 +236,22 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 
 &lt;h2 id=&quot;test-6-openj9-nightly&quot;&gt;Test 6: OpenJ9 (Nightly)&lt;/h2&gt;
 
-&lt;p&gt;&lt;strong&gt;UPDATE 2: FIXED IN NIGHYLY&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;If you run the following image:&lt;/p&gt;
+&lt;p&gt;Someone suggested using the latest ‘nightly’ build for OpenJ9.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk9-openj9:nightly /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;You’ll get the latest nightly build of OpenJ9. In this image it has two things:&lt;/p&gt;
+&lt;p&gt;This will get the latest nightly build of OpenJ9, and it has two things:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;The PATH parameter is broken, fix that&lt;/li&gt;
-  &lt;li&gt;The JVM has a new flag that fixes everything for OpenJ9 (like Java 10 will)&lt;/li&gt;
+  &lt;li&gt;Another broken PATH parameter, fix that.&lt;/li&gt;
+  &lt;li&gt;The JVM has support for the new flag UseContainerSupport (like Java 10 will)&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;/opt/java/openjdk/jdk-9.0.4+12/bin/java -XX:+UseContainerSupport MemEat
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;export PATH=$PATH:/opt/java/openjdk/jdk-9.0.4+12/bin/
+
+javac MemEat.java
+
+java -XX:+UseContainerSupport MemEat
 ...
 free memory: 5864464
 free memory: 4815880
@@ -268,6 +270,8 @@ JVMDUMP013I Processed dump event &quot;systhrow&quot;, detail &quot;java/lang/Ou
 Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;&lt;strong&gt;TADAAA&lt;/strong&gt;, a fix is on the way!&lt;/p&gt;
+
+&lt;p&gt;Oddly it seems this flag isn’t enabled by default in OpenJ9 like it is in Java 10 though. Again: Make sure you test this is you want to run Java inside a Docker container.&lt;/p&gt;
 
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 
