@@ -126,8 +126,8 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2018-05-02T16:14:11+02:00" class="date">
-            May 2, 2018 16:14:11
+          <span itemprop="datePublished" content="2018-05-16T08:14:11+02:00" class="date">
+            May 16, 2018 08:14:11
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
         </p>
@@ -398,19 +398,19 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
 <h1 id="conclusion">Conclusion</h1>
 
+<p><strong>IN SHORT:</strong> Be aware of the mismatch, the limitations. Test your memory settings and JVM flags, don’t assume anything.</p>
+
 <p>If you are running Java inside a Docker container, make sure that you have Docker memory limits <strong>AND</strong> limits in the JVM or a JVM that understands these limits.</p>
 
-<p>If you’re <strong>not</strong> able to <strong>upgrade</strong> your Java version:</p>
-
-<p><em>Set your own limits using -Xmx</em></p>
+<p>If you’re <strong>not</strong> able to <strong>upgrade</strong> your Java version set your own limits using <strong>-Xmx</strong>.</p>
 
 <p>For <strong>Java 8</strong> and <strong>Java 9</strong>, update to the latest version and use:</p>
 
-<p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
+<p>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</p>
 
-<p>For <strong>Java 10</strong>, make sure it understands the ‘UseContainerSupport’ flag (update to latest) and just run it!</p>
+<p>For <strong>Java 10</strong>, make sure it understands the ‘UseContainerSupport’ (update to latest) and just run it.</p>
 
-<p>For <strong>OpenJ9</strong> (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag, test this.</p>
+<p>For <strong>OpenJ9</strong> (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag.</p>
 
 
         </span>
