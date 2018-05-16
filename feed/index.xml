@@ -5,9 +5,192 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 May 2018 09:43:46 +0200</pubDate>
-    <lastBuildDate>Wed, 16 May 2018 09:43:46 +0200</lastBuildDate>
+    <pubDate>Wed, 16 May 2018 14:42:51 +0200</pubDate>
+    <lastBuildDate>Wed, 16 May 2018 14:42:51 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>OpenJ9 - A JVM shootout</title>
+        <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR;&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.eclipse.org/openj9/&quot;&gt;OpenJ9&lt;/a&gt; and &lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/en/SS6QYM_9.1.0/com.ibm.help.perf.manage.doc/c_FND_PM_IBMJ9JVM.html&quot;&gt;IBM J9&lt;/a&gt; are a different JVM implementation from the default Oracle HotSpot JVM. With the modern &lt;a href=&quot;https://hub.docker.com/u/adoptopenjdk/&quot;&gt;adoptopenjdk&lt;/a&gt; pre-made Docker images it is easy to swap and test different combinations and pick the right JVM for you.&lt;/p&gt;
+
+&lt;p&gt;The rumours seem to be true, OpenJ9 seems to blow HotSpot away on memory usage. HotSpot seems to have the edge CPU-wise.&lt;/p&gt;
+
+&lt;h1 id=&quot;openj9&quot;&gt;OpenJ9&lt;/h1&gt;
+
+&lt;p&gt;In the Java world most people are familiar with OpenJDK. This is a complete JDK implementation including the HotSpot JVM engine. Not a lot of developers know or try alternatives to HotSpot. Asking around some colleagues remembered the name JRockit, nobody mentioned IBM J9 and/or Eclipse OpenJ9.&lt;/p&gt;
+
+&lt;p&gt;Online I’ve read that &lt;a href=&quot;https://medium.com/criciumadev/new-open-source-jvm-optimized-for-cloud-and-microservices-c75a41aa987d&quot;&gt;OpenJ9 is very good with memory management&lt;/a&gt; and is tailered for usage in containers. With the current rise in microservice usage (and those things are &lt;strong&gt;not&lt;/strong&gt; so micro in Java), this could become a hot topic.&lt;/p&gt;
+
+&lt;h1 id=&quot;testing&quot;&gt;Testing&lt;/h1&gt;
+
+&lt;p&gt;Before the &lt;a href=&quot;https://www.docker.com/&quot;&gt;Docker&lt;/a&gt;-era it was relatively hard to compare different JVMs, versions. You needed to download, install, script and run everything. But now a lot of pre-made images are available online.&lt;/p&gt;
+
+&lt;p&gt;Here is my idea on how to test the JVMs:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a simple &lt;a href=&quot;https://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; application&lt;/li&gt;
+  &lt;li&gt;Start the application in various Docker Images&lt;/li&gt;
+  &lt;li&gt;Measure memory usage after startup and GC&lt;/li&gt;
+  &lt;li&gt;Measure the time it takes to run a small CPU-intensive test&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;This is by no means a thorough test or benchmark, but it should give us a basic idea of what we can expect from the virtual machines.&lt;/p&gt;
+
+&lt;h2 id=&quot;spring-boot-application&quot;&gt;Spring Boot application&lt;/h2&gt;
+
+&lt;p&gt;The Spring Boot application I created contains the following endpoints:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A REST endpoint that calls the GC (trying to make it fair)&lt;/li&gt;
+  &lt;li&gt;A REST endpoint that creates 1000 large random arrays and sorts them, returns the runtime (in ms)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Here is the listing of the CPU-test:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nd&quot;&gt;@RestController&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LoadTestController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@RequestMapping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/loadtest&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LoadTestResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;loadtest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;before&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;currentTimeMillis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;Random&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;nextLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LoadTestResult&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;currentTimeMillis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Again, we can argue endlessly about if this test makes sense and is even remotely relevant… but still it should give us some basic idea of what kind of performance we can expect.
+If the rumoured memory improvements are true, might there be a performance hit? Is there a performance trade-off?&lt;/p&gt;
+
+&lt;h2 id=&quot;jvm-images&quot;&gt;JVM images&lt;/h2&gt;
+
+&lt;p&gt;I’ve decided to test the following images.&lt;/p&gt;
+
+&lt;p&gt;First we have the (slim) &lt;a href=&quot;https://hub.docker.com/_/openjdk/&quot;&gt;openjdk&lt;/a&gt; images for 8/9/10/11:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;openjdk:8-slim&lt;/li&gt;
+  &lt;li&gt;openjdk:9-slim&lt;/li&gt;
+  &lt;li&gt;openjdk:10-slim&lt;/li&gt;
+  &lt;li&gt;openjdk:11-slim&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Next there are the &lt;a href=&quot;https://hub.docker.com/u/adoptopenjdk/&quot;&gt;adoptopenjdk&lt;/a&gt; images for 8/9/10:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;adoptopenjdk/openjdk8&lt;/li&gt;
+  &lt;li&gt;adoptopenjdk/openjdk9&lt;/li&gt;
+  &lt;li&gt;adoptopenjdk/openjdk10&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then we have OpenJ9, again provided by &lt;a href=&quot;https://hub.docker.com/u/adoptopenjdk/&quot;&gt;adoptopenjdk&lt;/a&gt; for 8, 9 and a nightly build of 9 (see my previous blogpost):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;adoptopenjdk/openjdk8-openj9&lt;/li&gt;
+  &lt;li&gt;adoptopenjdk/openjdk9-openj9&lt;/li&gt;
+  &lt;li&gt;adoptopenjdk/openjdk9-openj9:nightly&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And I decided to include IBM’s own J9 image as well:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ibmcom/ibmjava:8-jre&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;testing-with-docker&quot;&gt;Testing with Docker&lt;/h2&gt;
+
+&lt;p&gt;After building my Spring Boot application I launched each Docker image using the following command:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -it -v /Projects/temp/spring-boot-example:/app/spring-boot-example -p 8080:8080 IMAGE_NAME /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;I’m mapping my “&lt;em&gt;spring-boot-example&lt;/em&gt;” project folder to “&lt;em&gt;/apps/spring-boot-example&lt;/em&gt;” so I can start the JAR file inside the container. Also I’m forwarding port 8080 back to my host so I can call the endpoints.&lt;/p&gt;
+
+&lt;p&gt;Next, inside the container, I launch the Spring Boot application:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;java -jar /app/spring-boot-example/target/spring-boot-example-0.0.1-SNAPSHOT.jar&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;After waiting a bit, calling the endpoints a couple of times and performing a GC I measured the memory usage.&lt;/p&gt;
+
+&lt;p&gt;After that I called the “&lt;em&gt;/loadtest&lt;/em&gt;” endpoint containing the array-sorting test and waited for the results.&lt;/p&gt;
+
+&lt;h1 id=&quot;memory-benchmark&quot;&gt;Memory benchmark&lt;/h1&gt;
+
+&lt;p&gt;Here are the results of the memory used by the simple Spring Boot application:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/jvm-memory-usage.png&quot; alt=&quot;Chart with memory usage per Docker Image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;At first you can see that the memory usage for Java 8 is much higher than for Java 9 and 10, good!&lt;/p&gt;
+
+&lt;p&gt;But the biggest shock is how much less memory OpenJ9 and J9 are using, almost &lt;strong&gt;4x&lt;/strong&gt; less memory if you compare Java 8 with OpenJ9. I’m amazed, how does this even work? Now we can &lt;em&gt;almost&lt;/em&gt; call our Spring Boot service &lt;strong&gt;micro&lt;/strong&gt;!&lt;/p&gt;
+
+&lt;p&gt;I’ve also experimented with running some production Spring Boot code (not just simple examples) and here I’ve seen improvements up to 40-50% decrease in memory usage.&lt;/p&gt;
+
+&lt;h1 id=&quot;cpu-benchmark&quot;&gt;CPU benchmark&lt;/h1&gt;
+
+&lt;p&gt;Online I’ve read that OpenJ9 isn’t as good as HotSpot if you look at CPU intensive tasks. That is why I created a small test for this as well.&lt;/p&gt;
+
+&lt;p&gt;1000 arrays with 1000000 random long values being sorted. This takes around 100 seconds, this should give the JVM enough time to adjust and optimize. I’ve called the benchmark twice for each tested image. I’ve recorded the second time trying to eliminate warmup times.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/jvm-cpu-speed.png&quot; alt=&quot;Chart with CPU usage per Docker Image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the chart we can see that indeed the J9 and OpenJ9 images are slower, not by much max 18%. It seems for this particular testcase Java 8 beats most Java 9 implementations (except coupled with OpenJ9).&lt;/p&gt;
+
+&lt;h1 id=&quot;whats-next&quot;&gt;What’s next?&lt;/h1&gt;
+
+&lt;p&gt;My current project has a lot more memory issues than CPU issues on production (frequently running out of memory while having 1-2% CPU usage). We are definitely thinking about switching to OpenJ9 in the near future!&lt;/p&gt;
+
+&lt;p&gt;We did already encounter some issues during testing:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Hessian&lt;/strong&gt;: (binary protocol) has a build-in assumption that System.identityHashCode always returns a positive number. For HotSpot this is true but OpenJ9/J9 can also return negative numbers. This is an open issue and the Hessian project hasn’t fixed this in a couple of years, seems to be dead? Our solution is to move away from Hessian altogether&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Instana&lt;/strong&gt;: We love our monitoring tool Instana, but it had some problems connecting their agent to OpenJ9/J9. Luckily the people at Instana helped us identify a bug and a fix should be published today (and is automatically updated, w00t!)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Open questions I haven’t looked in to:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Can you still get/use jmap/&lt;strong&gt;hprof&lt;/strong&gt; information etc in OpenJ9?&lt;/li&gt;
+  &lt;li&gt;How will it hold up during longer production runs?&lt;/li&gt;
+  &lt;li&gt;Will we find other weird bugs? It feels tricky…&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Have you tried OpenJ9/J9? Let me know in the comments.&lt;/p&gt;
+
+&lt;p&gt;Is there anything else you’d love to see tested? The best way to contact me is to send me a tweet &lt;a href=&quot;https://twitter.com/royvanrijn&quot;&gt;royvanrijn&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 16 May 2018 13:54:31 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/</guid>
+        
+        <category>Java</category>
+        
+        <category>Memory</category>
+        
+        <category>OpenJDK</category>
+        
+        <category>OpenJ9</category>
+        
+        <category>Microservices</category>
+        
+        <category>Spring Boot</category>
+        
+        
+        <category>Java</category>
+        
+      </item>
     
       <item>
         <title>Java and Docker, the limitations</title>
@@ -1138,72 +1321,6 @@ For example:&lt;/p&gt;
         <category>future</category>
         
         <category>javaone</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Job titles when writing code</title>
-        <description>&lt;p&gt;The company I work for (&lt;a href=&quot;https://www.jpoint.nl/&quot;&gt;JPoint&lt;/a&gt;) we don’t have work titles. Well, we do, but you’re free to pick one. Some people call themselfs ‘software developer’, some are having more luck as ‘software architect’, others label themselfs as ‘software craftsman’ and there might be a ‘software ninja/rockstar’ hanging around.&lt;/p&gt;
-
-&lt;p&gt;But I have a problem with that… all those terms don’t reflect on what we do. Currently I’m sitting in a session at &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt; and I’m having the feeling people don’t realize what their job actually is.&lt;/p&gt;
-
-&lt;p&gt;#So, what does a software coder do?#&lt;/p&gt;
-
-&lt;p&gt;When creating software &lt;em&gt;we instruct a computer what to do&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;That is it.&lt;/p&gt;
-
-&lt;p&gt;We tell a machine how to respond. We don’t build things (develop), we don’t slay things (ninja!), we don’t rock, we just tell the computer what to do.&lt;/p&gt;
-
-&lt;p&gt;That is why a programming language is called… a &lt;strong&gt;language&lt;/strong&gt;. It is a way we, as coders, communicate with the computer.&lt;/p&gt;
-
-&lt;p&gt;Is it that simple? Sadly no.&lt;/p&gt;
-
-&lt;p&gt;When writing code, we are not alone. There are also other coders that read/write/edit/analyse our code. It isn’t enough that just you and the machine understand, other coders have to understand as well.&lt;/p&gt;
-
-&lt;p&gt;We started out programming in binary, but this was way too complicated for humans. So we invented programming languages. First we created assembly. This made it easier for a human to tell the machine what to do. But assembly was still too complicated. Slowly the programming languages became closer and closer to human language.&lt;/p&gt;
-
-&lt;p&gt;#Alternatives#&lt;/p&gt;
-
-&lt;p&gt;My job is to write code, code that the machine understands. The code must also be pleasant to read and understand by other humans. Also, in this, I’m putting a lot of creativity.&lt;/p&gt;
-
-&lt;p&gt;Maybe you are a &lt;strong&gt;software author&lt;/strong&gt; or &lt;strong&gt;software writer&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wri•ter (rahy-ter)
-
-noun
-1. a person engaged in writing (books, articles, stories, etc.) as an occupation or profession; an author or journalist.
-2. a person who commits his or her thoughts, ideas, etc., to writing
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This fits our job much better!&lt;/p&gt;
-
-&lt;p&gt;If you want something more exotic, and your code has a good flow and shows creativity, you might call yourself a: &lt;strong&gt;software poet&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;po•et (ˈpoʊ ɪt)
-
-noun
-1. one who writes poetry.
-2. one who displays imagination and sensitivity along with eloquent expression.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-</description>
-        <pubDate>Sat, 17 Sep 2016 19:45:12 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/09/job-titles-when-writing-code/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/09/job-titles-when-writing-code/</guid>
-        
-        <category>programming</category>
-        
-        <category>software poet</category>
-        
-        <category>software ninja</category>
-        
-        <category>language</category>
-        
-        <category>communication</category>
         
         
         <category>Programming</category>

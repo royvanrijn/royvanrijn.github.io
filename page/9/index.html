@@ -115,6 +115,141 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2011/01/rainbow-tables/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Rainbow tables, reverse hash lookup" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2011-01-01T17:17:25+01:00" class="date">
+            Jan 1, 2011 17:17:25
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today I’ve been looking into rainbow tables. These are tables used to do a reverse lookup for a hash function. For example MD5, or Windows LAN Manager. Usually these tables are used to find passwords if the hash is known. Now I’m not looking for a method to crack somebodies computer, but the technology and algorithms involved are very advanced and might be usefull in other fields as well!</p>
+
+<h1 id="hashing">Hashing</h1>
+
+<p>First off, lets talk about ‘hashing’, what is hashing? Well, a hash-function is a one-way function which turns some data (usually text) into a hashcode. For example… passwords:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">"test"     -&gt; "098f6bcd4621d373cade4e832627b4f6"
+"password" -&gt; "5f4dcc3b5aa765d61d8327deb882cf99"</code></pre></figure>
+
+<p>Every good website which takes security seriously will only store these MD5 hashes in their databases, not the real passwords. So even if their database is compromised the attackers don’t have anything, because the hash-function is only one-way.</p>
+
+<h1 id="attacking-a-hash">Attacking a hash</h1>
+
+<p>Where there is security there will be crackers trying to break it. How would you go about attacking, reversing, a hash? The earliest form was just to create huge tables of:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">PLAIN_TEXT -&gt; HASH</code></pre></figure>
+
+<p>And then check if the hash is your hash. If you have a match, you’ll get into the system!</p>
+
+<p>The problem is that these tables take a very long time to compute and you’ll end up with so much data you won’t be able to store it. This made hashing pretty safe.</p>
+
+<h1 id="rainbow-tables">Rainbow tables</h1>
+
+<p>A couple of generations further down the line, crackers now use rainbow tables. It takes the best of both worlds having a small(-ish) table on disk, and doing minimal computations. So how do they work..?</p>
+
+<h2 id="the-reduce-function">The reduce function</h2>
+
+<p>Lets assume we start with a random piece of text. For example we want to crack all passwords of length 5 and consisting of [ABC…XYZ0123456789]. We can now calculate the hash value. Instead of storing this single pair, we do a little trick. We use something that is called a ‘reduce function’. This is a selfmade one-way function that turns a hash back into a password! But not the original password (it isn’t a reverse hash-function) but just into some other password.</p>
+
+<p>Why would we do that? Lets continue, we take our first random password, generate a hash, and then we reduce it back to another password. This is then again hashed, reduced, hashed, reduced for lets say 1000 times. We’ll end up with:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Hash:   "random"                           -&gt; "7ddf32e17a6ac5ce04a8ecbf782ca509"
+Reduce: "7ddf32e17a6ac5ce04a8ecbf782ca509" -&gt; "ienw3"
+Hash:   "ienw3"                            -&gt; "b9322e367ad002d5adf7ca60b8b61e86"
+        ... (1000 times) ...
+Hash:   "o1gti"                            -&gt; "27aa4cbd3653a4617e0aec76ba3af9a4"</code></pre></figure>
+
+<p>The trick is, we throw away everything except the first input “random” and the final hash “27aa4cbd3653a4617e0aec76ba3af9a4”! This is the only part we need to store.</p>
+
+<h2 id="using-a-rainbow-table">Using a rainbow table</h2>
+
+<p>How can we use the data above to reverse hashes you might ask? To use this table we need the input hash. For example “b9322e367ad002d5adf7ca60b8b61e86”. First we check if this hash is in the database. If it is, we are very lucky, we can just re-generate that particulair chain and we know the plain text input!</p>
+
+<p>If we don’t find anything (which is very likely) we apply our reduce function to the input-hash and then hash that result. Now we check the hashes again, regenerate the chain and find out the answer. This can be repeated until we hit our set limit (1000) in that case, if no match has been found, we can’t reverse it.</p>
+
+<h2 id="false-alarms">False alarms</h2>
+
+<p>There is one problem in this algorithm. If you take a input-hash and then do a couple of reduce/hashes, and then you find a match… it might be a false alarm! The problem is that there might be input strings that result in the same hash. If this happens two chains will end up into one chain.</p>
+
+<p>If we would have done a couple of reduce/hashes from our input and find a match for endpoint “52cafa6b5e4a6509e6ed2b8e6976d780”, the original chain might not have contained our input value. When we construct the complete chain it is possible that our input-hash isn’t in the chain…!</p>
+
+<h2 id="the-rainbow-of-the-rainbow-table">The ‘rainbow’ of the rainbow table</h2>
+
+<p>The reason they call it a rainbow table has something to do with reducing the amount of false alarms. Until now we’ve talked about having one reduce-function. What if we would have multiple reduce functions? Then we could create multiple small tables, which would help reduce a little bit.</p>
+
+<p>Philippe Oechslin had a great idea. He used a different reduce algorithm for each step in the chain. So his tables are build using:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">input chain 1 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
+input chain 2 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash
+input chain 3 -&gt; hash -&gt; reduce1 -&gt; hash -&gt; reduce2 -&gt; .... -&gt; reduceN -&gt; hash</code></pre></figure>
+
+<p>(If you color the reduce functions you’ll end up with a pretty rainbow pattern).</p>
+
+<p>How would you reverse a hash using this method? Well, the first step is the same, check if your input-hash is present in the stored hashes.<br />
+Next we apply:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">reduce1000 -&gt; hash -&gt; check
+reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check
+reduce998 -&gt; hash -&gt; reduce999 -&gt; hash -&gt; reduce1000 -&gt; hash -&gt; check</code></pre></figure>
+
+<p>(etc)</p>
+
+<p>The big advantage is that similair hashes (collisions) will most likely use different reduce algorithms so they won’t end up in the same chain.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Using rainbow tables you greatly decrease the amount of stored values. It isn’t log(O), there is a bit of computation needed to do the lookups, but that as well is kept to a minimum. This results in a very fast method to crack passwords. But I think it can be used in other fields of computer science as well. There are a lot of situations where you’d like to have a very big hash-lookup table, and when it becomes too big, this can be used to reduce storage but maintain fairly good lookup times.</p>
+
+<h1 id="salting">Salting</h1>
+
+<p>Almost every article about hashing and rainbow tables end with a short alinea about salting. You can do salting in a couple of different ways, but the idea is usually the same. The easiest form of salting is having on ‘salt’ for a complete database.</p>
+
+<h2 id="one-salt-per-database">One salt per database</h2>
+
+<p>How does this work? Well, lets just generate a completely random piece of text: “thisisoursaltanditisverylarge”. Now every time we store a new user we do “MD5(password + salt)”. Because the password itself may be weak, we apply our large “database-salt” to it, and then we calculate the hash.</p>
+
+<p>Now if you want to crack a hash in this system it is almost impossible. Unless you find out the salt, then you could re-create a complete rainbow table and crack all the passwords.</p>
+
+<h2 id="using-a-user-value-as-salt">Using a user value as salt</h2>
+
+<p>An even better solution is to use a user-value as salt, for example their username or date of birth, or maybe their registration date/time. Now if somebody cracks the database and finds all the data they’ll have to create a new rainbow table for each seperate user (!!!). This is even more secure and preferred over the database-salt.</p>
+
+<h2 id="just-generate-a-random-sequence">Just generate a random sequence…</h2>
+
+<p>But the single best way of salting your database is to generate a large random salt for each user. You can just store this salt in the database next to the hash of the password. This is better then, for example, the username, because there are just less collisions. For example usernames like “root” or “admin” aren’t very uncommon aren’t they? So creating a rainbow table with “root” as salt might be worth the trouble. But creating one with a large random number just for a single user? That is hard and they’ll probably quickly give up.</p>
+
+<h1 id="other-uses-for-this-algorithm">Other uses for this algorithm</h1>
+
+<p>I haven’t been able to come up with a good other use for this algorithm yet, but I have the feeling tons of problems could potentially benefit from it! Can you come up with one?</p>
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2010/12/finding-performance-problems/">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Finding performance problems" width="100" height="100" />
@@ -1660,128 +1795,6 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/some-of-my-software-development-rules/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2010/02/compression-by-prediction/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Compression by prediction" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2010-02-17T10:39:23+01:00" class="date">
-            Feb 17, 2010 10:39:23
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/compression-by-prediction/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/02/compression-by-prediction/">Compression by prediction</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The last couple of weeks I have been playing around with compression/decompression algorithms. This is a field that has always intrigued me. It gives me a magical feeling, like a magician you wave some algorithm around and suddenly the files shrink and bytes dissapear. With the same motion you can undo all your actions and re-generate the original files from thin air!</p>
-
-<h1 id="arithmetic-coding">Arithmetic Coding</h1>
-
-<p>Arithmetic coding is a different method to encode bytes. On itself it doesn’t compress, but it is the backbone of a whole family of compression algorithms. To explain how it works we need some example text we want to compress: “ABACB”</p>
-
-<p>First we assign a probability to each symbol:</p>
-
-<ul>
-  <li>A: 45%</li>
-  <li>B: 40%</li>
-  <li>C: 15%</li>
-</ul>
-
-<p>Lets change these probabilities into ranges from 0.0 to 1.0:</p>
-
-<ul>
-  <li>A: 0.00 to 0.45</li>
-  <li>B: 0.45 to 0.85</li>
-  <li>C: 0.85 to 1.00</li>
-</ul>
-
-<p>Now we start reading our input (ABACB). The first character we find is ‘A’. First we do a lookup in the table, what range does ‘A’ have: 0.00 to 0.45. Lets remember these values as ‘low’ and ‘high’.</p>
-
-<p>Time to encode the second character ‘B’. The first thing we need to do is reset our ranges to be between low and high:</p>
-
-<ul>
-  <li>A: 0.0000 to 0.2025</li>
-  <li>B: 0.2025 to 0.3805</li>
-  <li>C: 0.3805 to 0.4500</li>
-</ul>
-
-<p>We want to encode ‘B’, so we’ll end up with low=0.2025 and high=0.3805. Time to update the table again:</p>
-
-<ul>
-  <li>A: 0.2025 to 0.2826</li>
-  <li>B: 0.2826 to 0.3538</li>
-  <li>C: 0.3538 to 0.3805</li>
-</ul>
-
-<p>Encode ‘A’, we get low=0.2025 and high=0.2826. And adjust the table again:</p>
-
-<ul>
-  <li>A: 0.202500 to 0.238545</li>
-  <li>B: 0.238545 to 0.270585</li>
-  <li>C: 0.270585 to 0.282600</li>
-</ul>
-
-<p>Encode ‘C’, we get low=0.270585 and high=0.282600. Adjust the table one last time:</p>
-
-<ul>
-  <li>A: 0.27058500 to 0.27599175</li>
-  <li>B: 0.27599175 to 0.28079775</li>
-  <li>C: 0.28079775 to 0.28260000</li>
-</ul>
-
-<p>So, lets encode the final symbol ‘B’ and stop right here. Now we save/output a value betwee low (0.27599175) and high (0.28079775) which takes the least amount of bytes, for example 0.28!</p>
-
-<p>Now I we want to decode our message “0.28” we start by building the ranges again, these are the same as the first table above. Now we look at which range our 0.28 fall in. The result is ‘A’ (between 0.0 and 0.45). So we output this symbol. Next we have to update the table, because we outputted ‘A’ we know our encoder encoded ‘A’, so we can follow the same steps as the encoder did and update the ranges in the same way, so we’ll end up with the second table (with values between 0.0 and 0.45). If we look at 0.28 it now falls into range ‘B’, so we output ‘B’ and adjust again.</p>
-
-<p>As you can see this number “0.28” describes our whole message “ABACB”! So we encoded a whole message in one small number. There are a lot of improvements possible to implement this algorithm efficiently, for example look at <a href="http://en.wikipedia.org/wiki/Range_encoding">range encoding</a>. Another website that helped me a lot is this <a href="http://www.arturocampos.com/ac_arithmetic.html">basic arithmetic coding</a> by Arturo Campos.</p>
-
-<h1 id="prediction">Prediction</h1>
-
-<p>The previous example works great, but there is a problem… if we assign equal probabilities to each possible symbol (each byte) we won’t compress anything! The example above works because I took bigger probabilities for A and B then for C… So for it to work we need to guess the correct probabilities, and the better we do this, the smaller our file gets! Luckely there are a couple of methods to assign/guess these probabilities.</p>
-
-<h2 id="read-and-save-table">Read and save table</h2>
-
-<p>One thing you can do is to first read the whole file and save the amount you see each character. Then you can scale these amounts into probabilities between 0.0 and 1.0 and save these probabilities to a file. Next we can use these probabilities to encode (and decode) our message! This will take quite a bit of overhead because you have to save the table..</p>
-
-<h2 id="runtime-adjustment">Runtime adjustment</h2>
-
-<p>Another thing we can do is to just start with equal probabilities for each symbol and adjust the probabilities during the encoding. If we use the same method in encoding and decoding our probability table will remain the same.</p>
-
-<h2 id="prediction-by-partial-matching-ppm">Prediction by Partial Matching (PPM)</h2>
-
-<p>So, we can adjust the probabilities at runtime and for example count all the symbols we have seen. But why stop there? For example in a piece of English text, the letter ‘E’ will probably have the highest count/probabilty. But if we encouter the symbols: “COMPRESSI” we know the next character will likely be an “O”, not an “E”! So what if we can enlarge our context? This is what PPM does, looking at the bigger picture. Not only count single symbols, but also combinations. The longer the combinations the more specific our predictions get (but also more memory is needed).</p>
-
-<h2 id="context-mixing-cm">Context Mixing (CM)</h2>
-
-<p>With PPM you have one model which predicts the probability of the next symbol by looking at its past statistics. But why stop there? With Context Mixing (CM) you can have multiple models predicting the next symbol work together. When you do this right you and predict the next symbol even better and thus get better compression ratios! This is how the best current compression algorithms work.</p>
-
-<h1 id="other-methods">Other methods</h1>
-
-<p>This is just one family of compression algorithms, there are a lot more which I won’t describe here (yet?). Instead of processing/guessing the next symbol you could also replace long series of symbols with shorter unique symbols. This is known as <a href="http://en.wikipedia.org/wiki/Dictionary_coder">dictionary coding</a>, an entire other family of compressors (including <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78">LZ, zip, gz</a>).</p>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/02/compression-by-prediction/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

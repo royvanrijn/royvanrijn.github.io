@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>OpenJ9 - A JVM shootout</title>
+  <meta name="description" content="TLDR;OpenJ9 and IBM J9 are a different JVM implementation from the default Oracle HotSpot JVM. With the modern adoptopenjdk pre-made Docker images it is easy...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Java,Memory,OpenJDK,OpenJ9,Microservices,Spring Boot,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="OpenJ9 - A JVM shootout" />
+  <meta name="twitter:description" content="TLDR;OpenJ9 and IBM J9 are a different JVM implementation from the default Oracle HotSpot JVM. With the modern adoptopenjdk pre-made Dock..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/docker.png"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2018/05/java-and-docker-memory-limits/" title="Previous Post: Java and Docker, the limitations">&laquo; Java and Docker, the limitations</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/docker.png"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2018-05-16T13:54:31+02:00" class="date">
+          May 16, 2018 13:54:31
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">OpenJ9 - A JVM shootout</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <h1 id="tldr">TLDR;</h1>
+
+<p><a href="https://www.eclipse.org/openj9/">OpenJ9</a> and <a href="https://www.ibm.com/support/knowledgecenter/en/SS6QYM_9.1.0/com.ibm.help.perf.manage.doc/c_FND_PM_IBMJ9JVM.html">IBM J9</a> are a different JVM implementation from the default Oracle HotSpot JVM. With the modern <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> pre-made Docker images it is easy to swap and test different combinations and pick the right JVM for you.</p>
+
+<p>The rumours seem to be true, OpenJ9 seems to blow HotSpot away on memory usage. HotSpot seems to have the edge CPU-wise.</p>
+
+<h1 id="openj9">OpenJ9</h1>
+
+<p>In the Java world most people are familiar with OpenJDK. This is a complete JDK implementation including the HotSpot JVM engine. Not a lot of developers know or try alternatives to HotSpot. Asking around some colleagues remembered the name JRockit, nobody mentioned IBM J9 and/or Eclipse OpenJ9.</p>
+
+<p>Online I’ve read that <a href="https://medium.com/criciumadev/new-open-source-jvm-optimized-for-cloud-and-microservices-c75a41aa987d">OpenJ9 is very good with memory management</a> and is tailered for usage in containers. With the current rise in microservice usage (and those things are <strong>not</strong> so micro in Java), this could become a hot topic.</p>
+
+<h1 id="testing">Testing</h1>
+
+<p>Before the <a href="https://www.docker.com/">Docker</a>-era it was relatively hard to compare different JVMs, versions. You needed to download, install, script and run everything. But now a lot of pre-made images are available online.</p>
+
+<p>Here is my idea on how to test the JVMs:</p>
+
+<ol>
+  <li>Create a simple <a href="https://projects.spring.io/spring-boot/">Spring Boot</a> application</li>
+  <li>Start the application in various Docker Images</li>
+  <li>Measure memory usage after startup and GC</li>
+  <li>Measure the time it takes to run a small CPU-intensive test</li>
+</ol>
+
+<p>This is by no means a thorough test or benchmark, but it should give us a basic idea of what we can expect from the virtual machines.</p>
+
+<h2 id="spring-boot-application">Spring Boot application</h2>
+
+<p>The Spring Boot application I created contains the following endpoints:</p>
+
+<ol>
+  <li>A REST endpoint that calls the GC (trying to make it fair)</li>
+  <li>A REST endpoint that creates 1000 large random arrays and sorts them, returns the runtime (in ms)</li>
+</ol>
+
+<p>Here is the listing of the CPU-test:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoadTestController</span> <span class="o">{</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/loadtest"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="kt">long</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">long</span><span class="o">[</span><span class="mi">1000000</span><span class="o">];</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">l</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="n">data</span><span class="o">[</span><span class="n">l</span><span class="o">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Again, we can argue endlessly about if this test makes sense and is even remotely relevant… but still it should give us some basic idea of what kind of performance we can expect.
+If the rumoured memory improvements are true, might there be a performance hit? Is there a performance trade-off?</p>
+
+<h2 id="jvm-images">JVM images</h2>
+
+<p>I’ve decided to test the following images.</p>
+
+<p>First we have the (slim) <a href="https://hub.docker.com/_/openjdk/">openjdk</a> images for 8/9/10/11:</p>
+
+<ul>
+  <li>openjdk:8-slim</li>
+  <li>openjdk:9-slim</li>
+  <li>openjdk:10-slim</li>
+  <li>openjdk:11-slim</li>
+</ul>
+
+<p>Next there are the <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> images for 8/9/10:</p>
+
+<ul>
+  <li>adoptopenjdk/openjdk8</li>
+  <li>adoptopenjdk/openjdk9</li>
+  <li>adoptopenjdk/openjdk10</li>
+</ul>
+
+<p>Then we have OpenJ9, again provided by <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> for 8, 9 and a nightly build of 9 (see my previous blogpost):</p>
+
+<ul>
+  <li>adoptopenjdk/openjdk8-openj9</li>
+  <li>adoptopenjdk/openjdk9-openj9</li>
+  <li>adoptopenjdk/openjdk9-openj9:nightly</li>
+</ul>
+
+<p>And I decided to include IBM’s own J9 image as well:</p>
+
+<ul>
+  <li>ibmcom/ibmjava:8-jre</li>
+</ul>
+
+<h2 id="testing-with-docker">Testing with Docker</h2>
+
+<p>After building my Spring Boot application I launched each Docker image using the following command:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -it -v /Projects/temp/spring-boot-example:/app/spring-boot-example -p 8080:8080 IMAGE_NAME /bin/bash</code></pre></figure>
+
+<p>I’m mapping my “<em>spring-boot-example</em>” project folder to “<em>/apps/spring-boot-example</em>” so I can start the JAR file inside the container. Also I’m forwarding port 8080 back to my host so I can call the endpoints.</p>
+
+<p>Next, inside the container, I launch the Spring Boot application:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">java -jar /app/spring-boot-example/target/spring-boot-example-0.0.1-SNAPSHOT.jar</code></pre></figure>
+
+<p>After waiting a bit, calling the endpoints a couple of times and performing a GC I measured the memory usage.</p>
+
+<p>After that I called the “<em>/loadtest</em>” endpoint containing the array-sorting test and waited for the results.</p>
+
+<h1 id="memory-benchmark">Memory benchmark</h1>
+
+<p>Here are the results of the memory used by the simple Spring Boot application:</p>
+
+<p><img src="/images/jvm-memory-usage.png" alt="Chart with memory usage per Docker Image" /></p>
+
+<p>At first you can see that the memory usage for Java 8 is much higher than for Java 9 and 10, good!</p>
+
+<p>But the biggest shock is how much less memory OpenJ9 and J9 are using, almost <strong>4x</strong> less memory if you compare Java 8 with OpenJ9. I’m amazed, how does this even work? Now we can <em>almost</em> call our Spring Boot service <strong>micro</strong>!</p>
+
+<p>I’ve also experimented with running some production Spring Boot code (not just simple examples) and here I’ve seen improvements up to 40-50% decrease in memory usage.</p>
+
+<h1 id="cpu-benchmark">CPU benchmark</h1>
+
+<p>Online I’ve read that OpenJ9 isn’t as good as HotSpot if you look at CPU intensive tasks. That is why I created a small test for this as well.</p>
+
+<p>1000 arrays with 1000000 random long values being sorted. This takes around 100 seconds, this should give the JVM enough time to adjust and optimize. I’ve called the benchmark twice for each tested image. I’ve recorded the second time trying to eliminate warmup times.</p>
+
+<p><img src="/images/jvm-cpu-speed.png" alt="Chart with CPU usage per Docker Image" /></p>
+
+<p>In the chart we can see that indeed the J9 and OpenJ9 images are slower, not by much max 18%. It seems for this particular testcase Java 8 beats most Java 9 implementations (except coupled with OpenJ9).</p>
+
+<h1 id="whats-next">What’s next?</h1>
+
+<p>My current project has a lot more memory issues than CPU issues on production (frequently running out of memory while having 1-2% CPU usage). We are definitely thinking about switching to OpenJ9 in the near future!</p>
+
+<p>We did already encounter some issues during testing:</p>
+
+<ol>
+  <li><strong>Hessian</strong>: (binary protocol) has a build-in assumption that System.identityHashCode always returns a positive number. For HotSpot this is true but OpenJ9/J9 can also return negative numbers. This is an open issue and the Hessian project hasn’t fixed this in a couple of years, seems to be dead? Our solution is to move away from Hessian altogether</li>
+  <li><strong>Instana</strong>: We love our monitoring tool Instana, but it had some problems connecting their agent to OpenJ9/J9. Luckily the people at Instana helped us identify a bug and a fix should be published today (and is automatically updated, w00t!)</li>
+</ol>
+
+<p>Open questions I haven’t looked in to:</p>
+
+<ol>
+  <li>Can you still get/use jmap/<strong>hprof</strong> information etc in OpenJ9?</li>
+  <li>How will it hold up during longer production runs?</li>
+  <li>Will we find other weird bugs? It feels tricky…</li>
+</ol>
+
+<p>Have you tried OpenJ9/J9? Let me know in the comments.</p>
+
+<p>Is there anything else you’d love to see tested? The best way to contact me is to send me a tweet <a href="https://twitter.com/royvanrijn">royvanrijn</a>.</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
