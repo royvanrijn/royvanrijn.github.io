@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 May 2018 14:54:44 +0200</pubDate>
-    <lastBuildDate>Wed, 16 May 2018 14:54:44 +0200</lastBuildDate>
+    <pubDate>Wed, 16 May 2018 18:50:23 +0200</pubDate>
+    <lastBuildDate>Wed, 16 May 2018 18:50:23 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -373,7 +373,11 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 
 &lt;h2 id=&quot;test-5-openj9&quot;&gt;Test 5: OpenJ9&lt;/h2&gt;
 
-&lt;p&gt;I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse. It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.&lt;/p&gt;
+&lt;p&gt;I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse.&lt;/p&gt;
+
+&lt;p&gt;Read more about OpenJ9 in my &lt;a href=&quot;/blog/2018/05/openj9-jvm-shootout/&quot;&gt;next blogpost&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.&lt;/p&gt;
 
 &lt;p&gt;To my surprise however, OpenJ9 doesn’t yet have an option similar to the flags currently (backported) in Java 8/9/10+ for cgroup memory limits. For example if we apply the previous testcase to the latest AdoptAJDK OpenJDK 9 + OpenJ9 build:&lt;/p&gt;
 

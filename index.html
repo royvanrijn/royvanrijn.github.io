@@ -508,7 +508,11 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 <h2 id="test-5-openj9">Test 5: OpenJ9</h2>
 
-<p>I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse. It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.</p>
+<p>I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse.</p>
+
+<p>Read more about OpenJ9 in my <a href="/blog/2018/05/openj9-jvm-shootout/">next blogpost</a>.</p>
+
+<p>It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.</p>
 
 <p>To my surprise however, OpenJ9 doesn’t yet have an option similar to the flags currently (backported) in Java 8/9/10+ for cgroup memory limits. For example if we apply the previous testcase to the latest AdoptAJDK OpenJDK 9 + OpenJ9 build:</p>
 
