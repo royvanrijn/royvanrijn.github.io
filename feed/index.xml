@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 May 2018 08:59:52 +0200</pubDate>
-    <lastBuildDate>Wed, 16 May 2018 08:59:52 +0200</lastBuildDate>
+    <pubDate>Wed, 16 May 2018 09:10:14 +0200</pubDate>
+    <lastBuildDate>Wed, 16 May 2018 09:10:14 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -142,15 +142,35 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 &lt;p&gt;Some people in the comments and on Reddit mentioned that Java 10 solves everything by making the experimental flags the new default.
 This behaviour can be turned off by disabling this flag: -XX:-UseContainerSupport.&lt;/p&gt;
 
-&lt;p&gt;I tested this but initially it didn’t work. At the time of writing this the OpenJDK10 Docker image has JVM jdk-10+23. This JVM doesn’t understand the ‘UseContainerSupport’ flag and the process was killed.&lt;/p&gt;
+&lt;p&gt;When I tested this it initially didn’t work. At the time of writing the AdoptAJDK OpenJDK10 image is packaged with jdk-10+23. This JVM apparently doesn’t understand the ‘UseContainerSupport’ flag (yet) and the process was still killed by Docker.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk10 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Testing the code (and even providing the flag manually):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;javac MemEat.java
+
+java MemEat
+...
+free memory: 96262112
+free memory: 94164960
+free memory: 92067808
+free memory: 89970656
+Killed
+
+java -XX:+UseContainerSupport MemEat
+
+Unrecognized VM option 'UseContainerSupport'
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h2 id=&quot;test-4-java-10u46-nightly&quot;&gt;Test 4: Java 10u46 (Nightly)&lt;/h2&gt;
 
-&lt;p&gt;But after starting the ‘nightly’ build of AdoptAJDK OpenJDK 10, it did work:&lt;/p&gt;
+&lt;p&gt;I decided to try the latest ‘nightly’ build of AdoptAJDK OpenJDK 10. Instead of Java 10+23 it includes 10+46.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk10:nightly /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;There is a problem in this nightly build, the exported path still points to 10+23, not to the packaged 10+46, we need to fix this:&lt;/p&gt;
+&lt;p&gt;There is a problem in this nightly build though, the exported PATH points to the old Java 10+23 directory, not to 10+46, we need to fix this.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;export PATH=$PATH:/opt/java/openjdk/jdk-10+46/bin/
 
@@ -253,18 +273,19 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 
 &lt;p&gt;If you are running Java inside a Docker container, make sure that you have:&lt;/p&gt;
 
-&lt;p&gt;Dockers memory limits defined &lt;strong&gt;AND:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Dockers memory limits defined &lt;strong&gt;AND:&lt;/strong&gt; either limits in the JVM or a JVM that understands these limits. Test this.&lt;/p&gt;
 
-&lt;ol&gt;
-  &lt;li&gt;The proper Java -Xmx flags &lt;strong&gt;OR&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;A JDK that knows about cgroups and use the UseCGroupMemoryLimitForHeap flags&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;If you’re not able to update your Java version:&lt;/p&gt;
 
-&lt;p&gt;If you have the option, go for JDK 10 which has better CPU calculation support.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Set your own limits using -Xmx&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker &lt;strong&gt;and&lt;/strong&gt; JVM memory limits with -Xmx.&lt;/p&gt;
+&lt;p&gt;For Java 8 and Java 9, update to the latest version and use:&lt;/p&gt;
 
-&lt;p&gt;Soon both Java 10 and OpenJ9 will have correct fixes in place, probably as a default (with the -XX:+UseContainerSupport flag).&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;For Java 10, make sure it understands the ‘UseContainerSupport’ flag (update to latest) and just run it!&lt;/p&gt;
+
+&lt;p&gt;For OpenJ9 (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag, test this.&lt;/p&gt;
 
 </description>
         <pubDate>Wed, 02 May 2018 16:14:11 +0200</pubDate>

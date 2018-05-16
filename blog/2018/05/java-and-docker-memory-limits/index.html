@@ -273,15 +273,35 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 <p>Some people in the comments and on Reddit mentioned that Java 10 solves everything by making the experimental flags the new default.
 This behaviour can be turned off by disabling this flag: -XX:-UseContainerSupport.</p>
 
-<p>I tested this but initially it didn’t work. At the time of writing this the OpenJDK10 Docker image has JVM jdk-10+23. This JVM doesn’t understand the ‘UseContainerSupport’ flag and the process was killed.</p>
+<p>When I tested this it initially didn’t work. At the time of writing the AdoptAJDK OpenJDK10 image is packaged with jdk-10+23. This JVM apparently doesn’t understand the ‘UseContainerSupport’ flag (yet) and the process was still killed by Docker.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk10 /bin/bash</code></pre></figure>
+
+<p>Testing the code (and even providing the flag manually):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
+
+java MemEat
+...
+free memory: 96262112
+free memory: 94164960
+free memory: 92067808
+free memory: 89970656
+Killed
+
+java -XX:+UseContainerSupport MemEat
+
+Unrecognized VM option 'UseContainerSupport'
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.</code></pre></figure>
 
 <h2 id="test-4-java-10u46-nightly">Test 4: Java 10u46 (Nightly)</h2>
 
-<p>But after starting the ‘nightly’ build of AdoptAJDK OpenJDK 10, it did work:</p>
+<p>I decided to try the latest ‘nightly’ build of AdoptAJDK OpenJDK 10. Instead of Java 10+23 it includes 10+46.</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk10:nightly /bin/bash</code></pre></figure>
 
-<p>There is a problem in this nightly build, the exported path still points to 10+23, not to the packaged 10+46, we need to fix this:</p>
+<p>There is a problem in this nightly build though, the exported PATH points to the old Java 10+23 directory, not to 10+46, we need to fix this.</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">export PATH=$PATH:/opt/java/openjdk/jdk-10+46/bin/
 
@@ -384,18 +404,19 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
 <p>If you are running Java inside a Docker container, make sure that you have:</p>
 
-<p>Dockers memory limits defined <strong>AND:</strong></p>
+<p>Dockers memory limits defined <strong>AND:</strong> either limits in the JVM or a JVM that understands these limits. Test this.</p>
 
-<ol>
-  <li>The proper Java -Xmx flags <strong>OR</strong></li>
-  <li>A JDK that knows about cgroups and use the UseCGroupMemoryLimitForHeap flags</li>
-</ol>
+<p>If you’re not able to update your Java version:</p>
 
-<p>If you have the option, go for JDK 10 which has better CPU calculation support.</p>
+<p><em>Set your own limits using -Xmx</em></p>
 
-<p>If you want to use OpenJ9 (which I highly recommend for bringing down your memory footprint in production) you’ll still need to set both Docker <strong>and</strong> JVM memory limits with -Xmx.</p>
+<p>For Java 8 and Java 9, update to the latest version and use:</p>
 
-<p>Soon both Java 10 and OpenJ9 will have correct fixes in place, probably as a default (with the -XX:+UseContainerSupport flag).</p>
+<p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
+
+<p>For Java 10, make sure it understands the ‘UseContainerSupport’ flag (update to latest) and just run it!</p>
+
+<p>For OpenJ9 (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag, test this.</p>
 
 
     </span>
