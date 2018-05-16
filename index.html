@@ -394,21 +394,19 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>If you are running Java inside a Docker container, make sure that you have:</p>
+<p>If you are running Java inside a Docker container, make sure that you have Docker memory limits <strong>AND</strong> limits in the JVM or a JVM that understands these limits.</p>
 
-<p>Dockers memory limits defined <strong>AND:</strong> either limits in the JVM or a JVM that understands these limits. Test this.</p>
-
-<p>If you’re not able to update your Java version:</p>
+<p>If you’re <strong>not</strong> able to <strong>upgrade</strong> your Java version:</p>
 
 <p><em>Set your own limits using -Xmx</em></p>
 
-<p>For Java 8 and Java 9, update to the latest version and use:</p>
+<p>For <strong>Java 8</strong> and <strong>Java 9</strong>, update to the latest version and use:</p>
 
 <p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
 
-<p>For Java 10, make sure it understands the ‘UseContainerSupport’ flag (update to latest) and just run it!</p>
+<p>For <strong>Java 10</strong>, make sure it understands the ‘UseContainerSupport’ flag (update to latest) and just run it!</p>
 
-<p>For OpenJ9 (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag, test this.</p>
+<p>For <strong>OpenJ9</strong> (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag, test this.</p>
 
 
         </span>
