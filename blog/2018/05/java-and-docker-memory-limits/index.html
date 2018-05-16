@@ -158,25 +158,25 @@
 
 <h2 id="problem-1-memory">Problem 1: Memory</h2>
 
-<p>Most applications in production today are still using Java 8 and this might give you problems. Java 8 doesn’t work well with Docker. The problem is the amount of memory and CPUs available isn’t the amount of memory and CPU of <em>your machine</em>, it is what <em>Docker</em> is allowing you to use (duh).</p>
+<p>Most applications in production today are still using Java 8 (or older) and this might give you problems. Java 8 (before update 131) doesn’t play nice with Docker. The problem is that the amount of memory and CPUs available to the JVM isn’t the total amount of memory and CPU of <em>your machine</em>, it is what <em>Docker</em> is allowing you to use (duh).</p>
 
-<p>For example if you limit your Docker container to have 500MB of memory, this isn’t something Java is aware of. Java doesn’t see this limit.</p>
+<p>For example if you limit your Docker container to get only 100MB of memory, this isn’t something ‘old’ Java was aware of. Java doesn’t see this limit. The JVM will claim more and more memory and go over this limit. Docker will then take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…</p>
 
-<p>To fix this you will <strong>also</strong> need to specify to Java there is a maximum memory limit. You’ll need to specify this <em>inside</em> your container, at the wrong abstraction if you ask me. If you forget to tell the JVM there is a limit set by Docker you’ll have a problem. Docker will take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…</p>
+<p>To fix this you will <strong>also</strong> need to specify to Java there is a maximum memory limit. In <strong>older Java</strong> versions (before 8u131) you needed to specify this <em>inside</em> your container by setting <strong>-Xmx</strong> flags to limit the heap size. This feels wrong, you’d rather not want to define these limits twice, nor do you want to define this ‘inside’ your container.</p>
 
-<p>From Java 9 onwards (and from 8u131+, this was backported) there have been extra options added to the JVM:</p>
+<p>Luckily there are better ways to fix this now. From <strong>Java 9</strong> onwards (and from <strong>8u131+</strong> onwards, backported) there are flags added to the JVM:</p>
 
 <p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
 
-<p>If you add these flags the JVM will look at the Linux <em>cgroup</em> configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.</p>
+<p>These flags will force the JVM to look at the Linux <em>cgroup</em> configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.</p>
 
-<p>In the future Oracle wants to make these properties the new default.</p>
+<p>From <strong>Java 10</strong> onwards (see test below) these experimental flags are the new default and are enabled using the -XX:+UseContainerSupport flag (you can disable this behaviour by providing -XX:-UseContainerSupport).</p>
 
 <h2 id="problem-2-cpu">Problem 2: CPU</h2>
 
-<p>The second problem is that Java doesn’t understand Docker’s memory settings is solved in Java 9, but there is a similar problem with the CPU. In short, the JVM will look at the hardware and detect the amount of CPU’s and it’ll optimize to use those CPU’s. But again, Docker won’t allow you to <strong>use</strong> all these CPU’s, there is a mismatch here. Sadly this isn’t fixed in Java 9, but was tackled in Java 10.</p>
+<p>The second problem is similar, but it has to do with the CPU. In short, the JVM will look at the hardware and detect the amount of CPU’s there are. It’ll optimize your runtime to use those CPU’s. But again, Docker might not allow you to <strong>use</strong> all these CPU’s, there is another mismatch here. Sadly this isn’t fixed in Java 8 or Java 9, but was tackled in Java 10.</p>
 
-<p>From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem.</p>
+<p>From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem (also with UseContainerSupport).</p>
 
 <h1 id="testing-java-and-docker-memory-handling">Testing Java and Docker memory handling</h1>
 
