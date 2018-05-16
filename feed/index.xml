@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 15 May 2018 23:39:54 +0200</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 23:39:54 +0200</lastBuildDate>
+    <pubDate>Wed, 16 May 2018 08:59:52 +0200</pubDate>
+    <lastBuildDate>Wed, 16 May 2018 08:59:52 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -70,6 +70,8 @@
 
 &lt;p&gt;We can start Docker containers and run this application to see what will happen.&lt;/p&gt;
 
+&lt;h2 id=&quot;test-1-java-8u111&quot;&gt;Test 1: Java 8u111&lt;/h2&gt;
+
 &lt;p&gt;First we’ll start with a container that has an older version of Java 8 (update 111).&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it java:openjdk-8u111 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -102,6 +104,8 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 
 &lt;p&gt;After providing our own memory limits, the process is halted correctly, the JVM understands the limits it is operating under. The &lt;strong&gt;problem&lt;/strong&gt; is however that you are now setting these memory limits &lt;strong&gt;twice&lt;/strong&gt;, for Docker &lt;em&gt;AND&lt;/em&gt; for the JVM.&lt;/p&gt;
 
+&lt;h2 id=&quot;test-2-java-8u144&quot;&gt;Test 2: Java 8u144&lt;/h2&gt;
+
 &lt;p&gt;As mentioned, with the new flags this has been fixed, the JVM will now follow the settings provided by Docker. We can test this using a newer JVM.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk8 /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -132,6 +136,37 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 	at MemEat.main(MemEat.java:8)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;This time we didn’t set any limits on the JVM by telling it what the limits &lt;em&gt;are&lt;/em&gt;, we just told the JVM to look at the correct settings! Much better.&lt;/p&gt;
+
+&lt;h2 id=&quot;test-3-java-10u23&quot;&gt;Test 3: Java 10u23&lt;/h2&gt;
+
+&lt;p&gt;Some people in the comments and on Reddit mentioned that Java 10 solves everything by making the experimental flags the new default.
+This behaviour can be turned off by disabling this flag: -XX:-UseContainerSupport.&lt;/p&gt;
+
+&lt;p&gt;I tested this but initially it didn’t work. At the time of writing this the OpenJDK10 Docker image has JVM jdk-10+23. This JVM doesn’t understand the ‘UseContainerSupport’ flag and the process was killed.&lt;/p&gt;
+
+&lt;h2 id=&quot;test-4-java-10u46-nightly&quot;&gt;Test 4: Java 10u46 (Nightly)&lt;/h2&gt;
+
+&lt;p&gt;But after starting the ‘nightly’ build of AdoptAJDK OpenJDK 10, it did work:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -m 100m -it adoptopenjdk/openjdk10:nightly /bin/bash&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;There is a problem in this nightly build, the exported path still points to 10+23, not to the packaged 10+46, we need to fix this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;export PATH=$PATH:/opt/java/openjdk/jdk-10+46/bin/
+
+javac MemEat.java
+
+java MemEat
+...
+free memory: 3566824
+free memory: 2796008
+free memory: 1480320
+Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
+  at MemEat.main(MemEat.java:8)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Succes! Without providing any flags Java 10 correctly detected Dockers memory limits.&lt;/p&gt;
+
+&lt;h2 id=&quot;test-5-openj9&quot;&gt;Test 5: OpenJ9&lt;/h2&gt;
 
 &lt;p&gt;I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse. It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.&lt;/p&gt;
 
@@ -178,6 +213,8 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
 &lt;p&gt;In this case the heap size is limited to the memory allocated to the Docker instance, this works for older JVMs and OpenJ9. This is of course &lt;em&gt;wrong&lt;/em&gt; because the container itself and other parts of the JVM off the heap also use memory. But it seems to work, appearantly Docker is lenient in this case. Maybe some bash-guru will make a better version subtracting a portion from the bytes for other processes.&lt;/p&gt;
 
 &lt;p&gt;Anyway, &lt;strong&gt;don’t&lt;/strong&gt; do this, it might not work.&lt;/p&gt;
+
+&lt;h2 id=&quot;test-6-openj9-nightly&quot;&gt;Test 6: OpenJ9 (Nightly)&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;UPDATE 2: FIXED IN NIGHYLY&lt;/strong&gt;&lt;/p&gt;
 
