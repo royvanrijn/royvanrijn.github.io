@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Part 2: OpenJ9 versus HotSpot</title>
+  <meta name="description" content="IntroYesterday I compared different JDK versions and OpenJ9 versus HotSpot on memory and speed. The memory part of the test was realistic if you ask me, an a...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Java,Memory,OpenJDK,OpenJ9,SPECjvm2008,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Part 2: OpenJ9 versus HotSpot" />
+  <meta name="twitter:description" content="IntroYesterday I compared different JDK versions and OpenJ9 versus HotSpot on memory and speed. The memory part of the test was realistic..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/openj9.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2018/05/openj9-jvm-shootout/" title="Previous Post: Part 1: OpenJ9 versus HotSpot">&laquo; Part 1: OpenJ9 versus HotSpot</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+
+    <div class="post">
+      <div class="post-thumbnail">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg"/>
+        
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span  itemprop="datePublished" content="2018-05-17T14:14:31+02:00" class="date">
+          May 17, 2018 14:14:31
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Part 2: OpenJ9 versus HotSpot</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <h1 id="intro">Intro</h1>
+
+<p>Yesterday I compared different JDK versions and <a href="https://www.eclipse.org/openj9/">OpenJ9</a> versus <a href="http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html">HotSpot</a> on <strong>memory</strong> and <strong>speed</strong>. The memory part of the test was realistic if you ask me, an actual working Spring Boot application that served REST objects.</p>
+
+<p>The speed/CPU test however was… lacking. Sorting some random arrays, just one specific test.</p>
+
+<p>Today I decided to test OpenJ9 and HotSpot a bit more using an actual benchmark: <strong>SPECjvm2008</strong>.</p>
+
+<h1 id="specjvm2008">SPECjvm2008</h1>
+
+<p><a href="https://www.spec.org">SPEC</a> (Standard Performance Evaluation Corporation) has a couple of well defined benchmarks and tests, including an old JVM benchmark called <strong>SPECjvm2008</strong>. This is an elaborate benchmark testing things like compression, compiling, XML parsing and much more. I decided to download this and give it a spin versus OpenJ9 and HotSpot. This should be a much fairer comparison.</p>
+
+<p>Initially I encountered some issues, some of the tests didn’t work against Java 8 and the tests wouldn’t even start against Java 9+. But eventually I got it working by excluding a couple of benchmarks with the following parameters:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+
+<h1 id="testing">Testing</h1>
+
+<p>The Docker images used in these tests are both Java 8 with OpenJDK8, but one with <strong>HotSpot</strong> underneath, the other with <strong>OpenJ9</strong>:</p>
+
+<ul>
+  <li>adoptopenjdk/openjdk8</li>
+  <li>adoptopenjdk/openjdk8-openj9</li>
+</ul>
+
+<p>Again I started the Docker image with a directory linked to the host containing the SPEC benchmark:</p>
+
+<ul>
+  <li>Start Docker:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">v</span> <span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="nl">SPECjvm2008:</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span> <span class="n">adoptopenjdk</span><span class="o">/</span><span class="n">openjdk8</span><span class="o">-</span><span class="n">openj9</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span></code></pre></figure>
+
+<ul>
+  <li>Go to the correct directory:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">cd</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span></code></pre></figure>
+
+<ul>
+  <li>Run the (working) tests:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">Xmx600m</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+
+<h1 id="results">Results</h1>
+
+<p>After waiting a long time for the benchmark to finish, I’ve got the following results:</p>
+
+<p><img src="/images/jvm-cpu-spec.png" alt="Chart with SPECjvm2008 results" /></p>
+
+<p>The graph is measured in <em>ops/m</em>, higher is better. Results may vary of course depending on hardware.</p>
+
+<p>In most cases HotSpot is faster than OpenJ9, and in two cases <strong>HotSpot</strong> is <em>much</em> faster, <strong>crypto</strong> and <strong>derby</strong>. It appears this is a case where HotSpot is doing something special that J9 isn’t doing (yet?). This might be important to know if you’re working on applications that do a lot of cryptology, for example high performance secured endpoints.</p>
+
+<p>One place where <strong>OpenJ9</strong> came out on top is <strong>XML validation</strong>. Parsing/validation is also an important part in most modern applications, so this could be a case where J9 makes up some lost ground in actual production code.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Is there a real conclusion from this? I don’t think so.</p>
+
+<p>The real lesson here is: Experiment, measure and you’ll know.
+Never decided anything based on some online benchmark.</p>
+
+<p>If there is anything else you’d love me to test, send me a tweet: <a href="https://twitter.com/royvanrijn">royvanrijn</a></p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

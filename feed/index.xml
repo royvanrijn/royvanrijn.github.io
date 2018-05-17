@@ -5,12 +5,100 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 May 2018 18:50:23 +0200</pubDate>
-    <lastBuildDate>Wed, 16 May 2018 18:50:23 +0200</lastBuildDate>
+    <pubDate>Thu, 17 May 2018 15:03:58 +0200</pubDate>
+    <lastBuildDate>Thu, 17 May 2018 15:03:58 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
-        <title>OpenJ9 - A JVM shootout</title>
+        <title>Part 2: OpenJ9 versus HotSpot</title>
+        <description>&lt;h1 id=&quot;intro&quot;&gt;Intro&lt;/h1&gt;
+
+&lt;p&gt;Yesterday I compared different JDK versions and &lt;a href=&quot;https://www.eclipse.org/openj9/&quot;&gt;OpenJ9&lt;/a&gt; versus &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html&quot;&gt;HotSpot&lt;/a&gt; on &lt;strong&gt;memory&lt;/strong&gt; and &lt;strong&gt;speed&lt;/strong&gt;. The memory part of the test was realistic if you ask me, an actual working Spring Boot application that served REST objects.&lt;/p&gt;
+
+&lt;p&gt;The speed/CPU test however was… lacking. Sorting some random arrays, just one specific test.&lt;/p&gt;
+
+&lt;p&gt;Today I decided to test OpenJ9 and HotSpot a bit more using an actual benchmark: &lt;strong&gt;SPECjvm2008&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;specjvm2008&quot;&gt;SPECjvm2008&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.spec.org&quot;&gt;SPEC&lt;/a&gt; (Standard Performance Evaluation Corporation) has a couple of well defined benchmarks and tests, including an old JVM benchmark called &lt;strong&gt;SPECjvm2008&lt;/strong&gt;. This is an elaborate benchmark testing things like compression, compiling, XML parsing and much more. I decided to download this and give it a spin versus OpenJ9 and HotSpot. This should be a much fairer comparison.&lt;/p&gt;
+
+&lt;p&gt;Initially I encountered some issues, some of the tests didn’t work against Java 8 and the tests wouldn’t even start against Java 9+. But eventually I got it working by excluding a couple of benchmarks with the following parameters:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;java&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SPECjvm2008&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;helloworld&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;aes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rsa&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;signverify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mpegaudio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;monte_carlo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;serial&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sunflow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;xml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;validation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;aes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rsa&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;signverify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;derby&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mpegaudio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;monte_carlo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serial&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sunflow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;validation&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;testing&quot;&gt;Testing&lt;/h1&gt;
+
+&lt;p&gt;The Docker images used in these tests are both Java 8 with OpenJDK8, but one with &lt;strong&gt;HotSpot&lt;/strong&gt; underneath, the other with &lt;strong&gt;OpenJ9&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;adoptopenjdk/openjdk8&lt;/li&gt;
+  &lt;li&gt;adoptopenjdk/openjdk8-openj9&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Again I started the Docker image with a directory linked to the host containing the SPEC benchmark:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Start Docker:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;docker&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Projects&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;SPECjvm2008:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SPECjvm2008&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adoptopenjdk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openjdk8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openj9&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bash&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Go to the correct directory:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SPECjvm2008&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Run the (working) tests:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;java&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Xmx600m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SPECjvm2008&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;helloworld&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;aes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rsa&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;signverify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mpegaudio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;monte_carlo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;serial&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sunflow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;startup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;xml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;validation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compiler&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;aes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rsa&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;signverify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;derby&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mpegaudio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;large&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fft&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lu&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;small&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scimark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;monte_carlo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serial&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sunflow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;validation&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;results&quot;&gt;Results&lt;/h1&gt;
+
+&lt;p&gt;After waiting a long time for the benchmark to finish, I’ve got the following results:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/jvm-cpu-spec.png&quot; alt=&quot;Chart with SPECjvm2008 results&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The graph is measured in &lt;em&gt;ops/m&lt;/em&gt;, higher is better. Results may vary of course depending on hardware.&lt;/p&gt;
+
+&lt;p&gt;In most cases HotSpot is faster than OpenJ9, and in two cases &lt;strong&gt;HotSpot&lt;/strong&gt; is &lt;em&gt;much&lt;/em&gt; faster, &lt;strong&gt;crypto&lt;/strong&gt; and &lt;strong&gt;derby&lt;/strong&gt;. It appears this is a case where HotSpot is doing something special that J9 isn’t doing (yet?). This might be important to know if you’re working on applications that do a lot of cryptology, for example high performance secured endpoints.&lt;/p&gt;
+
+&lt;p&gt;One place where &lt;strong&gt;OpenJ9&lt;/strong&gt; came out on top is &lt;strong&gt;XML validation&lt;/strong&gt;. Parsing/validation is also an important part in most modern applications, so this could be a case where J9 makes up some lost ground in actual production code.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Is there a real conclusion from this? I don’t think so.&lt;/p&gt;
+
+&lt;p&gt;The real lesson here is: Experiment, measure and you’ll know.
+Never decided anything based on some online benchmark.&lt;/p&gt;
+
+&lt;p&gt;If there is anything else you’d love me to test, send me a tweet: &lt;a href=&quot;https://twitter.com/royvanrijn&quot;&gt;royvanrijn&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 17 May 2018 14:14:31 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/</guid>
+        
+        <category>Java</category>
+        
+        <category>Memory</category>
+        
+        <category>OpenJDK</category>
+        
+        <category>OpenJ9</category>
+        
+        <category>SPECjvm2008</category>
+        
+        
+        <category>Java</category>
+        
+      </item>
+    
+      <item>
+        <title>Part 1: OpenJ9 versus HotSpot</title>
         <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR;&lt;/h1&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://www.eclipse.org/openj9/&quot;&gt;OpenJ9&lt;/a&gt; and &lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/en/SS6QYM_9.1.0/com.ibm.help.perf.manage.doc/c_FND_PM_IBMJ9JVM.html&quot;&gt;IBM J9&lt;/a&gt; are a different JVM implementation from the default Oracle HotSpot JVM. With the modern &lt;a href=&quot;https://hub.docker.com/u/adoptopenjdk/&quot;&gt;adoptopenjdk&lt;/a&gt; pre-made Docker images it is easy to swap and test different combinations and pick the right JVM for you.&lt;/p&gt;
@@ -1271,62 +1359,6 @@ For example:&lt;/p&gt;
         <category>holdup</category>
         
         <category>interrupt</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>JavaOne 2016, the Future of Java EE</title>
-        <description>&lt;p&gt;Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees &lt;a href=&quot;https://twitter.com/reza_rahman&quot;&gt;Reza Rahman&lt;/a&gt; was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 8 ground to a halt and Oracle was thinking about stopping Java EE development all together.&lt;/p&gt;
-
-&lt;p&gt;Oracle finally gave some insight on their proposal of the future of Java EE during &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt; 2016 (where I am right now).&lt;/p&gt;
-
-&lt;h1 id=&quot;what-is-java-ee&quot;&gt;What is Java EE?&lt;/h1&gt;
-
-&lt;p&gt;First, lets take a step back and look at what Java EE actually is. If you download Java SDK/JRE you are able to compile classes and run them. In the language (java.* and javax.*) there are a couple of libraries that you can use. For example if you want to compute mathematical equations there are classes to use in the java.math.* package.&lt;/p&gt;
-
-&lt;p&gt;Oracle quickly realized it is hard to make larger enterprise applications using just these libraries. That is why they developed the following things:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;A set of interfaces (API) for Enterprise Applications (Java EE)&lt;/li&gt;
-  &lt;li&gt;A default server &lt;em&gt;implemention&lt;/em&gt; for these API’s (Glassfish)&lt;/li&gt;
-  &lt;li&gt;A licensing structure for vendors that want to implement these API’s&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;So if you want to make an Java EE application you can use the Java EE API. For example you can define Servlets for web communication. Next when you deploy this application on an official licensed Java EE server it’ll make sure the methods are implemented and called when a URL is invoked.&lt;/p&gt;
-
-&lt;h1 id=&quot;java-ee-at-javaone-2016&quot;&gt;Java EE at &lt;a href=&quot;https://www.oracle.com/javaone/index.html&quot;&gt;JavaOne&lt;/a&gt; 2016&lt;/h1&gt;
-
-&lt;p&gt;During the keynote Oracle informed the crowd about Java EE 8. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 8 specification worth the effort? They clearly thought it wasn’t.&lt;/p&gt;
-
-&lt;p&gt;The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.&lt;/p&gt;
-
-&lt;p&gt;The decision has been made to continue developing Java EE 8. And during the keynote they proposed a release of EE 8 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.&lt;/p&gt;
-
-&lt;h1 id=&quot;my-thoughts&quot;&gt;My thoughts&lt;/h1&gt;
-
-&lt;p&gt;Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.&lt;/p&gt;
-
-&lt;p&gt;The problem is that Java EE 8 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.&lt;/p&gt;
-
-&lt;p&gt;The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.&lt;/p&gt;
-
-&lt;p&gt;Vendors like Red Hat (owner of WildFly) are already breaking up their Java EE implementation using frameworks like &lt;a href=&quot;http://wildfly-swarm.io/&quot;&gt;WildFly Swarm&lt;/a&gt;. Swarm allows you to package and run just the parts of the specification you’re using. This is, what I think, the real future of enterprise Java.&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 18 Sep 2016 19:45:12 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/09/the-future-of-java-ee/</guid>
-        
-        <category>java ee</category>
-        
-        <category>enterprise</category>
-        
-        <category>future</category>
-        
-        <category>javaone</category>
         
         
         <category>Programming</category>

@@ -115,9 +115,111 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a href="/blog/2018/05/openj9-hotsport-specjvm2008/">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="Part 2: OpenJ9 versus HotSpot" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="datePublished" content="2018-05-17T14:14:31+02:00" class="date">
+            May 17, 2018 14:14:31
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-hotsport-specjvm2008/">Part 2: OpenJ9 versus HotSpot</a></h1>
+
+        <span itemprop="articleBody">
+          <h1 id="intro">Intro</h1>
+
+<p>Yesterday I compared different JDK versions and <a href="https://www.eclipse.org/openj9/">OpenJ9</a> versus <a href="http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html">HotSpot</a> on <strong>memory</strong> and <strong>speed</strong>. The memory part of the test was realistic if you ask me, an actual working Spring Boot application that served REST objects.</p>
+
+<p>The speed/CPU test however was… lacking. Sorting some random arrays, just one specific test.</p>
+
+<p>Today I decided to test OpenJ9 and HotSpot a bit more using an actual benchmark: <strong>SPECjvm2008</strong>.</p>
+
+<h1 id="specjvm2008">SPECjvm2008</h1>
+
+<p><a href="https://www.spec.org">SPEC</a> (Standard Performance Evaluation Corporation) has a couple of well defined benchmarks and tests, including an old JVM benchmark called <strong>SPECjvm2008</strong>. This is an elaborate benchmark testing things like compression, compiling, XML parsing and much more. I decided to download this and give it a spin versus OpenJ9 and HotSpot. This should be a much fairer comparison.</p>
+
+<p>Initially I encountered some issues, some of the tests didn’t work against Java 8 and the tests wouldn’t even start against Java 9+. But eventually I got it working by excluding a couple of benchmarks with the following parameters:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+
+<h1 id="testing">Testing</h1>
+
+<p>The Docker images used in these tests are both Java 8 with OpenJDK8, but one with <strong>HotSpot</strong> underneath, the other with <strong>OpenJ9</strong>:</p>
+
+<ul>
+  <li>adoptopenjdk/openjdk8</li>
+  <li>adoptopenjdk/openjdk8-openj9</li>
+</ul>
+
+<p>Again I started the Docker image with a directory linked to the host containing the SPEC benchmark:</p>
+
+<ul>
+  <li>Start Docker:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">v</span> <span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="nl">SPECjvm2008:</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span> <span class="n">adoptopenjdk</span><span class="o">/</span><span class="n">openjdk8</span><span class="o">-</span><span class="n">openj9</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span></code></pre></figure>
+
+<ul>
+  <li>Go to the correct directory:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">cd</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span></code></pre></figure>
+
+<ul>
+  <li>Run the (working) tests:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">Xmx600m</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+
+<h1 id="results">Results</h1>
+
+<p>After waiting a long time for the benchmark to finish, I’ve got the following results:</p>
+
+<p><img src="/images/jvm-cpu-spec.png" alt="Chart with SPECjvm2008 results" /></p>
+
+<p>The graph is measured in <em>ops/m</em>, higher is better. Results may vary of course depending on hardware.</p>
+
+<p>In most cases HotSpot is faster than OpenJ9, and in two cases <strong>HotSpot</strong> is <em>much</em> faster, <strong>crypto</strong> and <strong>derby</strong>. It appears this is a case where HotSpot is doing something special that J9 isn’t doing (yet?). This might be important to know if you’re working on applications that do a lot of cryptology, for example high performance secured endpoints.</p>
+
+<p>One place where <strong>OpenJ9</strong> came out on top is <strong>XML validation</strong>. Parsing/validation is also an important part in most modern applications, so this could be a case where J9 makes up some lost ground in actual production code.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Is there a real conclusion from this? I don’t think so.</p>
+
+<p>The real lesson here is: Experiment, measure and you’ll know.
+Never decided anything based on some online benchmark.</p>
+
+<p>If there is anything else you’d love me to test, send me a tweet: <a href="https://twitter.com/royvanrijn">royvanrijn</a></p>
+
+
+        </span>
+
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a href="/blog/2018/05/openj9-jvm-shootout/">
       	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="OpenJ9 - A JVM shootout" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="Part 1: OpenJ9 versus HotSpot" width="100" height="100" />
       	
     	</a>
       </div>
@@ -131,7 +233,7 @@
           </span>
           : <a class="post-comments" href="http://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
         </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-jvm-shootout/">OpenJ9 - A JVM shootout</a></h1>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-jvm-shootout/">Part 1: OpenJ9 versus HotSpot</a></h1>
 
         <span itemprop="articleBody">
           <h1 id="tldr">TLDR;</h1>
@@ -1925,76 +2027,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/joy-of-coding-2016/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a href="/blog/2016/06/devoxx-uk-2016/">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxxuk2016.jpg" alt="Speaking at Devoxx UK 2016" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="datePublished" content="2016-06-10T13:25:02+02:00" class="date">
-            Jun 10, 2016 13:25:02
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/devoxx-uk-2016/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/06/devoxx-uk-2016/">Speaking at Devoxx UK 2016</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Last week I went to London with my colleague Bert Jan Schrijver for the Devoxx UK 2016 conference. The UK-member of the international Devoxx conference family is smaller than its siblings. The event was three days, with the first two having talks and the last day was filled with hands-on-labs. During the first two days there were four parallel tracks giving the almost 1000 visitors enough content to pick from.</p>
-
-<p><img src="/images/devoxxuk_speaking.jpg" alt="Roy van Rijn speaking at Devoxx UK" class="aligncenter" /></p>
-
-<p>The quality of the speakers is very high in London. There are usually a lot of international speakers, probably due to the Devoxx-branding. But also the LJC (London Java Community) has done a lot to encourage their members to do public speaking, it shows!</p>
-
-<h1 id="day-1">Day 1</h1>
-
-<p>Devoxx UK started with one large keynote. James Veitch (stand-up comedian/nerd) entertained us with his experiences with so called ‘nigerian’ spammers. If you’ve never seen a presentation by him, check out <a href="https://www.ted.com/talks/james_veitch_this_is_what_happens_when_you_reply_to_spam_email">his TED Talk</a> for example right now! He’s amazing.</p>
-
-<p>After the entertaining kick-off Mark Hazell (organizer) took the stage. And during his talk the next Devoxx-sibling was announced: <a href="https://devoxx.us/">Devoxx US</a>. For the first time Devoxx is going to cross the Atlantic ocean. It will take place 21 to 23 March 2017 (during the Java 9 release?) in San José.</p>
-
-<p>This news was followed by two technical keynotes. The first one was by Hadi Hariri (about the ‘free lunch’ in open source software) anf the second talk was by Mazz Mosley (about her Agile experiences). After this the four parallel tracks started. My colleague Bert Jan immediately took the stage with his talk on microservices in Vert.x.</p>
-
-<p>The first conference day ended with the Ignite sessions (5 minute talks, 20 slides, auto-forwarding slides, fun topics), this is where I talked about the coming of Skynet (from the Terminator movies) and the fact that Skynet will run on the JVM.</p>
-
-<p>The second day of the conference has again four rooms with parallel sessions. And during lunch I had my main talk, a 15 minute quickie about game theory, algorithms and the breakthroughs of Google/DeepMinds AlphaGo. The talk takes you from the most simple game you can imagine to Noughts and Crosses, to Chess and finally to Go. It talks about the algorithms you can use to make a computer play these games and why all those techniques don’t work with Go.</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/xGZmiqn4Blo"></iframe>
-
-<h1 id="day-2">Day 2</h1>
-
-<p>The second day ended with the usual Community Keynote. During this keynote some crazy French guy warned us for Brexit, they talked about the problems with Java EE and they did three short interviews, one of them was with me! Martijn and Antonio asked me some questions about Joggling (which I’d done an Ignite talk before) and filming at Devoxx. The most scary part was then Antonio challenged me to juggle three glasses… which I did: (skip to 16:79)</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/P-qwkVuwIs"></iframe>
-
-<p>We ended the day like real Londoners do: in the pub. After the last talk we went to ‘DevRoxx’, a party sponsored by Tomitribe, Lightbend, Couchbase and Atlassian.</p>
-
-<h1 id="impression-video">Impression video</h1>
-
-<p>I’m also the ‘official’ Devoxx UK camera man/editor and I’ve created the following movie:</p>
-
-<iframe type="text/html" src="http://player.vimeo.com/video/170226861" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-
-        </span>
-
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/devoxx-uk-2016/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
