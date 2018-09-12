@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Monero mining using Docker</title>
+  <meta name="description" content="Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).At the time of writing this I have...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Cryptocurrency,Monero,Docker,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2018/09/monero-mining/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Monero mining using Docker" />
+  <meta name="twitter:description" content="Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).At the time of..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2018/05/openj9-hotsport-specjvm2008/" title="Previous: Part 2: OpenJ9 versus HotSpot">&laquo; Part 2: OpenJ9 versus HotSpot</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2018/09/monero-mining/" title="Monero mining using Docker">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Monero mining using Docker" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2018-09-12T12:24:13+02:00" class="date" />
+        <span itemprop="datePublished" content="2018-09-12T12:24:13+02:00" class="date">
+          Sep 12, 2018 12:24:13
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/monero-mining/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Monero mining using Docker</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).
+At the time of writing this I have about 4 BTC left, and these coins are now worth over 25k dollar.</p>
+
+<p>Times have changed though, mining Bitcoin on your PC is no longer an option. First CPU miners were replaced by GPU miners and later specialized cryptocurrency mining hardware (ASICs) replaced them. Now you’ll need to create a big farm with cooling, cheap electricity etc to stay profitable.</p>
+
+<h1 id="introducing-monero">Introducing: Monero</h1>
+
+<p>It is still possible to get into cryptocurrency with your regular hardware though, but you’ll have to mine different currencies.</p>
+
+<p>The best one at the moment is probably: <strong>Monero</strong></p>
+
+<p>This cryptocurrency has been created to be easier on the CPU, harder on a GPU.</p>
+
+<h1 id="the-easy-way-docker">The easy way: Docker</h1>
+
+<p>Do you want to start mining Monero coins too?</p>
+
+<p>The easiest way is to fire up a Docker image like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run kannix/monero-miner -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u 45i78dDNEqES45Te6vHmh6XJQTHsEc3Kk5T9CTSfmvhv7sckTNxSF1pJGoNesLdqwd9rG6DwxRYr8HtuK2m9mTaLQRCdCFu -p worker_name</code></pre></figure>
+
+<p><sup>(of course: replace the address with your own address, unless you want to support me)</sup></p>
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

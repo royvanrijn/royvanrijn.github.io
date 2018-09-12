@@ -115,6 +115,64 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2018/09/monero-mining/" title="Monero mining using Docker">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Monero mining using Docker" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2018-09-12T12:24:13+02:00" class="date" />
+          <span itemprop="datePublished" content="2018-09-12T12:24:13+02:00" class="date">
+            Sep 12, 2018 12:24:13
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/monero-mining/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/monero-mining/">Monero mining using Docker</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).
+At the time of writing this I have about 4 BTC left, and these coins are now worth over 25k dollar.</p>
+
+<p>Times have changed though, mining Bitcoin on your PC is no longer an option. First CPU miners were replaced by GPU miners and later specialized cryptocurrency mining hardware (ASICs) replaced them. Now you’ll need to create a big farm with cooling, cheap electricity etc to stay profitable.</p>
+
+<h1 id="introducing-monero">Introducing: Monero</h1>
+
+<p>It is still possible to get into cryptocurrency with your regular hardware though, but you’ll have to mine different currencies.</p>
+
+<p>The best one at the moment is probably: <strong>Monero</strong></p>
+
+<p>This cryptocurrency has been created to be easier on the CPU, harder on a GPU.</p>
+
+<h1 id="the-easy-way-docker">The easy way: Docker</h1>
+
+<p>Do you want to start mining Monero coins too?</p>
+
+<p>The easiest way is to fire up a Docker image like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run kannix/monero-miner -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u 45i78dDNEqES45Te6vHmh6XJQTHsEc3Kk5T9CTSfmvhv7sckTNxSF1pJGoNesLdqwd9rG6DwxRYr8HtuK2m9mTaLQRCdCFu -p worker_name</code></pre></figure>
+
+<p><sup>(of course: replace the address with your own address, unless you want to support me)</sup></p>
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/monero-mining/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2018/05/openj9-hotsport-specjvm2008/" title="Part 2: OpenJ9 versus HotSpot">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="Part 2: OpenJ9 versus HotSpot" width="100" height="100" />
@@ -1980,53 +2038,6 @@ This method assigns a literal boolean value (true or false) to a boolean variabl
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/gender-inqeuality-my-honest-mistake/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/06/joy-of-coding-2016/" title="Speaking at Joy of Coding 2016">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/joyofcoding.png" alt="Speaking at Joy of Coding 2016" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-06-19T18:25:02+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-06-19T18:25:02+02:00" class="date">
-            Jun 19, 2016 18:25:02
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/joy-of-coding-2016/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/06/joy-of-coding-2016/">Speaking at Joy of Coding 2016</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Most conferences I get to visit are about Java. Java frameworks, techniques, other JVM languages, all of them have pretty much the same focus. However: there is one conference on my agenda that is… <em>different</em> (in a good way!). <a href="http://joyofcoding.org/">Joy of Coding</a> is all about (you’ve guessed it) the joy we experience while coding. The topics are very broad, some talks are technical, others are not.</p>
-
-<h1 id="talking-about-game-theory">Talking about game theory</h1>
-
-<p>At this edition of the Rotterdam-based conference I was invited to talk about game theory and game algorithms, and I explained this by going from a simple game, to noughts and crosses, to chess and finally to Go. From <a href="https://en.wikipedia.org/wiki/Minimax">minimax</a> to <a href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning">alpha-beta pruning</a> to <a href="https://en.wikipedia.org/wiki/Artificial_neural_network">neural networks</a>. It is the same talk as I did <a href="/blog/2016/06/devoxx-uk-2016/">last week</a> at Devoxx UK, but now I had much more time, 30 minutes. This allowed me to go deeper into the algorithms and for example explain the free optimization you get with alpha-beta pruning.</p>
-
-<p>The absolute best thing about Joy of Coding?
-The logo/mascot! Just look at this extremely happy cute octopus:</p>
-
-<p><img src="/images/octopus_joyofcoding.jpg" alt="Cutest conference mascot: Joy of Coding Octopus" class="aligncenter" /></p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2016/06/joy-of-coding-2016/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

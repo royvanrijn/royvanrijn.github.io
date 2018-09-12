@@ -5,9 +5,49 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 30 May 2018 15:54:46 +0200</pubDate>
-    <lastBuildDate>Wed, 30 May 2018 15:54:46 +0200</lastBuildDate>
+    <pubDate>Wed, 12 Sep 2018 16:58:22 +0200</pubDate>
+    <lastBuildDate>Wed, 12 Sep 2018 16:58:22 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>Monero mining using Docker</title>
+        <description>&lt;p&gt;Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).
+At the time of writing this I have about 4 BTC left, and these coins are now worth over 25k dollar.&lt;/p&gt;
+
+&lt;p&gt;Times have changed though, mining Bitcoin on your PC is no longer an option. First CPU miners were replaced by GPU miners and later specialized cryptocurrency mining hardware (ASICs) replaced them. Now you’ll need to create a big farm with cooling, cheap electricity etc to stay profitable.&lt;/p&gt;
+
+&lt;h1 id=&quot;introducing-monero&quot;&gt;Introducing: Monero&lt;/h1&gt;
+
+&lt;p&gt;It is still possible to get into cryptocurrency with your regular hardware though, but you’ll have to mine different currencies.&lt;/p&gt;
+
+&lt;p&gt;The best one at the moment is probably: &lt;strong&gt;Monero&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This cryptocurrency has been created to be easier on the CPU, harder on a GPU.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-easy-way-docker&quot;&gt;The easy way: Docker&lt;/h1&gt;
+
+&lt;p&gt;Do you want to start mining Monero coins too?&lt;/p&gt;
+
+&lt;p&gt;The easiest way is to fire up a Docker image like this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run kannix/monero-miner -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u 45i78dDNEqES45Te6vHmh6XJQTHsEc3Kk5T9CTSfmvhv7sckTNxSF1pJGoNesLdqwd9rG6DwxRYr8HtuK2m9mTaLQRCdCFu -p worker_name&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;sup&gt;(of course: replace the address with your own address, unless you want to support me)&lt;/sup&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 12 Sep 2018 12:24:13 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2018/09/monero-mining/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/09/monero-mining/</guid>
+        
+        <category>Cryptocurrency</category>
+        
+        <category>Monero</category>
+        
+        <category>Docker</category>
+        
+        
+        <category>Bitcoin</category>
+        
+      </item>
     
       <item>
         <title>Part 2: OpenJ9 versus HotSpot</title>
@@ -1252,113 +1292,6 @@ For example:&lt;/p&gt;
         <category>OpenJDK</category>
         
         <category>JDK</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Excuse me, sorry to interrupt...</title>
-        <description>&lt;p&gt;Interruptions are a software developers worst nightmare. This is what you often hear. There is nothing worse than being interrupted while working hard on a problem, while you’re in &lt;em&gt;the zone&lt;/em&gt;. You’ll lose your train of thought and the world collapses.&lt;/p&gt;
-
-&lt;p&gt;The idea is that in software development you are sometimes very deep into a problem, analysing code:&lt;/p&gt;
-
-&lt;p&gt;This orchestrator calls that service, it is managed by this class and talks to that queue. So this generator has these parameters and it all depends on… “&lt;strong&gt;hey&lt;/strong&gt; &lt;em&gt;I still need your time sheet&lt;/em&gt;”&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/rage.gif&quot; alt=&quot;Rage&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Poof&lt;/strong&gt;… everything gone. Your mind is now filled with rage and lost the entire train of thought. This is the main reason programmers hate interruptions.&lt;/p&gt;
-
-&lt;h1 id=&quot;root-cause-analysis&quot;&gt;Root cause analysis&lt;/h1&gt;
-
-&lt;p&gt;During the &lt;a href=&quot;https://www.oracle.com/javaone/&quot;&gt;JavaOne&lt;/a&gt; 2016 conference I attended a talk by Holly Cummins called &lt;em&gt;“Euphoria Despite the Despair”&lt;/em&gt;. In this talk she went in depth into what makes work &lt;strong&gt;fun&lt;/strong&gt; and stressed the point that interruptions should be &lt;strong&gt;avoided&lt;/strong&gt; &lt;em&gt;at all cost&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;She even talked about a team that has a dedicated duo that had ‘interruption duty’. A Slack-bot was created so you could ask which colleagues you could interrupt each day.&lt;/p&gt;
-
-&lt;p&gt;But… are we judging too quickly here? Are &lt;strong&gt;all&lt;/strong&gt; interruptions bad? I don’t think they are. Time to dig a little bit deeper.&lt;/p&gt;
-
-&lt;h1 id=&quot;sync-versus-async-and-good-versus-bad&quot;&gt;Sync versus async and good versus bad&lt;/h1&gt;
-
-&lt;p&gt;Interruptions are synchronous and blocking. Someone walks up to you and stands near your desk trying to get your attention. You might have a few milliseconds to finish what you are doing but you’ll need to reply. Other forms of communication are asynchronous, for example mail or chat clients (Slack). Someone asks a question and when you have the time to reply, you reply.&lt;/p&gt;
-
-&lt;p&gt;Our team has evolved to use this to our advantage. Some problems ask for &lt;strong&gt;direct&lt;/strong&gt; action, but &lt;em&gt;most&lt;/em&gt; can be handled &lt;strong&gt;asynchronous&lt;/strong&gt;. This is something we talk about and discuss.&lt;/p&gt;
-
-&lt;p&gt;For example: If my manager wants a time sheet? Ask me asynchronous, it can wait. If a colleague has a question but is able to do other things first? Ask asynchronous, it can wait. If a colleague is &lt;em&gt;stuck&lt;/em&gt; and can’t continue to work? I’d be happy to drop what I’m doing and assist! This is what teams do, they work together and communicate!&lt;/p&gt;
-
-&lt;p&gt;Don’t throw all interruptions on one big pile and label them as bad, distinguish between the &lt;strong&gt;good&lt;/strong&gt; and &lt;strong&gt;bad&lt;/strong&gt; interruptions.&lt;/p&gt;
-
-&lt;h1 id=&quot;mount-the-headphones-get-in-the-zone&quot;&gt;Mount the headphones, get in the zone&lt;/h1&gt;
-
-&lt;p&gt;Sometimes, as a programmer, you just want to concentrate and solve some deep problem alone.&lt;/p&gt;
-
-&lt;p&gt;In our team this can be done in two ways:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Work at &lt;strong&gt;home&lt;/strong&gt; or in a small &lt;strong&gt;dedicated room&lt;/strong&gt; in our office&lt;/li&gt;
-  &lt;li&gt;Put on your &lt;strong&gt;headphones&lt;/strong&gt;, if they are on, you signal you don’t want to be disturbed&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;I do this too, mostly using my headphones. Most of the time I don’t even have music playing and I can hear everything the team says (this is important, more on this below!).&lt;/p&gt;
-
-&lt;p&gt;In my opinion though we need to &lt;strong&gt;rethink&lt;/strong&gt; this. Is it really the &lt;em&gt;best&lt;/em&gt; way to program when you are ‘in the zone’?&lt;/p&gt;
-
-&lt;p&gt;I think you are much more likely to solve problems when you openly &lt;strong&gt;share&lt;/strong&gt; and &lt;strong&gt;collaborate&lt;/strong&gt;. Pairing isn’t just for trivial work, instead: the trivial things are things you should do alone! Teams should have no secrets, at each point in time you should have a pretty good idea what each of your team buddies is working on. Actively ask questions, even trivial things.&lt;/p&gt;
-
-&lt;h1 id=&quot;near-subliminal-team-updates&quot;&gt;Near-subliminal team updates&lt;/h1&gt;
-
-&lt;p&gt;What? “Near-subliminal” team updates? Yes, I’m so sorry, I can’t think of a better name. Can you? &lt;strong&gt;Please tell me&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;One thing that is very important in software development is the use of what I’ve just called near-subliminal team updates/mumblings. It is the main reason I have headphones on without any music, and why I don’t like working at different locations (at home or in cubicles).&lt;/p&gt;
-
-&lt;h2 id=&quot;example&quot;&gt;Example&lt;/h2&gt;
-
-&lt;p&gt;You are working on something and you feel the need to refactor a class. At this moment you say/mumble out loud:&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;“Hey team, I’m going to refactor &lt;strong&gt;classname&lt;/strong&gt; because &lt;strong&gt;reason&lt;/strong&gt; okay?”&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;This is what I call a near-subliminal team update, and they are &lt;em&gt;very&lt;/em&gt; important. They can solve a lot of problems!&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;Maybe you &lt;strong&gt;don’t&lt;/strong&gt; agree with &lt;strong&gt;reason&lt;/strong&gt;, this is the perfect time to talk about that. You don’t want to wait until a code review and tell them it was a bad idea later the same day.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Maybe you are also working on something in &lt;strong&gt;classname&lt;/strong&gt; and it might collide with your work. You don’t want to wait until you &lt;em&gt;git pull&lt;/em&gt; and need to merge, tackle it right away!&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Maybe it &lt;strong&gt;isn’t&lt;/strong&gt; relevant to you at all (which is most of the time)… Well, most likely you don’t even really notice the update. It didn’t contain any trigger words. Terms you are working on or have an opinion about. You aren’t really interrupted and can continue to work.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
-
-&lt;p&gt;To summerize:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Don’t treat all interruptions as &lt;strong&gt;evil&lt;/strong&gt;, they are not…&lt;/li&gt;
-  &lt;li&gt;If you are annoyed about interrupts, &lt;strong&gt;talk&lt;/strong&gt; about it&lt;/li&gt;
-  &lt;li&gt;Speak up, mumble, use those near-submliminal team updates!&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Did I miss anything? How do you cope or deal with interruptions?&lt;/p&gt;
-
-&lt;p&gt;And &lt;strong&gt;please&lt;/strong&gt;: If there is someone with a &lt;strong&gt;better name&lt;/strong&gt; for these short near-subliminal status updates, let me know!&lt;/p&gt;
-
-</description>
-        <pubDate>Thu, 20 Oct 2016 10:28:12 +0200</pubDate>
-        <link>http://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/</guid>
-        
-        <category>interruptions</category>
-        
-        <category>agile</category>
-        
-        <category>scrum</category>
-        
-        <category>holdup</category>
-        
-        <category>interrupt</category>
         
         
         <category>Programming</category>

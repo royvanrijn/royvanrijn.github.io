@@ -115,6 +115,49 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/04/playing-around-with-html-5/" title="Playing around with HTML 5">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Playing around with HTML 5" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-04-14T12:45:43+02:00" class="date" />
+          <span itemprop="datePublished" content="2010-04-14T12:45:43+02:00" class="date">
+            Apr 14, 2010 12:45:43
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/04/playing-around-with-html-5/">Playing around with HTML 5</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Yesterday, while browsing DZone, I encountered a couple of HTML 5 blogs. So I decided to try and code some HTML5 - Canvas myself.</p>
+
+<p>This is the result of one hour trail-and-error:</p>
+
+<p><strong>Sorry, no <canvas></canvas> support, please upgrade your browser!</strong></p>
+
+<p>Maybe I’ll do a write-up soon, but for now, just check the sources. (Yes they are wrong/hack-ish, I know…).</p>
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2010/04/playing-around-with-html-5/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2010/04/some-of-my-software-development-rules/" title="Some of my software development rules">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Some of my software development rules" width="100" height="100" />
@@ -1964,180 +2007,6 @@ ELSE proceed</em></p>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/testing-with-spring/" title="Testing with Spring">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Testing with Spring" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-08T23:49:31+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-08T23:49:31+01:00" class="date">
-            Dec 8, 2009 23:49:31
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/testing-with-spring/">Testing with Spring</a></h1>
-
-        <span itemprop="articleBody">
-          <p>To improve the quality of your code it is important to thoroughly test your code. Not only using unit tests but also using integration tests. I’ll describe these terms and show examples on how to create tests using JUnit and Spring’s Test library.</p>
-
-<h1 id="unit-testing">Unit Testing</h1>
-
-<p>A unit-test is an automated test that tests one single unit-of-work. So, what is this unit-of-work? Its the smallest piece of code that can be distinguished. If you are programming in Java the smallest unit you can test is a single method. So all unit-tests should only test this single unit, and no other dependencies.</p>
-
-<p>Here is an example of a unit-test:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CalculatorTest</span> <span class="o">{</span>
-
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD1</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">ANSWER</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-	
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAdd</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">Calculator</span> <span class="n">calculator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">();</span>
-		
-		<span class="n">Integer</span> <span class="n">returnedAnswer</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">TOADD1</span><span class="o">,</span> <span class="n">TOADD2</span><span class="o">);</span>
-		
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">"The answer of "</span> <span class="o">+</span> <span class="n">TOADD1</span> <span class="o">+</span> <span class="s">"+"</span> <span class="o">+</span> <span class="n">TOADD2</span> <span class="o">+</span>
-			<span class="s">" should be "</span> <span class="o">+</span> <span class="n">ANSWER</span> <span class="o">+</span> <span class="s">" but was "</span> <span class="o">+</span> <span class="n">returnedAnswer</span><span class="o">,</span> 
-			<span class="n">ANSWER</span><span class="o">,</span> <span class="n">returnedAnswer</span><span class="o">);</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>By adding the @Test annotation JUnit will know this is a unit test. When running the code we verify that it correctly adds two values.</p>
-
-<h1 id="test-driven-development">Test Driven Development</h1>
-
-<p>Test Driven Development (TDD) is very important in modern software development. More and more people and businesses are using this technique to improve their code quality.</p>
-
-<p>What TDD consists of, basically, is a very small development cycle for all your code. You just follow these steps:</p>
-
-<ol>
-  <li>Write a unit-test that verifies your usecase</li>
-  <li>Implement the interfaces you created for step 1<br />
-(can be done quick and dirty, just to get the logic correct)</li>
-  <li>Run the tests and confirm your code is logically correct</li>
-  <li>Refactor your code into maintainable, readable, reusable code</li>
-  <li>Confirm the code still works as designed by running the test(s)</li>
-</ol>
-
-<p>Actually, I don’t write all my tests before the real code, but the process goes hand-in-hand. When writing code I always think about how I’m going to test it, and when the code is done, the test is too, combining step one and two. It speeds the process up a bit, and the code I end up with is almost the same because of the refactor-step.</p>
-
-<h1 id="integration-testing">Integration testing</h1>
-
-<p>With unit testing you can verify that the smallest units of work are correct. But this doesn’t give you any guarantees!</p>
-
-<p>A famous example is NASA’s $125 million Mars Orbiter. It crashed when it was about to land on Mars. And why did it crash? Because one component calculated metric units and it feeded this information into another component that was using English units.</p>
-
-<p>Very painfull for NASA, but a great example showing the importance of integration testing. Both NASA-components had been tested a lot, but apparently they neglected to test the components together.</p>
-
-<h1 id="integration-testing-with-spring">Integration testing with Spring</h1>
-
-<p>Most business software in Java uses Spring. This is a framework glueing all your components together and providing dependency injection. This makes it easy to test all the classes and methods, but it makes it a bit harder to test the integration and communication between classes because you depend on the framework for that.</p>
-
-<p>Luckely Spring helps us with a their Spring Test library full of tools that help you creating integration tests.</p>
-
-<p>One thing you need in all integration tests is Springs Context. With Spring Test it is possible to wire some beans and let Spring inject those beans in your unit test. The old(-ish) way to do this is extending <em>org.springframework.test.AbstractDependencyInjectionSpringContextTests</em> or <em>org.springframework.test.AbstractTransactionalSpringContextTests</em>.</p>
-
-<p>If you want to use these classes you need two things:</p>
-
-<ul>
-  <li>Create a seperate Spring configuration with test-beans (or use your normal Spring config)</li>
-  <li>Override <em>String[] getConfigLocations()</em>, provide it with the location of your Spring configuration.</li>
-</ul>
-
-<p>Now, for all the private fields you have in your testclass Spring will attempt to auto-wire beans on it.</p>
-
-<p>A small example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> 
-	<span class="kd">extends</span> <span class="n">AbstractDependencyInjectionSpringContextTests</span> <span class="o">{</span>
-
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
-
-	<span class="cm">/**
-	 * Integration test for my calculator.
-	 * It also calls the calculatorDao which is in the calculatorService.
-	 */</span>
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
-		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
-		
-		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
-		
-		<span class="c1">//Test if the person has been added.
-</span>
-	<span class="o">}</span>
-	
-	<span class="cm">/**
-	 * Provide the test with a configuration
-	 */</span>
-	<span class="nd">@Override</span>
-	<span class="kd">protected</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">getConfigLocations</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">"my-test-applicationcontext.xml"</span> <span class="o">};</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="testing-with-spring-25">Testing with Spring 2.5+</h1>
-
-<p>With the introduction of Spring 2.5 they improved the above method. For more flexability and a bit more control over the objects they introduced the SpringJUnit4ClassRunner.</p>
-
-<p>This is how you would use it:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.junit.runner.RunWith</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.AbstractDependencyInjectionSpringContextTests</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.context.ContextConfiguration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringJUnit4ClassRunner</span><span class="o">;</span>
-
-<span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="nd">@ContextConfiguration</span><span class="o">(</span><span class="n">locations</span><span class="o">=</span> <span class="o">{</span> <span class="s">"my-test-applicationcontext.xml"</span> <span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> <span class="o">{</span>
-
-	<span class="nd">@Autowired</span>
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
-
-	<span class="cm">/**
-	 * Integration test for my calculator.
-	 * It also calls the calculatorDao which is in the calculatorService.
-	 */</span>
-	<span class="nd">@Test</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
-		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
-		
-		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
-		
-		<span class="c1">//Test if the person has been added.
-</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It works the same way as before, but instead of having to override the <em>AbstractDependencyInjectionSpringContextTests</em> you now have a POJO. All the information about Spring and JUnit are placed in annotations on top of you class.</p>
-
-<p>Hopefully I’ll find the time to write another post on mocking, including EasyMock and Mockito.</p>
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
