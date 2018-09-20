@@ -115,9 +115,9 @@
     <div class="post">
 
       <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2018/09/monero-mining/" title="Monero mining using Docker">
+      	<a itemprop="mainEntityOfPage" href="/blog/2018/09/part-1-java-to-native-using-graalvm/" title="Part 1: Java to native using GraalVM">
       	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Monero mining using Docker" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/graalvm.png" alt="Part 1: Java to native using GraalVM" width="100" height="100" />
       	
     	</a>
       </div>
@@ -126,42 +126,218 @@
         <p class="post-meta">
           Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
           (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2018-09-12T12:24:13+02:00" class="date" />
-          <span itemprop="datePublished" content="2018-09-12T12:24:13+02:00" class="date">
-            Sep 12, 2018 12:24:13
+          <span itemprop="dateModified" content="2018-09-20T09:14:13+02:00" class="date" />
+          <span itemprop="datePublished" content="2018-09-20T09:14:13+02:00" class="date">
+            Sep 20, 2018 09:14:13
           </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/monero-mining/#disqus_thread">0 comments</a>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/part-1-java-to-native-using-graalvm/#disqus_thread">0 comments</a>
         </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/monero-mining/">Monero mining using Docker</a></h1>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1: Java to native using GraalVM</a></h1>
 
         <span itemprop="articleBody">
-          <p>Bitcoin mining was profitable, for a short while. I once mined over 100 coins (at the time not worth even a single dollar).
-At the time of writing this I have about 4 BTC left, and these coins are now worth over 25k dollar.</p>
+          <p>One of the most amazing projects I’ve learned about this year is <a href="https://www.graalvm.org/">GraalVM</a>.</p>
 
-<p>Times have changed though, mining Bitcoin on your PC is no longer an option. First CPU miners were replaced by GPU miners and later specialized cryptocurrency mining hardware (ASICs) replaced them. Now you’ll need to create a big farm with cooling, cheap electricity etc to stay profitable.</p>
+<p>I’ve learned about this project during Devoxx Poland (a Polish developer conference) at a talk by Oleg Šelajev. If you’re curious about everything GraalVM has to offer, not just the native Java compilation, please <a href="https://www.youtube.com/watch?v=tEaEAq0L9Pk">watch his video</a>.</p>
 
-<h1 id="introducing-monero">Introducing: Monero</h1>
+<p>GraalVM is a universal/polyglot virtual machine. This means GraalVM can run programs written in:</p>
 
-<p>It is still possible to get into cryptocurrency with your regular hardware though, but you’ll have to mine different currencies.</p>
+<ul>
+  <li>Javascript</li>
+  <li>Ruby</li>
+  <li>Python 3</li>
+  <li>R</li>
+  <li>JVM-based languages (such as <strong>Java</strong>, Scala, Kotlin)</li>
+  <li>LLVM-based languages (such as C, C++).</li>
+</ul>
 
-<p>The best one at the moment is probably: <strong>Monero</strong></p>
+<p>In short: Graal is very powerful.</p>
 
-<p>This cryptocurrency has been created to be easier on the CPU, harder on a GPU.</p>
+<p>There is also the possibility to mix-and-match languages using Graal, do you want to make a nice graph in R from your Java code? No problem. Do you want to call some fast C code from Python, go ahead.</p>
 
-<h1 id="the-easy-way-docker">The easy way: Docker</h1>
+<h1 id="installing-graalvm">Installing GraalVM</h1>
 
-<p>Do you want to start mining Monero coins too?</p>
+<p>In this blogpost though we’ll look at another powerful thing Graal can do: native-image compilation.</p>
 
-<p>The easiest way is to fire up a Docker image like this:</p>
+<p>Instead of explaining what it is, let’s just go ahead, install GraalVM and try it out.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run kannix/monero-miner -a cryptonight -o stratum+tcp://pool.supportxmr.com:3333 -u 45i78dDNEqES45Te6vHmh6XJQTHsEc3Kk5T9CTSfmvhv7sckTNxSF1pJGoNesLdqwd9rG6DwxRYr8HtuK2m9mTaLQRCdCFu -p worker_name</code></pre></figure>
+<p>To install GraalVM, download and unpack, update PATH parameters and you’re ready to go. When you look in the /bin directory of Graal you’ll see the following programs:</p>
 
-<p><sup>(of course: replace the address with your own address, unless you want to support me)</sup></p>
+<p><img src="/images/graalvm_bin_directory.png" alt="" /></p>
+
+<p>Here we recognise some usual commands, such as ‘javac’ and ‘java’. And if everything is setup correctly you’ll see:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ java -version
+openjdk version "1.8.0_172"
+OpenJDK Runtime Environment (build 1.8.0_172-20180626105433.graaluser.jdk8u-src-tar-g-b11)
+GraalVM 1.0.0-rc6 (build 25.71-b01-internal-jvmci-0.48, mixed mode)</code></pre></figure>
+
+<h1 id="hello-world-with-native-image">Hello World with native-image</h1>
+
+<p>Next up, let’s create a “Hello World” application in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World"</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And just like your normal JDK, we can compile and run this code in the Graal virtual machine:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ javac HelloWorld.java
+$ java HelloWorld
+Hello World</code></pre></figure>
+
+<p>But the real power of Graal becomes clear when we use a third command: <strong>native-image</strong></p>
+
+<p>This command takes your Java class(es) and turns them into an actual program, a standalone binary executable, without any virtual machine! The commands you pass to ‘native-image’ very similar to what you would pass to ‘java’. In this case we have the classpath and the Main class:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ native-image -cp . HelloWorld
+Build on Server(pid: 63941, port: 60051)*
+[helloworld:63941]    classlist:   1,236.06 ms
+[helloworld:63941]        (cap):   1,885.61 ms
+[helloworld:63941]        setup:   2,758.47 ms
+[helloworld:63941]   (typeflow):   3,031.39 ms
+[helloworld:63941]    (objects):   2,136.63 ms
+[helloworld:63941]   (features):      46.04 ms
+[helloworld:63941]     analysis:   5,304.17 ms
+[helloworld:63941]     universe:     205.46 ms
+[helloworld:63941]      (parse):     640.12 ms
+[helloworld:63941]     (inline):   1,155.06 ms
+[helloworld:63941]    (compile):   3,436.76 ms
+[helloworld:63941]      compile:   5,594.76 ms
+[helloworld:63941]        image:     749.82 ms
+[helloworld:63941]        write:     653.29 ms
+[helloworld:63941]      [total]:  16,753.87 ms
+$ ls -ltr
+-rw-r--r--  1 royvanrijn  wheel  119 Sep 20 09:36 HelloWorld.java
+-rw-r--r--  1 royvanrijn  wheel  425 Sep 20 09:38 HelloWorld.class
+-rwxr-xr-x  1 royvanrijn  wheel  5596400 Sep 20 09:41 helloworld
+$ ./helloworld 
+Hello World</code></pre></figure>
+
+<p>Now we have an executable that prints “Hello World”, without any JVM in between, just 5.6mb. Sure, for this example 5mb isn’t <em>that</em> small, but it is <strong>much</strong> smaller than having to package and install an entire JVM (400+mb)!</p>
+
+<h1 id="docker-and-native-image">Docker and native-image</h1>
+
+<p>So what else can we do? Well, because the resulting program is a binary, we can put it into a Docker image without ANY overhead. To do this we’ll need two different Dockerfile’s, the first is used to compile the program against Linux (instead of MacOS or Windows), the second image is the ‘host’ Dockerfile, used to host our program.</p>
+
+<p>Here is the first Dockerfile:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">FROM ubuntu
+
+RUN apt-get update &amp;&amp; \
+    apt-get -y install gcc libc6-dev zlib1g-dev curl bash &amp;&amp; \
+    rm -rf /var/lib/apt/lists/*
+
+# Latest version of GraalVM (at the time of writing)
+ENV GRAAL_VERSION 1.0.0-rc6
+ENV GRAAL_FILENAME graalvm-ce-${GRAAL_VERSION}-linux-amd64.tar.gz
+
+# Download GraalVM
+RUN curl -4 -L https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/${GRAAL_FILENAME} -o /tmp/${GRAAL_FILENAME}
+
+# Untar and move the files we need:
+RUN tar -zxvf /tmp/${GRAAL_FILENAME} -C /tmp \
+    &amp;&amp; mv /tmp/graalvm-ce-${GRAAL_VERSION} /usr/lib/graalvm
+
+RUN rm -rf /tmp/*
+
+# Create a volume to which we can mount to build:
+VOLUME /project
+WORKDIR /project
+
+# And finally, run native-image
+ENTRYPOINT ["/usr/lib/graalvm/bin/native-image"]</code></pre></figure>
+
+<p>This image can be created as follows:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker build -t royvanrijn/graal-native-image:latest .</code></pre></figure>
+
+<p>Using this image we can create a different kind of executable. Let’s create our application using the just created docker image:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker run -it \
+  -v /Projects/graal-example/helloworld/:/project --rm \
+  royvanrijn/graal-native-image:latest \
+  --static -cp . HelloWorld -H:Name=app
+
+Build on Server(pid: 11, port: 40905)*
+[app:11]    classlist:   3,244.85 ms
+[app:11]        (cap):   1,023.94 ms
+[app:11]        setup:   1,986.81 ms
+[app:11]   (typeflow):   4,285.18 ms
+[app:11]    (objects):   2,008.19 ms
+[app:11]   (features):      57.07 ms
+[app:11]     analysis:   6,446.49 ms
+[app:11]     universe:     255.45 ms
+[app:11]      (parse):     926.85 ms
+[app:11]     (inline):   1,496.69 ms
+[app:11]    (compile):   4,953.85 ms
+[app:11]      compile:   7,689.47 ms
+[app:11]        image:     806.53 ms
+[app:11]        write:     573.77 ms
+[app:11]      [total]:  21,160.90 ms
+$ ls -ltr app
+-rwxr-xr-x  1 royvanrijn  wheel  6766144 Sep 20 10:11 app
+$ ./app
+-bash: ./app: cannot execute binary file</code></pre></figure>
+
+<p>This results in an executable ‘app’, but this is one I can’t start on my MacBook, because it is a statically linked Ubuntu executable. So what do all these commands mean? We’ll let’s break it down:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">The first part is just running Docker:
+     docker run -it
+
+Next we map my directory containing the class files to the volume /project in the Docker image:
+     -v /Projects/graal-example/helloworld/:/project --rm
+
+This is the Docker image we want to run, the one we just created:
+     royvanrijn/graal-native-image:latest
+
+And finally we have the commands we pass to native-image inside the Docker image
+We start with --static, this causes the created binary to be a statically linked executable
+     --static
+
+We have the class path and Main class:
+     -cp . HelloWorld
+
+And finally we tell native-image to name the resulting executable 'app'
+     -H:Name=app</code></pre></figure>
+
+<p>But we <em>can</em> do something cool with it using the following, surprisingly empty, Dockerfile:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">FROM scratch
+COPY app /app
+CMD ["/app"]</code></pre></figure>
+
+<p>We start with the most empty Docker image you can have, ‘scratch’ and we copy in our ‘app’ executable and finally we run it. Now we can build our helloworld image:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker build -t royvanrijn/graal-helloworld:latest .
+Sending build context to Docker daemon  34.11MB
+Step 1/3 : FROM scratch
+ ---&gt; 
+Step 2/3 : COPY app /app
+ ---&gt; f0894b299e8f
+Removing intermediate container 37182de1ef68
+ ---&gt; 49ff43413c7a
+Step 3/3 : CMD ["/app"]
+ ---&gt; Running in ea69a913d243
+Removing intermediate container ea69a913d243
+ ---&gt; ab33b4d59de3
+Successfully built ab33b4d59de3
+Successfully tagged royvanrijn/graal-helloworld:latest
+
+$ docker images
+REPOSITORY                                                  TAG                         IMAGE ID            CREATED             SIZE
+royvanrijn/graal-helloworld                                 latest                      ab33b4d59de3        5 seconds ago       6.77MB</code></pre></figure>
+
+<p>We’ve now turned our Java application into a very small Docker image with a size of just 6.77MB!</p>
+
+<p>In the next blogpost (part two coming soon) we’ll look at Java applications a bit larger than HelloWorld, how will GraalVM’s native-image handle those?!</p>
+
 
         </span>
 
         <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/monero-mining/#disqus_thread">0 comments</a>
+          <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/part-1-java-to-native-using-graalvm/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
