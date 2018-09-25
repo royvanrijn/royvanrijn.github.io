@@ -115,6 +115,159 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/" title="Generating de Bruijn sequences and Lyndon words">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Generating de Bruijn sequences and Lyndon words" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2011-02-24T10:32:52+01:00" class="date" />
+          <span itemprop="datePublished" content="2011-02-24T10:32:52+01:00" class="date">
+            Feb 24, 2011 10:32:52
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">Generating de Bruijn sequences and Lyndon words</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Not so long ago I encountered something called the <a href="http://en.wikipedia.org/wiki/De_Bruijn_sequence">de Bruijn sequence</a>. For now I’ll only use this for an alphabet of (0,1), binary. But everything said here could also be applied to other alphabets. In this post I’ll describe what this sequence is, and how you can generate them, using <a href="http://en.wikipedia.org/wiki/Lyndon_word">Lyndon words</a>.</p>
+
+<h1 id="what-is-a-de-bruijn-sequence">What is a de Bruijn sequence?</h1>
+
+<p>Well, it is a sequence (again, in this case binary) which contains all combinations/permutations of a specific length. And it does this only once.<br />
+For example: B(2,4)</p>
+
+<ul>
+  <li>000100110101111 (000)</li>
+</ul>
+
+<p>This sequence contains all possible permutations you can make in binary of length 4. The last part (000) is optional, and needed it you do not want the sequence looped. As you can see, the length of this sequence is 16. All sequences will have length 2^N.</p>
+
+<h1 id="how-do-you-construct-these-sequences">How do you construct these sequences?</h1>
+
+<p>The next thing I wanted to know is how to construct these sequences. The first hit I got was from the <a href="http://mathworld.wolfram.com/deBruijnSequence.html">MathWorld</a> website. It states:<br />
+<em>Surprisingly, it turns out that the lexicographic sequence of Lyndon words of lengths divisible by N gives the lexicographically smallest de Bruijn sequence (Ruskey).</em></p>
+
+<h1 id="lyndon-word">Lyndon word..?</h1>
+
+<p>It seems that the next step is generating Lyndon words. Lyndon words are the lexographically smallest rotation of a word. I haven’t yet found a proper way to do this (I know there are) so here is what I do:</p>
+
+<p>Pseudo:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">lastLyndon = -1
+for all possible N's {
+    currentSmallestLyndon = smallestLyndonRotation(N)
+    if( currentSmallestLyndon &gt; lastLyndon ) {
+        lastLyndon = currentSmallestLyndon
+        print currentSmallestLyndon
+    }
+}</code></pre></figure>
+
+<p>And here is what I used to generate the smallestLyndonRotation (Java):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">BigInteger</span> <span class="nf">smallestLyndonRotation</span><span class="o">(</span><span class="n">BigInteger</span> <span class="n">input</span><span class="o">,</span> <span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">BigInteger</span> <span class="n">lowestForm</span> <span class="o">=</span> <span class="n">input</span><span class="o">;</span>
+	<span class="n">BigInteger</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">BigInteger</span><span class="o">.</span><span class="na">ONE</span><span class="o">;</span>
+	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">size</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+		<span class="n">BigInteger</span> <span class="n">possibleLowerForm</span> <span class="o">=</span> <span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">mask</span><span class="o">).</span><span class="na">shiftLeft</span><span class="o">(</span><span class="n">size</span><span class="o">-</span><span class="n">i</span><span class="o">)).</span><span class="na">or</span><span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">mask</span><span class="o">.</span><span class="na">negate</span><span class="o">()).</span><span class="na">shiftRight</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+		<span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">mask</span><span class="o">.</span><span class="na">shiftLeft</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">possibleLowerForm</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">lowestForm</span><span class="o">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">lowestForm</span> <span class="o">=</span> <span class="n">possibleLowerForm</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">lowestForm</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>How does it work? Well, for example the input is: 0010.<br />
+It loops over all rotations (using some bit-masking):</p>
+
+<ul>
+  <li>0010</li>
+  <li>0100</li>
+  <li>1000</li>
+  <li>0001</li>
+</ul>
+
+<p>And finds the smallest lexographically (0001) and returns this.</p>
+
+<p>The above pseudo code will spit out the following numbers:</p>
+
+<ul>
+  <li>0000</li>
+  <li>0001</li>
+  <li>0011</li>
+  <li>0101</li>
+  <li>0111</li>
+  <li>1111</li>
+</ul>
+
+<p>These are all the Lyndon words for N=4.</p>
+
+<h1 id="splitting-reducing-the-lyndon-words">Splitting, reducing the Lyndon words</h1>
+
+<p>Now if we put the Lyndon words together we get:</p>
+
+<ul>
+  <li>000000010011010101111111 (our sequence)</li>
+  <li>0000100110101111 (de Bruijn sequence)</li>
+</ul>
+
+<p>We aren’t quite there yet… but there is some resemblance. There is one more step left, we have to reduce/split the Lyndon words into its smallest unique part.</p>
+
+<p>Lets take the Lyndon words again:</p>
+
+<ul>
+  <li>0000 -&gt; 0 (4x)</li>
+  <li>0001 -&gt; 0001</li>
+  <li>0011 -&gt; 0011</li>
+  <li>0101 -&gt; 01 (2x)</li>
+  <li>0111 -&gt; 0111</li>
+  <li>1111 -&gt; 1 (4x)</li>
+</ul>
+
+<p>Results in: 0000100110101111, the sequence!</p>
+
+<p>And that is it! If we’ve created the smallest possible de Bruijn sequence for B(2,4).</p>
+
+<p>Here are some more sequences:</p>
+
+<ol>
+  <li>01</li>
+  <li>0011</li>
+  <li>00010111</li>
+  <li>0000100110101111</li>
+  <li>00000100011001010011101011011111</li>
+  <li>0000001000011000101000111001001011001101001111010101110110111111</li>
+  <li>00000001000001100001010000111000100100010110001101000111100100110010101001011100110110011101001111101010110101111011011101111111</li>
+  <li>00000000100000011000001010000011100001001000010110000110100001111000100010011000101010001011100011001000110110001110100011111001<br />
+00101001001110010101100101101001011110011001101010011011100111011001111010011111101010101110101101101011111011011110111011111111</li>
+  <li>00000000010000000110000001010000001110000010010000010110000011010000011110000100010000100110000101010000101110000110010000110110<br />
+00011101000011111000100011000100101000100111000101001000101011000101101000101111000110011000110101000110111000111001000111011000111<br />
+10100011111100100100101100100110100100111100101001100101010100101011100101101100101110100101111100110011100110101100110110100110111<br />
+10011101010011101110011110110011111010011111110101010110101011110101101110101110110101111110110110111110111011110111111111</li>
+</ol>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2011/02/unit-testing-a-chess-engine/" title="Testing a chess engine">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Testing a chess engine" width="100" height="100" />
@@ -1579,405 +1732,6 @@ Landmark Digital Services, LLC<br />
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/music-matching-part-deux/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/06/creating-shazam-in-java/" title="Creating Shazam in Java">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Creating Shazam in Java" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-06-01T01:43:08+02:00" class="date" />
-          <span itemprop="datePublished" content="2010-06-01T01:43:08+02:00" class="date">
-            Jun 1, 2010 01:43:08
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/06/creating-shazam-in-java/">Creating Shazam in Java</a></h1>
-
-        <span itemprop="articleBody">
-          <p>A couple of days ago I encountered this article: <a href="http://laplacian.wordpress.com/2009/01/10/how-shazam-works/">How Shazam Works</a></p>
-
-<p>This got me interested in how a program like Shazam works… And more importantly, how hard is it to program something similar in Java?</p>
-
-<h1 id="about-shazam">About Shazam</h1>
-
-<p>Shazam is an application which you can use to analyse/match music. When you install it on your phone, and hold the microphone to some music for about 20 to 30 seconds, it will tell you which song it is.</p>
-
-<p>When I first used it it gave me a magical feeling. “How did it do that!?”. And even today, after using it a lot, it still has a bit of magical feel to it.<br />
-Wouldn’t it be great if we can program something of our own that gives that same feeling? That was my goal for the past weekend.</p>
-
-<h1 id="listen-up">Listen up..!</h1>
-
-<p>First things first, get the music sample to analyse we first need to listen to the microphone in our Java application…! This is something I hadn’t done yet in Java, so I had no idea how hard this was going to be.</p>
-
-<p>But it turned out it was very easy:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings
-</span>
-<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">TargetDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
-<span class="kd">final</span> <span class="n">TargetDataLine</span> <span class="n">line</span> <span class="o">=</span> <span class="o">(</span><span class="n">TargetDataLine</span><span class="o">)</span> <span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
-<span class="n">line</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">);</span>
-<span class="n">line</span><span class="o">.</span><span class="na">start</span><span class="o">();</span></code></pre></figure>
-
-<p>Now we can read the data from the TargetDataLine just like a normal InputStream:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// In another thread I start:
-</span>
-
-<span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
-<span class="n">running</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-
-<span class="k">try</span> <span class="o">{</span>
-    <span class="k">while</span> <span class="o">(</span><span class="n">running</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">buffer</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">count</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"I/O problems: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Using this method it is easy to open the microphone and record all the sounds! The AudioFormat I’m currently using is:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">AudioFormat</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
-    <span class="kt">float</span> <span class="n">sampleRate</span> <span class="o">=</span> <span class="mi">44100</span><span class="o">;</span>
-    <span class="kt">int</span> <span class="n">sampleSizeInBits</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
-    <span class="kt">int</span> <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//mono
-</span>
-    <span class="kt">boolean</span> <span class="n">signed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-    <span class="kt">boolean</span> <span class="n">bigEndian</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nf">AudioFormat</span><span class="o">(</span><span class="n">sampleRate</span><span class="o">,</span> <span class="n">sampleSizeInBits</span><span class="o">,</span> <span class="n">channels</span><span class="o">,</span> <span class="n">signed</span><span class="o">,</span> <span class="n">bigEndian</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>So, now we have the recorded data in a ByteArrayOutputStream, great! Step 1 complete.</p>
-
-<h1 id="microphone-data">Microphone data</h1>
-
-<p>The next challenge is analyzing the data, when I outputted the data I received in my byte array I got a long list of numbers, like this:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">0
-0
-1
-2
-4
-7
-6
-3
--1
--2
--4
--2
--5
--7
--8
-(etc)</code></pre></figure>
-
-<p>Erhm… yes? This is sound?</p>
-
-<p>To see if the data could be visualized I took the output and placed it in Open Office to generate a line graph:</p>
-
-<p><a href="/images/graph.png"><img src="/images/graph-300x248.png" alt="graph" /></a></p>
-
-<p>Ah yes! This kind of looks like ‘sound’. It looks like what you see when using for example Windows Sound Recorder.</p>
-
-<p>This data is actually known as <a href="http://en.wikipedia.org/wiki/Time_domain">time domain</a>. But these numbers are currently basically useless to us… if you read the above article on how Shazam works you’ll read that they use a <a href="http://en.wikipedia.org/wiki/Spectrum_analyzer">spectrum analysis</a> instead of direct time domain data.<br />
-So the next big question is: How do we transform the current data into a spectrum analysis?</p>
-
-<h1 id="discrete-fourier-transform">Discrete Fourier transform</h1>
-
-<p>To turn our data into usable data we need to apply the so called <a href="http://en.wikipedia.org/wiki/Discrete_Fourier_transform">Discrete Fourier Transformation</a>. This turns the data from time domain into frequency domain.<br />
-There is just one problem, if you transform the data into the frequency domain you loose every bit of information regarding time. So you’ll know what the magnitude of all the frequencies are, but you have no idea when they appear.</p>
-
-<p>To solve this we need a sliding window. We take chunks of data (in my case 4096 bytes of data) and transform just this bit of information. Then we know the magnitude of all frequencies that occur during just these 4096 bytes.</p>
-
-<h1 id="implementing-this">Implementing this</h1>
-
-<p>Instead of worrying about the Fourier Transformation I googled a bit and found code for the so called FFT (Fast Fourier Transformation). I’m calling this code with the chunks:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">byte</span> <span class="n">audio</span><span class="o">[]</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
-
-<span class="kd">final</span> <span class="kt">int</span> <span class="n">totalSize</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-
-<span class="kt">int</span> <span class="n">amountPossible</span> <span class="o">=</span> <span class="n">totalSize</span><span class="o">/</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span>
-
-<span class="c1">//When turning into frequency domain we'll need complex numbers:
-</span>
-<span class="n">Complex</span><span class="o">[][]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">amountPossible</span><span class="o">][];</span>
-
-<span class="c1">//For all the chunks:
-</span>
-<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">times</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">times</span> <span class="o">&lt;</span> <span class="n">amountPossible</span><span class="o">;</span> <span class="n">times</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">Complex</span><span class="o">[]</span> <span class="n">complex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">];</span>
-    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-        <span class="c1">//Put the time domain data into a complex number with imaginary part as 0:
-</span>
-        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="c1">//Perform FFT analysis on the chunk:
-</span>
-    <span class="n">results</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="n">FFT</span><span class="o">.</span><span class="na">fft</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="c1">//Done!</span></code></pre></figure>
-
-<p>Now we have a double array containing all chunks as Complex[]. This array contains data about all frequencies. To visualize this data I decided to implement a full spectrum analyzer (just to make sure I got the math right).<br />
-To show the data I hacked this together:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">results</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">line</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">line</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">line</span><span class="o">++)</span> <span class="o">{</span>
-        <span class="c1">// To get the magnitude of the sound at a given frequency slice
-</span>
-        <span class="c1">// get the abs() from the complex number.
-</span>
-        <span class="c1">// In this case I use Math.log to get a more managable number (used for color)
-</span>
-        <span class="kt">double</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()+</span><span class="mi">1</span><span class="o">);</span>
-
-        <span class="c1">// The more blue in the color the more intensity for a given frequency point:
-</span>
-        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="n">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
-        <span class="c1">// Fill:
-</span>
-        <span class="n">g2d</span><span class="o">.</span><span class="na">fillRect</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="n">blockSizeX</span><span class="o">,</span> <span class="o">(</span><span class="n">size</span><span class="o">-</span><span class="n">line</span><span class="o">)*</span><span class="n">blockSizeY</span><span class="o">,</span><span class="n">blockSizeX</span><span class="o">,</span><span class="n">blockSizeY</span><span class="o">);</span>
-		
-        <span class="c1">// I used a improviced logarithmic scale and normal scale:
-</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">logModeEnabled</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">freq</span> <span class="o">+=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="n">freq</span><span class="o">++;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="introducing-aphex-twin">Introducing, Aphex Twin</h1>
-
-<p>This seems a bit of OT (off-topic), but I’d like to tell you about a electronic musician called Aphex Twin (Richard David James). He makes crazy electronic music… but some songs have an interesting feature. His biggest hit for example, <a href="http://en.wikipedia.org/wiki/Windowlicker">Windowlicker</a> has a spectrogram image in it.<br />
-If you look at the song as spectral image it shows a nice spiral. Another song, called ‘Mathematical Equation’ shows the face of Twin! More information can be found here: <a href="http://www.bastwood.com/aphex.php">Bastwood - Aphex Twin’s face</a>.</p>
-
-<p>When running this song against my spectral analyzer I get the following result:</p>
-
-<p><a href="/images/face.png"><img src="/images/face-299x300.png" alt="face" /></a></p>
-
-<p>Not perfect, but it seems to be Twin’s face!</p>
-
-<h1 id="determining-the-key-music-points">Determining the key music points</h1>
-
-<p>The next step in Shazam’s algorithm is to determine some key points in the song, save those points as a hash and then try to match on them against their database of over 8 million songs. This is done for speed, the lookup of a hash is O(1) speed. That explains a lot of the awesome performance of Shazam!</p>
-
-<p>Because I wanted to have everything working in one weekend (this is my maximum attention span sadly enough, then I need a new project to work on) I kept my algorithm as simple as possible. And to my surprise it worked.</p>
-
-<p>For each line the in spectrum analysis I take the points with the highest magnitude from certain ranges. In my case: 40-80, 80-120, 120-180, 180-300.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//For every line of data:
-</span>
-
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">LOWER_LIMIT</span><span class="o">;</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="n">UPPER_LIMIT</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">freq</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="c1">//Get the magnitude:
-</span>
-    <span class="kt">double</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-
-    <span class="c1">//Find out which range we are in:
-</span>
-    <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">getIndex</span><span class="o">(</span><span class="n">freq</span><span class="o">);</span>
-
-    <span class="c1">//Save the highest magnitude and corresponding frequency:
-</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">mag</span> <span class="o">&gt;</span> <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">])</span> <span class="o">{</span>
-        <span class="n">highscores</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">mag</span><span class="o">;</span>
-        <span class="n">recordPoints</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">freq</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="c1">//Write the points to a file:
-</span>
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">AMOUNT_OF_POINTS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">recordPoints</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">"\t"</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
-
-<span class="c1">// ... snip ...
-</span>
-
-
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">RANGE</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">40</span><span class="o">,</span><span class="mi">80</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span><span class="mi">180</span><span class="o">,</span> <span class="n">UPPER_LIMIT</span><span class="o">+</span><span class="mi">1</span><span class="o">};</span>
-
-<span class="c1">//Find out in which range
-</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">(</span><span class="kt">int</span> <span class="n">freq</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="k">while</span><span class="o">(</span><span class="n">RANGE</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">freq</span><span class="o">)</span> <span class="n">i</span><span class="o">++;</span>
-        <span class="k">return</span> <span class="n">i</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>When we record a song now, we get a list of numbers such as:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">33	56	99	121	195	
-30	41	84	146	199	
-33	51	99	133	183	
-33	47	94	137	193	
-32	41	106	161	191	
-33	76	95	123	185	
-40	68	110	134	232	
-30	62	88	125	194	
-34	57	83	121	182	
-34	42	89	123	182	
-33	56	99	121	195	
-30	41	84	146	199	
-33	51	99	133	183	
-33	47	94	137	193	
-32	41	106	161	191	
-33	76	95	123	185</code></pre></figure>
-
-<p>If I record a song and look at it visually it looks like this:</p>
-
-<p><a href="/images/points.png"><img src="/images/points-228x300.png" alt="points" /></a><br />
-(all the red dots are ‘important points’)</p>
-
-<h1 id="indexing-my-own-music">Indexing my own music</h1>
-
-<p>With this algorithm in place I decided to index all my 3000 songs. Instead of using the microphone you can just open mp3 files, convert them to the correct format, and read them the same way we did with the microphone, using an AudioInputStream. Converting stereo music into mono-channel audio was a bit trickier then I hoped. Examples can be found online (requires a bit too much code to paste here) have to change the sampling a bit.</p>
-
-<h1 id="matching">Matching!</h1>
-
-<p>The most important part of the program is the matching process. Reading Shazams paper they use hashing to get matches and the decide which song was the best match.</p>
-
-<p>Instead of using difficult point-groupings in time I decided to use a line of our data (for example “33, 47, 94, 137”) as one hash: 1370944733<br />
-(in my tests using 3 or 4 points works best, but tweaking is difficult, I need to re-index my mp3 every time!)</p>
-
-<p>Example hash-code using 4 points per line:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Using a little bit of error-correction, damping
-</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">FUZ_FACTOR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
-
-<span class="kd">private</span> <span class="kt">long</span> <span class="nf">hash</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\t"</span><span class="o">);</span>
-    <span class="kt">long</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p4</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">3</span><span class="o">]);</span>
-    <span class="k">return</span>  <span class="o">(</span><span class="n">p4</span><span class="o">-(</span><span class="n">p4</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p3</span><span class="o">-(</span><span class="n">p3</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p2</span><span class="o">-(</span><span class="n">p2</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="o">(</span><span class="n">p1</span><span class="o">-(</span><span class="n">p1</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now I create two data sets:</p>
-
-<p>- A list of songs, List<String> (List index is Song-ID, String is songname)  
-\- Database of hashes: Map&lt;Long, List<DataPoint>&gt;</DataPoint></String></p>
-
-<p>The long in the database of hashes represents the hash itself, and it has a bucket of DataPoints.</p>
-
-<p>A DataPoint looks like:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">class</span> <span class="nc">DataPoint</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kt">int</span> <span class="n">time</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kt">int</span> <span class="n">songId</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">DataPoint</span><span class="o">(</span><span class="kt">int</span> <span class="n">songId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">time</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">songId</span> <span class="o">=</span> <span class="n">songId</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">;</span>
-    <span class="o">}</span>
-	
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getTime</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">time</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getSongId</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">songId</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we already have everything in place to do a lookup. First I read all the songs and generate hashes for each point of data. This is put into the hash-database.<br />
-The second step is reading the data of the song we need to match. These hashes are retrieved and we look at the matching datapoints.</p>
-
-<p>There is just one problem, for each hash there are some hits, but how do we determine which song is the correct song..? Looking at the amount of matches? No, this doesn’t work…<br />
-The most important thing is timing. We must overlap the timing…! But how can we do this if we don’t know where we are in the song? After all, we could just as easily have recorded the final chords of the song.</p>
-
-<p>By looking at the data I discovered something interesting, because we have the following data:</p>
-
-<p>- A hash of the recording<br />
-- A matching hash of the possible match<br />
-- A song ID of the possible match<br />
-- The current time in our own recording<br />
-- The time of the hash in the possible match</p>
-
-<p>Now we can substract the current time in our recording (for example, line 34) with the time of the hash-match (for example, line 1352). This difference is stored together with the song ID. Because this offset, this difference, tells us where we possibly could be in the song.<br />
-When we have gone through all the hashes from our recording we are left with a lot of song id’s and offsets. The cool thing is, if you have a lot of hashes with matching offsets, you’ve found your song.</p>
-
-<h1 id="the-results">The results</h1>
-
-<p>For example, when listening to The Kooks - Match Box for just 20 seconds, this is the output of my program:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Done loading: 2921 songs
-
-Start matching song...
-
-Top 20 matches:
-
-01: 08_the_kooks_-_match_box.mp3 with 16 matches.
-02: 04 Racoon - Smoothly.mp3 with 8 matches.
-03: 05 Röyksopp - Poor Leno.mp3 with 7 matches.
-04: 07_athlete_-_yesterday_threw_everyting_a_me.mp3 with 7 matches.
-05: Flogging Molly - WMH - Dont Let Me Dia Still Wonderin.mp3 with 7 matches.
-06: coldplay - 04 - sparks.mp3 with 7 matches.
-07: Coldplay - Help Is Round The Corner (yellow b-side).mp3 with 7 matches.
-08: the arcade fire - 09 - rebellion (lies).mp3 with 7 matches.
-09: 01-coldplay-_clocks.mp3 with 6 matches.
-10: 02 Scared Tonight.mp3 with 6 matches.
-11: 02-radiohead-pyramid_song-ksi.mp3 with 6 matches.
-12: 03 Shadows Fall.mp3 with 6 matches.
-13: 04 Röyksopp - In Space.mp3 with 6 matches.
-14: 04 Track04.mp3 with 6 matches.
-15: 05 - Dress Up In You.mp3 with 6 matches.
-16: 05 Supergrass - Can't Get Up.mp3 with 6 matches.
-17: 05 Track05.mp3 with 6 matches.
-18: 05The Fox In The Snow.mp3 with 6 matches.
-19: 05_athlete_-_wires.mp3 with 6 matches.
-20: 06 Racoon - Feel Like Flying.mp3 with 6 matches.
-
-Matching took: 259 ms
-
-Final prediction: 08_the_kooks_-_match_box.mp3.song with 16 matches.</code></pre></figure>
-
-<p>It works!!</p>
-
-<p>Listening for 20 seconds it can match almost all the songs I have. And even this <a href="http://www.youtube.com/watch?v=sLR9d4sMcq4">live recording of the Editors</a> could be matched to the correct song after listening 40 seconds!</p>
-
-<p>Again it feels like magic! :-)</p>
-
-<p>Currently, the code isn’t in a releasable state and it doesn’t work perfectly. It has been a pure weekend-hack, more like a proof-of-concept / algorithm exploration.</p>
-
-<p>Maybe, if enough people ask about it, I’ll clean it up and release it somewhere.</p>
-
-<h1 id="update">Update:</h1>
-
-<p>The Shazam patent holders lawyers are sending me emails to stop me from releasing the code and removing this blogpost, read the story <a href="/blog/2010/07/patent-infringement/">here</a>.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

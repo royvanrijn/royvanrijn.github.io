@@ -115,6 +115,97 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2014/11/the-java-9-kulla-repl/" title="The Java 9 'Kulla' REPL">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The Java 9 'Kulla' REPL" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2014-11-27T12:09:20+01:00" class="date" />
+          <span itemprop="datePublished" content="2014-11-27T12:09:20+01:00" class="date">
+            Nov 27, 2014 12:09:20
+          </span>
+          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/11/the-java-9-kulla-repl/">The Java 9 'Kulla' REPL</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Maybe it’ll be part of JDK 9, maybe it won’t… but people are working hard on creating a REPL tool/environment for the Java Development Kit (JDK). More information on the code and the project is available as part of OpenJDK: <a href="http://openjdk.java.net/projects/kulla/">project Kulla</a>.</p>
+
+<p>Some of you might not be familiar with the terminology ‘REPL’, it is short for Read Evaluate Print Loop. It is hard to explain exactly what it does, but very easy to demonstrate:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="n">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Java</span> <span class="n">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="n">Version</span> <span class="mf">0.23</span>
+<span class="o">|</span>  <span class="n">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
+
+<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
+<span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
+
+<span class="o">-&gt;</span></code></pre></figure>
+
+<p>The idea is that you have a place you can enter Java and run it, without main method, class structure. You can build instances, and alter them while you type. For example you’ll able to do Swing development while you type:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; import javax.swing.*;
+-&gt; JFrame frame = new JFrame();
+-&gt; frame.setVisible(true);</code></pre></figure>
+
+<p>Now we have a visible frame, you can drag it around, resize it etc.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; JPanel panel = new JPanel();
+-&gt; frame.add(panel);
+-&gt; JButton button = new JButton();
+-&gt; panel.add(button);</code></pre></figure>
+
+<p>Suddenly our frame has a panel, and the panel has an empty button! You can prototype, do live coding and you have instant feedback.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.setText("Push me!");</code></pre></figure>
+
+<p>Now the button has text, but pressing it still does nothing…</p>
+
+<p><a href="/images/Screen-Shot-2014-11-27-at-11.55.08.png"><img src="/images/Screen-Shot-2014-11-27-at-11.55.08-300x159.png" alt="Push me!" class="aligncenter" /></a></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-&gt; button.addActionListener(e -&gt; System.out.println("Hello World!"));
+-&gt; 
+Hello World!
+Hello World!
+Hello World!</code></pre></figure>
+
+<p>And there we go, a final simple lambda creates a working “Hello World!”-button.</p>
+
+<p>It is also possible to load a repl script from file, allowing you to share, store and run scripts. This is done using the ‘/load’ and ‘/save’ commands. You can even ‘/dump’ all the created classes in a directory.</p>
+
+<p>I’m very curious how people will be using the REPL in the future, some use cases:</p>
+
+<ul>
+  <li>(GUI) Prototyping</li>
+  <li>Live music (like <a href="http://overtone.github.io/">overtone</a>)</li>
+  <li>Coding at conferences</li>
+  <li>Scripting</li>
+  <li><a href="http://codegolf.stackexchange.com/">Code golf!</a></li>
+</ul>
+
+<p>If you want to try out Kulla, it took me literally 20 minutes to get up and running on my MacBook. Just follow the instructions on <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK</a>, but instead use <a href="http://hg.openjdk.java.net/kulla/dev/">http://hg.openjdk.java.net/kulla/dev/</a> as codebase. After building the JDK, go to ./langtools/repl and look at the README.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="http://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2014/11/kill-all-mutants/" title="Kill all mutants">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Kill all mutants" width="100" height="100" />
@@ -1541,68 +1632,6 @@ Fastest 10000m run:	--:--:--</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="http://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2014/01/stargazing-my-first-telescope/" title="Stargazing: My first telescope">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stargazing: My first telescope" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2014-01-12T12:15:41+01:00" class="date" />
-          <span itemprop="datePublished" content="2014-01-12T12:15:41+01:00" class="date">
-            Jan 12, 2014 12:15:41
-          </span>
-          : <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/01/stargazing-my-first-telescope/">Stargazing: My first telescope</a></h1>
-
-        <span itemprop="articleBody">
-          <p>A couple of months ago I was in the <a href="http://en.wikipedia.org/wiki/Eifel">Eifel</a> area in Germany. Surrounded by forests and hills, completely dark, I looked up to the sky and the view was amazing. The milky way was stunning, and there were so incredibly many stars…</p>
-
-<p>That is when I decided: I want a telescope!</p>
-
-<h1 id="sky-watcher-heritage-130p">Sky-Watcher Heritage 130p</h1>
-
-<p>After a lot of searching/reading I decided to go with an entry level <a href="http://en.wikipedia.org/wiki/Dobsonian_telescope">Dobsonian telescope</a> design. This type of telescope is usually cheaper to make, and easier to scale up; so for not a lot of money you get the most light-gathering which is very important in telescopes. It doesn’t have the convenience of a GOTO mount, which automatically points your telescope to interesting stars and star clusters, so I’ll have to learn to navigate on my own.</p>
-
-<p>What I bought was the <a href="http://www.skywatcher.com/product.php?cat=6&amp;id=57">Sky-Watcher Heritage P130</a>, a telescope which has a truss-tube design so it is easier to carry around and take with me to Germany.</p>
-
-<p>After waiting for three weeks for clear skies (..sigh..) I had already hacked together a webcam so I could take pictures. This is how I created the following image of the moon:</p>
-
-<p><img src="/images/moon.png" alt="The moon" class="aligncenter" /></p>
-
-<p>(Sky-Watcher Heritage 130P, modified Microsoft Lifecam HD-3000, stacked using RegiStax 6)</p>
-
-<p>After playing around with this setup I decided I want to have 2x Barlow (which increases magnification 2 times again). I settled on an Ostara 1.25” achromatic 2x Barlow lens, which also has an T-adapter with EOS T-ring for my DSLR camera. Basically this turns my telescope into the lens of the camera. I’m very pleased with the results, the Barlow itself is great, but I’ve ditched the webcam completely and now only use my DSLR for astrophotographing.</p>
-
-<p>Initially my results weren’t very good using the Barlow, the increased magnification pointed out another problem with my telescope: It needed collimation. Every once in a while the mirrors of a telescope need to be realigned. There are a lot of ways to do this, but the easiest and cheapest (free) method is using a DIY collimation cap. It is a cap with small hole in the middle, which I made from the Barlow dust cap. Now you can point the telescope to a bright wall and align the mirrors. This made another huge improvement to the image quality.</p>
-
-<p>Initially when looking at <a href="/images/jupiter.png">Jupiter</a> I could only see a disk with 4 planets in a row. But after collimation I can clearly see the bands on Jupiters surface. And after attaching the DSLR and filming a bit on magnified 640x480 (which results in a better picture after stacking then using 1080p for example), I stacked everything using RegiStax, this is the result:</p>
-
-<p><img src="/images/jupiter.png" alt="jupiter" class="aligncenter" /></p>
-
-<p>(Sky-Watcher Heritage 130P, 2x Barlow, Canon 550D 640x480 cropped, stacked using RegiStax 6)</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="http://royvanrijn.com/blog/2014/01/stargazing-my-first-telescope/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

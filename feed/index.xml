@@ -5,9 +5,450 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 20 Sep 2018 10:20:13 +0200</pubDate>
-    <lastBuildDate>Thu, 20 Sep 2018 10:20:13 +0200</lastBuildDate>
+    <pubDate>Tue, 25 Sep 2018 21:35:15 +0200</pubDate>
+    <lastBuildDate>Tue, 25 Sep 2018 21:35:15 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>Part 2: Native microservice in GraalVM</title>
+        <description>&lt;p&gt;Last week I posted &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; of this series of blogposts about &lt;a href=&quot;https://www.graalvm.org/&quot;&gt;GraalVM&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;We looked at GraalVM and what it can do. We dove into the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; command and transformed a simple HelloWorld application into a native application (running in Docker).&lt;/p&gt;
+
+&lt;p&gt;This time I want to go beyond “Hello World” and build something useful (despite all the limitations listed below). A CRUD microservice with REST API and database access.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;TLDR;&lt;/strong&gt; If you’re just intersted in the end result, go &lt;a href=&quot;#results&quot;&gt;right to the results&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;limitations&quot;&gt;Limitations&lt;/h1&gt;
+
+&lt;p&gt;So what are some of the limitations that GraalVM currently has? (using version 1.0.0 RC6 at time of writing)&lt;/p&gt;
+
+&lt;p&gt;Well, the Java VM is a very complete and dynamic system able to handle a lot of &lt;em&gt;dynamic&lt;/em&gt; changes. This is something a native application can’t do as easily. GraalVM needs to analyse your application &lt;strong&gt;up front&lt;/strong&gt; and discover all these things. Therefor, things like reflection and dynamic classloading are very hard to do (but not impossible).&lt;/p&gt;
+
+&lt;p&gt;To ‘emulate’ a dynamic running JVM the GraalVM project is shipped with &lt;a href=&quot;https://github.com/oracle/graal/tree/master/substratevm&quot;&gt;Substrate VM&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Substrate VM is a framework that allows ahead-of-time (AOT) compilation of Java applications under closed-world assumption into executable images or shared objects (ELF-64 or 64-bit Mach-O).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The Java VM for example has a garbage collector, when you eliminate the JVM, you’ll still need to free your objects. This is something Substrate VM (written in Java!) does for you.&lt;/p&gt;
+
+&lt;p&gt;To read about the limitations of Substrate VM, look at this &lt;a href=&quot;https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md&quot;&gt;LIMITATIONS.md&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;spring-boot&quot;&gt;Spring Boot&lt;/h1&gt;
+
+&lt;p&gt;We want to do more than just ‘HelloWorld’, how about an entire microservice?&lt;/p&gt;
+
+&lt;p&gt;If you talk about &lt;em&gt;microservices&lt;/em&gt; in Java, most people will immediately say: Spring Boot. While you can certainly discuss the &lt;strong&gt;micro&lt;/strong&gt;-part, it is by far the most popular way of writing (enterprise) Java applications at the moment. The problem is that most Spring Boot applications quickly grow, having Docker images of 600+ mb and runtime memory usage of 250+ mb is to be expected.&lt;/p&gt;
+
+&lt;p&gt;So it seems this is a perfect candidate to turn into a native application.&lt;/p&gt;
+
+&lt;p&gt;But there is some instant bad news: &lt;strong&gt;It won’t work&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;At least, at this moment in time. The developers of Spring Boot are working very hard with the developers of GraalVM to fix all the problems. A lot of work has already been done, you can check out the progress &lt;a href=&quot;https://jira.spring.io/browse/SPR-16991&quot;&gt;in this Spring issue&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;web-alternative-sparkjava&quot;&gt;Web alternative: SparkJava&lt;/h1&gt;
+
+&lt;p&gt;Instead of turning to Spring Boot, let’s keep our application really micro and use something else. &lt;a href=&quot;http://sparkjava.com/&quot;&gt;Spark Framework&lt;/a&gt; is a small web framework. And it works like a charm using &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;First I created a simple Maven project and to use the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; command I needed all the Maven dependencies as a JAR file on the class path after compilation. To have this I added the following plugin to the &lt;code class=&quot;highlighter-rouge&quot;&gt;pom.xml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;            &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- Make all the JAR files go into the output target/lib --&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.maven.plugins&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;maven-dependency-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;executions&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;nt&quot;&gt;&amp;lt;execution&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;copy-dependencies&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;phase&amp;gt;&lt;/span&gt;prepare-package&lt;span class=&quot;nt&quot;&gt;&amp;lt;/phase&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;goals&amp;gt;&lt;/span&gt;
+                            &lt;span class=&quot;nt&quot;&gt;&amp;lt;goal&amp;gt;&lt;/span&gt;copy-dependencies&lt;span class=&quot;nt&quot;&gt;&amp;lt;/goal&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/goals&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+                            &lt;span class=&quot;nt&quot;&gt;&amp;lt;outputDirectory&amp;gt;&lt;/span&gt;${project.build.directory}/lib&lt;span class=&quot;nt&quot;&gt;&amp;lt;/outputDirectory&amp;gt;&lt;/span&gt;
+                            &lt;span class=&quot;nt&quot;&gt;&amp;lt;overWriteReleases&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/overWriteReleases&amp;gt;&lt;/span&gt;
+                            &lt;span class=&quot;nt&quot;&gt;&amp;lt;overWriteSnapshots&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/overWriteSnapshots&amp;gt;&lt;/span&gt;
+                            &lt;span class=&quot;nt&quot;&gt;&amp;lt;overWriteIfNewer&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/overWriteIfNewer&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/execution&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next I added the following dependency:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.sparkjava&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spark-core&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;2.7.2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we can write our code and run the HelloWorld web application:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Spark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HelloWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/hello&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Hello World&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Building everything is the same as in &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;There are two differences though. The base image can no longer be &lt;code class=&quot;highlighter-rouge&quot;&gt;FROM scratch&lt;/code&gt; because we need access to networking. Second, we need to expose the port of the web application to the outside using &lt;code class=&quot;highlighter-rouge&quot;&gt;EXPOSE 4567&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Also we need to add the following option to &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt;:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-H:+ReportUnsupportedElementsAtRuntime&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This option eliminates some problems during the analysis phase out of the way.&lt;/p&gt;
+
+&lt;p&gt;Running this Dockerfile results in a “Hello World” in the browser at &lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4567/hello&lt;/code&gt;. Using just &lt;strong&gt;4 mb&lt;/strong&gt; of runtime memory (!).&lt;/p&gt;
+
+&lt;h1 id=&quot;dependency-injection-google-guice&quot;&gt;Dependency Injection: Google Guice&lt;/h1&gt;
+
+&lt;p&gt;Another big problem at the moment using GraalVM is trying to use dependency injection. First I tried to use &lt;strong&gt;Google Guice&lt;/strong&gt;. It is marketed as a ‘low overhead’ dependency injection framework. When I fired up the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; command I got the following exception (amongst many others):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Exception in thread &quot;main&quot; java.lang.AssertionError: java.lang.NoSuchMethodException: java.lang.Integer.parseInt(java.lang.String)
+  at java.lang.Throwable.&amp;lt;init&amp;gt;(Throwable.java:265)
+  at java.lang.Error.&amp;lt;init&amp;gt;(Error.java:70)
+  at java.lang.AssertionError.&amp;lt;init&amp;gt;(AssertionError.java:58)
+  at java.lang.AssertionError.&amp;lt;init&amp;gt;(AssertionError.java:74)
+  at com.google.inject.internal.TypeConverterBindingProcessor.convertToPrimitiveType(TypeConverterBindingProcessor.java:130)
+  at com.google.inject.internal.TypeConverterBindingProcessor.prepareBuiltInConverters(TypeConverterBindingProcessor.java:46)
+  at com.google.inject.internal.InjectorShell$Builder.build(InjectorShell.java:152)
+  at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:104)
+  at com.google.inject.Guice.createInjector(Guice.java:96)
+  at com.google.inject.Guice.createInjector(Guice.java:73)
+  at com.google.inject.Guice.createInjector(Guice.java:62)
+  at com.royvanrijn.graal.Main.&amp;lt;init&amp;gt;(Main.java:39)
+  at com.royvanrijn.graal.Main.main(Main.java:52)
+  at com.oracle.svm.core.JavaMainWrapper.run(JavaMainWrapper.java:163)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It seems that Google Guice internally uses a way to call Integer.parseInt using reflection, but GraalVM doesn’t understand this. But luckely, we can help GraalVM a bit.&lt;/p&gt;
+
+&lt;p&gt;To fix this first problem I added the following file to my project:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;java.lang.Class&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;allDeclaredConstructors&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;allPublicConstructors&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;allDeclaredMethods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;allPublicMethods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;java.lang.Integer&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;methods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parseInt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parameterTypes&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;java.lang.String&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;java.lang.Long&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;methods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parseLong&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parameterTypes&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;java.lang.String&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;etc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And during the build of &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; I pass the following option:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-H:ReflectionConfigurationFiles=src/main/resources/graal_config.json&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we have instructed Substrate VM/GraalVM that our application will do a reflection lookup to Integer.parseInt (amongst other calls). It now understands this and loads everything.&lt;/p&gt;
+
+&lt;p&gt;For some reason though, for each dependency I kept getting the following exception:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Could not find a suitable constructor in com.royvanrijn.graal.domain.UserRepositoryImpl. Classes must have either one (and only one) constructor annotated with @Inject or a zero-argument constructor that is not private.
+  at com.royvanrijn.graal.domain.UserRepositoryImpl.class(Unknown Source)
+  at java.lang.Throwable.&amp;lt;init&amp;gt;(Throwable.java:250)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The application works great running it from &lt;code class=&quot;highlighter-rouge&quot;&gt;java&lt;/code&gt; but not after using &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt;. Time for something different!&lt;/p&gt;
+
+&lt;h1 id=&quot;dependency-injection-dagger-2&quot;&gt;Dependency Injection: Dagger 2&lt;/h1&gt;
+
+&lt;p&gt;Instead of Google Guice or Spring I decided to go with another framework: &lt;a href=&quot;https://google.github.io/dagger/&quot;&gt;Dagger 2&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This framework has one big advantage over all the others: It works &lt;strong&gt;compile-time&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Sure, setting it up takes a little bit more time. You’ll need to include a Maven plugin that does all the magic during compilation. But it is a perfect solution (currently) for GraalVM’s native-image. All the injection-&lt;em&gt;magic&lt;/em&gt; is done during compilation, so when running the application everything is already nicely wired up and static.&lt;/p&gt;
+
+&lt;h1 id=&quot;database-access-hibernateoracle&quot;&gt;Database access (Hibernate/Oracle)&lt;/h1&gt;
+
+&lt;p&gt;Finally, to complete my CRUD application I tried to access our Oracle database. GraalVM and the database are both created and maintained by Oracle so I hoped this would work out of the box…. but (spoiler): &lt;strong&gt;It didn’t&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;The main problem here is the code in Oracle’s JDBC driver, this turned out to be a very hard thing to get working, this took about an entire day!&lt;/p&gt;
+
+&lt;p&gt;First off, there are a lot of static initializer blocks and some of those are starting Threads. This is something the SubstrateVM’s analyzer can’t handle (again: see &lt;a href=&quot;https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md&quot;&gt;LIMITATIONS.md&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;It was throwing errors like:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Error: com.oracle.graal.pointsto.constraints.UnsupportedFeatureException: Detected a started Thread in the image heap. Threads running in the image generator are no longer running at image run time. The object was probably created by a class initializer and is reachable from a static field. By default, all class initialization is done during native image building.You can manually delay class initialization to image run time by using the option --delay-class-initialization-to-runtime=&amp;lt;class-name&amp;gt;. Or you can write your own initialization methods and call them explicitly from your main entry point.
+Trace: 
+  at parsing oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(OracleTimeoutThreadPerVM.java:64)
+Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(): 
+  at oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(OracleTimeoutThreadPerVM.java:64)
+  at oracle.jdbc.driver.OracleDriver.deregister(OracleDriver.java:517)
+  at oracle.jdbc.driver.OracleDriver$$Lambda$443/1007825518.deregister(Unknown Source)
+  at java.sql.DriverManager.deregisterDriver(DriverManager.java:414)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Again, like before, the exception itself does provide a solution. The issue here are static initializer blocks starting threads during analysis, but this can be countered by delaying the class initialization. This isn’t trivial here because I don’t have access to the code in Oracle’s JDBC driver. But in the end I managed to get it working by adding the following parameters to the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;--delay-class-initialization-to-runtime=oracle.jdbc.driver.OracleDriver,java.sql.DriverManager,org.hibernate.jpa.HibernatePersistenceProvider&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The next problem was getting the &lt;code class=&quot;highlighter-rouge&quot;&gt;persistence.xml&lt;/code&gt; file to load. Hibernate is using ClassLoader.getResources() for this during runtime and for some reason I couldn’t get this to work. I knew there was a way to add resources into the native image but I struggled to get it working, the flag is called &lt;code class=&quot;highlighter-rouge&quot;&gt;-H:IncludeResources=&lt;/code&gt; and you can add a regex here.&lt;/p&gt;
+
+&lt;p&gt;It wasn’t until I browsed the Substrate VM source code and extracted the parsing from &lt;a href=&quot;https://github.com/oracle/graal/blob/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk/ResourcesFeature.java&quot;&gt;ResourcesFeature.java&lt;/a&gt;. Running this code locally showed me everything I tried was wrong.&lt;/p&gt;
+
+&lt;p&gt;Things I tried that didn’t work:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-H:IncludeResources=target/classes/*
+-H:IncludeResources=target/classes/.*
+-H:IncludeResources=target/classes/META-INF/persistence.xml
+-H:IncludeResources=META-INF/persistence.xml
+-H:IncludeResources=*/persistence.xml
+
+... and more and more ...&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This finally worked (including all XSD’s, properties and everything in META-INF):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-H:IncludeResources=.*.properties|.*META-INF/persistence.xml|.*.xsd&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It turns out the listing goes through all the JAR files and directories and matches them against a relative path which in our case is:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;/logging.properties&lt;/li&gt;
+  &lt;li&gt;/META-INF/persistence.xml&lt;/li&gt;
+  &lt;li&gt;etc&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So having &lt;code class=&quot;highlighter-rouge&quot;&gt;META-INF/persistence.xml&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;logging.properties&lt;/code&gt; isn’t enough. This cost me &lt;strong&gt;way&lt;/strong&gt; more time than it should have. A nice feature to add to GraalVM would be to list all the resources being added because at some point I was convinced it should just work and the problem was in my code somewhere.&lt;/p&gt;
+
+&lt;p&gt;Next problem: &lt;strong&gt;Xerces&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This library gave me nightmares before as a Java developer, but luckily this time the problems could be fixed easily by adding more reflection exceptions to our &lt;em&gt;-H:ReflectionConfigurationFiles=&lt;/em&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reflection.json&lt;/code&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;methods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;init&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parameterTypes&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;methods&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;init&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;parameterTypes&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;some&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;more&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;see&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GitHub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;details&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Also xerces needed a resource bundle to load:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.xpath.regex.message&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Sigh, okay, still making progress.&lt;/p&gt;
+
+&lt;p&gt;Now again a problem with Hibernate and resources. I got the following &lt;code class=&quot;highlighter-rouge&quot;&gt;StringIndexOutOfBoundsException&lt;/code&gt; running the application:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;Caused&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;by:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;StringIndexOutOfBoundsException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;range:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Throwable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;265&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;66&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;62&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;IndexOutOfBoundsException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IndexOutOfBoundsException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;56&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;StringIndexOutOfBoundsException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StringIndexOutOfBoundsException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;69&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;substring&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1967&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hibernate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;archive&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;internal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ArchiveHelper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getJarURLFromURLEntry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArchiveHelper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;45&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hibernate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jpa&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;internal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;PersistenceXmlParser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parsePersistenceXml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PersistenceXmlParser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;256&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hibernate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jpa&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;internal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;PersistenceXmlParser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;parsePersistenceXml&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PersistenceXmlParser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;240&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It turns out due to the way GraalVM labels its resources we get to a point where Hibernate is confused. It calls the following code with the wrong parameters:&lt;/p&gt;
+
+&lt;p&gt;Input:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;url: “META-INF/persistence.xml”&lt;/li&gt;
+  &lt;li&gt;entry: “/META-INF/persistence.xml”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getJarURLFromURLEntry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalArgumentException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;substring&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;With this input &lt;code class=&quot;highlighter-rouge&quot;&gt;entry.length()&lt;/code&gt;&lt;em&gt;=25&lt;/em&gt; is bigger than &lt;code class=&quot;highlighter-rouge&quot;&gt;url.length()&lt;/code&gt;&lt;em&gt;=24&lt;/em&gt; resulting in &lt;code class=&quot;highlighter-rouge&quot;&gt;file.substring(0, -1)&lt;/code&gt;, sigh.&lt;/p&gt;
+
+&lt;p&gt;To fix this I’ve created a so called &lt;em&gt;shadowed&lt;/em&gt; class. This is a class with the exact same signature that I am compiling and adding to the classpath. Because my version of the class is loaded before the Hibernate version of the class, my version is used, I’m overriding the Hibernate version. This is obviously very &lt;strong&gt;ugly&lt;/strong&gt;, but it does the job surprisingly well!&lt;/p&gt;
+
+&lt;p&gt;I used &lt;code class=&quot;highlighter-rouge&quot;&gt;Math.max(0, file.length() - entry.length())&lt;/code&gt; to fix getting a ‘-1’ in the substring:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getJarURLFromURLEntry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalArgumentException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;substring&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And of course, a new problem pops up. Again with the resources, GraalVM seems to have put &lt;code class=&quot;highlighter-rouge&quot;&gt;resource&lt;/code&gt; as a protocol of all the loaded resources. Opening the resource using an &lt;code class=&quot;highlighter-rouge&quot;&gt;java.lang.URL&lt;/code&gt; caused more problems in &lt;code class=&quot;highlighter-rouge&quot;&gt;ArchiveHelper&lt;/code&gt; because GraalVM doesn’t recognise ‘resource’ as a valid protocol (huh?). This meant I needed to make another small patch in the shadowed &lt;code class=&quot;highlighter-rouge&quot;&gt;ArchiveHelper&lt;/code&gt;:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getJarURLFromURLEntry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;URL&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalArgumentException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;resource&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;protocol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// FIX: Added for GraalVM, just return the URL&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The next big problem was getting &lt;code class=&quot;highlighter-rouge&quot;&gt;oracle.jdbc.driver.OracleDriver&lt;/code&gt; to accept the fact that GraalVM doesn’t support JMX (and might never support it). The driver tried to load MXBeans and MBeans from a static initializer block, this caused major headaches…. but in the end I managed to solve this again by shadowing another class:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oracle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;as&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;jmx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;framework&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.management.MBeanServer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/**
+ * Shadowing class: oracle.as.jmx.framework.PortableMBeanFactory
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PortableMBeanFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** Just return null, GraalVM doesn't support MBeans/JMX */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MBeanServer&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getMBeanServer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Do nothing.&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Still the initial static initializer block in &lt;code class=&quot;highlighter-rouge&quot;&gt;oracle.jdbc.driver.OracleDriver&lt;/code&gt; wouldn’t load and broke the native compilation. Browsing the decompiled code I noticed the following lines which might cause a problem:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;OraclePKIProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This class isn’t on the classpath oddly enough, so I decided to create a dummy/shadow class again, just in case:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oracle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;security&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;pki&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/** Another shadowing class... */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OraclePKIProvider&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;c1&quot;&gt;// Placeholder for GraalVM.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This worked and finally, after adding a &lt;strong&gt;lot&lt;/strong&gt; more classes to the &lt;em&gt;-H:ReflectionConfigurationFiles=&lt;/em&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reflection.json&lt;/code&gt; I now have a fully working Hibernate EntityManager with Oracle JDBC driver, able to access our database and execute queries!&lt;/p&gt;
+
+&lt;h1 id=&quot;docker-multi-stage-build&quot;&gt;Docker: Multi-stage build&lt;/h1&gt;
+
+&lt;p&gt;After &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: &lt;a href=&quot;https://docs.docker.com/develop/develop-images/multistage-build/&quot;&gt;Docker multistage&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;After some changes I now have a single Dockerfile with two &lt;code class=&quot;highlighter-rouge&quot;&gt;FROM&lt;/code&gt; sections in it. The first section is the builder-part, the second part is the host-part. My &lt;code class=&quot;highlighter-rouge&quot;&gt;docker build&lt;/code&gt; command now uses that first image to build, passes everything to the second image and builds our resulting Docker container. Really nice, I’m learning new techniques every day.&lt;/p&gt;
+
+&lt;h1 id=&quot;compilation-speed&quot;&gt;Compilation speed&lt;/h1&gt;
+
+&lt;p&gt;One thing I noticed during this entire process, the analysis time used by &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; grew exponentially. The HelloWorld application from &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; took just a couple of seconds, but look at the following output:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;nl&quot;&gt;classlist:&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;398.63&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;181.85&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        &lt;span class=&quot;nl&quot;&gt;setup:&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;329.11&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;typeflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;477&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;904.73&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objects&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;641&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;498.60&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;826.28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nl&quot;&gt;analysis:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;158&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;033.10&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;nl&quot;&gt;universe:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;221&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;809.62&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;723.95&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;49&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;021.78&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;104&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;756.90&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;      &lt;span class=&quot;nl&quot;&gt;compile:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;193&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;699.62&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        &lt;span class=&quot;nl&quot;&gt;image:&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;31&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;052.63&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        &lt;span class=&quot;nl&quot;&gt;write:&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;717.73&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;625&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;666.08&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It now took a whopping 60 minutes to compile to native! And during the creation of this project I needed to add a single line the &lt;code class=&quot;highlighter-rouge&quot;&gt;reflecion.json&lt;/code&gt; and restart the entire build &lt;strong&gt;a lot&lt;/strong&gt; of times. Transforming a project to work with &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; right now is a really time-consuming endeavour.&lt;/p&gt;
+
+&lt;h1 id=&quot;final-result-a-working-native-microservice&quot;&gt;&lt;a name=&quot;results&quot;&gt;&lt;/a&gt;Final result: a working native microservice&lt;/h1&gt;
+
+&lt;p&gt;I’m proud to say I now have a simple CRUD &lt;strong&gt;native&lt;/strong&gt; microservice, written in Java, using Java libraries.&lt;/p&gt;
+
+&lt;p&gt;It uses:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Hibernate/Oracle&lt;/li&gt;
+  &lt;li&gt;SparkJava&lt;/li&gt;
+  &lt;li&gt;GSON&lt;/li&gt;
+  &lt;li&gt;Dagger 2&lt;/li&gt;
+  &lt;li&gt;SLF4J + java.util.logging&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This allows me to serve REST/JSON objects from the database with some Java code in between, what most microservices do.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;All the sources are on GitHub&lt;/strong&gt;: &lt;a href=&quot;https://github.com/royvanrijn/graalvm-native-microservice&quot;&gt;check it out&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Check out all the &lt;a href=&quot;https://github.com/royvanrijn/graalvm-native-microservice&quot;&gt;code on GitHub&lt;/a&gt; and try it out for yourself. To get it up and running all you need it to set up a database and put the connection information in &lt;code class=&quot;highlighter-rouge&quot;&gt;persistence.xml&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;start-up-time&quot;&gt;Start up time&lt;/h2&gt;
+
+&lt;p&gt;The microservice has a very fast startup time:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Sep 25, 2018 7:22:54 PM org.eclipse.jetty.server.AbstractConnector doStart
+INFO: Started ServerConnector@3650e607{HTTP/1.1,[http/1.1]}{0.0.0.0:4567}
+Sep 25, 2018 7:22:54 PM org.eclipse.jetty.server.Server doStart
+INFO: Started @486ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Compare this to the Java 8 version (same code):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Sep 25, 2018 9:12:09 PM org.eclipse.jetty.server.AbstractConnector doStart
+INFO: Started ServerConnector@6d5ff62e{HTTP/1.1,[http/1.1]}{0.0.0.0:4567}
+Sep 25, 2018 9:12:09 PM org.eclipse.jetty.server.Server doStart
+INFO: Started @3406ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;With &lt;strong&gt;486ms&lt;/strong&gt; compared to &lt;strong&gt;3406ms&lt;/strong&gt; the native version starts &lt;strong&gt;7x&lt;/strong&gt; faster.&lt;/p&gt;
+
+&lt;h2 id=&quot;memory-consumption&quot;&gt;Memory consumption&lt;/h2&gt;
+
+&lt;p&gt;The Java version consumes &lt;strong&gt;267mb&lt;/strong&gt; of memory, while the native version takes just &lt;strong&gt;20.7mb&lt;/strong&gt;, so it is &lt;strong&gt;13x&lt;/strong&gt; smaller.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;At the moment GraalVM is still in its &lt;strong&gt;infancy stage&lt;/strong&gt;, there are still a lot of areas that can use some improvement. Most problems I’ve encountered have to do with &lt;strong&gt;resource loading&lt;/strong&gt; or &lt;strong&gt;reflection&lt;/strong&gt;. The build/analysis-cycle becomes pretty long when you add more and more classes and if you need to add reflection-configuration exceptions each build, this process is quite cumbersome.&lt;/p&gt;
+
+&lt;p&gt;Frameworks and libraries will start to notice GraalVM (once it gains more traction) and they will change their code to work better with Graal. For example the team behind Spring Boot is already actively working together with the GraalVM team to get their framework working.&lt;/p&gt;
+
+&lt;p&gt;Now some people are shouting to their laptops:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Why not just use Go/Rust/some other language that compiles to native by default!?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;That is a very good point. If you want to use Go or Rust, go ahead!&lt;/p&gt;
+
+&lt;p&gt;Java is the most popular programming language in the world (according to the &lt;a href=&quot;https://www.tiobe.com/tiobe-index/&quot;&gt;tiobe index&lt;/a&gt;). It is the language with most libraries and frameworks (except for Javascript probably). Changing entire development teams to learn Go and/or Rust, changing companies to a new language is very hard to do. Using &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; might be a more accessible way of transitioning to native backends IMO.&lt;/p&gt;
+
+&lt;p&gt;I’ll for sure be keeping track of GraalVM, not just because of the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; capabilities, but also because the amazing speed of their VM.&lt;/p&gt;
+
+&lt;p&gt;Did you know the Oracle Database has GraalVM support? You can create queries which use Javascript functions or Java methods!&lt;/p&gt;
+
+&lt;p&gt;Did you know there is a Graal AOT compiler inside your JDK right now? (see: &lt;a href=&quot;http://openjdk.java.net/jeps/295&quot;&gt;JEP-295&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Sources:&lt;/strong&gt; All the code from this blogpost can be found &lt;a href=&quot;https://github.com/royvanrijn/graalvm-native-microservice&quot;&gt;here on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 24 Sep 2018 09:22:32 +0200</pubDate>
+        <link>http://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/</link>
+        <guid isPermaLink="true">http://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/</guid>
+        
+        <category>Docker</category>
+        
+        <category>Java</category>
+        
+        <category>Native Image</category>
+        
+        
+        <category>GraalVM</category>
+        
+      </item>
     
       <item>
         <title>Part 1: Java to native using GraalVM</title>
@@ -32,7 +473,7 @@
 
 &lt;h1 id=&quot;installing-graalvm&quot;&gt;Installing GraalVM&lt;/h1&gt;
 
-&lt;p&gt;In this blogpost though we’ll look at another powerful thing Graal can do: native-image compilation.&lt;/p&gt;
+&lt;p&gt;In this blogpost though we’ll look at another powerful thing Graal can do: &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; compilation&lt;/p&gt;
 
 &lt;p&gt;Instead of explaining what it is, let’s just go ahead, install GraalVM and try it out.&lt;/p&gt;
 
@@ -63,9 +504,9 @@ GraalVM 1.0.0-rc6 (build 25.71-b01-internal-jvmci-0.48, mixed mode)&lt;/code&gt;
 $ java HelloWorld
 Hello World&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;But the real power of Graal becomes clear when we use a third command: &lt;strong&gt;native-image&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;But the real power of Graal becomes clear when we use a third command: &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;This command takes your Java class(es) and turns them into an actual program, a standalone binary executable, without any virtual machine! The commands you pass to ‘native-image’ very similar to what you would pass to ‘java’. In this case we have the classpath and the Main class:&lt;/p&gt;
+&lt;p&gt;This command takes your Java class(es) and turns them into an actual program, a standalone binary executable, without any virtual machine! The commands you pass to &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; very similar to what you would pass to &lt;code class=&quot;highlighter-rouge&quot;&gt;java&lt;/code&gt;. In this case we have the classpath and the Main class:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ native-image -cp . HelloWorld
 Build on Server(pid: 63941, port: 60051)*
@@ -184,7 +625,7 @@ And finally we tell native-image to name the resulting executable 'app'
 COPY app /app
 CMD [&quot;/app&quot;]&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;We start with the most empty Docker image you can have, ‘scratch’ and we copy in our ‘app’ executable and finally we run it. Now we can build our helloworld image:&lt;/p&gt;
+&lt;p&gt;We start with the most empty Docker image you can have, &lt;code class=&quot;highlighter-rouge&quot;&gt;scratch&lt;/code&gt; and we copy in our &lt;code class=&quot;highlighter-rouge&quot;&gt;app&lt;/code&gt; executable and finally we run it. Now we can build our helloworld image:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker build -t royvanrijn/graal-helloworld:latest .
 Sending build context to Docker daemon  34.11MB
@@ -207,7 +648,7 @@ royvanrijn/graal-helloworld                                 latest              
 
 &lt;p&gt;We’ve now turned our Java application into a very small Docker image with a size of just 6.77MB!&lt;/p&gt;
 
-&lt;p&gt;In the next blogpost (part two coming soon) we’ll look at Java applications a bit larger than HelloWorld, how will GraalVM’s native-image handle those?!&lt;/p&gt;
+&lt;p&gt;In the next blogpost &lt;a href=&quot;(/blog/2018/09/part-2-native-microservice-in-graalvm&quot;&gt;Part 2&lt;/a&gt; we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 20 Sep 2018 09:14:13 +0200</pubDate>
@@ -1228,246 +1669,6 @@ I’ve created a bot that generates music some years, maybe I should improve tha
         <category>Vikipedia</category>
         
         <category>ffmpeg</category>
-        
-        
-        <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Three new JEPs</title>
-        <description>&lt;p&gt;This morning &lt;a href=&quot;https://twitter.com/mreinhold&quot;&gt;Mark Reinhold&lt;/a&gt; submitted three brand new JEPs (JDK Enhancement Proposal).&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://openjdk.java.net/jeps/300&quot;&gt;JEP 300&lt;/a&gt;: Augment Use-Site Variance with Declaration-Site Defaults&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://openjdk.java.net/jeps/301&quot;&gt;JEP 301&lt;/a&gt;: Enhanced Enums&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://openjdk.java.net/jeps/302&quot;&gt;JEP 302&lt;/a&gt;: Lambda Leftovers&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;These proposals are enhancements to the JDK (Java Development Kit) and OpenJDK. A long term roadmap for the JDK projects, a look into what the future of Java might hold.&lt;/p&gt;
-
-&lt;p&gt;Let’s dive right in and take a quick look on what these proposals actually are!&lt;/p&gt;
-
-&lt;h1 id=&quot;jep-300-augment-use-site-variance-with-declaration-site-defaults&quot;&gt;JEP 300: Augment Use-Site Variance with Declaration-Site Defaults&lt;/h1&gt;
-
-&lt;p&gt;When you currently use Java Generics you probably already know about wildcards. It is possible to set lower and upper bounds to generics using the keywords &lt;strong&gt;? extends&lt;/strong&gt; and &lt;strong&gt;? super&lt;/strong&gt;. There are two parts to using wildcards, declaration side and use side, this JEP focusses mainly on making the use side easier and more powerful.&lt;/p&gt;
-
-&lt;h2 id=&quot;declaration-side&quot;&gt;Declaration side&lt;/h2&gt;
-
-&lt;p&gt;It is possible to set a bound with a wildcard on the declaration side:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Shelter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;In this example we’ve declared that the Shelter has to contain Animals. It is possible to create an Shelter&amp;lt;Cat&amp;gt; or Shelter&amp;lt;Dog&amp;gt; now, but not Shelter&amp;lt;Bike&amp;gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;use-side&quot;&gt;Use side&lt;/h2&gt;
-
-&lt;p&gt;The second way to use wildcards is on the &lt;em&gt;use&lt;/em&gt; side. There we can speak of so called &lt;strong&gt;in&lt;/strong&gt; and &lt;strong&gt;out&lt;/strong&gt;-variable wildcards.&lt;/p&gt;
-
-&lt;p&gt;The following code uses the ‘extends’ keyword to create the &lt;strong&gt;in&lt;/strong&gt;-variable:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animals&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Using extends we create an 'in' variable:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inAnimals&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// From the inAnimals we can read: Animal (not subclasses)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- reading Animal is fine&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error, we can't read Cat&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// We can write: nothing (!) making it almost read-only&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;inAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;There is also the ‘super’ keyword (not very common) to create an &lt;strong&gt;out&lt;/strong&gt;-variable use side:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animals&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Using super we create an 'out' variable, setting an upper bound:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// From the outAnimals we can read: object (no superclasses!)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error, illegal&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;o&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- we can only read object&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// On the write side, we've set a bound to Cat:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- correct!&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;outAnimals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;so-what-is-jep-300&quot;&gt;So what is JEP 300?&lt;/h2&gt;
-
-&lt;p&gt;The motivation of the JEP states:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Since invariant uses of these type arguments are less flexible than their wildcard equivalents, while providing no extra power, a reasonable practice is to always use a wildcard when mentioning the type.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;It is almost always more powerful and equivalent to use wildcards on the use side. The problem is that this is verbose and adds a lot of noise to your code. The proposal wants to make it possible to declare (at the declaration side) what the default wildcard strategy should be.&lt;/p&gt;
-
-&lt;p&gt;For example look at the following code:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contravariant&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;covariant&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// other possible syntaxes are Function&amp;lt;-T, +R&amp;gt; or Function&amp;lt;in T, out R&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;The compiler can now automatically treat every use of the type e.g., Function&amp;lt;String, Number&amp;gt; as if it had wildcards Function&amp;lt;? super String, ? extends Number&amp;gt;.&lt;/p&gt;
-
-&lt;p&gt;On the use side the proposal says:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Rather than making changes to subtyping, we preprocess the source code so that types like Function&amp;lt;String, Number&amp;gt; are implicitly expanded to Function&amp;lt;? super String, ? extends Number&amp;gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;This should make it more powerful and just as readable to using wildcards by default without even noticing them.&lt;/p&gt;
-
-&lt;h1 id=&quot;jep-301-enhanced-enums&quot;&gt;JEP 301: Enhanced Enums&lt;/h1&gt;
-
-&lt;p&gt;The next proposal Mark has submitted is about using Enums with Generics. Look at the following example:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;BELLA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bella&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;BUDDY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Buddy&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;TIGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tigger&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;animal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;We have an enum with three pets. These pets have an instance of an animal inside them. And we have a way of retrieving them.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;BELLA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// prints: &quot;Bella&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;But one thing we can’t do it call the method “.bark()” on BELLA, because we don’t know this is a Dog.&lt;/p&gt;
-
-&lt;p&gt;The proposal JEP 301 wants to make it possible to correlate a specific type to an enum constant:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;BELLA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bella&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;BUDDY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Buddy&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;TIGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Cat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tigger&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;animal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Having coupled the Dog type to enum BELLA it should now we possible to call:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;BELLA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// WOOF!&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;TIGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;purr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Purrrrrrrrr.....&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h1 id=&quot;jep-302-lambda-leftovers&quot;&gt;JEP 302: Lambda Leftovers&lt;/h1&gt;
-
-&lt;p&gt;This is turning out to be a rather long blogpost but we’ve reached the final proposed JEP of the day: &lt;strong&gt;Lambda Leftovers&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;accidental-ambiguities&quot;&gt;Accidental ambiguities&lt;/h2&gt;
-
-&lt;p&gt;One of the problems people are having with the lambdas at the moment, and this JEP wants to improve, are accidental ambiguities.&lt;/p&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Predicate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Animal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-   &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- compile error&lt;/span&gt;
-
-&lt;span class=&quot;cm&quot;&gt;/**
- * Ambiguous method call. Both:
- * apply (Predicate&amp;lt;Animal&amp;gt;)        in classname and
- * apply (Function&amp;lt;Animal, String&amp;gt;) in classname match
- */&lt;/span&gt;
-    &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Why are we having this problem? Both methods are possible candidates of the lambda. If we look further and see the return type ‘boolean’ it should be clear we wanted to call the Predicate method and not the Function (which should return a String). Right now this doesn’t work, but it is something the compiler could figure out for us.&lt;/p&gt;
-
-&lt;h2 id=&quot;underscores&quot;&gt;Underscores&lt;/h2&gt;
-
-&lt;p&gt;Up to Java 8 it was perfectly acceptable to use the underscore character ‘_’ as a variable name. But this has been changed, all leading up to JEP 302. In most languages with lambda’s it is possible to denote certain inputs as &lt;em&gt;unused&lt;/em&gt;. This is done using the underscore. In Java this causes problems because it is right now a valid variable name.&lt;/p&gt;
-
-&lt;p&gt;Starting with Java 8 the use of an underscore as lambda argument caused a warning and from Java 9 the use of an underscore became an error. This allows future Java versions beyond 9 to be able to use the underscore for other purposes. And one of those purposes is to bring it back as a default variable name. Not causing collisions if used multiple times and it can’t be used as variable by calling _.toString() for example.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Ignore the second parameter, just use i:&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;BiFunction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;biss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;valueOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// Even possible, ignore both:&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;BiFunction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;someString&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;shadowing-of-parameters&quot;&gt;Shadowing of parameters&lt;/h2&gt;
-
-&lt;p&gt;Another small change that is proposed is allowing to shadow parameters. For example look at the following code:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;computeSomeKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;computeIfAbsent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// compile error, key already defined&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;computeIfAbsent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// compile error, can't redefine key inside this scope&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;In both cases ‘key’ is already defined, can’t be used as a parameter or local variable inside the lambda. The proposal wants to lift this restriction, allowing the use of ‘key’ as a parameter or as a local inside the lambda using so called ‘shadowing’.&lt;/p&gt;
-
-&lt;p&gt;One possible drawback is readability, and I too think that this might be a problem.
-For example:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;theInitialKey&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;computeIfAbsent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;theShadowKey&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;- delete this&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;The second variable “theShadowKey” is taking the place of the first “theInitialKey”. This can be quite confusing because if you delete the second declaration nothing would break. The other variable would come from the shadows and take its place. This feels dangerous and confusing to me, not very ‘Java’-like.&lt;/p&gt;
-
-&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
-
-&lt;p&gt;Another day, three new JEPs submitted. Java is moving forward and trying to improve the user experience with genetics and lambdas. These proposals look like good, small, low-impact improvements that can really benefit the common programmer.&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 06 Dec 2016 07:28:12 +0100</pubDate>
-        <link>http://royvanrijn.com/blog/2016/12/three-new-jeps/</link>
-        <guid isPermaLink="true">http://royvanrijn.com/blog/2016/12/three-new-jeps/</guid>
-        
-        <category>JEP</category>
-        
-        <category>Java</category>
-        
-        <category>Enhancement</category>
-        
-        <category>Proposal</category>
-        
-        <category>Reinhold</category>
-        
-        <category>OpenJDK</category>
-        
-        <category>JDK</category>
         
         
         <category>Programming</category>

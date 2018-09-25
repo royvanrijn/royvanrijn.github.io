@@ -118,6 +118,8 @@
       </div> 
       <div class="right"> 
          
+          <a href="/blog/2018/09/part-2-native-microservice-in-graalvm/" title="Next: Part 2: Native microservice in GraalVM">Part 2: Native microservice in GraalVM &raquo; </a> 
+         
       </div> 
       <div class="clear"></div> 
     </div> 
@@ -165,7 +167,7 @@
 
 <h1 id="installing-graalvm">Installing GraalVM</h1>
 
-<p>In this blogpost though we’ll look at another powerful thing Graal can do: native-image compilation.</p>
+<p>In this blogpost though we’ll look at another powerful thing Graal can do: <code class="highlighter-rouge">native-image</code> compilation</p>
 
 <p>Instead of explaining what it is, let’s just go ahead, install GraalVM and try it out.</p>
 
@@ -196,9 +198,9 @@ GraalVM 1.0.0-rc6 (build 25.71-b01-internal-jvmci-0.48, mixed mode)</code></pre>
 $ java HelloWorld
 Hello World</code></pre></figure>
 
-<p>But the real power of Graal becomes clear when we use a third command: <strong>native-image</strong></p>
+<p>But the real power of Graal becomes clear when we use a third command: <code class="highlighter-rouge">native-image</code></p>
 
-<p>This command takes your Java class(es) and turns them into an actual program, a standalone binary executable, without any virtual machine! The commands you pass to ‘native-image’ very similar to what you would pass to ‘java’. In this case we have the classpath and the Main class:</p>
+<p>This command takes your Java class(es) and turns them into an actual program, a standalone binary executable, without any virtual machine! The commands you pass to <code class="highlighter-rouge">native-image</code> very similar to what you would pass to <code class="highlighter-rouge">java</code>. In this case we have the classpath and the Main class:</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">$ native-image -cp . HelloWorld
 Build on Server(pid: 63941, port: 60051)*
@@ -317,7 +319,7 @@ And finally we tell native-image to name the resulting executable 'app'
 COPY app /app
 CMD ["/app"]</code></pre></figure>
 
-<p>We start with the most empty Docker image you can have, ‘scratch’ and we copy in our ‘app’ executable and finally we run it. Now we can build our helloworld image:</p>
+<p>We start with the most empty Docker image you can have, <code class="highlighter-rouge">scratch</code> and we copy in our <code class="highlighter-rouge">app</code> executable and finally we run it. Now we can build our helloworld image:</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker build -t royvanrijn/graal-helloworld:latest .
 Sending build context to Docker daemon  34.11MB
@@ -340,7 +342,7 @@ royvanrijn/graal-helloworld                                 latest              
 
 <p>We’ve now turned our Java application into a very small Docker image with a size of just 6.77MB!</p>
 
-<p>In the next blogpost (part two coming soon) we’ll look at Java applications a bit larger than HelloWorld, how will GraalVM’s native-image handle those?!</p>
+<p>In the next blogpost <a href="(/blog/2018/09/part-2-native-microservice-in-graalvm">Part 2</a> we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?</p>
 
 
     </span>

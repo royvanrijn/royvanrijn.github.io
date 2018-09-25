@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Part 2: Native microservice in GraalVM</title>
+  <meta name="description" content="Last week I posted Part 1 of this series of blogposts about GraalVM.We looked at GraalVM and what it can do. We dove into the native-image command and transf...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Docker,Java,Native Image,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="http://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Part 2: Native microservice in GraalVM" />
+  <meta name="twitter:description" content="Last week I posted Part 1 of this series of blogposts about GraalVM.We looked at GraalVM and what it can do. We dove into the native-imag..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/graalvm.png"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2018/09/part-1-java-to-native-using-graalvm/" title="Previous: Part 1: Java to native using GraalVM">&laquo; Part 1: Java to native using GraalVM</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2018/09/part-2-native-microservice-in-graalvm/" title="Part 2: Native microservice in GraalVM">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/graalvm.png" alt="Part 2: Native microservice in GraalVM" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2018-09-24T09:22:32+02:00" class="date" />
+        <span itemprop="datePublished" content="2018-09-24T09:22:32+02:00" class="date">
+          Sep 24, 2018 09:22:32
+        </span>
+        : <a class="post-comments" href="http://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Part 2: Native microservice in GraalVM</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Last week I posted <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> of this series of blogposts about <a href="https://www.graalvm.org/">GraalVM</a>.</p>
+
+<p>We looked at GraalVM and what it can do. We dove into the <code class="highlighter-rouge">native-image</code> command and transformed a simple HelloWorld application into a native application (running in Docker).</p>
+
+<p>This time I want to go beyond “Hello World” and build something useful (despite all the limitations listed below). A CRUD microservice with REST API and database access.</p>
+
+<p><strong>TLDR;</strong> If you’re just intersted in the end result, go <a href="#results">right to the results</a></p>
+
+<h1 id="limitations">Limitations</h1>
+
+<p>So what are some of the limitations that GraalVM currently has? (using version 1.0.0 RC6 at time of writing)</p>
+
+<p>Well, the Java VM is a very complete and dynamic system able to handle a lot of <em>dynamic</em> changes. This is something a native application can’t do as easily. GraalVM needs to analyse your application <strong>up front</strong> and discover all these things. Therefor, things like reflection and dynamic classloading are very hard to do (but not impossible).</p>
+
+<p>To ‘emulate’ a dynamic running JVM the GraalVM project is shipped with <a href="https://github.com/oracle/graal/tree/master/substratevm">Substrate VM</a>.</p>
+
+<blockquote>
+  <p>Substrate VM is a framework that allows ahead-of-time (AOT) compilation of Java applications under closed-world assumption into executable images or shared objects (ELF-64 or 64-bit Mach-O).</p>
+</blockquote>
+
+<p>The Java VM for example has a garbage collector, when you eliminate the JVM, you’ll still need to free your objects. This is something Substrate VM (written in Java!) does for you.</p>
+
+<p>To read about the limitations of Substrate VM, look at this <a href="https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md">LIMITATIONS.md</a>.</p>
+
+<h1 id="spring-boot">Spring Boot</h1>
+
+<p>We want to do more than just ‘HelloWorld’, how about an entire microservice?</p>
+
+<p>If you talk about <em>microservices</em> in Java, most people will immediately say: Spring Boot. While you can certainly discuss the <strong>micro</strong>-part, it is by far the most popular way of writing (enterprise) Java applications at the moment. The problem is that most Spring Boot applications quickly grow, having Docker images of 600+ mb and runtime memory usage of 250+ mb is to be expected.</p>
+
+<p>So it seems this is a perfect candidate to turn into a native application.</p>
+
+<p>But there is some instant bad news: <strong>It won’t work</strong></p>
+
+<p>At least, at this moment in time. The developers of Spring Boot are working very hard with the developers of GraalVM to fix all the problems. A lot of work has already been done, you can check out the progress <a href="https://jira.spring.io/browse/SPR-16991">in this Spring issue</a>.</p>
+
+<h1 id="web-alternative-sparkjava">Web alternative: SparkJava</h1>
+
+<p>Instead of turning to Spring Boot, let’s keep our application really micro and use something else. <a href="http://sparkjava.com/">Spark Framework</a> is a small web framework. And it works like a charm using <code class="highlighter-rouge">native-image</code>.</p>
+
+<p>First I created a simple Maven project and to use the <code class="highlighter-rouge">native-image</code> command I needed all the Maven dependencies as a JAR file on the class path after compilation. To have this I added the following plugin to the <code class="highlighter-rouge">pom.xml</code>:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">            <span class="c">&lt;!-- Make all the JAR files go into the output target/lib --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-dependency-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;executions&gt;</span>
+                    <span class="nt">&lt;execution&gt;</span>
+                        <span class="nt">&lt;id&gt;</span>copy-dependencies<span class="nt">&lt;/id&gt;</span>
+                        <span class="nt">&lt;phase&gt;</span>prepare-package<span class="nt">&lt;/phase&gt;</span>
+                        <span class="nt">&lt;goals&gt;</span>
+                            <span class="nt">&lt;goal&gt;</span>copy-dependencies<span class="nt">&lt;/goal&gt;</span>
+                        <span class="nt">&lt;/goals&gt;</span>
+                        <span class="nt">&lt;configuration&gt;</span>
+                            <span class="nt">&lt;outputDirectory&gt;</span>${project.build.directory}/lib<span class="nt">&lt;/outputDirectory&gt;</span>
+                            <span class="nt">&lt;overWriteReleases&gt;</span>false<span class="nt">&lt;/overWriteReleases&gt;</span>
+                            <span class="nt">&lt;overWriteSnapshots&gt;</span>false<span class="nt">&lt;/overWriteSnapshots&gt;</span>
+                            <span class="nt">&lt;overWriteIfNewer&gt;</span>true<span class="nt">&lt;/overWriteIfNewer&gt;</span>
+                        <span class="nt">&lt;/configuration&gt;</span>
+                    <span class="nt">&lt;/execution&gt;</span>
+                <span class="nt">&lt;/executions&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span></code></pre></figure>
+
+<p>Next I added the following dependency:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>com.sparkjava<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spark-core<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.7.2<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span></code></pre></figure>
+
+<p>Now we can write our code and run the HelloWorld web application:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">spark</span><span class="o">.</span><span class="na">Spark</span><span class="o">.*;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">get</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">,</span> <span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"Hello World"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Building everything is the same as in <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a>.</p>
+
+<p>There are two differences though. The base image can no longer be <code class="highlighter-rouge">FROM scratch</code> because we need access to networking. Second, we need to expose the port of the web application to the outside using <code class="highlighter-rouge">EXPOSE 4567</code>.</p>
+
+<p>Also we need to add the following option to <code class="highlighter-rouge">native-image</code>:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-H:+ReportUnsupportedElementsAtRuntime</code></pre></figure>
+
+<p>This option eliminates some problems during the analysis phase out of the way.</p>
+
+<p>Running this Dockerfile results in a “Hello World” in the browser at <code class="highlighter-rouge">http://localhost:4567/hello</code>. Using just <strong>4 mb</strong> of runtime memory (!).</p>
+
+<h1 id="dependency-injection-google-guice">Dependency Injection: Google Guice</h1>
+
+<p>Another big problem at the moment using GraalVM is trying to use dependency injection. First I tried to use <strong>Google Guice</strong>. It is marketed as a ‘low overhead’ dependency injection framework. When I fired up the <code class="highlighter-rouge">native-image</code> command I got the following exception (amongst many others):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Exception in thread "main" java.lang.AssertionError: java.lang.NoSuchMethodException: java.lang.Integer.parseInt(java.lang.String)
+  at java.lang.Throwable.&lt;init&gt;(Throwable.java:265)
+  at java.lang.Error.&lt;init&gt;(Error.java:70)
+  at java.lang.AssertionError.&lt;init&gt;(AssertionError.java:58)
+  at java.lang.AssertionError.&lt;init&gt;(AssertionError.java:74)
+  at com.google.inject.internal.TypeConverterBindingProcessor.convertToPrimitiveType(TypeConverterBindingProcessor.java:130)
+  at com.google.inject.internal.TypeConverterBindingProcessor.prepareBuiltInConverters(TypeConverterBindingProcessor.java:46)
+  at com.google.inject.internal.InjectorShell$Builder.build(InjectorShell.java:152)
+  at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:104)
+  at com.google.inject.Guice.createInjector(Guice.java:96)
+  at com.google.inject.Guice.createInjector(Guice.java:73)
+  at com.google.inject.Guice.createInjector(Guice.java:62)
+  at com.royvanrijn.graal.Main.&lt;init&gt;(Main.java:39)
+  at com.royvanrijn.graal.Main.main(Main.java:52)
+  at com.oracle.svm.core.JavaMainWrapper.run(JavaMainWrapper.java:163)</code></pre></figure>
+
+<p>It seems that Google Guice internally uses a way to call Integer.parseInt using reflection, but GraalVM doesn’t understand this. But luckely, we can help GraalVM a bit.</p>
+
+<p>To fix this first problem I added the following file to my project:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">[</span>
+  <span class="o">{</span>
+    <span class="s">"name"</span> <span class="o">:</span> <span class="s">"java.lang.Class"</span><span class="o">,</span>
+    <span class="s">"allDeclaredConstructors"</span> <span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+    <span class="s">"allPublicConstructors"</span> <span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+    <span class="s">"allDeclaredMethods"</span> <span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+    <span class="s">"allPublicMethods"</span> <span class="o">:</span> <span class="kc">true</span>
+  <span class="o">},</span>
+  <span class="o">{</span>
+    <span class="s">"name"</span> <span class="o">:</span> <span class="s">"java.lang.Integer"</span><span class="o">,</span>
+    <span class="s">"methods"</span> <span class="o">:</span> <span class="o">[</span>
+      <span class="o">{</span> <span class="s">"name"</span> <span class="o">:</span> <span class="s">"parseInt"</span><span class="o">,</span> <span class="s">"parameterTypes"</span> <span class="o">:</span> <span class="o">[</span><span class="s">"java.lang.String"</span><span class="o">]}</span>
+    <span class="o">]</span>
+  <span class="o">},</span>
+  <span class="o">{</span>
+    <span class="s">"name"</span> <span class="o">:</span> <span class="s">"java.lang.Long"</span><span class="o">,</span>
+    <span class="s">"methods"</span> <span class="o">:</span> <span class="o">[</span>
+      <span class="o">{</span> <span class="s">"name"</span> <span class="o">:</span> <span class="s">"parseLong"</span><span class="o">,</span> <span class="s">"parameterTypes"</span> <span class="o">:</span> <span class="o">[</span><span class="s">"java.lang.String"</span><span class="o">]}</span>
+    <span class="o">]</span>
+  <span class="o">}</span>
+  <span class="o">...</span> <span class="n">etc</span> <span class="o">...</span></code></pre></figure>
+
+<p>And during the build of <code class="highlighter-rouge">native-image</code> I pass the following option:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-H:ReflectionConfigurationFiles=src/main/resources/graal_config.json</code></pre></figure>
+
+<p>Now we have instructed Substrate VM/GraalVM that our application will do a reflection lookup to Integer.parseInt (amongst other calls). It now understands this and loads everything.</p>
+
+<p>For some reason though, for each dependency I kept getting the following exception:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Could not find a suitable constructor in com.royvanrijn.graal.domain.UserRepositoryImpl. Classes must have either one (and only one) constructor annotated with @Inject or a zero-argument constructor that is not private.
+  at com.royvanrijn.graal.domain.UserRepositoryImpl.class(Unknown Source)
+  at java.lang.Throwable.&lt;init&gt;(Throwable.java:250)</code></pre></figure>
+
+<p>The application works great running it from <code class="highlighter-rouge">java</code> but not after using <code class="highlighter-rouge">native-image</code>. Time for something different!</p>
+
+<h1 id="dependency-injection-dagger-2">Dependency Injection: Dagger 2</h1>
+
+<p>Instead of Google Guice or Spring I decided to go with another framework: <a href="https://google.github.io/dagger/">Dagger 2</a></p>
+
+<p>This framework has one big advantage over all the others: It works <strong>compile-time</strong>.</p>
+
+<p>Sure, setting it up takes a little bit more time. You’ll need to include a Maven plugin that does all the magic during compilation. But it is a perfect solution (currently) for GraalVM’s native-image. All the injection-<em>magic</em> is done during compilation, so when running the application everything is already nicely wired up and static.</p>
+
+<h1 id="database-access-hibernateoracle">Database access (Hibernate/Oracle)</h1>
+
+<p>Finally, to complete my CRUD application I tried to access our Oracle database. GraalVM and the database are both created and maintained by Oracle so I hoped this would work out of the box…. but (spoiler): <strong>It didn’t</strong>.</p>
+
+<p>The main problem here is the code in Oracle’s JDBC driver, this turned out to be a very hard thing to get working, this took about an entire day!</p>
+
+<p>First off, there are a lot of static initializer blocks and some of those are starting Threads. This is something the SubstrateVM’s analyzer can’t handle (again: see <a href="https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md">LIMITATIONS.md</a>).</p>
+
+<p>It was throwing errors like:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Error: com.oracle.graal.pointsto.constraints.UnsupportedFeatureException: Detected a started Thread in the image heap. Threads running in the image generator are no longer running at image run time. The object was probably created by a class initializer and is reachable from a static field. By default, all class initialization is done during native image building.You can manually delay class initialization to image run time by using the option --delay-class-initialization-to-runtime=&lt;class-name&gt;. Or you can write your own initialization methods and call them explicitly from your main entry point.
+Trace: 
+  at parsing oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(OracleTimeoutThreadPerVM.java:64)
+Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(): 
+  at oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWatchdog(OracleTimeoutThreadPerVM.java:64)
+  at oracle.jdbc.driver.OracleDriver.deregister(OracleDriver.java:517)
+  at oracle.jdbc.driver.OracleDriver$$Lambda$443/1007825518.deregister(Unknown Source)
+  at java.sql.DriverManager.deregisterDriver(DriverManager.java:414)</code></pre></figure>
+
+<p>Again, like before, the exception itself does provide a solution. The issue here are static initializer blocks starting threads during analysis, but this can be countered by delaying the class initialization. This isn’t trivial here because I don’t have access to the code in Oracle’s JDBC driver. But in the end I managed to get it working by adding the following parameters to the <code class="highlighter-rouge">native-image</code> command:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">--delay-class-initialization-to-runtime=oracle.jdbc.driver.OracleDriver,java.sql.DriverManager,org.hibernate.jpa.HibernatePersistenceProvider</code></pre></figure>
+
+<p>The next problem was getting the <code class="highlighter-rouge">persistence.xml</code> file to load. Hibernate is using ClassLoader.getResources() for this during runtime and for some reason I couldn’t get this to work. I knew there was a way to add resources into the native image but I struggled to get it working, the flag is called <code class="highlighter-rouge">-H:IncludeResources=</code> and you can add a regex here.</p>
+
+<p>It wasn’t until I browsed the Substrate VM source code and extracted the parsing from <a href="https://github.com/oracle/graal/blob/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk/ResourcesFeature.java">ResourcesFeature.java</a>. Running this code locally showed me everything I tried was wrong.</p>
+
+<p>Things I tried that didn’t work:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-H:IncludeResources=target/classes/*
+-H:IncludeResources=target/classes/.*
+-H:IncludeResources=target/classes/META-INF/persistence.xml
+-H:IncludeResources=META-INF/persistence.xml
+-H:IncludeResources=*/persistence.xml
+
+... and more and more ...</code></pre></figure>
+
+<p>This finally worked (including all XSD’s, properties and everything in META-INF):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-H:IncludeResources=.*.properties|.*META-INF/persistence.xml|.*.xsd</code></pre></figure>
+
+<p>It turns out the listing goes through all the JAR files and directories and matches them against a relative path which in our case is:</p>
+
+<ul>
+  <li>/logging.properties</li>
+  <li>/META-INF/persistence.xml</li>
+  <li>etc</li>
+</ul>
+
+<p>So having <code class="highlighter-rouge">META-INF/persistence.xml</code> or <code class="highlighter-rouge">logging.properties</code> isn’t enough. This cost me <strong>way</strong> more time than it should have. A nice feature to add to GraalVM would be to list all the resources being added because at some point I was convinced it should just work and the problem was in my code somewhere.</p>
+
+<p>Next problem: <strong>Xerces</strong></p>
+
+<p>This library gave me nightmares before as a Java developer, but luckily this time the problems could be fixed easily by adding more reflection exceptions to our <em>-H:ReflectionConfigurationFiles=</em><code class="highlighter-rouge">reflection.json</code>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">  <span class="o">...</span>
+  <span class="o">{</span>
+    <span class="s">"name"</span> <span class="o">:</span> <span class="s">"com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl"</span><span class="o">,</span>
+    <span class="s">"methods"</span> <span class="o">:</span> <span class="o">[</span>
+      <span class="o">{</span>
+        <span class="s">"name"</span> <span class="o">:</span> <span class="s">"&lt;init&gt;"</span><span class="o">,</span> <span class="s">"parameterTypes"</span> <span class="o">:</span> <span class="o">[]</span>
+      <span class="o">}</span>
+    <span class="o">]</span>
+  <span class="o">},</span>
+  <span class="o">{</span>
+    <span class="s">"name"</span> <span class="o">:</span> <span class="s">"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"</span><span class="o">,</span>
+    <span class="s">"methods"</span> <span class="o">:</span> <span class="o">[</span>
+      <span class="o">{</span>
+        <span class="s">"name"</span> <span class="o">:</span> <span class="s">"&lt;init&gt;"</span><span class="o">,</span> <span class="s">"parameterTypes"</span> <span class="o">:</span> <span class="o">[]</span>
+      <span class="o">}</span>
+    <span class="o">]</span>
+  <span class="o">},</span>
+  <span class="o">(</span><span class="n">and</span> <span class="n">some</span> <span class="n">more</span><span class="o">,</span> <span class="n">see</span> <span class="n">GitHub</span> <span class="k">for</span> <span class="n">details</span><span class="o">)</span>
+  <span class="o">...</span></code></pre></figure>
+
+<p>Also xerces needed a resource bundle to load:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.xpath.regex.message</code></pre></figure>
+
+<p>Sigh, okay, still making progress.</p>
+
+<p>Now again a problem with Hibernate and resources. I got the following <code class="highlighter-rouge">StringIndexOutOfBoundsException</code> running the application:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Caused</span> <span class="nl">by:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">:</span> <span class="n">String</span> <span class="n">index</span> <span class="n">out</span> <span class="n">of</span> <span class="nl">range:</span> <span class="o">-</span><span class="mi">1</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Throwable</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">Throwable</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">265</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Exception</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">Exception</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">66</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">RuntimeException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">62</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">IndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">IndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">56</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">StringIndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">69</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1967</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">archive</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">ArchiveHelper</span><span class="o">.</span><span class="na">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">ArchiveHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">45</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="n">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">256</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="n">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">240</span><span class="o">)</span></code></pre></figure>
+
+<p>It turns out due to the way GraalVM labels its resources we get to a point where Hibernate is confused. It calls the following code with the wrong parameters:</p>
+
+<p>Input:</p>
+
+<ul>
+  <li>url: “META-INF/persistence.xml”</li>
+  <li>entry: “/META-INF/persistence.xml”</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+   <span class="o">...</span>
+   <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span> <span class="mi">0</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">entry</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+   <span class="o">...</span></code></pre></figure>
+
+<p>With this input <code class="highlighter-rouge">entry.length()</code><em>=25</em> is bigger than <code class="highlighter-rouge">url.length()</code><em>=24</em> resulting in <code class="highlighter-rouge">file.substring(0, -1)</code>, sigh.</p>
+
+<p>To fix this I’ve created a so called <em>shadowed</em> class. This is a class with the exact same signature that I am compiling and adding to the classpath. Because my version of the class is loaded before the Hibernate version of the class, my version is used, I’m overriding the Hibernate version. This is obviously very <strong>ugly</strong>, but it does the job surprisingly well!</p>
+
+<p>I used <code class="highlighter-rouge">Math.max(0, file.length() - entry.length())</code> to fix getting a ‘-1’ in the substring:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+   <span class="o">...</span>
+   <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span> <span class="mi">0</span><span class="o">,</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">entry</span><span class="o">.</span><span class="na">length</span><span class="o">()));</span>
+   <span class="o">...</span></code></pre></figure>
+
+<p>And of course, a new problem pops up. Again with the resources, GraalVM seems to have put <code class="highlighter-rouge">resource</code> as a protocol of all the loaded resources. Opening the resource using an <code class="highlighter-rouge">java.lang.URL</code> caused more problems in <code class="highlighter-rouge">ArchiveHelper</code> because GraalVM doesn’t recognise ‘resource’ as a valid protocol (huh?). This meant I needed to make another small patch in the shadowed <code class="highlighter-rouge">ArchiveHelper</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+   <span class="o">...</span>
+   <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span> <span class="s">"resource"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">protocol</span><span class="o">))</span> <span class="o">{</span>
+      <span class="c1">// FIX: Added for GraalVM, just return the URL</span>
+      <span class="k">return</span> <span class="n">url</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="o">...</span></code></pre></figure>
+
+<p>The next big problem was getting <code class="highlighter-rouge">oracle.jdbc.driver.OracleDriver</code> to accept the fact that GraalVM doesn’t support JMX (and might never support it). The driver tried to load MXBeans and MBeans from a static initializer block, this caused major headaches…. but in the end I managed to solve this again by shadowing another class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">oracle</span><span class="o">.</span><span class="na">as</span><span class="o">.</span><span class="na">jmx</span><span class="o">.</span><span class="na">framework</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.management.MBeanServer</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Shadowing class: oracle.as.jmx.framework.PortableMBeanFactory
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PortableMBeanFactory</span> <span class="o">{</span>
+
+    <span class="cm">/** Just return null, GraalVM doesn't support MBeans/JMX */</span>
+    <span class="kd">public</span> <span class="n">MBeanServer</span> <span class="nf">getMBeanServer</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> <span class="c1">// Do nothing.</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Still the initial static initializer block in <code class="highlighter-rouge">oracle.jdbc.driver.OracleDriver</code> wouldn’t load and broke the native compilation. Browsing the decompiled code I noticed the following lines which might cause a problem:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">...</span>
+<span class="k">try</span> <span class="o">{</span>
+   <span class="k">new</span> <span class="nf">OraclePKIProvider</span><span class="o">();</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">var3</span><span class="o">)</span> <span class="o">{</span>
+   <span class="o">;</span>
+<span class="o">}</span>
+<span class="o">...</span></code></pre></figure>
+
+<p>This class isn’t on the classpath oddly enough, so I decided to create a dummy/shadow class again, just in case:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">oracle</span><span class="o">.</span><span class="na">security</span><span class="o">.</span><span class="na">pki</span><span class="o">;</span>
+
+<span class="cm">/** Another shadowing class... */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OraclePKIProvider</span> <span class="o">{</span>
+   <span class="c1">// Placeholder for GraalVM.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This worked and finally, after adding a <strong>lot</strong> more classes to the <em>-H:ReflectionConfigurationFiles=</em><code class="highlighter-rouge">reflection.json</code> I now have a fully working Hibernate EntityManager with Oracle JDBC driver, able to access our database and execute queries!</p>
+
+<h1 id="docker-multi-stage-build">Docker: Multi-stage build</h1>
+
+<p>After <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: <a href="https://docs.docker.com/develop/develop-images/multistage-build/">Docker multistage</a></p>
+
+<p>After some changes I now have a single Dockerfile with two <code class="highlighter-rouge">FROM</code> sections in it. The first section is the builder-part, the second part is the host-part. My <code class="highlighter-rouge">docker build</code> command now uses that first image to build, passes everything to the second image and builds our resulting Docker container. Really nice, I’m learning new techniques every day.</p>
+
+<h1 id="compilation-speed">Compilation speed</h1>
+
+<p>One thing I noticed during this entire process, the analysis time used by <code class="highlighter-rouge">native-image</code> grew exponentially. The HelloWorld application from <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> took just a couple of seconds, but look at the following output:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>    <span class="nl">classlist:</span>  <span class="mi">10</span><span class="o">,</span><span class="mf">398.63</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>        <span class="o">(</span><span class="n">cap</span><span class="o">):</span>   <span class="mi">1</span><span class="o">,</span><span class="mf">181.85</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>        <span class="nl">setup:</span>   <span class="mi">2</span><span class="o">,</span><span class="mf">329.11</span> <span class="n">ms</span>
+<span class="o">...</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>   <span class="o">(</span><span class="n">typeflow</span><span class="o">):</span> <span class="mi">477</span><span class="o">,</span><span class="mf">904.73</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>    <span class="o">(</span><span class="n">objects</span><span class="o">):</span> <span class="mi">2</span><span class="o">,</span><span class="mi">641</span><span class="o">,</span><span class="mf">498.60</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>   <span class="o">(</span><span class="n">features</span><span class="o">):</span>  <span class="mi">26</span><span class="o">,</span><span class="mf">826.28</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>     <span class="nl">analysis:</span> <span class="mi">3</span><span class="o">,</span><span class="mi">158</span><span class="o">,</span><span class="mf">033.10</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>     <span class="nl">universe:</span> <span class="mi">221</span><span class="o">,</span><span class="mf">809.62</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>      <span class="o">(</span><span class="n">parse</span><span class="o">):</span>  <span class="mi">29</span><span class="o">,</span><span class="mf">723.95</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>     <span class="o">(</span><span class="n">inline</span><span class="o">):</span>  <span class="mi">49</span><span class="o">,</span><span class="mf">021.78</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>    <span class="o">(</span><span class="n">compile</span><span class="o">):</span> <span class="mi">104</span><span class="o">,</span><span class="mf">756.90</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>      <span class="nl">compile:</span> <span class="mi">193</span><span class="o">,</span><span class="mf">699.62</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>        <span class="nl">image:</span>  <span class="mi">31</span><span class="o">,</span><span class="mf">052.63</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>        <span class="nl">write:</span>   <span class="mi">6</span><span class="o">,</span><span class="mf">717.73</span> <span class="n">ms</span>
+<span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>      <span class="o">[</span><span class="n">total</span><span class="o">]:</span> <span class="mi">3</span><span class="o">,</span><span class="mi">625</span><span class="o">,</span><span class="mf">666.08</span> <span class="n">ms</span></code></pre></figure>
+
+<p>It now took a whopping 60 minutes to compile to native! And during the creation of this project I needed to add a single line the <code class="highlighter-rouge">reflecion.json</code> and restart the entire build <strong>a lot</strong> of times. Transforming a project to work with <code class="highlighter-rouge">native-image</code> right now is a really time-consuming endeavour.</p>
+
+<h1 id="final-result-a-working-native-microservice"><a name="results"></a>Final result: a working native microservice</h1>
+
+<p>I’m proud to say I now have a simple CRUD <strong>native</strong> microservice, written in Java, using Java libraries.</p>
+
+<p>It uses:</p>
+
+<ul>
+  <li>Hibernate/Oracle</li>
+  <li>SparkJava</li>
+  <li>GSON</li>
+  <li>Dagger 2</li>
+  <li>SLF4J + java.util.logging</li>
+</ul>
+
+<p>This allows me to serve REST/JSON objects from the database with some Java code in between, what most microservices do.</p>
+
+<p><strong>All the sources are on GitHub</strong>: <a href="https://github.com/royvanrijn/graalvm-native-microservice">check it out</a></p>
+
+<p>Check out all the <a href="https://github.com/royvanrijn/graalvm-native-microservice">code on GitHub</a> and try it out for yourself. To get it up and running all you need it to set up a database and put the connection information in <code class="highlighter-rouge">persistence.xml</code>.</p>
+
+<h2 id="start-up-time">Start up time</h2>
+
+<p>The microservice has a very fast startup time:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Sep 25, 2018 7:22:54 PM org.eclipse.jetty.server.AbstractConnector doStart
+INFO: Started ServerConnector@3650e607{HTTP/1.1,[http/1.1]}{0.0.0.0:4567}
+Sep 25, 2018 7:22:54 PM org.eclipse.jetty.server.Server doStart
+INFO: Started @486ms</code></pre></figure>
+
+<p>Compare this to the Java 8 version (same code):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Sep 25, 2018 9:12:09 PM org.eclipse.jetty.server.AbstractConnector doStart
+INFO: Started ServerConnector@6d5ff62e{HTTP/1.1,[http/1.1]}{0.0.0.0:4567}
+Sep 25, 2018 9:12:09 PM org.eclipse.jetty.server.Server doStart
+INFO: Started @3406ms</code></pre></figure>
+
+<p>With <strong>486ms</strong> compared to <strong>3406ms</strong> the native version starts <strong>7x</strong> faster.</p>
+
+<h2 id="memory-consumption">Memory consumption</h2>
+
+<p>The Java version consumes <strong>267mb</strong> of memory, while the native version takes just <strong>20.7mb</strong>, so it is <strong>13x</strong> smaller.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>At the moment GraalVM is still in its <strong>infancy stage</strong>, there are still a lot of areas that can use some improvement. Most problems I’ve encountered have to do with <strong>resource loading</strong> or <strong>reflection</strong>. The build/analysis-cycle becomes pretty long when you add more and more classes and if you need to add reflection-configuration exceptions each build, this process is quite cumbersome.</p>
+
+<p>Frameworks and libraries will start to notice GraalVM (once it gains more traction) and they will change their code to work better with Graal. For example the team behind Spring Boot is already actively working together with the GraalVM team to get their framework working.</p>
+
+<p>Now some people are shouting to their laptops:</p>
+
+<blockquote>
+  <p>Why not just use Go/Rust/some other language that compiles to native by default!?</p>
+</blockquote>
+
+<p>That is a very good point. If you want to use Go or Rust, go ahead!</p>
+
+<p>Java is the most popular programming language in the world (according to the <a href="https://www.tiobe.com/tiobe-index/">tiobe index</a>). It is the language with most libraries and frameworks (except for Javascript probably). Changing entire development teams to learn Go and/or Rust, changing companies to a new language is very hard to do. Using <code class="highlighter-rouge">native-image</code> might be a more accessible way of transitioning to native backends IMO.</p>
+
+<p>I’ll for sure be keeping track of GraalVM, not just because of the <code class="highlighter-rouge">native-image</code> capabilities, but also because the amazing speed of their VM.</p>
+
+<p>Did you know the Oracle Database has GraalVM support? You can create queries which use Javascript functions or Java methods!</p>
+
+<p>Did you know there is a Graal AOT compiler inside your JDK right now? (see: <a href="http://openjdk.java.net/jeps/295">JEP-295</a>)</p>
+
+<p><strong>Sources:</strong> All the code from this blogpost can be found <a href="https://github.com/royvanrijn/graalvm-native-microservice">here on GitHub</a>.</p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
