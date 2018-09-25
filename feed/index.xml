@@ -5,13 +5,13 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 25 Sep 2018 21:35:15 +0200</pubDate>
-    <lastBuildDate>Tue, 25 Sep 2018 21:35:15 +0200</lastBuildDate>
+    <pubDate>Tue, 25 Sep 2018 21:38:54 +0200</pubDate>
+    <lastBuildDate>Tue, 25 Sep 2018 21:38:54 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
         <title>Part 2: Native microservice in GraalVM</title>
-        <description>&lt;p&gt;Last week I posted &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; of this series of blogposts about &lt;a href=&quot;https://www.graalvm.org/&quot;&gt;GraalVM&lt;/a&gt;.&lt;/p&gt;
+        <description>&lt;p&gt;Last week I posted &lt;a href=&quot;/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; of this series of blogposts about &lt;a href=&quot;https://www.graalvm.org/&quot;&gt;GraalVM&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;We looked at GraalVM and what it can do. We dove into the &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; command and transformed a simple HelloWorld application into a native application (running in Docker).&lt;/p&gt;
 
@@ -92,7 +92,7 @@
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Building everything is the same as in &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Building everything is the same as in &lt;a href=&quot;/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;There are two differences though. The base image can no longer be &lt;code class=&quot;highlighter-rouge&quot;&gt;FROM scratch&lt;/code&gt; because we need access to networking. Second, we need to expose the port of the web application to the outside using &lt;code class=&quot;highlighter-rouge&quot;&gt;EXPOSE 4567&lt;/code&gt;.&lt;/p&gt;
 
@@ -341,13 +341,13 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 &lt;h1 id=&quot;docker-multi-stage-build&quot;&gt;Docker: Multi-stage build&lt;/h1&gt;
 
-&lt;p&gt;After &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: &lt;a href=&quot;https://docs.docker.com/develop/develop-images/multistage-build/&quot;&gt;Docker multistage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;After &lt;a href=&quot;/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: &lt;a href=&quot;https://docs.docker.com/develop/develop-images/multistage-build/&quot;&gt;Docker multistage&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;After some changes I now have a single Dockerfile with two &lt;code class=&quot;highlighter-rouge&quot;&gt;FROM&lt;/code&gt; sections in it. The first section is the builder-part, the second part is the host-part. My &lt;code class=&quot;highlighter-rouge&quot;&gt;docker build&lt;/code&gt; command now uses that first image to build, passes everything to the second image and builds our resulting Docker container. Really nice, I’m learning new techniques every day.&lt;/p&gt;
 
 &lt;h1 id=&quot;compilation-speed&quot;&gt;Compilation speed&lt;/h1&gt;
 
-&lt;p&gt;One thing I noticed during this entire process, the analysis time used by &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; grew exponentially. The HelloWorld application from &lt;a href=&quot;(/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; took just a couple of seconds, but look at the following output:&lt;/p&gt;
+&lt;p&gt;One thing I noticed during this entire process, the analysis time used by &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; grew exponentially. The HelloWorld application from &lt;a href=&quot;/blog/2018/09/part-1-java-to-native-using-graalvm/&quot;&gt;Part 1&lt;/a&gt; took just a couple of seconds, but look at the following output:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;nl&quot;&gt;classlist:&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;398.63&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;app:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;):&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;181.85&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;
@@ -648,7 +648,7 @@ royvanrijn/graal-helloworld                                 latest              
 
 &lt;p&gt;We’ve now turned our Java application into a very small Docker image with a size of just 6.77MB!&lt;/p&gt;
 
-&lt;p&gt;In the next blogpost &lt;a href=&quot;(/blog/2018/09/part-2-native-microservice-in-graalvm&quot;&gt;Part 2&lt;/a&gt; we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?&lt;/p&gt;
+&lt;p&gt;In the next blogpost &lt;a href=&quot;/blog/2018/09/part-2-native-microservice-in-graalvm&quot;&gt;Part 2&lt;/a&gt; we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 20 Sep 2018 09:14:13 +0200</pubDate>

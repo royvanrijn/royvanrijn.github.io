@@ -135,7 +135,7 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/part-2-native-microservice-in-graalvm/">Part 2: Native microservice in GraalVM</a></h1>
 
         <span itemprop="articleBody">
-          <p>Last week I posted <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> of this series of blogposts about <a href="https://www.graalvm.org/">GraalVM</a>.</p>
+          <p>Last week I posted <a href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> of this series of blogposts about <a href="https://www.graalvm.org/">GraalVM</a>.</p>
 
 <p>We looked at GraalVM and what it can do. We dove into the <code class="highlighter-rouge">native-image</code> command and transformed a simple HelloWorld application into a native application (running in Docker).</p>
 
@@ -216,7 +216,7 @@
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
-<p>Building everything is the same as in <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a>.</p>
+<p>Building everything is the same as in <a href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a>.</p>
 
 <p>There are two differences though. The base image can no longer be <code class="highlighter-rouge">FROM scratch</code> because we need access to networking. Second, we need to expose the port of the web application to the outside using <code class="highlighter-rouge">EXPOSE 4567</code>.</p>
 
@@ -465,13 +465,13 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 <h1 id="docker-multi-stage-build">Docker: Multi-stage build</h1>
 
-<p>After <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: <a href="https://docs.docker.com/develop/develop-images/multistage-build/">Docker multistage</a></p>
+<p>After <a href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> some people suggested my Dockerfiles could be made cleaner with a so called ‘multistage’ build. More information can be found here: <a href="https://docs.docker.com/develop/develop-images/multistage-build/">Docker multistage</a></p>
 
 <p>After some changes I now have a single Dockerfile with two <code class="highlighter-rouge">FROM</code> sections in it. The first section is the builder-part, the second part is the host-part. My <code class="highlighter-rouge">docker build</code> command now uses that first image to build, passes everything to the second image and builds our resulting Docker container. Really nice, I’m learning new techniques every day.</p>
 
 <h1 id="compilation-speed">Compilation speed</h1>
 
-<p>One thing I noticed during this entire process, the analysis time used by <code class="highlighter-rouge">native-image</code> grew exponentially. The HelloWorld application from <a href="(/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> took just a couple of seconds, but look at the following output:</p>
+<p>One thing I noticed during this entire process, the analysis time used by <code class="highlighter-rouge">native-image</code> grew exponentially. The HelloWorld application from <a href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1</a> took just a couple of seconds, but look at the following output:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>    <span class="nl">classlist:</span>  <span class="mi">10</span><span class="o">,</span><span class="mf">398.63</span> <span class="n">ms</span>
 <span class="o">[</span><span class="nl">app:</span><span class="mi">9</span><span class="o">]</span>        <span class="o">(</span><span class="n">cap</span><span class="o">):</span>   <span class="mi">1</span><span class="o">,</span><span class="mf">181.85</span> <span class="n">ms</span>
@@ -790,7 +790,7 @@ royvanrijn/graal-helloworld                                 latest              
 
 <p>We’ve now turned our Java application into a very small Docker image with a size of just 6.77MB!</p>
 
-<p>In the next blogpost <a href="(/blog/2018/09/part-2-native-microservice-in-graalvm">Part 2</a> we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?</p>
+<p>In the next blogpost <a href="/blog/2018/09/part-2-native-microservice-in-graalvm">Part 2</a> we’ll take a look at Java applications larger than just HelloWorld. How will GraalVM’s native-image handle those applications, and what are the limitations we’ll run into?</p>
 
 
         </span>
