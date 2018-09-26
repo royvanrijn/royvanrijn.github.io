@@ -476,8 +476,6 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    <span class="c1">// Placeholder for GraalVM.</span>
 <span class="o">}</span></code></pre></figure>
 
-<p>This worked and finally, after adding a <strong>lot</strong> more classes to the <em>-H:ReflectionConfigurationFiles=</em><code class="highlighter-rouge">reflection.json</code> I now have a started Hibernate EntityManager with Oracle JDBC driver.</p>
-
 <p>The next problem is Hibernate’s dynamic runtime proxies. This is something GraalVM can’t handle so we need to make sure Hibernate’s magic is done <strong>before</strong> we start our application. Luckily there is a Maven plugin which does just that:</p>
 
 <figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
@@ -500,7 +498,24 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    <span class="nt">&lt;/executions&gt;</span>
 <span class="nt">&lt;/plugin&gt;</span></code></pre></figure>
 
-<p>Now we have everything in place and we can use the EntityManager to access our database and execute queries.</p>
+<p>Now we have everything in place and we can use the EntityManager to access our database and execute queries…. right?</p>
+
+<p>Well it turns out, the application <em>does</em> start, and it comes a long way. But there is one thing I wasn’t able to fix, loading the definitions.</p>
+
+<p>Hibernate has two ways of loading/mapping the actual class to the database:</p>
+
+<ul>
+  <li>Hbm files</li>
+  <li>Annotations</li>
+</ul>
+
+<p>First I tried to use annotations, but this failed because at runtime the native (pre-loaded) classes don’t have any knowledge left of the annotations they once had.</p>
+
+<p>The second method is using an HBM xml file, but this too failed. Reading the XML file again needs support for annotations and JAXB failed on me.</p>
+
+<p>So we’ll have to stop here. The JDBC driver was working, so probably plain old SQL would work perfectly. Hibernate for now eludes me.</p>
+
+<p><strong>Update:</strong> Previously I mentioned Hibernate was working, this was a mistake on my part!</p>
 
 <h1 id="docker-multi-stage-build">Docker: Multi-stage build</h1>
 
@@ -531,18 +546,20 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 <p>It now took a whopping 60 minutes to compile to native! And during the creation of this project I needed to add a single line the <code class="highlighter-rouge">reflecion.json</code> and restart the entire build <strong>a lot</strong> of times. Transforming a project to work with <code class="highlighter-rouge">native-image</code> right now is a really time-consuming endeavour.</p>
 
+<p>When compiling on my MacBook <strong>for</strong> MacOS, the compilation time is much shorter, just a couple of minutes. The problem here seems to be Docker and building for Ubuntu.</p>
+
 <h1 id="final-result-a-working-native-microservice"><a name="results"></a>Final result: a working native microservice</h1>
 
-<p>I’m proud to say I now have a simple CRUD <strong>native</strong> microservice, written in Java, using Java libraries.</p>
+<p>I’m proud to say I now have a simple CRUD <strong>native</strong> microservice, written in Java, using Java libraries…. that is almost working. With a bit more work on the GraalVM/SubstrateVM side I’m pretty sure this could work in the near future.</p>
 
 <p>It uses:</p>
 
 <ul>
-  <li>Hibernate/Oracle</li>
   <li>SparkJava</li>
   <li>GSON</li>
   <li>Dagger 2</li>
   <li>SLF4J + java.util.logging</li>
+  <li>Hibernate/Oracle (almost working…)</li>
 </ul>
 
 <p>This allows me to serve REST/JSON objects from the database with some Java code in between, what most microservices do.</p>

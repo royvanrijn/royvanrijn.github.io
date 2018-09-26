@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 26 Sep 2018 09:22:56 +0200</pubDate>
-    <lastBuildDate>Wed, 26 Sep 2018 09:22:56 +0200</lastBuildDate>
+    <pubDate>Wed, 26 Sep 2018 17:22:35 +0200</pubDate>
+    <lastBuildDate>Wed, 26 Sep 2018 17:22:35 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -343,8 +343,6 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    &lt;span class=&quot;c1&quot;&gt;// Placeholder for GraalVM.&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;This worked and finally, after adding a &lt;strong&gt;lot&lt;/strong&gt; more classes to the &lt;em&gt;-H:ReflectionConfigurationFiles=&lt;/em&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reflection.json&lt;/code&gt; I now have a started Hibernate EntityManager with Oracle JDBC driver.&lt;/p&gt;
-
 &lt;p&gt;The next problem is Hibernate’s dynamic runtime proxies. This is something GraalVM can’t handle so we need to make sure Hibernate’s magic is done &lt;strong&gt;before&lt;/strong&gt; we start our application. Luckily there is a Maven plugin which does just that:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
@@ -367,7 +365,24 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
 &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Now we have everything in place and we can use the EntityManager to access our database and execute queries.&lt;/p&gt;
+&lt;p&gt;Now we have everything in place and we can use the EntityManager to access our database and execute queries…. right?&lt;/p&gt;
+
+&lt;p&gt;Well it turns out, the application &lt;em&gt;does&lt;/em&gt; start, and it comes a long way. But there is one thing I wasn’t able to fix, loading the definitions.&lt;/p&gt;
+
+&lt;p&gt;Hibernate has two ways of loading/mapping the actual class to the database:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Hbm files&lt;/li&gt;
+  &lt;li&gt;Annotations&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;First I tried to use annotations, but this failed because at runtime the native (pre-loaded) classes don’t have any knowledge left of the annotations they once had.&lt;/p&gt;
+
+&lt;p&gt;The second method is using an HBM xml file, but this too failed. Reading the XML file again needs support for annotations and JAXB failed on me.&lt;/p&gt;
+
+&lt;p&gt;So we’ll have to stop here. The JDBC driver was working, so probably plain old SQL would work perfectly. Hibernate for now eludes me.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; Previously I mentioned Hibernate was working, this was a mistake on my part!&lt;/p&gt;
 
 &lt;h1 id=&quot;docker-multi-stage-build&quot;&gt;Docker: Multi-stage build&lt;/h1&gt;
 
@@ -398,18 +413,20 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 &lt;p&gt;It now took a whopping 60 minutes to compile to native! And during the creation of this project I needed to add a single line the &lt;code class=&quot;highlighter-rouge&quot;&gt;reflecion.json&lt;/code&gt; and restart the entire build &lt;strong&gt;a lot&lt;/strong&gt; of times. Transforming a project to work with &lt;code class=&quot;highlighter-rouge&quot;&gt;native-image&lt;/code&gt; right now is a really time-consuming endeavour.&lt;/p&gt;
 
+&lt;p&gt;When compiling on my MacBook &lt;strong&gt;for&lt;/strong&gt; MacOS, the compilation time is much shorter, just a couple of minutes. The problem here seems to be Docker and building for Ubuntu.&lt;/p&gt;
+
 &lt;h1 id=&quot;final-result-a-working-native-microservice&quot;&gt;&lt;a name=&quot;results&quot;&gt;&lt;/a&gt;Final result: a working native microservice&lt;/h1&gt;
 
-&lt;p&gt;I’m proud to say I now have a simple CRUD &lt;strong&gt;native&lt;/strong&gt; microservice, written in Java, using Java libraries.&lt;/p&gt;
+&lt;p&gt;I’m proud to say I now have a simple CRUD &lt;strong&gt;native&lt;/strong&gt; microservice, written in Java, using Java libraries…. that is almost working. With a bit more work on the GraalVM/SubstrateVM side I’m pretty sure this could work in the near future.&lt;/p&gt;
 
 &lt;p&gt;It uses:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Hibernate/Oracle&lt;/li&gt;
   &lt;li&gt;SparkJava&lt;/li&gt;
   &lt;li&gt;GSON&lt;/li&gt;
   &lt;li&gt;Dagger 2&lt;/li&gt;
   &lt;li&gt;SLF4J + java.util.logging&lt;/li&gt;
+  &lt;li&gt;Hibernate/Oracle (almost working…)&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;This allows me to serve REST/JSON objects from the database with some Java code in between, what most microservices do.&lt;/p&gt;
