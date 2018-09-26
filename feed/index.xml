@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>http://royvanrijn.com/</link>
     <atom:link href="http://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 25 Sep 2018 21:38:54 +0200</pubDate>
-    <lastBuildDate>Tue, 25 Sep 2018 21:38:54 +0200</lastBuildDate>
+    <pubDate>Wed, 26 Sep 2018 09:15:33 +0200</pubDate>
+    <lastBuildDate>Wed, 26 Sep 2018 09:15:33 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
@@ -337,7 +337,31 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    &lt;span class=&quot;c1&quot;&gt;// Placeholder for GraalVM.&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;This worked and finally, after adding a &lt;strong&gt;lot&lt;/strong&gt; more classes to the &lt;em&gt;-H:ReflectionConfigurationFiles=&lt;/em&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reflection.json&lt;/code&gt; I now have a fully working Hibernate EntityManager with Oracle JDBC driver, able to access our database and execute queries!&lt;/p&gt;
+&lt;p&gt;This worked and finally, after adding a &lt;strong&gt;lot&lt;/strong&gt; more classes to the &lt;em&gt;-H:ReflectionConfigurationFiles=&lt;/em&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reflection.json&lt;/code&gt; I now have a started Hibernate EntityManager with Oracle JDBC driver.&lt;/p&gt;
+
+&lt;p&gt;The next problem is Hibernate’s dynamic runtime proxies. This is something GraalVM can’t handle so we need to make sure Hibernate’s magic is done &lt;strong&gt;before&lt;/strong&gt; we start our application. Luckily there is a Maven plugin which does just that:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.hibernate.orm.tooling&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;hibernate-enhance-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;5.3.6.Final&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;executions&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;execution&amp;gt;&lt;/span&gt;
+         &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;failOnError&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/failOnError&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;enableLazyInitialization&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/enableLazyInitialization&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;enableDirtyTracking&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/enableDirtyTracking&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;enableAssociationManagement&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/enableAssociationManagement&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;enableExtendedEnhancement&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/enableExtendedEnhancement&amp;gt;&lt;/span&gt;
+         &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+         &lt;span class=&quot;nt&quot;&gt;&amp;lt;goals&amp;gt;&lt;/span&gt;
+             &lt;span class=&quot;nt&quot;&gt;&amp;lt;goal&amp;gt;&lt;/span&gt;enhance&lt;span class=&quot;nt&quot;&gt;&amp;lt;/goal&amp;gt;&lt;/span&gt;
+         &lt;span class=&quot;nt&quot;&gt;&amp;lt;/goals&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/execution&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;/executions&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we have everything in place and we can use the EntityManager to access our database and execute queries.&lt;/p&gt;
 
 &lt;h1 id=&quot;docker-multi-stage-build&quot;&gt;Docker: Multi-stage build&lt;/h1&gt;
 

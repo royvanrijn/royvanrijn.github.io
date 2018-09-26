@@ -470,7 +470,31 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
    <span class="c1">// Placeholder for GraalVM.</span>
 <span class="o">}</span></code></pre></figure>
 
-<p>This worked and finally, after adding a <strong>lot</strong> more classes to the <em>-H:ReflectionConfigurationFiles=</em><code class="highlighter-rouge">reflection.json</code> I now have a fully working Hibernate EntityManager with Oracle JDBC driver, able to access our database and execute queries!</p>
+<p>This worked and finally, after adding a <strong>lot</strong> more classes to the <em>-H:ReflectionConfigurationFiles=</em><code class="highlighter-rouge">reflection.json</code> I now have a started Hibernate EntityManager with Oracle JDBC driver.</p>
+
+<p>The next problem is Hibernate’s dynamic runtime proxies. This is something GraalVM can’t handle so we need to make sure Hibernate’s magic is done <strong>before</strong> we start our application. Luckily there is a Maven plugin which does just that:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>org.hibernate.orm.tooling<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>hibernate-enhance-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;version&gt;</span>5.3.6.Final<span class="nt">&lt;/version&gt;</span>
+   <span class="nt">&lt;executions&gt;</span>
+      <span class="nt">&lt;execution&gt;</span>
+         <span class="nt">&lt;configuration&gt;</span>
+            <span class="nt">&lt;failOnError&gt;</span>true<span class="nt">&lt;/failOnError&gt;</span>
+            <span class="nt">&lt;enableLazyInitialization&gt;</span>true<span class="nt">&lt;/enableLazyInitialization&gt;</span>
+            <span class="nt">&lt;enableDirtyTracking&gt;</span>true<span class="nt">&lt;/enableDirtyTracking&gt;</span>
+            <span class="nt">&lt;enableAssociationManagement&gt;</span>true<span class="nt">&lt;/enableAssociationManagement&gt;</span>
+            <span class="nt">&lt;enableExtendedEnhancement&gt;</span>false<span class="nt">&lt;/enableExtendedEnhancement&gt;</span>
+         <span class="nt">&lt;/configuration&gt;</span>
+         <span class="nt">&lt;goals&gt;</span>
+             <span class="nt">&lt;goal&gt;</span>enhance<span class="nt">&lt;/goal&gt;</span>
+         <span class="nt">&lt;/goals&gt;</span>
+      <span class="nt">&lt;/execution&gt;</span>
+   <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span></code></pre></figure>
+
+<p>Now we have everything in place and we can use the EntityManager to access our database and execute queries.</p>
 
 <h1 id="docker-multi-stage-build">Docker: Multi-stage build</h1>
 
