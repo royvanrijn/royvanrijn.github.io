@@ -171,40 +171,46 @@
 
 <p>At least, at this moment in time. The developers of Spring Boot are working very hard with the developers of GraalVM to fix all the problems. A lot of work has already been done, you can check out the progress <a href="https://jira.spring.io/browse/SPR-16991">in this Spring issue</a>.</p>
 
+<h1 id="micronautio">Micronaut.io</h1>
+
+<p>A framework that also covers the entire spectrum and <strong>does</strong> work with GraalVM is <a href="http://micronaut.io/">micronaut.io</a>. If you want something that works out of the box, check out their entire stack.</p>
+
+<p>But I’d like to do it enirely myself, find the pitfalls and learn about the limitations of GraalVM at the moment. This is very useful to understand what you can and can’t do. I’m going to build my own GraalVM stack!</p>
+
 <h1 id="web-alternative-sparkjava">Web alternative: SparkJava</h1>
 
-<p>Instead of turning to Spring Boot, let’s keep our application really micro and use something else. <a href="http://sparkjava.com/">Spark Framework</a> is a small web framework. And it works like a charm using <code class="highlighter-rouge">native-image</code>.</p>
+<p>Instead of turning to Spring Boot or micronaut, let’s keep our application really <em>micro</em> and use something else. <a href="http://sparkjava.com/">Spark Framework</a> is a small web framework. And it works like a charm using <code class="highlighter-rouge">native-image</code>.</p>
 
 <p>First I created a simple Maven project and to use the <code class="highlighter-rouge">native-image</code> command I needed all the Maven dependencies as a JAR file on the class path after compilation. To have this I added the following plugin to the <code class="highlighter-rouge">pom.xml</code>:</p>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml">            <span class="c">&lt;!-- Make all the JAR files go into the output target/lib --&gt;</span>
-            <span class="nt">&lt;plugin&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>maven-dependency-plugin<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;executions&gt;</span>
-                    <span class="nt">&lt;execution&gt;</span>
-                        <span class="nt">&lt;id&gt;</span>copy-dependencies<span class="nt">&lt;/id&gt;</span>
-                        <span class="nt">&lt;phase&gt;</span>prepare-package<span class="nt">&lt;/phase&gt;</span>
-                        <span class="nt">&lt;goals&gt;</span>
-                            <span class="nt">&lt;goal&gt;</span>copy-dependencies<span class="nt">&lt;/goal&gt;</span>
-                        <span class="nt">&lt;/goals&gt;</span>
-                        <span class="nt">&lt;configuration&gt;</span>
-                            <span class="nt">&lt;outputDirectory&gt;</span>${project.build.directory}/lib<span class="nt">&lt;/outputDirectory&gt;</span>
-                            <span class="nt">&lt;overWriteReleases&gt;</span>false<span class="nt">&lt;/overWriteReleases&gt;</span>
-                            <span class="nt">&lt;overWriteSnapshots&gt;</span>false<span class="nt">&lt;/overWriteSnapshots&gt;</span>
-                            <span class="nt">&lt;overWriteIfNewer&gt;</span>true<span class="nt">&lt;/overWriteIfNewer&gt;</span>
-                        <span class="nt">&lt;/configuration&gt;</span>
-                    <span class="nt">&lt;/execution&gt;</span>
-                <span class="nt">&lt;/executions&gt;</span>
-            <span class="nt">&lt;/plugin&gt;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- Make all the JAR files go into the output target/lib --&gt;</span>
+<span class="nt">&lt;plugin&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>maven-dependency-plugin<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;executions&gt;</span>
+      <span class="nt">&lt;execution&gt;</span>
+         <span class="nt">&lt;id&gt;</span>copy-dependencies<span class="nt">&lt;/id&gt;</span>
+         <span class="nt">&lt;phase&gt;</span>prepare-package<span class="nt">&lt;/phase&gt;</span>
+         <span class="nt">&lt;goals&gt;</span>
+            <span class="nt">&lt;goal&gt;</span>copy-dependencies<span class="nt">&lt;/goal&gt;</span>
+         <span class="nt">&lt;/goals&gt;</span>
+         <span class="nt">&lt;configuration&gt;</span>
+            <span class="nt">&lt;outputDirectory&gt;</span>${project.build.directory}/lib<span class="nt">&lt;/outputDirectory&gt;</span>
+            <span class="nt">&lt;overWriteReleases&gt;</span>false<span class="nt">&lt;/overWriteReleases&gt;</span>
+            <span class="nt">&lt;overWriteSnapshots&gt;</span>false<span class="nt">&lt;/overWriteSnapshots&gt;</span>
+            <span class="nt">&lt;overWriteIfNewer&gt;</span>true<span class="nt">&lt;/overWriteIfNewer&gt;</span>
+            <span class="nt">&lt;/configuration&gt;</span>
+         <span class="nt">&lt;/execution&gt;</span>
+    <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span></code></pre></figure>
 
 <p>Next I added the following dependency:</p>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml">        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>com.sparkjava<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>spark-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.7.2<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>com.sparkjava<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>spark-core<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;version&gt;</span>2.7.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre></figure>
 
 <p>Now we can write our code and run the HelloWorld web application:</p>
 
