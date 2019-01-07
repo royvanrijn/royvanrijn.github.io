@@ -115,6 +115,76 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/01/longest-path/" title="The longest maze/snake">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The longest maze/snake" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-01-07T08:12:57+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
+            Jan 7, 2019 08:12:57
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/longest-path/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/01/longest-path/">The longest maze/snake</a></h1>
+
+        <span itemprop="articleBody">
+          <p>An amazing website I keep running into (especially through <a href="https://news.ycombinator.com/news">Hacker News</a>) is: <strong><a href="https://www.redblobgames.com/">Red Blob Games</a></strong>.</p>
+
+<p>It has a lot of amazing algorithms explained using interactive Javascript examples. For example take a look at how Amir explains <a href="https://www.redblobgames.com/grids/hexagons/">Hexagonal grids</a> and <a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">A* pathfinding</a>. The interactive demo’s make it easy to grasp all these fun algorithms and implement them yourself.</p>
+
+<h1 id="pathfinding-for-tower-defense">Pathfinding for Tower Defense</h1>
+
+<p>Last week though I was reading this tutorial, <a href="https://www.redblobgames.com/pathfinding/tower-defense/">Pathfinding for Tower Defense</a>.</p>
+
+<p>He explains a method for creating a single <strong>vector/flow field</strong> for game AI’s to follow. This allows a single calculation to be used by a lot of AI bots, which is great for a Tower Defense game.</p>
+
+<p>However, when I was playing with the bottom Javascript example (after pressing ‘Start animation’) I found myself playing a new little game of my own. There is a box, <strong>20</strong>x<strong>10</strong> where you can place <strong>walls</strong>, also you are able to drag/move the <strong>start position</strong> around.</p>
+
+<h1 id="a-new-game">A new game…</h1>
+
+<p>This is the goal:</p>
+
+<p><strong>“What is the longest path possible? / What is the highest number I can reach?”</strong></p>
+
+<p>After coding up a little solver and playing around I found the following configuration:</p>
+
+<p><img src="/images/longestpath.png" alt="A solution with score of 124" /></p>
+
+<p>This is a solution that goes up to <strong>124</strong> (near the top left corner). I’ve also found one later with a score of <strong>125</strong>.</p>
+
+<p>It seems that diagonals are the best way to pack the longest maze into there, but the problem is, one diagonal cuts the field in two smaller parts. Zig-zagging works great, but there is no ‘easiest’ way to zig-zag.</p>
+
+<p>It doesn’t seem to me that there is a trivial solution? I haven’t found one at least, is there? Are there simple optimal patterns for given boxes, NxN?</p>
+
+<p>Searching for a solution seems to be NP-hard and even 20x10 is out of the question, the amount of possible configurations of walls and starting positions is huge and grows exponentially. Coding up a solver is pretty easy though, using some simple heuristics and some random searches I got my 125 solution.</p>
+
+<p>Maybe this would be a fun puzzle for a future <a href="http://azspcs.com/">AZsPCs</a> contest…?</p>
+
+<p>Can you get a better configuration than <strong>125</strong>? I’d love to know.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/longest-path/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2019/01/java-champion/" title="Happy New Year: 2019">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Happy New Year: 2019" width="100" height="100" />
@@ -2464,86 +2534,6 @@ For example:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/09/job-titles-when-writing-code/" title="Job titles when writing code">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/communication.jpg" alt="Job titles when writing code" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-09-17T19:45:12+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-09-17T19:45:12+02:00" class="date">
-            Sep 17, 2016 19:45:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/job-titles-when-writing-code/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/09/job-titles-when-writing-code/">Job titles when writing code</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The company I work for (<a href="https://www.jpoint.nl/">JPoint</a>) we don’t have work titles. Well, we do, but you’re free to pick one. Some people call themselfs ‘software developer’, some are having more luck as ‘software architect’, others label themselfs as ‘software craftsman’ and there might be a ‘software ninja/rockstar’ hanging around.</p>
-
-<p>But I have a problem with that… all those terms don’t reflect on what we do. Currently I’m sitting in a session at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> and I’m having the feeling people don’t realize what their job actually is.</p>
-
-<p>#So, what does a software coder do?#</p>
-
-<p>When creating software <em>we instruct a computer what to do</em>.</p>
-
-<p>That is it.</p>
-
-<p>We tell a machine how to respond. We don’t build things (develop), we don’t slay things (ninja!), we don’t rock, we just tell the computer what to do.</p>
-
-<p>That is why a programming language is called… a <strong>language</strong>. It is a way we, as coders, communicate with the computer.</p>
-
-<p>Is it that simple? Sadly no.</p>
-
-<p>When writing code, we are not alone. There are also other coders that read/write/edit/analyse our code. It isn’t enough that just you and the machine understand, other coders have to understand as well.</p>
-
-<p>We started out programming in binary, but this was way too complicated for humans. So we invented programming languages. First we created assembly. This made it easier for a human to tell the machine what to do. But assembly was still too complicated. Slowly the programming languages became closer and closer to human language.</p>
-
-<p>#Alternatives#</p>
-
-<p>My job is to write code, code that the machine understands. The code must also be pleasant to read and understand by other humans. Also, in this, I’m putting a lot of creativity.</p>
-
-<p>Maybe you are a <strong>software author</strong> or <strong>software writer</strong>:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wri•ter (rahy-ter)
-
-noun
-1. a person engaged in writing (books, articles, stories, etc.) as an occupation or profession; an author or journalist.
-2. a person who commits his or her thoughts, ideas, etc., to writing
-</code></pre></div></div>
-
-<p>This fits our job much better!</p>
-
-<p>If you want something more exotic, and your code has a good flow and shows creativity, you might call yourself a: <strong>software poet</strong>:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>po•et (ˈpoʊ ɪt)
-
-noun
-1. one who writes poetry.
-2. one who displays imagination and sensitivity along with eloquent expression.
-</code></pre></div></div>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/job-titles-when-writing-code/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

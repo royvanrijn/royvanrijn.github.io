@@ -115,6 +115,97 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2014/12/programming-testing-documentation/" title="Programming, testing, documentation">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Programming, testing, documentation" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2014-12-02T16:10:04+01:00" class="date" />
+          <span itemprop="datePublished" content="2014-12-02T16:10:04+01:00" class="date">
+            Dec 2, 2014 16:10:04
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/programming-testing-documentation/">Programming, testing, documentation</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This week I’ve started work on a new project. This project has strict rules regarding documentation and testing. First of all, everything needs to be modelled in EA (Enterprise Architect), from use cases to the REST API fields. Next we need to perform the actual programming, and the testers write down their tests.</p>
+
+<h1 id="realization">Realization</h1>
+
+<p>What is in the <strong>documentation</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+
+<p>What is in the <strong>code</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+
+<p>What is in the <strong>test</strong>?<br />
+- A description of who inputs what and what the results should be</p>
+
+<p>Come to think of it… <strong>programming IS testing IS documenting</strong>, we are all doing exactly the same thing! This sounds a bit wasteful doesn’t it?</p>
+
+<h1 id="duplication">Duplication</h1>
+
+<p>Is this (triple) duplication a bad thing? Well, not exactly, it is a good thing the tests and the code are written twice, this greatly reduces the amount of bugs and errors that always happen when writing something. Thinking and writing those things twice is actually a good thing!<br />
+<strong>BUT</strong>…</p>
+
+<h1 id="divergence">Divergence</h1>
+
+<p>There is a major problem with having duplication: divergence.</p>
+
+<p>What happens when a programmer decides to change the fields in the REST API? The moment he does that the documentation isn’t correct. In the best case all three, documentation, tests and code, get (<em>manually</em>) updated. But this just <strong>never</strong> happens in real life… Tests start lacking behind, documentation ends up being wrong, code ends up doing things we don’t expect. Mostly because we are human and don’t like doing things manually, we are focused on one thing, the code, or the test, or EA.</p>
+
+<p>Another problem is that all three documents are ‘alive’. During design sessions people will change the documentation in EA, but this isn’t yet implemented in the code. Also the test isn’t yet updated. So at every possible moment in time <em>none</em> of the documents hold the entire truth. If you read the documentation you can never rely that the code is actually implemented.</p>
+
+<h1 id="verify-and-automate">Verify and automate!</h1>
+
+<p>If all three things (documentation, tests, code) do the same thing (namely ‘describing how the program should behave’) why don’t we automatically verify this?</p>
+
+<p>If you have a REST API description with all fields and types in Enterprise Architect, why not verify this with the actual code?<br />
+A use case describes all possible paths and the expected outcomes, this is 100% the same as your (automated) tests should be!</p>
+
+<p>We could <em>(and should!)</em> automate and verify this.</p>
+
+<p>This morning the architect showed us three random examples from pieces of documentation in EA (to teach us how to work with the tool). But <em>NONE</em> of the three examples were complete and/or correct. Not a single example was the same in the documentation as implemented in the code. If this is the case, why even bother writing the documentation? It will keep diverging and become more and more useless.</p>
+
+<h1 id="tooling">Tooling</h1>
+
+<p>In a previous project I did, we didn’t have any real documentation. We ‘only’ had Fitnesse tests! But those tests were just as readable as documentation.<br />
+The big advantage was that we had a complete set of tests that:</p>
+
+<ul>
+  <li>are readable as documentation (like use cases)</li>
+  <li>are executable and verify our code does what we expect (and visa versa)</li>
+  <li>ensure the documentation, tests and code are <strong>the same</strong></li>
+</ul>
+
+<p>This fixes all the problems regarding divergence and testing. When we wrote down the specification we instantly have our use cases. How do we know the code isn’t ready yet? When this documentation is executed, it fails! Writing this initial test text should be done together with programmers, testers and the product owner.</p>
+
+<p>So is Fitnesse the best tool for the job? Probably not, it isn’t as elaborate as Enterprise Architect (thankfully?) but maybe it could use some more structure. The big advantage of EA is the re-use of (partial) use cases when we create a new part of the application, you just drag and link parts together. In my experience people don’t treat Fitnesse with the proper respect (it is ‘just’ test code). For some reason Fitnesse code always ends up as spaghetti code, isn’t reusable and becomes a mess, while it should be considered the entire complete and only truth!</p>
+
+<p>Most tools seem to be very developer focussed, Fitnesse and Cucumber. What other tools can help us accomplish this goal of automating and verifying this trinity? Are there better alternatives?</p>
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2014/12/devoxx-be-2014-aftermovie/" title="Devoxx BE 2014: Aftermovie">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx BE 2014: Aftermovie" width="100" height="100" />
@@ -1338,189 +1429,6 @@ Any ideas, anyone :-?</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2014/04/creating-a-chatterbot/" title="Creating a chatterbot (Part 1)">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Creating a chatterbot (Part 1)" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2014-04-24T21:26:21+02:00" class="date" />
-          <span itemprop="datePublished" content="2014-04-24T21:26:21+02:00" class="date">
-            Apr 24, 2014 21:26:21
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/04/creating-a-chatterbot/">Creating a chatterbot (Part 1)</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Ever since the first time I heard about the <a href="http://en.wikipedia.org/wiki/Turing_test">Turing Test</a> I’ve wanted to make my own chatbot. It started probably twenty plus years ago, when the only language I could program in was QBASIC. At that time I never got further than:</p>
-
-<blockquote>
-  <p>Hi computer!<br />
-Hello.</p>
-</blockquote>
-
-<p>…. and now? ….</p>
-
-<h1 id="current-state">Current state</h1>
-
-<p>Since that first try (aged 10 or something) I’ve never tried to build another chatbot. But a couple of days ago I read a news article about the Loebner Prize, an annual event that tests the best chatbots in the world against some human judges, and it sparked my interest again.</p>
-
-<p>I started researching the Loebner Prize winners and there seems to be three distinct groups/types of chatbots and algorithms:</p>
-
-<ol>
-  <li>Template based bots</li>
-  <li>Crowdsourced bots</li>
-  <li>Markov Chain bots</li>
-</ol>
-
-<p>Let me quickly describe how they work.</p>
-
-<h2 id="template-based-bots">Template based bots</h2>
-
-<p>A lot of populair bots (like <a href="http://en.wikipedia.org/wiki/Artificial_Linguistic_Internet_Computer_Entity">A.L.I.C.E.</a> winner of the 2000, 2001 and 2004 Loebner Prize) use pre-defined templates. Most of them use a certain XML template called <a href="http://en.wikipedia.org/wiki/AIML">AIML</a>. This is a short example:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&lt;category&gt;
-  &lt;pattern&gt;* YOUR NAME?&lt;/pattern&gt;
-  &lt;template&gt;My name is Chatbot.&lt;/template&gt;
-&lt;/category&gt;</code></pre></figure>
-
-<p>When somebody talks to the bot it quickly goes through all the templates and finds matches. This particular pattern will for example match:</p>
-<blockquote>
-  <p>What is your name?<br />
-My name is Chatbot.</p>
-</blockquote>
-
-<p>These kinds of bots have enormous databases of AIML templates, mostly hand-crafted by skilled bot configurers. Although they work very good, they don’t seem very ‘smart’ and AI to me; so I’m not going to make another AIML-like bot.</p>
-
-<h2 id="crowdsourced-bots">Crowdsourced bots</h2>
-
-<p>One of the best (most human-like) chatbots is <a href="http://www.cleverbot.com/">Cleverbot</a>. But in my opinion it is one of the most simple bots around. It uses a nice trick and huge database. When it encounters a question it doesn’t know/understand, it just ignores it, and stores it. In another chat session, it’ll mimic and repeat that question to another human. The result is stored in the huge database for future conversations. As a result all the answers it gives are very human-like (because, well, they are human answers).</p>
-
-<p>But there is obviously a huge drawback, for example at one moment the bot is pretending to be a 18 year old male, the next moment it claims to be a 40 year old female. Then it starts talking about how much it loves horses, the next moment it says it hates animals…</p>
-
-<h2 id="markov-chain-bots">Markov Chain bots</h2>
-
-<p>To keep this (long) blog post within reasonable length I’m not going to elaborately explain how <a href="http://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a> work. Markov Chain bots they store words in Markov Chains, let’s for example say we store chains of length three.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">"Let's store this sentence, let's store it in a markov chain."
-
-1&gt; Let's store this
-2&gt; store this sentence
-3&gt; this sentence let's
-4&gt; sentence let's store
-5&gt; let's store it
-6&gt; store it in
-7&gt; it in a
-8&gt; in a markov
-9&gt; a markov chain</code></pre></figure>
-
-<p>Now let’s imagine we are building a valid reply to a question and we already have “let’s store”… what can we do next? We go into the chain and walk the nodes until we find the two matching results (1) and (5). So the sentence can continue with “this” or “it”.</p>
-
-<p>Famous bots like MegaHAL kind of work this way (see their <a href="http://megahal.alioth.debian.org/How.html">explanation</a>). Although this feels much more like real AI/knowledge to me, it also has drawbacks. For example you can’t say these bots are reasoning, they don’t understand the environment/context it is in.</p>
-
-<h1 id="a-new-attempt">A new attempt</h1>
-
-<p>I’ve made a list of what my ideal chatbot should be:</p>
-
-<ul>
-  <li>Learn through conversation/reading text</li>
-  <li>Not just repeat, but understand relations and concepts</li>
-  <li>Have different scopes, global knowledge, conversational scope</li>
-</ul>
-
-<p>Two days ago these ideas started to take shape in my head and I started writing the first code. The first goal is to make the bot able to read text and extract ‘knowledge’ from it.</p>
-
-<p>The first thing I had to do was to break up the input text into pieces, for this I found a great open source framework called <a href="https://opennlp.apache.org/">Apache OpenNLP</a>. It recognises words and sentences, it detects verbs, nouns, pronouns, adjectives, adverbs etc.</p>
-
-<p>The next thing I wanted to do was to turn all the nouns and verbs into their ‘base’. When storing relations in the bots memory I want to avoid duplicate entries, so for example “fish are animals” and “fish is an animal” is the same. For that purpose I’m using <a href="http://wordnet.princeton.edu/">WordNet®</a> in combination with the Java library JWNL.</p>
-
-<p>Currently this is what the bot sees when given some input:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">&gt; The bot can parse sentences and understand their base form
-Transformed: (The DT : WordPart) (bot NN : NounPart) (can MD : WordPart) (parse VB : VerbPart) (sentence NNS : NounPart) (and CC : WordPart) (understand VB : VerbPart) (their PRP$ : WordPart) (base form NN : NounPart) 
-&gt; It can also parse names like Roy van Rijn and numbers like five hundred million and 4 hundred
-Transformed: (It PRP : WordPart) (can MD : WordPart) (also RB : AdverbPart) (parse VB : VerbPart) (name NNS : NounPart) (like IN : WordPart) (Roy van Rijn) (and CC : WordPart) (number NNS : NounPart) (like IN : WordPart) (500000000) (and CC : WordPart) (400)</code></pre></figure>
-
-<p>Understanding what kind of words are used and being able to transform them into the base-form will make it easier to store ‘knowledge’ and make sense of the world in the future.</p>
-
-<h1 id="graph-database">Graph database</h1>
-
-<p>Instead of learning how to use a real graph database (like Neo4J) I decided to build something myself. Normally this is a horrible choice, but I’m in it for the fun and to learn new skills. Although it is yet another distraction from the actual bot, after a couple of hours I’ve got the following unit test working:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Set up some fruity test data:
-</span>
-<span class="c1">// [thing] [connection] [thing] [optional: inverse connection]
-</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"fruit"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">);</span>
-<span class="n">graph</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">);</span>
-    
-<span class="c1">//True: Does human eat banana?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"banana"</span><span class="o">));</span>
-<span class="c1">//True: Does human eat strawberry?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"human"</span><span class="o">,</span> <span class="s">"eat"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
-<span class="c1">//True: Is banana eaten by human?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"banana"</span><span class="o">,</span> <span class="s">"eaten by"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
-<span class="c1">//True: Does the group fruit contain strawberry?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"food"</span><span class="o">,</span> <span class="s">"contains"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span>
-<span class="c1">//True: Is apple a fruit?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"food"</span><span class="o">));</span>
-<span class="c1">//True: Do apples fall from trees?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"apple"</span><span class="o">,</span> <span class="s">"fall"</span><span class="o">,</span> <span class="s">"tree"</span><span class="o">));</span>
-    
-<span class="c1">//False: Is strawberry a human?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"strawberry"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"human"</span><span class="o">));</span>
-<span class="c1">//False: Is fruit a strawberry?
-</span>
-<span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">graph</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="s">"fruit"</span><span class="o">,</span> <span class="s">"be"</span><span class="o">,</span> <span class="s">"strawberry"</span><span class="o">));</span></code></pre></figure>
-
-<p>There are already more facts possible to extract from this ‘knowledge database’ than just the plain information I put in.</p>
-
-<h1 id="data-extraction">Data extraction</h1>
-
-<p>The next step in making my bot is going to be data extraction. I’m probably going to make a small template language that (might!) look like this:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Pattern: [noun] {be} (adj) [noun]
-Store: %1 is %2</code></pre></figure>
-
-<p>The template should match sentences like “fish are animals”, “roses are red”, “Roy is a handsome dude” and “Roy is an obvious liar”.</p>
-
-<p>The bot should be able to store all these ‘facts’ and put them in my graph/relation database. With these data extraction templates it should be possible to build a large knowledge base with facts for the bot, for example just by parsing a Wikipedia dump.</p>
-
-<p>Now I’m going to dive back into the code and continue my chatbot adventure, keep an eye out for part 2!</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/04/creating-a-chatterbot/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

@@ -7,23 +7,23 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Happy New Year: 2019</title>
-  <meta name="description" content="First of all, best wishes for 2019 from me.Time for me to reflect on the last couple of months.Public speakingLast year has been a crazy busy year for me. I’...">
+  <title>The longest maze/snake</title>
+  <meta name="description" content="An amazing website I keep running into (especially through Hacker News) is: Red Blob Games.It has a lot of amazing algorithms explained using interactive Jav...">
   
-  <meta name="keywords" content="royvanrijn,programming,java,Docker,Java,Native Image,">
+  <meta name="keywords" content="royvanrijn,programming,java,maze,Java,path,puzzle,algorithm,">
   
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
   
   <link rel="apple-touch-icon" href="/images/avatar.jpg" />
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="https://royvanrijn.com/blog/2019/01/java-champion/">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2019/01/longest-path/">
   <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@royvanrijn" />
-  <meta name="twitter:title" content="Happy New Year: 2019" />
-  <meta name="twitter:description" content="First of all, best wishes for 2019 from me.Time for me to reflect on the last couple of months.Public speakingLast year has been a crazy ..." />
+  <meta name="twitter:title" content="The longest maze/snake" />
+  <meta name="twitter:description" content="An amazing website I keep running into (especially through Hacker News) is: Red Blob Games.It has a lot of amazing algorithms explained u..." />
   
   <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
   
@@ -113,12 +113,10 @@
     <div class="page-navigation"> 
       <div class="left"> 
          
-          <a href="/blog/2018/09/part-2-native-microservice-in-graalvm/" title="Previous: Part 2: Native microservice in GraalVM">&laquo; Part 2: Native microservice in GraalVM</a> 
+          <a href="/blog/2019/01/java-champion/" title="Previous: Happy New Year: 2019">&laquo; Happy New Year: 2019</a> 
          
       </div> 
       <div class="right"> 
-         
-          <a href="/blog/2019/01/longest-path/" title="Next: The longest maze/snake">The longest maze/snake &raquo; </a> 
          
       </div> 
       <div class="clear"></div> 
@@ -128,47 +126,57 @@
   <article itemscope itemtype="http://schema.org/Article" class="post-content">
     <div class="post">
       <div class="post-thumbnail">
-        <a itemprop="mainEntityOfPage" href="/blog/2019/01/java-champion/" title="Happy New Year: 2019">
+        <a itemprop="mainEntityOfPage" href="/blog/2019/01/longest-path/" title="The longest maze/snake">
         
-          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Happy New Year: 2019" width="100" height="100"/>
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The longest maze/snake" width="100" height="100"/>
         
       </a>
       </div>
       <p class="post-meta">
         Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
-        <span itemprop="dateModified" content="2019-01-06T18:22:32+01:00" class="date" />
-        <span itemprop="datePublished" content="2019-01-06T18:22:32+01:00" class="date">
-          Jan 6, 2019 18:22:32
+        <span itemprop="dateModified" content="2019-01-07T08:12:57+01:00" class="date" />
+        <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
+          Jan 7, 2019 08:12:57
         </span>
-        : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/java-champion/#disqus_thread">0 comments</a>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/longest-path/#disqus_thread">0 comments</a>
       </p>
-      <h1 itemprop="headline" class="post-title">Happy New Year: 2019</h1>
+      <h1 itemprop="headline" class="post-title">The longest maze/snake</h1>
     </div>
 
     <span itemprop="articleBody">
-    <p>First of all, best wishes for 2019 from me.</p>
+    <p>An amazing website I keep running into (especially through <a href="https://news.ycombinator.com/news">Hacker News</a>) is: <strong><a href="https://www.redblobgames.com/">Red Blob Games</a></strong>.</p>
 
-<p>Time for me to reflect on the last couple of months.</p>
+<p>It has a lot of amazing algorithms explained using interactive Javascript examples. For example take a look at how Amir explains <a href="https://www.redblobgames.com/grids/hexagons/">Hexagonal grids</a> and <a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">A* pathfinding</a>. The interactive demo’s make it easy to grasp all these fun algorithms and implement them yourself.</p>
 
-<h1 id="public-speaking">Public speaking</h1>
+<h1 id="pathfinding-for-tower-defense">Pathfinding for Tower Defense</h1>
 
-<p>Last year has been a crazy busy year for me. I’ve been to and spoken at to <a href="https://jspring.nl/">J-Spring</a>, <a href="https://jfall.nl/">J-Fall</a>, <a href="http://devoxx.be/">Devoxx Belgium</a>, <a href="http://devoxx.pl/">Devoxx Poland</a> and JavaOne… errr… Oracle <a href="https://www.oracle.com/code-one/">CodeOne</a> on various topics. From <a href="https://www.youtube.com/watch?v=fFW36-CGkPY">quantum computing</a> to <a href="https://www.youtube.com/watch?v=FyVnL1bfYf">software architecture</a>.</p>
+<p>Last week though I was reading this tutorial, <a href="https://www.redblobgames.com/pathfinding/tower-defense/">Pathfinding for Tower Defense</a>.</p>
 
-<p><strong><a href="https://www.youtube.com/playlist?list=PLVGkcLa8_uiLEv5Fqj-TIErI3ipVifdQp">Here</a></strong> is a list of all my conference talks.</p>
+<p>He explains a method for creating a single <strong>vector/flow field</strong> for game AI’s to follow. This allows a single calculation to be used by a lot of AI bots, which is great for a Tower Defense game.</p>
 
-<h1 id="rotterdamjug">RotterdamJUG</h1>
+<p>However, when I was playing with the bottom Javascript example (after pressing ‘Start animation’) I found myself playing a new little game of my own. There is a box, <strong>20</strong>x<strong>10</strong> where you can place <strong>walls</strong>, also you are able to drag/move the <strong>start position</strong> around.</p>
 
-<p>I’m a big fan of sharing knowledge and getting people together to have fun. This is why I’ve decided to create a new <strong>JUG</strong> (Java User Group) this year in the city of <strong>Rotterdam</strong>, the <a href="https://rotterdamjug.nl/">RotterdamJUG</a>. In November we had our first meeting and I’ve already got more meetups planned.</p>
+<h1 id="a-new-game">A new game…</h1>
 
-<h1 id="java-champion">Java Champion</h1>
+<p>This is the goal:</p>
 
-<p>The biggest achievement this year is probably being named an Oracle <strong><a href="https://twitter.com/Java_Champions/status/1076477461603516420">Java Champion</a></strong>. There are no more than 300 Java Champions in the world and it is a great honor to be added to this group.</p>
+<p><strong>“What is the longest path possible? / What is the highest number I can reach?”</strong></p>
 
-<h1 id="-2019">…. 2019</h1>
+<p>After coding up a little solver and playing around I found the following configuration:</p>
 
-<p>So what’s next for 2019? I’m going to continue with the <strong>RotterdamJUG</strong>, we’ve already got a Kotlin-workshop planned for this month and I’m looking for a venue for a February meetup (anyone?).</p>
+<p><img src="/images/longestpath.png" alt="A solution with score of 124" /></p>
 
-<p>I’m also going to go back to <strong>math</strong> and <strong>puzzles</strong>, I’ve got some idea’s planned and some tricks/<strong>algorithms</strong> to explain, more on that in the coming days/weeks hopefully!</p>
+<p>This is a solution that goes up to <strong>124</strong> (near the top left corner). I’ve also found one later with a score of <strong>125</strong>.</p>
+
+<p>It seems that diagonals are the best way to pack the longest maze into there, but the problem is, one diagonal cuts the field in two smaller parts. Zig-zagging works great, but there is no ‘easiest’ way to zig-zag.</p>
+
+<p>It doesn’t seem to me that there is a trivial solution? I haven’t found one at least, is there? Are there simple optimal patterns for given boxes, NxN?</p>
+
+<p>Searching for a solution seems to be NP-hard and even 20x10 is out of the question, the amount of possible configurations of walls and starting positions is huge and grows exponentially. Coding up a solver is pretty easy though, using some simple heuristics and some random searches I got my 125 solution.</p>
+
+<p>Maybe this would be a fun puzzle for a future <a href="http://azspcs.com/">AZsPCs</a> contest…?</p>
+
+<p>Can you get a better configuration than <strong>125</strong>? I’d love to know.</p>
 
 
     </span>

@@ -5,9 +5,65 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 07 Jan 2019 12:56:29 +0100</pubDate>
-    <lastBuildDate>Mon, 07 Jan 2019 12:56:29 +0100</lastBuildDate>
+    <pubDate>Mon, 07 Jan 2019 13:33:28 +0100</pubDate>
+    <lastBuildDate>Mon, 07 Jan 2019 13:33:28 +0100</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>The longest maze/snake</title>
+        <description>&lt;p&gt;An amazing website I keep running into (especially through &lt;a href=&quot;https://news.ycombinator.com/news&quot;&gt;Hacker News&lt;/a&gt;) is: &lt;strong&gt;&lt;a href=&quot;https://www.redblobgames.com/&quot;&gt;Red Blob Games&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;It has a lot of amazing algorithms explained using interactive Javascript examples. For example take a look at how Amir explains &lt;a href=&quot;https://www.redblobgames.com/grids/hexagons/&quot;&gt;Hexagonal grids&lt;/a&gt; and &lt;a href=&quot;https://www.redblobgames.com/pathfinding/a-star/introduction.html&quot;&gt;A* pathfinding&lt;/a&gt;. The interactive demo’s make it easy to grasp all these fun algorithms and implement them yourself.&lt;/p&gt;
+
+&lt;h1 id=&quot;pathfinding-for-tower-defense&quot;&gt;Pathfinding for Tower Defense&lt;/h1&gt;
+
+&lt;p&gt;Last week though I was reading this tutorial, &lt;a href=&quot;https://www.redblobgames.com/pathfinding/tower-defense/&quot;&gt;Pathfinding for Tower Defense&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;He explains a method for creating a single &lt;strong&gt;vector/flow field&lt;/strong&gt; for game AI’s to follow. This allows a single calculation to be used by a lot of AI bots, which is great for a Tower Defense game.&lt;/p&gt;
+
+&lt;p&gt;However, when I was playing with the bottom Javascript example (after pressing ‘Start animation’) I found myself playing a new little game of my own. There is a box, &lt;strong&gt;20&lt;/strong&gt;x&lt;strong&gt;10&lt;/strong&gt; where you can place &lt;strong&gt;walls&lt;/strong&gt;, also you are able to drag/move the &lt;strong&gt;start position&lt;/strong&gt; around.&lt;/p&gt;
+
+&lt;h1 id=&quot;a-new-game&quot;&gt;A new game…&lt;/h1&gt;
+
+&lt;p&gt;This is the goal:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;“What is the longest path possible? / What is the highest number I can reach?”&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;After coding up a little solver and playing around I found the following configuration:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/longestpath.png&quot; alt=&quot;A solution with score of 124&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a solution that goes up to &lt;strong&gt;124&lt;/strong&gt; (near the top left corner). I’ve also found one later with a score of &lt;strong&gt;125&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;It seems that diagonals are the best way to pack the longest maze into there, but the problem is, one diagonal cuts the field in two smaller parts. Zig-zagging works great, but there is no ‘easiest’ way to zig-zag.&lt;/p&gt;
+
+&lt;p&gt;It doesn’t seem to me that there is a trivial solution? I haven’t found one at least, is there? Are there simple optimal patterns for given boxes, NxN?&lt;/p&gt;
+
+&lt;p&gt;Searching for a solution seems to be NP-hard and even 20x10 is out of the question, the amount of possible configurations of walls and starting positions is huge and grows exponentially. Coding up a solver is pretty easy though, using some simple heuristics and some random searches I got my 125 solution.&lt;/p&gt;
+
+&lt;p&gt;Maybe this would be a fun puzzle for a future &lt;a href=&quot;http://azspcs.com/&quot;&gt;AZsPCs&lt;/a&gt; contest…?&lt;/p&gt;
+
+&lt;p&gt;Can you get a better configuration than &lt;strong&gt;125&lt;/strong&gt;? I’d love to know.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 07 Jan 2019 08:12:57 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2019/01/longest-path/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/01/longest-path/</guid>
+        
+        <category>maze</category>
+        
+        <category>Java</category>
+        
+        <category>path</category>
+        
+        <category>puzzle</category>
+        
+        <category>algorithm</category>
+        
+        
+        <category>GraalVM</category>
+        
+      </item>
     
       <item>
         <title>Happy New Year: 2019</title>
@@ -1465,48 +1521,6 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
         
         
         <category>Agile</category>
-        
-      </item>
-    
-      <item>
-        <title>JavaOne Rock Star 2016</title>
-        <description>&lt;p&gt;Today I got an email with the subject: “Congratulations JavaOne 2016 Rock Star!”. It turns out the JavaOne 2016 Ignite session was voted enough to receive a JavaOne &lt;a href=&quot;https://www.oracle.com/javaone/rock-star-wall-of-fame.html&quot;&gt;Rock Star&lt;/a&gt; Award!&lt;/p&gt;
-
-&lt;p&gt;I was so excited, elated even!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/rockstar1.gif&quot; alt=&quot;Rocking that talk&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;But I quickly found out that the JavaOne Rock Star lifestyle &lt;strong&gt;isn’t&lt;/strong&gt; as much fun as it sounds.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Being 3 hours late for a meeting, even a Rock Star can’t do that.&lt;/li&gt;
-  &lt;li&gt;Peeing in the corner of your office while holding a bottle of Jack Daniels, still not appreciated.&lt;/li&gt;
-  &lt;li&gt;Wearing ripped jeans, a leather jacket and other than that just chest hair, is considered &lt;em&gt;too&lt;/em&gt; casual.&lt;/li&gt;
-  &lt;li&gt;The groupies? It is like answering random Stack Overflow questions, non-stop, face to face.&lt;/li&gt;
-  &lt;li&gt;After each coding session, smashing your MacBook on the floor… quickly becomes expensive.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/drunk-wombat.jpg&quot; alt=&quot;Drunk Wombat holding bottle of Jack Daniels&quot; class=&quot;aligncenter&quot; /&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Wed, 01 Feb 2017 09:28:12 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/</guid>
-        
-        <category>Java</category>
-        
-        <category>JavaOne</category>
-        
-        <category>Rockstar</category>
-        
-        <category>Award</category>
-        
-        <category>Ignite</category>
-        
-        <category>conference</category>
-        
-        
-        <category>Programming</category>
         
       </item>
     
