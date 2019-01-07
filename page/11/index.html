@@ -96,6 +96,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -110,6 +112,219 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/" title="Splitting up Spring Web Flow & Facelets into JARs">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Splitting up Spring Web Flow & Facelets into JARs" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2009-12-15T15:25:15+01:00" class="date" />
+          <span itemprop="datePublished" content="2009-12-15T15:25:15+01:00" class="date">
+            Dec 15, 2009 15:25:15
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">Splitting up Spring Web Flow & Facelets into JARs</a></h1>
+
+        <span itemprop="articleBody">
+          <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
+
+<p>This sounds straightforward but it took quite a bit of code and time…</p>
+
+<p>First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.</p>
+
+<p>The first thing I did was changing our flowRegistry:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- The registry of executable flow definitions --&gt;</span>
+<span class="nt">&lt;webflow:flow-registry</span> <span class="na">id=</span><span class="s">"flowRegistry"</span> 
+   <span class="na">flow-builder-services=</span><span class="s">"facesFlowBuilderServices"</span> 
+   <span class="na">base-path=</span><span class="s">"classpath*:flows"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;webflow:flow-location-pattern</span> <span class="na">value=</span><span class="s">"/**/*-flow.xml"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/webflow:flow-registry&gt;</span></code></pre></figure>
+
+<p>The <em>classpath*:</em> allows SWF to search the whole classpath for flow-directories containing a flow definition.<br />
+In our case it would be: <em>/flows/module1/module1-flow.xml</em></p>
+
+<p>When you try to run this, and access a page we got the following exception:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Caused by: java.lang.IllegalStateException: A ContextResource is required to get relative view paths within this context; the resource was file [D:\projects\projectfromjar\module1\bin\flows\module1\page1.xhtml]
+	at org.springframework.faces.webflow.FlowViewHandler.resolveResourcePath(FlowViewHandler.java:110)
+	at org.springframework.faces.webflow.FlowViewHandler.restoreView(FlowViewHandler.java:74)
+	at com.sun.facelets.FaceletViewHandler.restoreView(FaceletViewHandler.java:316)
+	at org.springframework.faces.webflow.JsfViewFactory.getView(JsfViewFactory.java:93)
+	at org.springframework.webflow.engine.ViewState.resume(ViewState.java:193)
+	at org.springframework.webflow.engine.Flow.resume(Flow.java:545)
+	at org.springframework.webflow.engine.impl.FlowExecutionImpl.resume(FlowExecutionImpl.java:259)
+	... 38 more</code></pre></figure>
+
+<p>For some reason Spring Web Flow doesn’t want to load the facelet. After browsing around Spring’s forums I came across some solutions. They didn’t do the trick, only when combining several methods I got it working for Spring Web Flow 2.0.7.</p>
+
+<p>This is how I did it, we need to tell Facelets to use our custom ClassPathResourceResolver:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- To load flows and pages from JARs, use this resolver --&gt;</span>
+<span class="nt">&lt;context-param&gt;</span>
+      <span class="nt">&lt;param-name&gt;</span>facelets.RESOURCE_RESOLVER<span class="nt">&lt;/param-name&gt;</span>
+      <span class="nt">&lt;param-value&gt;</span>nl.redcode.ClassPathResourceResolver<span class="nt">&lt;/param-value&gt;</span>
+<span class="nt">&lt;/context-param&gt;</span></code></pre></figure>
+
+<p>The resolver itself is basic but does the job:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.sun.facelets.impl.ResourceResolver</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassPathResourceResolver</span> <span class="kd">implements</span> <span class="n">ResourceResolver</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="n">URL</span> <span class="nf">resolveUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="k">return</span> <span class="nf">getClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This will help Facelets to translate a given path to a java.net.URL using the current classloader.<br />
+Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t work because we want to load the pages with our classloader. For this we have the following wrapper:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ContextResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">CustomClassPathContextResource</span> <span class="kd">extends</span> <span class="n">ClassPathResource</span> <span class="kd">implements</span> <span class="n">ContextResource</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">classLoader</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPathWithinContext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getPath</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Resource</span> <span class="nf">createRelative</span><span class="o">(</span><span class="n">String</span> <span class="n">relativePath</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">pathToUse</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">applyRelativePath</span><span class="o">(</span><span class="n">getPath</span><span class="o">(),</span> <span class="n">relativePath</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">pathToUse</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To force Spring to use this Resource instead of FileSystemResource we use a post processor:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.beans.BeansException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.config.BeanPostProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.ApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.support.GenericApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.ResourceLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.webflow.definition.registry.FlowDefinitionRegistry</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlowRegistryClassPathPostProcessor</span> <span class="kd">implements</span> <span class="n">BeanPostProcessor</span> <span class="o">{</span>
+	
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessBeforeInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessAfterInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">bean</span> <span class="k">instanceof</span> <span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">alterRegistry</span><span class="o">((</span><span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="n">bean</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">alterRegistry</span><span class="o">(</span><span class="n">FlowDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">flowId</span> <span class="o">:</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinitionIds</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinition</span><span class="o">(</span><span class="n">flowId</span><span class="o">).</span><span class="na">getApplicationContext</span><span class="o">();</span>
+            <span class="n">overrideResourceLoader</span><span class="o">((</span><span class="n">GenericApplicationContext</span><span class="o">)</span> <span class="n">ctx</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    
+    <span class="cm">/**
+     * Override the ResourceLoader:
+     * We know our flow is always defined as "flows/module1".
+     * From the context we can derive the name of the flow (module1)
+     * So we build up the ClassPathResource base as:
+     * "flows/"+ ctx.getResource("")+ "/"
+     * 
+     * @param ctx
+     */</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">overrideResourceLoader</span><span class="o">(</span><span class="n">GenericApplicationContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="kd">final</span> <span class="n">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">"flows/"</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">""</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">"/"</span><span class="o">);</span>
+
+    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
+        	
+        	<span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getClassLoader</span><span class="o">()</span> <span class="o">{</span>
+        		<span class="k">return</span> <span class="n">cpr</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">();</span>
+        	<span class="o">}</span>
+
+        	<span class="kd">public</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(</span><span class="n">String</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+        		<span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">cpr</span><span class="o">.</span><span class="na">getPath</span><span class="o">()</span> <span class="o">+</span> <span class="n">location</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
+        	<span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When the FlowDefinitionRegistry is created we provide it with a new ResourceLoader. When the resources are requested by Spring Web Flow we create our own CustomClassPathContextResource. This consists of our current location plus the defined location (viewId).</p>
+
+<p>To register this post processor add it to your project-servlet.xml:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"flowRegistryClassPathPostProcessor"</span> <span class="na">class=</span><span class="s">"nl.redcode.FlowRegistryClassPathPostProcessor"</span> <span class="nt">/&gt;</span></code></pre></figure>
+
+<h1 id="how-to-use-it">How to use it</h1>
+
+<p>In our project we have the following flow(s) defined in a seperate JAR:<br />
+/flows/module1/module1-flow.xml</p>
+
+<p>And our pages are in the same directory:<br />
+/flows/module1/page1.xhtml<br />
+/flows/module1/page2.xhtml<br />
+etc…</p>
+
+<p>In the flow we can now use the following view-id’s:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;flow</span> 	<span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/webflow"</span>
+		<span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+		<span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/webflow
+							http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;view-state</span> <span class="na">id=</span><span class="s">"start"</span> <span class="na">view=</span><span class="s">"page1.xhtml"</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/flow&gt;</span></code></pre></figure>
+
+<p>Its also possible to have pages in other places, you can define the views as relative paths. For example:<br />
+<em>”../../shared_pages/page2.xhtml”</em> turns into <em>“/shared_pages/page2.xhtml”</em><br />
+<em>”../pages/page3.xhtml”</em> turns into <em>“/flows/pages/page3.xhtml”</em></p>
+
+<p>The only problem we still have using this method is the deployment with RAD/Eclipse WTP and Facelets auto-refresh. For some reason after deploying our application locks the files in the bin-directory. Eclipse then can’t delete this directory and fails to publish. Ending in one big #fail. But a simple clean, clean, republish, clean, rebuild, restart, shout, scream, cry, rebuild and republish will solve this.</p>
+
+<p>The big advantage is the fact that the flows and pages are now defined in their own JAR files, making releases and sharing classes (like shared services/shared menu’s etc) much easier.</p>
+
+<p>Information on <a href="http://forum.springsource.org/showthread.php?t=64252">Spring forum</a></p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -2243,79 +2458,6 @@ end START
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/" title="Corewars - An Introduction to Hostile Programming">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - An Introduction to Hostile Programming" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-01T11:02:17+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-01T11:02:17+01:00" class="date">
-            Dec 1, 2009 11:02:17
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Corewars - An Introduction to Hostile Programming</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
-
-<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
-
-<p>Here’s an example of a typical Corewar program:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">org   wipe
-    
-step  equ 5
-first equ bomb-10
-    
-    bomb:mov.i #1,       -1
-    
-    ptr: sub   #step,    #first
-    wipe:jmz.f ptr,      @ptr
-    
-mov   bomb,     &gt;ptr
-djn.f wipe,     {ptr-5
-    
-end</code></pre></figure>
-
-<p>This simple example of scissors once held a 20 point lead over it’s rivals. The first instruction is never executed, it’s the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
-
-<p>Corewar is still going strong, and celebrates it’s 25th anniversary in 2009. If you’d like to discover more about Corewar, here are the top resources:</p>
-
-<ul>
-  <li><a href="http://vyznev.net/corewar/guide.html">The Beginner’s Guide to Redcode</a> will teach you the language of Corewar</li>
-  <li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
-  <li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
-  <li><a href="http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
-  <li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
-  <li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
-  <li>#corewars is the official Corewar discussion channel, hosted by irc.freenode.net</li>
-</ul>
-
-<p>What are your experiences with Corewar, have you ever had any success?</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -2370,9 +2512,13 @@ end</code></pre></figure>
         <div class="pagination-item"><strong>11</strong></div>
       
     
+      
+        <div class="pagination-item"><a href="/page/12">12</a></div>
+      
+    
 
     
-      <div class="pagination-item">Next &raquo;</div>
+      <div class="pagination-item"><a href="/page/12">Next &raquo;</a></div>
     
     </div>
   </div>

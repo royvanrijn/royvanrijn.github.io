@@ -96,6 +96,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -110,6 +112,158 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/01/word-finding/" title="Solving a word search puzzle">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving a word search puzzle" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-01-07T08:12:57+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
+            Jan 7, 2019 08:12:57
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/word-finding/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/01/word-finding/">Solving a word search puzzle</a></h1>
+
+        <span itemprop="articleBody">
+          <p>In the <a href="/blog/2019/01/longest-path/">previous post</a> I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.</p>
+
+<p>Last week I used this snippet to solve a word search puzzle a colleague created for us as a “Back to work in 2019”-challenge:</p>
+
+<p><img src="/images/wordsearch.jpg" alt="The word search puzzle" /></p>
+
+<p>(Note: Some fellow <strong>developer</strong> colleagues think that solving the puzzle with code is unfair… heh. really?!)</p>
+
+<h1 id="reading-the-lexicon">Reading the lexicon</h1>
+
+<p>Here is the complete code:</p>
+
+<p>First we’ll need to read in all the possible words we’re looking for. And using the new Java streams this is very easy. Just download one of the many online word-lists and do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">// Store the words we find here:</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+        <span class="c1">// Read in the lexicon, the list of possible words:</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
+                <span class="o">.</span><span class="na">stream</span><span class="o">()</span>                        <span class="c1">// Open the file as a stream</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span> <span class="c1">// Convert all the lines (one word per line) to uppercase</span>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
+
+<p>It was never easier in Java to do File IO and manipulate collections.
+Next I embedded the entire puzzle and turned it into an array of Strings.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// The puzzle: (yeah, hardcoded, sue me.)</span>
+        <span class="n">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
+                          <span class="s">"ARNOSTIASSTUNODJEOFN\n"</span> <span class="o">+</span>
+                          <span class="s">"FMAMLAPCNNTPIKETYKXA\n"</span> <span class="o">+</span>
+                          <span class="s">"UDHBISMUHBALTIGLCCSK\n"</span> <span class="o">+</span>
+                          <span class="s">"HKLANTGERICHTEBBOAER\n"</span> <span class="o">+</span>
+                          <span class="s">"YCHAVFCONTEAMSHUFFLE\n"</span> <span class="o">+</span>
+                          <span class="s">"MIPXRETHNWSLIISIAEIS\n"</span> <span class="o">+</span>
+                          <span class="s">"ZRSEKANFEIEUWUTLBQGW\n"</span> <span class="o">+</span>
+                          <span class="s">"RTNPCIHBNLBRDOEDRGAO\n"</span> <span class="o">+</span>
+                          <span class="s">"UANRIANAEMLOKLFSIETR\n"</span> <span class="o">+</span>
+                          <span class="s">"UPEDMDGCODZUWEATCWCB\n"</span> <span class="o">+</span>
+                          <span class="s">"TMOISREKIURBEGNREKGX\n"</span> <span class="o">+</span>
+                          <span class="s">"UASROCSRPDWIUNPADOXJ\n"</span> <span class="o">+</span>
+                          <span class="s">"JGRFTKIXMLENJRMAGDRU\n"</span> <span class="o">+</span>
+                          <span class="s">"CNLBLMRSAAKNYFATMGCS\n"</span> <span class="o">+</span>
+                          <span class="s">"GEOOYBAVKNNETXCKXOPT\n"</span> <span class="o">+</span>
+                          <span class="s">"ZTVRUNLPVOENIREVLOWU\n"</span> <span class="o">+</span>
+                          <span class="s">"COHRDBONSRHVEUDMURCS\n"</span> <span class="o">+</span>
+                          <span class="s">"QIBEOVPAPPFACTORYDJO\n"</span> <span class="o">+</span>
+                          <span class="s">"MRRLNYTRAPNALGCARIJB\n"</span> <span class="o">+</span>
+                          <span class="s">"DIUEGIPHYJEROENAGRUK\n"</span> <span class="o">+</span>
+                          <span class="s">"KSCNADINEELTHRANABIK"</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span></code></pre></figure>
+
+<h1 id="finding-all-the-words">Finding all the words</h1>
+
+<p>Finally we need to traverse all the possible combinations a word can be made and check against the Set of target words. I’m doing this the <em>dumbest</em> way possible.</p>
+
+<p>First I go over each possible start location by enumerating all x/y combinations:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">y</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span><span class="o">();</span> <span class="n">x</span><span class="o">++)</span> <span class="o">{</span></code></pre></figure>
+
+<p>Next I check each direction using the neighbor algorithm from the <a href="/blog/2019/01/longest-path/">previous post</a>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">direction</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">direction</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="o">;</span> <span class="n">direction</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">direction</span> <span class="o">==</span> <span class="mi">4</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span> <span class="c1">// direction 4 is staying still, invalid.</span></code></pre></figure>
+
+<p>Now we start building the possible word, using two new pointers (tx and ty):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="kt">int</span> <span class="n">ty</span> <span class="o">=</span> <span class="n">y</span><span class="o">,</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>                      <span class="c1">// Create two new pointers</span>
+                    <span class="n">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
+
+<p>While we are within the bounds of the puzzle we must travel in the current ‘direction’. This is done by adding the direction offset (from <a href="/blog/2019/01/longest-path/">previous post</a>) to the <strong>tx</strong> and <strong>ty</strong> pointers.</p>
+
+<p>If the word in-progress matches one we’re searching for, add it to the found words list!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="k">while</span><span class="o">(</span><span class="n">tx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">tx</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">ty</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>  <span class="n">ty</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+
+                        <span class="c1">// Move in the direction:</span>
+                        <span class="n">ty</span> <span class="o">+=</span> <span class="o">((</span><span class="n">direction</span><span class="o">%</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+                        <span class="n">tx</span> <span class="o">+=</span> <span class="o">((</span><span class="n">direction</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+
+                        <span class="c1">// Update the word:</span>
+                        <span class="n">word</span> <span class="o">+=</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">));</span>
+
+                        <span class="c1">// Check against the lexicon:</span>
+                        <span class="k">if</span><span class="o">(</span><span class="n">lexicon</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">word</span><span class="o">))</span> <span class="o">{</span>
+
+                            <span class="c1">// Store the words we found (for later reference):</span>
+                            <span class="n">foundWords</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span></code></pre></figure>
+
+<p>Finally let’s close everything off, for developers with OCD like me:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// Print the words:</span>
+        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+      <span class="o">}</span></code></pre></figure>
+
+<p>This prints the words, sorted, just as we want. <strong>Q.E.D.</strong>.</p>
+
+<h1 id="improvements">Improvements</h1>
+
+<p>The way we now iterate over all the possible word hiding places is very very <em>dumb</em>.</p>
+
+<p>There are some obvious improvements to be made here, for example one could place the entire lexicon in a <strong>tree-like</strong> structure instead of a set of words and stop iterating if the certain branch doesn’t exist.</p>
+
+<p>However, for this puzzle, this challenge, the speed it runs at is good enough!</p>
+
+<h1 id="entire-code">Entire code:</h1>
+
+<p>You can download the complete listing here: <a href="/code/PuzzleSolver.java">PuzzleSolver.java</a></p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/word-finding/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -2529,78 +2683,6 @@ For example:</p>
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/09/the-future-of-java-ee/" title="JavaOne 2016, the Future of Java EE">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaOne 2016, the Future of Java EE" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-09-18T19:45:12+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-09-18T19:45:12+02:00" class="date">
-            Sep 18, 2016 19:45:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/09/the-future-of-java-ee/">JavaOne 2016, the Future of Java EE</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 8 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p>
-
-<p>Oracle finally gave some insight on their proposal of the future of Java EE during <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016 (where I am right now).</p>
-
-<h1 id="what-is-java-ee">What is Java EE?</h1>
-
-<p>First, lets take a step back and look at what Java EE actually is. If you download Java SDK/JRE you are able to compile classes and run them. In the language (java.* and javax.*) there are a couple of libraries that you can use. For example if you want to compute mathematical equations there are classes to use in the java.math.* package.</p>
-
-<p>Oracle quickly realized it is hard to make larger enterprise applications using just these libraries. That is why they developed the following things:</p>
-
-<ol>
-  <li>A set of interfaces (API) for Enterprise Applications (Java EE)</li>
-  <li>A default server <em>implemention</em> for these API’s (Glassfish)</li>
-  <li>A licensing structure for vendors that want to implement these API’s</li>
-</ol>
-
-<p>So if you want to make an Java EE application you can use the Java EE API. For example you can define Servlets for web communication. Next when you deploy this application on an official licensed Java EE server it’ll make sure the methods are implemented and called when a URL is invoked.</p>
-
-<h1 id="java-ee-at-javaone-2016">Java EE at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016</h1>
-
-<p>During the keynote Oracle informed the crowd about Java EE 8. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 8 specification worth the effort? They clearly thought it wasn’t.</p>
-
-<p>The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.</p>
-
-<p>The decision has been made to continue developing Java EE 8. And during the keynote they proposed a release of EE 8 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.</p>
-
-<h1 id="my-thoughts">My thoughts</h1>
-
-<p>Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.</p>
-
-<p>The problem is that Java EE 8 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.</p>
-
-<p>The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.</p>
-
-<p>Vendors like Red Hat (owner of WildFly) are already breaking up their Java EE implementation using frameworks like <a href="http://wildfly-swarm.io/">WildFly Swarm</a>. Swarm allows you to package and run just the parts of the specification you’re using. This is, what I think, the real future of enterprise Java.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -2653,6 +2735,10 @@ For example:</p>
     
       
         <div class="pagination-item"><a href="/page/11">11</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/12">12</a></div>
       
     
 

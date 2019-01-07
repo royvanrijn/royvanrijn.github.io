@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Solving a word search puzzle</title>
+  <meta name="description" content="In the previous post I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.Last week I used this snippet to solve a...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,Java,puzzle,algorithm,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2019/01/word-finding/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Solving a word search puzzle" />
+  <meta name="twitter:description" content="In the previous post I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.Last week I used thi..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2019/01/longest-path/" title="Previous: The longest maze/snake">&laquo; The longest maze/snake</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2019/01/word-finding/" title="Solving a word search puzzle">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving a word search puzzle" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2019-01-07T08:12:57+01:00" class="date" />
+        <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
+          Jan 7, 2019 08:12:57
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/word-finding/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Solving a word search puzzle</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>In the <a href="/blog/2019/01/longest-path/">previous post</a> I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.</p>
+
+<p>Last week I used this snippet to solve a word search puzzle a colleague created for us as a “Back to work in 2019”-challenge:</p>
+
+<p><img src="/images/wordsearch.jpg" alt="The word search puzzle" /></p>
+
+<p>(Note: Some fellow <strong>developer</strong> colleagues think that solving the puzzle with code is unfair… heh. really?!)</p>
+
+<h1 id="reading-the-lexicon">Reading the lexicon</h1>
+
+<p>Here is the complete code:</p>
+
+<p>First we’ll need to read in all the possible words we’re looking for. And using the new Java streams this is very easy. Just download one of the many online word-lists and do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">// Store the words we find here:</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+        <span class="c1">// Read in the lexicon, the list of possible words:</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
+                <span class="o">.</span><span class="na">stream</span><span class="o">()</span>                        <span class="c1">// Open the file as a stream</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span> <span class="c1">// Convert all the lines (one word per line) to uppercase</span>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
+
+<p>It was never easier in Java to do File IO and manipulate collections.
+Next I embedded the entire puzzle and turned it into an array of Strings.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// The puzzle: (yeah, hardcoded, sue me.)</span>
+        <span class="n">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
+                          <span class="s">"ARNOSTIASSTUNODJEOFN\n"</span> <span class="o">+</span>
+                          <span class="s">"FMAMLAPCNNTPIKETYKXA\n"</span> <span class="o">+</span>
+                          <span class="s">"UDHBISMUHBALTIGLCCSK\n"</span> <span class="o">+</span>
+                          <span class="s">"HKLANTGERICHTEBBOAER\n"</span> <span class="o">+</span>
+                          <span class="s">"YCHAVFCONTEAMSHUFFLE\n"</span> <span class="o">+</span>
+                          <span class="s">"MIPXRETHNWSLIISIAEIS\n"</span> <span class="o">+</span>
+                          <span class="s">"ZRSEKANFEIEUWUTLBQGW\n"</span> <span class="o">+</span>
+                          <span class="s">"RTNPCIHBNLBRDOEDRGAO\n"</span> <span class="o">+</span>
+                          <span class="s">"UANRIANAEMLOKLFSIETR\n"</span> <span class="o">+</span>
+                          <span class="s">"UPEDMDGCODZUWEATCWCB\n"</span> <span class="o">+</span>
+                          <span class="s">"TMOISREKIURBEGNREKGX\n"</span> <span class="o">+</span>
+                          <span class="s">"UASROCSRPDWIUNPADOXJ\n"</span> <span class="o">+</span>
+                          <span class="s">"JGRFTKIXMLENJRMAGDRU\n"</span> <span class="o">+</span>
+                          <span class="s">"CNLBLMRSAAKNYFATMGCS\n"</span> <span class="o">+</span>
+                          <span class="s">"GEOOYBAVKNNETXCKXOPT\n"</span> <span class="o">+</span>
+                          <span class="s">"ZTVRUNLPVOENIREVLOWU\n"</span> <span class="o">+</span>
+                          <span class="s">"COHRDBONSRHVEUDMURCS\n"</span> <span class="o">+</span>
+                          <span class="s">"QIBEOVPAPPFACTORYDJO\n"</span> <span class="o">+</span>
+                          <span class="s">"MRRLNYTRAPNALGCARIJB\n"</span> <span class="o">+</span>
+                          <span class="s">"DIUEGIPHYJEROENAGRUK\n"</span> <span class="o">+</span>
+                          <span class="s">"KSCNADINEELTHRANABIK"</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span></code></pre></figure>
+
+<h1 id="finding-all-the-words">Finding all the words</h1>
+
+<p>Finally we need to traverse all the possible combinations a word can be made and check against the Set of target words. I’m doing this the <em>dumbest</em> way possible.</p>
+
+<p>First I go over each possible start location by enumerating all x/y combinations:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">y</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span><span class="o">();</span> <span class="n">x</span><span class="o">++)</span> <span class="o">{</span></code></pre></figure>
+
+<p>Next I check each direction using the neighbor algorithm from the <a href="/blog/2019/01/longest-path/">previous post</a>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">direction</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">direction</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="o">;</span> <span class="n">direction</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">direction</span> <span class="o">==</span> <span class="mi">4</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span> <span class="c1">// direction 4 is staying still, invalid.</span></code></pre></figure>
+
+<p>Now we start building the possible word, using two new pointers (tx and ty):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="kt">int</span> <span class="n">ty</span> <span class="o">=</span> <span class="n">y</span><span class="o">,</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>                      <span class="c1">// Create two new pointers</span>
+                    <span class="n">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
+
+<p>While we are within the bounds of the puzzle we must travel in the current ‘direction’. This is done by adding the direction offset (from <a href="/blog/2019/01/longest-path/">previous post</a>) to the <strong>tx</strong> and <strong>ty</strong> pointers.</p>
+
+<p>If the word in-progress matches one we’re searching for, add it to the found words list!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="k">while</span><span class="o">(</span><span class="n">tx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">tx</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">ty</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>  <span class="n">ty</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+
+                        <span class="c1">// Move in the direction:</span>
+                        <span class="n">ty</span> <span class="o">+=</span> <span class="o">((</span><span class="n">direction</span><span class="o">%</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+                        <span class="n">tx</span> <span class="o">+=</span> <span class="o">((</span><span class="n">direction</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+
+                        <span class="c1">// Update the word:</span>
+                        <span class="n">word</span> <span class="o">+=</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">));</span>
+
+                        <span class="c1">// Check against the lexicon:</span>
+                        <span class="k">if</span><span class="o">(</span><span class="n">lexicon</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">word</span><span class="o">))</span> <span class="o">{</span>
+
+                            <span class="c1">// Store the words we found (for later reference):</span>
+                            <span class="n">foundWords</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span></code></pre></figure>
+
+<p>Finally let’s close everything off, for developers with OCD like me:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// Print the words:</span>
+        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+      <span class="o">}</span></code></pre></figure>
+
+<p>This prints the words, sorted, just as we want. <strong>Q.E.D.</strong>.</p>
+
+<h1 id="improvements">Improvements</h1>
+
+<p>The way we now iterate over all the possible word hiding places is very very <em>dumb</em>.</p>
+
+<p>There are some obvious improvements to be made here, for example one could place the entire lexicon in a <strong>tree-like</strong> structure instead of a set of words and stop iterating if the certain branch doesn’t exist.</p>
+
+<p>However, for this puzzle, this challenge, the speed it runs at is good enough!</p>
+
+<h1 id="entire-code">Entire code:</h1>
+
+<p>You can download the complete listing here: <a href="/code/PuzzleSolver.java">PuzzleSolver.java</a></p>
+
+
+    </span>
+    
+  </article>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'royvanrijn';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

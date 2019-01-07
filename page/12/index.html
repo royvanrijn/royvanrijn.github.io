@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>royvanrijn  | Java, algorithms, math, science and more!</title>
+  <meta name="description" content="Java, algorithms, math, science and more!">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,blog,devoxx,conference,speaker,technology,science,math,azspcs,tips,tricks" />
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/page/12/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="royvanrijn" />
+  <meta name="twitter:description" content="Java, algorithms, math, science and more!" />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+
+  <hr/>
+  <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/" title="Corewars - An Introduction to Hostile Programming">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - An Introduction to Hostile Programming" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2009-12-01T11:02:17+01:00" class="date" />
+          <span itemprop="datePublished" content="2009-12-01T11:02:17+01:00" class="date">
+            Dec 1, 2009 11:02:17
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Corewars - An Introduction to Hostile Programming</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
+
+<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
+
+<p>Here’s an example of a typical Corewar program:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">org   wipe
+    
+step  equ 5
+first equ bomb-10
+    
+    bomb:mov.i #1,       -1
+    
+    ptr: sub   #step,    #first
+    wipe:jmz.f ptr,      @ptr
+    
+mov   bomb,     &gt;ptr
+djn.f wipe,     {ptr-5
+    
+end</code></pre></figure>
+
+<p>This simple example of scissors once held a 20 point lead over it’s rivals. The first instruction is never executed, it’s the bomb used to overwrite opponents. The next two instructions form a loop which looks through memory for an opponent, and the final two instructions actually overwrite it.</p>
+
+<p>Corewar is still going strong, and celebrates it’s 25th anniversary in 2009. If you’d like to discover more about Corewar, here are the top resources:</p>
+
+<ul>
+  <li><a href="http://vyznev.net/corewar/guide.html">The Beginner’s Guide to Redcode</a> will teach you the language of Corewar</li>
+  <li><a href="http://corewar.co.uk/pmars">pMARS</a> is a portable implementation of the Corewar virtual machine</li>
+  <li><a href="http://corewar.co.uk/guides.htm">Corewar Tutorials</a> exist on virtually every aspect of the game</li>
+  <li><a href="http://users.obs.carnegiescience.edu/birk/COREWAR/koenigstuhl.html">Koenigstuhl</a> is an archive of thousands of published Corewar programs</li>
+  <li><a href="http://sal.discontinuity.info/">SAL</a> organises a number of on-going king of the hill tournaments</li>
+  <li><a href="http://sfghoul.blogspot.com">sfghoul</a> and <a href="http://impomatic.blogspot.com">impomatic</a> report the latest Corewar news on their blogs</li>
+  <li>#corewars is the official Corewar discussion channel, hosted by irc.freenode.net</li>
+</ul>
+
+<p>What are your experiences with Corewar, have you ever had any success?</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+
+  <!-- Pagination -->
+  
+  <div class="pagination">
+    <div class="pagination-center">
+    
+      <div class="pagination-item"><a href="/page/11">&laquo; Prev</a></div>
+    
+
+    
+      
+        <div class="pagination-item"><a href="/index.html">1</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/2">2</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/3">3</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/4">4</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/5">5</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/6">6</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/7">7</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/8">8</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/9">9</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/10">10</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/11">11</a></div>
+      
+    
+      
+        <div class="pagination-item"><strong>12</strong></div>
+      
+    
+
+    
+      <div class="pagination-item">Next &raquo;</div>
+    
+    </div>
+  </div>
+  
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

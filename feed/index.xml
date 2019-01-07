@@ -5,9 +5,143 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 07 Jan 2019 14:41:14 +0100</pubDate>
-    <lastBuildDate>Mon, 07 Jan 2019 14:41:14 +0100</lastBuildDate>
+    <pubDate>Mon, 07 Jan 2019 17:51:38 +0100</pubDate>
+    <lastBuildDate>Mon, 07 Jan 2019 17:51:38 +0100</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
+    
+      <item>
+        <title>Solving a word search puzzle</title>
+        <description>&lt;p&gt;In the &lt;a href=&quot;/blog/2019/01/longest-path/&quot;&gt;previous post&lt;/a&gt; I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.&lt;/p&gt;
+
+&lt;p&gt;Last week I used this snippet to solve a word search puzzle a colleague created for us as a “Back to work in 2019”-challenge:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/wordsearch.jpg&quot; alt=&quot;The word search puzzle&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;(Note: Some fellow &lt;strong&gt;developer&lt;/strong&gt; colleagues think that solving the puzzle with code is unfair… heh. really?!)&lt;/p&gt;
+
+&lt;h1 id=&quot;reading-the-lexicon&quot;&gt;Reading the lexicon&lt;/h1&gt;
+
+&lt;p&gt;Here is the complete code:&lt;/p&gt;
+
+&lt;p&gt;First we’ll need to read in all the possible words we’re looking for. And using the new Java streams this is very easy. Just download one of the many online word-lists and do the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Store the words we find here:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foundWords&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Read in the lexicon, the list of possible words:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lexicon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Files&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;readAllLines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FileSystems&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDefault&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getPath&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Lexicon.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)))&lt;/span&gt; 
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;                        &lt;span class=&quot;c1&quot;&gt;// Open the file as a stream&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;line&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toUpperCase&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Convert all the lines (one word per line) to uppercase&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;collect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collectors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// Store this in a list.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It was never easier in Java to do File IO and manipulate collections.
+Next I embedded the entire puzzle and turned it into an array of Strings.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;        &lt;span class=&quot;c1&quot;&gt;// The puzzle: (yeah, hardcoded, sue me.)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TZKRAMONHSMARIONRDBU\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;ARNOSTIASSTUNODJEOFN\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;FMAMLAPCNNTPIKETYKXA\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;UDHBISMUHBALTIGLCCSK\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;HKLANTGERICHTEBBOAER\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;YCHAVFCONTEAMSHUFFLE\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;MIPXRETHNWSLIISIAEIS\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;ZRSEKANFEIEUWUTLBQGW\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;RTNPCIHBNLBRDOEDRGAO\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;UANRIANAEMLOKLFSIETR\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;UPEDMDGCODZUWEATCWCB\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;TMOISREKIURBEGNREKGX\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;UASROCSRPDWIUNPADOXJ\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;JGRFTKIXMLENJRMAGDRU\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;CNLBLMRSAAKNYFATMGCS\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;GEOOYBAVKNNETXCKXOPT\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;ZTVRUNLPVOENIREVLOWU\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;COHRDBONSRHVEUDMURCS\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;QIBEOVPAPPFACTORYDJO\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;MRRLNYTRAPNALGCARIJB\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;DIUEGIPHYJEROENAGRUK\n&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                          &lt;span class=&quot;s&quot;&gt;&quot;KSCNADINEELTHRANABIK&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;\n&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h1 id=&quot;finding-all-the-words&quot;&gt;Finding all the words&lt;/h1&gt;
+
+&lt;p&gt;Finally we need to traverse all the possible combinations a word can be made and check against the Set of target words. I’m doing this the &lt;em&gt;dumbest&lt;/em&gt; way possible.&lt;/p&gt;
+
+&lt;p&gt;First I go over each possible start location by enumerating all x/y combinations:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next I check each direction using the neighbor algorithm from the &lt;a href=&quot;/blog/2019/01/longest-path/&quot;&gt;previous post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;                &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// direction 4 is staying still, invalid.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now we start building the possible word, using two new pointers (tx and ty):&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;                    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;                      &lt;span class=&quot;c1&quot;&gt;// Create two new pointers&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;charAt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Start with the initial character&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;While we are within the bounds of the puzzle we must travel in the current ‘direction’. This is done by adding the direction offset (from &lt;a href=&quot;/blog/2019/01/longest-path/&quot;&gt;previous post&lt;/a&gt;) to the &lt;strong&gt;tx&lt;/strong&gt; and &lt;strong&gt;ty&lt;/strong&gt; pointers.&lt;/p&gt;
+
+&lt;p&gt;If the word in-progress matches one we’re searching for, add it to the found words list!&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;                    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+                        &lt;span class=&quot;c1&quot;&gt;// Move in the direction:&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+                        &lt;span class=&quot;c1&quot;&gt;// Update the word:&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;charAt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+
+                        &lt;span class=&quot;c1&quot;&gt;// Check against the lexicon:&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lexicon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+                            &lt;span class=&quot;c1&quot;&gt;// Store the words we found (for later reference):&lt;/span&gt;
+                            &lt;span class=&quot;n&quot;&gt;foundWords&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+                        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+                    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Finally let’s close everything off, for developers with OCD like me:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Print the words:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;foundWords&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sorted&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This prints the words, sorted, just as we want. &lt;strong&gt;Q.E.D.&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;improvements&quot;&gt;Improvements&lt;/h1&gt;
+
+&lt;p&gt;The way we now iterate over all the possible word hiding places is very very &lt;em&gt;dumb&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;There are some obvious improvements to be made here, for example one could place the entire lexicon in a &lt;strong&gt;tree-like&lt;/strong&gt; structure instead of a set of words and stop iterating if the certain branch doesn’t exist.&lt;/p&gt;
+
+&lt;p&gt;However, for this puzzle, this challenge, the speed it runs at is good enough!&lt;/p&gt;
+
+&lt;h1 id=&quot;entire-code&quot;&gt;Entire code:&lt;/h1&gt;
+
+&lt;p&gt;You can download the complete listing here: &lt;a href=&quot;/code/PuzzleSolver.java&quot;&gt;PuzzleSolver.java&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 07 Jan 2019 08:12:57 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2019/01/word-finding/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/01/word-finding/</guid>
+        
+        <category>Java</category>
+        
+        <category>puzzle</category>
+        
+        <category>algorithm</category>
+        
+        
+        <category>Algorithms</category>
+        
+      </item>
     
       <item>
         <title>The longest maze/snake</title>
@@ -1535,52 +1669,6 @@ Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space
         
         
         <category>Java</category>
-        
-      </item>
-    
-      <item>
-        <title>Inverse Conway's law</title>
-        <description>&lt;p&gt;Today I got to present at &lt;a href=&quot;http://www.devoxx.pl&quot;&gt;Devoxx Poland&lt;/a&gt; on being agile and managing your architecture.&lt;/p&gt;
-
-&lt;p&gt;One of the points I made during the talk had to do with Conway’s Law. For those unfamiliar with it, here it is:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations &lt;cite&gt;M. Conway&lt;/cite&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;This basically means that the code you create is likely to reflect the way the people and teams in your company communicate. For example, banks are usually pretty strict and have a tendency to document things. The code written at banks in turn have the tendency to use SOAP for example, verbose and strict.&lt;/p&gt;
-
-&lt;p&gt;The project I’m currently working on has a very agile mindset, we change a lot and have open communication. This reflects in our codebase as well, all the code is easy to understand and easy to change (thankfully!).&lt;/p&gt;
-
-&lt;p&gt;But lately we’ve started to move away from our old monolith and we’ve began cutting it up into microservices. That’s when I noticed something odd, which I call the &lt;strong&gt;Inverse Conway’s Law&lt;/strong&gt; (maybe it is &lt;strong&gt;Roy’s Law&lt;/strong&gt;?):&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;organisations which radically change their system design should expect changes in communication structure &lt;cite&gt;Roy van Rijn&lt;/cite&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;What does this mean?&lt;/p&gt;
-
-&lt;p&gt;We’ve started to move towards a microservice environment, where each team has a responsibility over a couple of services. They’ve developed it and they &lt;em&gt;own&lt;/em&gt; it. This ownership completely changed the culture in our team. Up to now if the monolithic backend was broken or offline, everyone was hurting and everyone wanted to fix this as soon as possible. With microservices, this is gone. The first thing we now do is check which microservice failed. If it isn’t theirs, it is not their problem, it’s someone elses problem now!&lt;/p&gt;
-
-&lt;p&gt;This is just one example on how changing the design of our system changed the culture and team dynamic. It is one thing that sounds logical when you think about it, but I didn’t expect this before we started the transition.&lt;/p&gt;
-
-</description>
-        <pubDate>Thu, 22 Jun 2017 14:28:12 +0200</pubDate>
-        <link>https://royvanrijn.com/blog/2017/06/inverse-conways-law/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2017/06/inverse-conways-law/</guid>
-        
-        <category>Devoxx</category>
-        
-        <category>Programming</category>
-        
-        <category>Scrum</category>
-        
-        <category>Conway</category>
-        
-        <category>conference</category>
-        
-        
-        <category>Agile</category>
         
       </item>
     

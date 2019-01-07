@@ -96,6 +96,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -110,6 +112,78 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2016/09/the-future-of-java-ee/" title="JavaOne 2016, the Future of Java EE">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaOne 2016, the Future of Java EE" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2016-09-18T19:45:12+02:00" class="date" />
+          <span itemprop="datePublished" content="2016-09-18T19:45:12+02:00" class="date">
+            Sep 18, 2016 19:45:12
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/09/the-future-of-java-ee/">JavaOne 2016, the Future of Java EE</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 8 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p>
+
+<p>Oracle finally gave some insight on their proposal of the future of Java EE during <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016 (where I am right now).</p>
+
+<h1 id="what-is-java-ee">What is Java EE?</h1>
+
+<p>First, lets take a step back and look at what Java EE actually is. If you download Java SDK/JRE you are able to compile classes and run them. In the language (java.* and javax.*) there are a couple of libraries that you can use. For example if you want to compute mathematical equations there are classes to use in the java.math.* package.</p>
+
+<p>Oracle quickly realized it is hard to make larger enterprise applications using just these libraries. That is why they developed the following things:</p>
+
+<ol>
+  <li>A set of interfaces (API) for Enterprise Applications (Java EE)</li>
+  <li>A default server <em>implemention</em> for these API’s (Glassfish)</li>
+  <li>A licensing structure for vendors that want to implement these API’s</li>
+</ol>
+
+<p>So if you want to make an Java EE application you can use the Java EE API. For example you can define Servlets for web communication. Next when you deploy this application on an official licensed Java EE server it’ll make sure the methods are implemented and called when a URL is invoked.</p>
+
+<h1 id="java-ee-at-javaone-2016">Java EE at <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016</h1>
+
+<p>During the keynote Oracle informed the crowd about Java EE 8. Rumor was that Oracle wanted to completely stop developing Java EE because the demand has been decreasing over the years. More and more ‘fat’-jar applications are being deployed on simple web servers that don’t implement the full Java EE specification. Oracle has to think about the return value, is the effort of developing a new Java EE 8 specification worth the effort? They clearly thought it wasn’t.</p>
+
+<p>The problem for Oracle was the big backlash coming from the community. A couple of initiatives were started to create a voice and support for Java EE (for example the Java EE Guardians and EE Central). This put Oracle in a bad position. If they stopped developing Java EE the community would be very dissapointed. The initiatives would demand the rights to the API to keep developing it themselfs. But Oracle can’t do this because they are earning money from selling licenses.</p>
+
+<p>The decision has been made to continue developing Java EE 8. And during the keynote they proposed a release of EE 8 in 2017. Going forward they’re talking about changing the focus to reflect ‘modern’ enterprise development. They want to add support for virtualization (Docker anyone?) and microservices, modernizing Java EE.</p>
+
+<h1 id="my-thoughts">My thoughts</h1>
+
+<p>Parts of Java EE, for example CDI and JPA are in my opinion very succesful. Java EE looked at the options in the market and they’ve defined a new, clearer, general, evolved API that allows you to change the underlaying technology/vendor. This is very good! It is always valuable when vendors get together and define a shared API together based on the lessons learned from their own implementations.</p>
+
+<p>The problem is that Java EE 8 as a whole is too large, it is a monolith. If I start a new project I’d love to pick some parts from Java EE and just use those. There is no need to have one huge Java EE certified server if instead you can pick one particular CDI and JPA implementation.</p>
+
+<p>The future of Java EE isn’t to continue as one big bundled EE server. We need to break it up. All the parts can have their own lifecycle and seperate implementations. This makes it easier to get smaller certified implementations and doesn’t require large EE servers. This also allows for pruning, if certain parts aren’t relevant anymore, don’t use it and stop developing.</p>
+
+<p>Vendors like Red Hat (owner of WildFly) are already breaking up their Java EE implementation using frameworks like <a href="http://wildfly-swarm.io/">WildFly Swarm</a>. Swarm allows you to package and run just the parts of the specification you’re using. This is, what I think, the real future of enterprise Java.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -1423,66 +1497,6 @@ There are some good <strong>pros</strong> but also quite a lot of <strong>cons</
   
     <hr/>
   
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/01/fantasy-names-using-jshell/" title="Fantasy names using Java JShell">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Fantasy names using Java JShell" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-01-21T20:01:11+01:00" class="date" />
-          <span itemprop="datePublished" content="2016-01-21T20:01:11+01:00" class="date">
-            Jan 21, 2016 20:01:11
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/01/fantasy-names-using-jshell/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/01/fantasy-names-using-jshell/">Fantasy names using Java JShell</a></h1>
-
-        <span itemprop="articleBody">
-          <p>I’ve been a big fan of the Java JShell from the early beginning. I was even the first one on the mailing list besides the people from Oracle. I’m working on a weekend/side project involving JavaFX and JShell API now for a couple of days and something was bothering me.</p>
-
-<p>The project I’m working on is targetted at teaching kids to learn Java Programming in a fun way. But automaticly generated variable names called <em>$1</em>, <em>$2</em>, <em>$3</em> etc are not ‘fun’ enough! Luckily I found the following method in the API:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JShell</span> <span class="n">shell</span> <span class="o">=</span> <span class="n">JShell</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">tempVariableNameGenerator</span><span class="o">(</span><span class="k">new</span> <span class="n">CustomNameGenerator</span><span class="o">())</span>
-                <span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></figure>
-
-<p>The name generator has to implement <em>Supplier&lt;String&gt;</em>, with a single method <em>get()</em>, very easy! The generator I’ve made generates semi-random fantasy character names. This is what I’ve ended up with:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">-&gt;</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">10</span>
-<span class="o">|</span>  <span class="n">Expression</span> <span class="n">value</span> <span class="nl">is:</span> <span class="mi">20</span>
-<span class="o">|</span>    <span class="n">assigned</span> <span class="n">to</span> <span class="n">temporary</span> <span class="n">variable</span> <span class="n">baiduth</span> <span class="n">of</span> <span class="n">type</span> <span class="kt">int</span>
-
-<span class="o">-&gt;</span> <span class="n">baiduth</span> <span class="o">*</span> <span class="mi">2</span>
-<span class="o">|</span>  <span class="n">Expression</span> <span class="n">value</span> <span class="nl">is:</span> <span class="mi">40</span>
-<span class="o">|</span>    <span class="n">assigned</span> <span class="n">to</span> <span class="n">temporary</span> <span class="n">variable</span> <span class="n">bleibriss</span> <span class="n">of</span> <span class="n">type</span> <span class="kt">int</span>
-
-<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bleibriss</span> <span class="o">+</span> <span class="n">baiduth</span><span class="o">)</span>
-<span class="mi">60</span>
-
-<span class="o">-&gt;</span> </code></pre></figure>
-
-<p>Much better! If you’re interested in the project I’m working on, teaching kids Java with the JShell API and JavaFX, keep an eye out. When I have something worth showing I’ll push it to GitHub so everyone can enjoy it!</p>
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/01/fantasy-names-using-jshell/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
 
   <!-- Pagination -->
   
@@ -1535,6 +1549,10 @@ There are some good <strong>pros</strong> but also quite a lot of <strong>cons</
     
       
         <div class="pagination-item"><a href="/page/11">11</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/12">12</a></div>
       
     
 
