@@ -182,6 +182,62 @@
 
 <p>Can you get a better configuration than <strong>125</strong>? I’d love to know.</p>
 
+<h1 id="neighbors-algorithm">Neighbors algorithm</h1>
+
+<p>When I wrote a score checker for the puzzle above I needed a way to get the neighbors in an <strong>2D array</strong>. I’ve gotten used to code 2D mazes/puzzles and I always use the following way to calculate all the neighbors.</p>
+
+<p>I find this to be easier and more readable that the alternatives, going over all the -1/+1 combinations or having two nested loops.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// We have a 2D maze:</span>
+<span class="kt">int</span><span class="o">[][]</span> <span class="n">maze</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">10</span><span class="o">][</span><span class="mi">20</span><span class="o">];</span>
+
+<span class="c1">// And a certain location, row and column:</span>
+<span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+
+<span class="c1">// List all neighbors:</span>
+<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">direction</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">direction</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="o">;</span> <span class="n">direction</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">direction</span> <span class="o">==</span> <span class="mi">4</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span> <span class="c1">// Skip 4, this is ourself.</span>
+    
+    <span class="kt">int</span> <span class="n">n_row</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="o">((</span><span class="n">direction</span><span class="o">%</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span> <span class="c1">// Neighbor row</span>
+    <span class="kt">int</span> <span class="n">n_col</span> <span class="o">=</span> <span class="n">col</span> <span class="o">+</span> <span class="o">((</span><span class="n">direction</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span> <span class="c1">// Neighbor column</span>
+
+    <span class="c1">// Check the bounds:</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">n_row</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">n_row</span> <span class="o">&lt;</span> <span class="n">maze</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;&amp;</span> <span class="n">n_col</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">n_col</span> <span class="o">&lt;</span> <span class="n">maze</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+        
+        <span class="c1">// A valid neighbor:</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Neighbor: "</span> <span class="o">+</span> <span class="n">n_row</span> <span class="o">+</span> <span class="s">","</span> <span class="o">+</span> <span class="n">n_col</span> <span class="o">+</span> <span class="s">": "</span> <span class="o">+</span> <span class="n">maze</span><span class="o">[</span><span class="n">n_row</span><span class="o">][</span><span class="n">n_col</span><span class="o">]);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h2 id="how-does-this-work">How does this work?</h2>
+
+<p>First we list all directions with a single integer, 0 to 9, and we’ll need to skip the middle number four, this points to ourself.</p>
+
+<p><img src="/images/neighbors_directions.png" alt="List directions" /></p>
+
+<p>From this single direction we’re able to easily calculate both the new row value (<strong>n_row</strong>) and the new col value (<strong>n_col</strong>). To do this we’ll need to divide by three and use modulo three.</p>
+
+<h2 id="neighbor-row-value">Neighbor row value:</h2>
+
+<p>To find the new <strong>row value</strong> we start our by using <strong>modulo 3</strong>. The only thing left to do is to <strong>subtract 1</strong> and we’ll get the new row value for each direction:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">n_row</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="o">((</span><span class="n">direction</span><span class="o">%</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span></code></pre></figure>
+
+<p><img src="/images/neighbors_row.png" alt="row + (directions%3) - 1" /></p>
+
+<h2 id="neighbor-col-value">Neighbor col value:</h2>
+
+<p>The same thing can be done for the <strong>col value</strong>. Instead of using modulo 3, we’ll be using <strong>divide by 3</strong>. And the same as with the row value, we’ll also need to <strong>subtract 1</strong> to get the following new column values:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">n_col</span> <span class="o">=</span> <span class="n">col</span> <span class="o">+</span> <span class="o">((</span><span class="n">direction</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span></code></pre></figure>
+
+<p><img src="/images/neighbors_col.png" alt="col + (directions/3) - 1" /></p>
+
+<p>And there you go, list all neighbors in a 2D array without using two nested loops and dirty checks.</p>
+
+<p>Happy coding!</p>
+
 
     </span>
     
