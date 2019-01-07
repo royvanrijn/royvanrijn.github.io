@@ -115,6 +115,145 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2012/06/getting-started-arduino-mega/" title="Getting started: Arduino Mega">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Getting started: Arduino Mega" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2012-06-07T13:00:50+02:00" class="date" />
+          <span itemprop="datePublished" content="2012-06-07T13:00:50+02:00" class="date">
+            Jun 7, 2012 13:00:50
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2012/06/getting-started-arduino-mega/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/06/getting-started-arduino-mega/">Getting started: Arduino Mega</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of days ago I’ve received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, capacitors, and a couple of sensors).</p>
+
+<p><img src="/images/arduino_mega-300x225.jpg" alt="arduino_mega" class="alignright" /></p>
+
+<h1 id="arduino">Arduino?</h1>
+
+<p>The Arduino is a handy little board with micro controller. It allows you to connect your computer using USB to the micro controller and easily program and upload the program to the board. I’m a very experienced programmer with almost no experience in electronics.</p>
+
+<p>I know what a resistor is and what it does, but I have no idea how/when to use which resistor. But I’d love to learn more, maybe even build some toy robots in the end. A final goal would be to have a working humanoid with 20+ servo’s, but that goal might be a bit out of reach…</p>
+
+<h1 id="the-examples">The examples</h1>
+
+<p>The first thing I’ve done after unboxing the Arduino was plugging it in my laptop and browsing to the <a href="http://www.arduino.cc">arduino.cc</a> website. There you can download the Arduino IDE.</p>
+
+<p>In the ‘Learning’ section (<a href="http://arduino.cc/en/Tutorial/HomePage">http://arduino.cc/en/Tutorial/HomePage</a>) you’ll find everything you need to get started. There are diagrams on how to wire everything into the breadboard, and there are also code examples.</p>
+
+<p>Some stuff I made using the ‘Learning’ page:</p>
+
+<ul>
+  <li>Blinking LED (the hardware Hello World, yay!)</li>
+  <li>Slowly fading blinking LED</li>
+  <li>Knight rider, KITT LED bar</li>
+  <li>Tiny keyboard with 5 buttons</li>
+  <li>Light reactive theremin</li>
+</ul>
+
+<p>And some projects that aren’t on the example page, but could be made using the things I’ve learned:</p>
+
+<ul>
+  <li>Extended keyboard with 5 buttons and LEDs!</li>
+  <li>Light reactive LED bar (showing the amount of light in LEDs)</li>
+  <li>Knock-sensor, LED shows when it ‘feels/hears’ a knock</li>
+</ul>
+
+<p>All the above was made in a single evening! And there is much much more that you could make with the Arduino. I haven’t even started using servos and/or DC motors. The only problem left is lack of imagination!</p>
+
+<p>For a programmer the code is very easy to understand, and the <a href="http://arduino.cc/en/Reference/HomePage">Arduino Programming Language</a> used is closely related to the C/Java family.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*
+  keyboard
+ 
+ Plays a pitch that changes based on a changing analog input
+ 
+ circuit:
+ * 3 force-sensing resistors from +5V to analog in 0 through 5
+ * 3 10K resistors from analog in 0 through 5 to ground
+ * 8-ohm speaker on digital pin 8
+ 
+ created 21 Jan 2010
+ modified 9 Apr 2012
+ by Tom Igoe 
+
+This example code is in the public domain.
+ 
+ http://arduino.cc/en/Tutorial/Tone3
+ 
+ */</span>
+
+<span class="err">#</span><span class="n">include</span> <span class="s">"pitches.h"</span>
+
+<span class="kd">const</span> <span class="kt">int</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// minimum reading of the sensors that generates a note
+</span>
+
+<span class="c1">// notes to play, corresponding to the 3 sensors:
+</span>
+<span class="kt">int</span> <span class="n">notes</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">NOTE_A4</span><span class="o">,</span> <span class="n">NOTE_B4</span><span class="o">,</span><span class="n">NOTE_C3</span> <span class="o">};</span>
+
+<span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">loop</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">thisSensor</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">thisSensor</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">thisSensor</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="c1">// get a sensor reading:
+</span>
+    <span class="kt">int</span> <span class="n">sensorReading</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">thisSensor</span><span class="o">);</span>
+
+    <span class="c1">// if the sensor is pressed hard enough:
+</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">sensorReading</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// play the note corresponding to this sensor:
+</span>
+      <span class="n">tone</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">notes</span><span class="o">[</span><span class="n">thisSensor</span><span class="o">],</span> <span class="mi">20</span><span class="o">);</span>
+    <span class="o">}</span> 
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
+<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">"Sensor value: "</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
+<span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
+
+<p>This little piece of code above gives unpredictable results because ‘stringThree’ never got an initial value before you started concatenating different data types. Instead you’ll have to do:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
+<span class="n">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">"Sensor value: "</span><span class="o">;</span>
+<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="n">stringOne</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
+<span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
+
+<p>Weird…! But I really suggest trying out the Arduino, give it a chance and you’ll probably like it and learn a lot about electronics and microcontrollers.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2012/06/getting-started-arduino-mega/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2012/05/we-are-now-cached/" title="We are now cached">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="We are now cached" width="100" height="100" />
@@ -1210,58 +1349,6 @@ Here is one (including the best song I’ve created): <a href="http://t.co/9oogn
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2011/11/speaking-at-devoxx/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2011/10/code-quality-confirmation/" title="Code quality: Confirmation">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Code quality: Confirmation" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2011-10-24T15:32:29+02:00" class="date" />
-          <span itemprop="datePublished" content="2011-10-24T15:32:29+02:00" class="date">
-            Oct 24, 2011 15:32:29
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/10/code-quality-confirmation/">Code quality: Confirmation</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Last week I wrote a blogpost on <a href="/blog/2011/10/great-code-is-written-twice-or-more/">rewriting code</a> and improving quality. And now we have some great news that will support my claims. To verify our project and convince management we are doing it the right way, we’ve send a copy of our code to <a href="http://www.tuvit.de/english/Home.asp">TÜViT</a>.</p>
-
-<h1 id="tÜvit">TÜViT</h1>
-
-<p>Most people from Europe will know TÜV. They test and certify cars, elevators and even nuclear power plants. They also verify IT security, quality, infrastructure, products, processes and their requirements. TÜViT is accredited by organisations and official bodies for the areas of IT security and IT quality.</p>
-
-<p><a href="/images/hamisteam.jpg"><img src="/images/hamisteam.jpg" alt="The team that made it possible (and some management stealing our thunder)" /></a></p>
-
-<h1 id="hamis">HaMIS</h1>
-
-<p>Their verdict couldn’t have been better, last week we’ve received a banner with 5 out of 5 stars! Just 5% of the projects that are submitted to get tested get 5 stars. More information can be found in the official <a href="http://www.portofrotterdam.com/en/News/pressreleases-news/Pages/stars-port-rotterdam.aspx">press release</a> and in the <a href="http://www.automatiseringgids.nl/technologie/software/2011/42/vijf-sterren-voor-software-havenbedrijf-rotterdam.aspx">Automatiserings Gids</a> (Dutch).</p>
-
-<h1 id="agile-architecture-and-refactoring">Agile architecture and refactoring</h1>
-
-<p>For some reason getting these 5 stars makes me very proud. Normally I don’t care much about certification, they usually focus on the wrong issues. We know we are doing the right stuff, it feels good, and we’re making good progress. And this is just a perfect verification from an external source, this will also assure management we are on the right track.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/10/code-quality-confirmation/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

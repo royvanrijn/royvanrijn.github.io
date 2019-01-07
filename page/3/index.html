@@ -115,6 +115,79 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2015/12/keep-the-force-asleep/" title="Keep the Force asleep">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/theforce.png" alt="Keep the Force asleep" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2015-12-15T15:00:41+01:00" class="date" />
+          <span itemprop="datePublished" content="2015-12-15T15:00:41+01:00" class="date">
+            Dec 15, 2015 15:00:41
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2015/12/keep-the-force-asleep/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/12/keep-the-force-asleep/">Keep the Force asleep</a></h1>
+
+        <span itemprop="articleBody">
+          <p>At the moment it is very hard for an online nerd on Twitter. Star Wars ep 7: The Force Awakens has been released into the wild and most of us haven’t seen it yet. But luckely there is a solution, I’ve created a handy <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a>.</p>
+
+<p>A bookmarklet is a piece of Javascript code that you can add as a bookmark. When you are on a certain website (like Twitter) you can press the bookmarklet and the Javascript is executed. The bookmarklet code I’m using has been created using this great website: <a href="http://www.conroyp.com/2010/03/11/declutter/">DeClutter Twitter</a> and it removes most Star Wars related tweets from your timeline!</p>
+
+<h2 id="forcefilter">ForceFilter</h2>
+
+<p>Just drag this bookmarklet <a href="javascript:%24(%27body%27).bind(%27ajaxSuccess%27,declutter)%3Bvoid(declutter())%3Bfunction declutter()%7Bvar rk%3D%5B%27star wars%27, %27the empire%27, %27the rebellion%27, %27han solo%27, %27theforceawakens%27, %27jar jar%27, %27kylo ren%27, %27rey%27, %27finn%27, %27poe dameron%27, %27xwing%27, %27deathstar%27, %27c-3po%27, %27r2d2%27, %27darth%27, %27jedi%27, %27sith%27, %27leia%27%5D%3B%24.each(%24(%27li.stream-item%27), function()%7Bvar c %3D %24(this).html()%3B var p %3D %24(this)%3B %24.each(rk, function(i, v)%7B if(c.toLowerCase().indexOf(v) &gt; 0)%7Bp.remove()%3B%7D%7D)%3B%7D)%3B%7D">ForceFilter</a> to the bookmark section of your browser. Next time you open Twitter, quickly press the bookmarklet before reading.</p>
+
+<h2 id="the-code">The code</h2>
+
+<p>Below is the (generated) code, again, made by <a href="http://www.conroyp.com/2010/03/11/declutter/">DeClutter Twitter</a> (all credits belong there):</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">javascript</span><span class="p">:</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">'body'</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'ajaxSuccess'</span><span class="p">,</span><span class="nx">declutter</span><span class="p">);</span>
+  
+  <span class="k">void</span><span class="p">(</span><span class="nx">declutter</span><span class="p">());</span>
+
+  <span class="kd">function</span> <span class="nx">declutter</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Remove tweets containing these terms:</span>
+    <span class="kd">var</span> <span class="nx">rk</span><span class="o">=</span><span class="p">[</span><span class="s1">'star wars'</span><span class="p">,</span> <span class="s1">'the empire'</span><span class="p">,</span> <span class="s1">'the rebellion'</span><span class="p">,</span> <span class="s1">'han solo'</span><span class="p">,</span> <span class="s1">'theforceawakens'</span><span class="p">,</span> <span class="s1">'jar jar'</span><span class="p">,</span> <span class="s1">'kylo ren'</span><span class="p">,</span> <span class="s1">'rey'</span><span class="p">,</span> <span class="s1">'finn'</span><span class="p">,</span> <span class="s1">'poe dameron'</span><span class="p">,</span> <span class="s1">'xwing'</span><span class="p">,</span> <span class="s1">'deathstar'</span><span class="p">,</span> <span class="s1">'c-3po'</span><span class="p">,</span> <span class="s1">'r2d2'</span><span class="p">,</span> <span class="s1">'jedi'</span><span class="p">,</span> <span class="s1">'darth'</span><span class="p">,</span> <span class="s1">'sith'</span><span class="p">,</span> <span class="s1">'leia'</span><span class="p">];</span>
+
+    <span class="c1">// Twitter timeline entries have class "stream-item" - loop through them, </span>
+    <span class="c1">// removing those that match blacklisted term</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">'li.stream-item'</span><span class="p">),</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">();</span> 
+        <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> 
+        <span class="c1">// Iterate through the keywords, removing the parent element </span>
+        <span class="c1">// where a match is found</span>
+        <span class="nx">$</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rk</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span> 
+            <span class="c1">// Lower-case the text so case issues don't trip us up</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="nx">p</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">}</span></code></pre></figure>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2015/12/keep-the-force-asleep/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2015/12/google-guava-range-with-localdate/" title="Google Guava: Range with LocalDate">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/guava.png" alt="Google Guava: Range with LocalDate" width="100" height="100" />
@@ -1275,53 +1348,6 @@ The big advantage was that we had a complete set of tests that:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2014/12/devoxx-be-2014-aftermovie/" title="Devoxx BE 2014: Aftermovie">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx BE 2014: Aftermovie" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2014-12-01T12:09:18+01:00" class="date" />
-          <span itemprop="datePublished" content="2014-12-01T12:09:18+01:00" class="date">
-            Dec 1, 2014 12:09:18
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/devoxx-be-2014-aftermovie/">Devoxx BE 2014: Aftermovie</a></h1>
-
-        <span itemprop="articleBody">
-          <p>A couple of weeks ago was Devoxx in Antwerp again, the largest annual European Java conference. As always I was there, with my camera, to capture the amazing atmosphere:</p>
-
-<iframe type="text/html" src="http://player.vimeo.com/video/113170080" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<p>We (me and my colleagues) had a great time, and learned some new things. But most of all, we met great people and received a lot of inspiration. This year I´ve done a short 5 minute Ignite talk on Mutation testing. This was my first ´Ignite´ session and it is hard! The format of an Ignite session is, 20 slides, 5 minutes, auto forward each 20 seconds. This means timing is everything. A 50 minute talk is much easier, you decide when you´ve told enough and press next.</p>
-
-<p>Also, my J-Fall presentation on mutation testing is now available online (50 minutes, in Dutch).</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="http://www.youtube.com/embed/aLAcvMI2VBI"></iframe>
-
-<p>⋆Brag⋆ It was voted as best session of the conference with 61 people! Also of all the visitors it was voted second ´most populair´, surpassed by one vote, but the other session had more people in the room!</p>
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

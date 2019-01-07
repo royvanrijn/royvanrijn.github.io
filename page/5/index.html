@@ -115,6 +115,164 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2014/02/hacking-runkeeper-data/" title="Hacking your RunKeeper data">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hacking your RunKeeper data" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2014-02-14T23:38:17+01:00" class="date" />
+          <span itemprop="datePublished" content="2014-02-14T23:38:17+01:00" class="date">
+            Feb 14, 2014 23:38:17
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/02/hacking-runkeeper-data/">Hacking your RunKeeper data</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This week I’ve started running/jogging, and I’m using <a href="http://www.runkeeper.com">RunKeeper</a> on my iPhone to track my progress.</p>
+
+<p>RunKeeper stores all the GPS data from your runs. This data is displayed per run, including a nice map of your route. Most important data can be reached throught the web interface, things like pace (min/km or min/mile) and distance. The most rewarding thing in running is breaking your own records, and RunKeeper has a couple of records:</p>
+
+<ul>
+  <li>Longest run (distance)</li>
+  <li>Longest run (time)</li>
+  <li>Most calories burned in a run</li>
+  <li>Fastest average pace</li>
+  <li>etc</li>
+</ul>
+
+<p>As you can see, all those statistics are about single runs, what I’m missing are the following records:</p>
+
+<p>Fastest 1 KM, 3 KM, 5K, 10K etc.</p>
+
+<p>For example, when I’ve run a very fast 5.5 km run, I’d love to see this reflected as my 5K personal record, but right now it is lost because I’ve already done a slow 6 km run and a very fast 1 km sprint.</p>
+
+<h1 id="export-data">Export data</h1>
+
+<p>But luckily RunKeeper has a very useful option for us developers: <strong>Settings &gt; Export data</strong>.<br />
+This results in a ZIP file with GPX files, raw GPS data with time and location!</p>
+
+<h2 id="jaxb">JAXB</h2>
+
+<p>The first thing I did was download the XSD and generate the JAXB Java code:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ xjc -p com.royvanrijn.running.gpx gpx.xsd 
+parsing a schema...
+compiling a schema...
+com/royvanrijn/running/gpx/BoundsType.java
+com/royvanrijn/running/gpx/CopyrightType.java
+com/royvanrijn/running/gpx/EmailType.java
+com/royvanrijn/running/gpx/ExtensionsType.java
+com/royvanrijn/running/gpx/GpxType.java
+com/royvanrijn/running/gpx/LinkType.java
+com/royvanrijn/running/gpx/MetadataType.java
+com/royvanrijn/running/gpx/ObjectFactory.java
+com/royvanrijn/running/gpx/PersonType.java
+com/royvanrijn/running/gpx/PtType.java
+com/royvanrijn/running/gpx/PtsegType.java
+com/royvanrijn/running/gpx/RteType.java
+com/royvanrijn/running/gpx/TrkType.java
+com/royvanrijn/running/gpx/TrksegType.java
+com/royvanrijn/running/gpx/WptType.java
+com/royvanrijn/running/gpx/package-info.java</code></pre></figure>
+
+<p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">"com.royvanrijn.running.gpx"</span><span class="o">);</span>
+<span class="n">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
+<span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
+
+<p>The next thing I did was translate the lat+long+time waypoints into ‘legs’ consisting of meters+seconds.<br />
+Those legs can be used to check for a record during longer runs, like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">analyze</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;();</span>
+	
+	<span class="kt">double</span> <span class="n">runningDistance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+	<span class="k">for</span><span class="o">(</span><span class="n">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//Add next leg to the tail:
+</span>
+		<span class="n">cache</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">leg</span><span class="o">);</span>
+		<span class="n">runningDistance</span> <span class="o">+=</span> <span class="n">leg</span><span class="o">.</span><span class="na">getMeters</span><span class="o">();</span>
+		
+		<span class="c1">//If possible remove from head:
+</span>
+		<span class="k">while</span><span class="o">((</span><span class="n">runningDistance</span><span class="o">-</span><span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">())</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">runningDistance</span> <span class="o">-=</span> <span class="n">cache</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getMeters</span><span class="o">();</span>
+		<span class="o">}</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="n">runningDistance</span> <span class="o">&gt;</span> <span class="n">targetDistance</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">//Check if the current target distance time is a record:
+</span>
+			<span class="n">checkTime</span><span class="o">(</span><span class="n">cache</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For example using a target of 5000 meters in a 5070 meter run, this analysis finds the following 5K times:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">5000.135743886022	00:29:57
+5001.356437683744	00:29:55
+5013.145427605677	00:30:01
+5009.98623847093	00:30:00
+5000.938905254762	00:30:01
+5001.8612669243685	00:30:03
+5000.555676905546	00:30:05
+5000.514815789608	00:30:07
+5000.514815789608	00:30:07</code></pre></figure>
+
+<p>The information from RunKeeper website is:</p>
+
+<ul>
+  <li>Distance: <strong>5.07 km</strong></li>
+  <li>Time: <strong>30:38</strong></li>
+  <li>Pace: <strong>6:03</strong></li>
+</ul>
+
+<p>But when analysing the data more accurately, it could have said:</p>
+
+<ul>
+  <li>New personal record 3K: <strong>00:16:46</strong></li>
+  <li>New personal record 5K: <strong>00:29:55</strong></li>
+</ul>
+
+<p>I couldn’t believe this feature wasn’t available in RunKeeper… but after a lot of Googling it turns out a lot of other people are looking for this ‘most requested’ feature! With a little bit of Java (100 lines of code) you can get a pretty good result:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Done analyzing all runs:
+Fastest 100m run:	00:00:13
+Fastest 200m run:	00:00:48
+Fastest 400m run:	00:02:01
+Fastest 1500m run:	00:07:50
+Fastest 3000m run:	00:16:46
+Fastest 5000m run:	00:29:55
+Fastest 10000m run:	--:--:--</code></pre></figure>
+
+<p>I’m now thinking of making a simple JavaScript application (no backend) that uses the RunKeeper export zip file as input and displays a lot of additional data. Are you interested in this? Please drop a comment and convince me to make this for you guys and girls!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2014/02/hacking-runkeeper-data/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2014/01/stargazing-my-first-telescope/" title="Stargazing: My first telescope">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stargazing: My first telescope" width="100" height="100" />
@@ -1443,73 +1601,6 @@ And I’m not talking about ‘craftsmanship’ ethics such as <em>“always mak
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2013/06/ethics-for-programmers/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2013/06/devoxx4kids-in-the-netherlands/" title="Why are you not organizing a Devoxx4Kids?">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Why are you not organizing a Devoxx4Kids?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2013-06-10T15:39:51+02:00" class="date" />
-          <span itemprop="datePublished" content="2013-06-10T15:39:51+02:00" class="date">
-            Jun 10, 2013 15:39:51
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2013/06/devoxx4kids-in-the-netherlands/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/06/devoxx4kids-in-the-netherlands/">Why are you not organizing a Devoxx4Kids?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Last year I attended the first Devoxx4Kids in Gent (Belgium). It is a day where programmers introduce children aged 10 to 14 to programming. That day we used Scratch (a fun online programming framework), Lego Mindstorms and a Mars rover (with emulation). And it was a blast!</p>
-
-<p>Once I returned and edited <a href="https://vimeo.com/51393678">this</a> video and showed it to my colleagues we quickly came to the conclusion: We need to organize a Dutch version!</p>
-
-<h1 id="organizing">Organizing</h1>
-
-<p>Edwin (a <a href="http://www.jpoint.nl">JPoint</a> colleague) and I tried a couple of contacts and found a willing foe in the form of the <a href="http://www.uva.nl/en/home">University of Amsterdam</a>. They saw the potential and were kind enough to offer us rooms, laptops, Lego Mindstorms and a completely organized lunch! We in turn hired two students to assist with the sessions and took care of subscription, marketing and the technical know-how. It doesn’t take a lot of organizational skills to organize a Devoxx4Kids session.</p>
-
-<h1 id="devoxx4kids-nl">Devoxx4Kids NL</h1>
-
-<p>Last saturday was the moment of truth, in the morning kids and parents started to arrive at the university. We did a quick introduction, flew around with (off the shelf) quadcopter to start off with the wow-factor and then we went into the sessions. In Belgium all the parents left the kids, but this time most parents accompanied the children into the session rooms. In retrospect this wasn’t very good and next time we should banish parents from the sessions. The sessions we organized:</p>
-
-<ul>
-  <li><a href="http://scratch.mit.edu/about/">Scratch</a></li>
-  <li><a href="http://mindstorms.lego.com/">Lego Mindstorms</a></li>
-  <li><a href="http://www.arduino.cc//">Arduino</a> (my own session)</li>
-</ul>
-
-<p>The kids were split up into three groups and rotated over all the sessions. Every session was 90 minutes, in retrospect this is a bit long. Most kids got tired and a bit bored after about 45 to 60 minutes. The last track of the day the kids were a lot more distracted. For future Devoxx4Kids events I’d rather do short fun 45 minute sessions instead of complete in depth 90 minute sessions.</p>
-
-<p>Kids learn quickly… even faster than adults! I tried my Arduino session on a couple of adults and they took about 75 minutes to complete all the tasks. The kids did it in record time, we had to improvise and set them a new challenge on the fly. They first made a blinking LED, then hooked up a piezo buzzer to play some music, then they created a ‘musical instrument’ with a photoresistor and the piezo buzzer. Finally (improvised on-the-fly) we made them create a traffic light with three colored LEDs! The quick learning was also noticed in the other sessions.</p>
-
-<p>Our Devoxx4Kids was completely sold out in just 2 hours, so there is a lot of demand for events involving kids and programming. We are going to brainstorm this Wednesday on how we can do more on this front. Keep organizing Devoxx4Kids for 40 kids at the time? Or are there other options? How can we make it pay for itself instead of being fully voluntary…? All ideas are welcome, leave a comment/tweet/email!</p>
-
-<h1 id="video-impression">Video impression</h1>
-
-<p>Are you not yet convinced you should organize a Devoxx4Kids in your neighbourhood/country? Just watch the video I made during our event:</p>
-<iframe type="text/html" src="http://player.vimeo.com/video/67959779" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
-
-<p>p.s. Having pictures and video help to tell the story. <a href="https://vimeo.com/51393678">This</a> video from Devoxx4Kids 2012 in Belgium helped us to get the University of Amsterdam involved!</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2013/06/devoxx4kids-in-the-netherlands/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
