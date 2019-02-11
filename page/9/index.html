@@ -117,6 +117,92 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/" title="Reading iPhone GPS data from backup (with Java)">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Reading iPhone GPS data from backup (with Java)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2011-04-21T01:06:24+02:00" class="date" />
+          <span itemprop="datePublished" content="2011-04-21T01:06:24+02:00" class="date">
+            Apr 21, 2011 01:06:24
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">Reading iPhone GPS data from backup (with Java)</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today I noticed the following post on Slashdot: <a href="http://apple.slashdot.org/story/11/04/20/1357248/Apple-Logging-Locations-of-All-iPhone-Users">Apple Logging Locations of All iPhone Users</a></p>
+
+<p>And the article they are referring to can be found <a href="http://petewarden.github.com/iPhoneTracker/">here</a></p>
+
+<p>First I was amazed, how can Apple do this? But on second thought, they aren’t sending it yet to anybody, it is just something on the phone (and also on the phone’s backup). My next reaction was: I want to see my own map! But to my disappointment it only works on Apple Mac’s, not Windows/Linux.</p>
+
+<h1 id="re-building-it-in-java">(Re-)building it in Java</h1>
+
+<p>Because their code is open source and well explained on the website I decided to make my own version, in Java (cross platform!). Now, just a couple of hours since I read the article, I’ve got it working and it can be used as a base for extention. So I’d like to share the code!</p>
+
+<h1 id="step-1-getting-the-correct-file">Step 1: Getting the correct file</h1>
+
+<p>This step was the hardest part, technically. The backup Apple makes doesn’t just have all the files as they are on your iPhone. Instead they all have names like: “b4d1c79c2f5fc1da044c18d1066b80b39b575590”. They do however store the information in two files: Manifest.mbdb and Manifest.mbdx.</p>
+
+<p>The MBDB file only contains information about the original files, and the MBDX file contains pointers into the MBDB file with the Hex-filenames used in the backup. So we need to parse both files to be able to connect the original filename to the Hex-filename.</p>
+
+<p>Luckely somebody already did this in Python and posted it on <a href="http://stackoverflow.com/questions/3085153/how-to-parse-the-manifest-mbdb-file-in-an-ios-4-0-itunes-backup">stackoverflow</a>. I took their idea and translated it into Java code.</p>
+
+<p>When this was fully translated it could resolve all the filenames. This meant I could map the target file “Library/Caches/locationd/consolidated.db” to the hex-filename “4096c9ec676f2847dc283405900e284a7c815836”.</p>
+
+<h1 id="step-2-reading-the-sqllite-file">Step 2: Reading the SQLLite file</h1>
+
+<p>The contents of “4096c9ec676f2847dc283405900e284a7c815836” is just a SQLLite file. For this I decided to use SQLJet, a framework that can read(/and write) SQLLite files. Using just a couple of lines of code I had all the data I need: timestamp, latitude, longitude (and more! speed, course, confidence, altitude etc).</p>
+
+<h1 id="step-3-what-to-do-with-the-geo-data">Step 3: What to do with the geo data?</h1>
+
+<p>The implementation created by <a href="http://petewarden.github.com/iPhoneTracker/">Pete Warden</a> has a nice map and timeline. But at this time I wanted to have results as fast as possible. That is why chose to just output a <a href="http://nl.wikipedia.org/wiki/Keyhole_Markup_Language">KML</a> file. KML is a file format used by Google Earth and other applications.</p>
+
+<p>The results are far from nice (just plain ugly) but fun: <a href="https://sites.google.com/site/redcodenl/home/281096076.jpg">click here for a screenshot</a></p>
+
+<h1 id="running-the-code">Running the code</h1>
+
+<p>The above code is mainly created for developers, the resulting JAR can’t be executed. But I’m aware people will want to just have the KML file, and not go through the code. That is why I’ve uploaded an executable JAR. You can get it here: <a href="https://sites.google.com/site/redcodenl/runnableiPhoneJTrack.zip">runnableiPhoneJTrack.zip</a> (813 KB)</p>
+
+<p>To run the program, extract the three JAR-files and type:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Usage:
+java -jar iPhoneJTrack.jar "&lt;location of backup directory&gt;"
+
+For example:
+java -jar iPhoneTracker.jar "C:\Users\roy\AppData\Roaming\Apple Computer\MobileSync\Backup\b4d1c79c2f5fc1da044c18d1066b80b39b575590"</code></pre></figure>
+
+<p>This outputs a file named iPhoneData.kml, which can be loaded for example in Google Earth.</p>
+
+<h1 id="playing-with-the-code">Playing with the code</h1>
+
+<p>I’ve pushed my code onto GitHub: <a href="https://github.com/royvanrijn/iPhoneJTrack">https://github.com/royvanrijn/iPhoneJTrack</a></p>
+
+<p>Feel free to add features and send me pull requests!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2011/04/static-state-evil-as-well/" title="Static state: Evil as well">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Static state: Evil as well" width="100" height="100" />
@@ -1524,63 +1610,6 @@ This will show everybody a couple of things:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/09/dinosaur-in-your-street/" title="Dinosaurize your street">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Dinosaurize your street" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-09-14T15:40:16+02:00" class="date" />
-          <span itemprop="datePublished" content="2010-09-14T15:40:16+02:00" class="date">
-            Sep 14, 2010 15:40:16
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/dinosaur-in-your-street/">Dinosaurize your street</a></h1>
-
-        <span itemprop="articleBody">
-          <p>After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
-
-<p>It is nothing like The Wilderness Downtown, but still I’d like to share it ;-)</p>
-
-<p>Enter streetname, town and country:</p>
-
-<p><img src="/images/" alt="Image 1" /><br />
-<img src="/images/" alt="Image 1" /><br />
-<img src="/images/" alt="Image 1" /></p>
-
-<p><img src="/images/walking.gif" alt="walking" /></p>
-
-<p>Yes, there are a LOT of bugs… And no, I’m not going to fix them, so there is no need to notify me.<br />
-Some known bugs:</p>
-
-<ul>
-  <li>Sometimes the dinosaur moonwalks (images go backwards)</li>
-  <li>Locations aren’t always found, it depends on Google Street View</li>
-  <li>It can only walk from the startingpoint to the next junction, no complete routes.</li>
-</ul>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

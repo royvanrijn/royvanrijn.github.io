@@ -117,6 +117,63 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/09/dinosaur-in-your-street/" title="Dinosaurize your street">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Dinosaurize your street" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-09-14T15:40:16+02:00" class="date" />
+          <span itemprop="datePublished" content="2010-09-14T15:40:16+02:00" class="date">
+            Sep 14, 2010 15:40:16
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/dinosaur-in-your-street/">Dinosaurize your street</a></h1>
+
+        <span itemprop="articleBody">
+          <p>After looking at <a href="http://www.thewildernessdowntown.com/">The Wilderness Downtown</a>, a fantastic Chrome Experiment, I felt like I had to do something similair! Three hours later (first time experimenting with Google Maps and Street View) the result is below.</p>
+
+<p>It is nothing like The Wilderness Downtown, but still I’d like to share it ;-)</p>
+
+<p>Enter streetname, town and country:</p>
+
+<p><img src="/images/" alt="Image 1" /><br />
+<img src="/images/" alt="Image 1" /><br />
+<img src="/images/" alt="Image 1" /></p>
+
+<p><img src="/images/walking.gif" alt="walking" /></p>
+
+<p>Yes, there are a LOT of bugs… And no, I’m not going to fix them, so there is no need to notify me.<br />
+Some known bugs:</p>
+
+<ul>
+  <li>Sometimes the dinosaur moonwalks (images go backwards)</li>
+  <li>Locations aren’t always found, it depends on Google Street View</li>
+  <li>It can only walk from the startingpoint to the next junction, no complete routes.</li>
+</ul>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2010/07/patent-publicity/" title="Patent, publicity">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent, publicity" width="100" height="100" />
@@ -2194,90 +2251,6 @@ A collegue adviced me this: If the car has just finished wiping, quickly switch 
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/does-my-car-hate-me/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/01/md5-fixed-point/" title="MD5 quine, fixed point">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="MD5 quine, fixed point" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-01-05T16:04:53+01:00" class="date" />
-          <span itemprop="datePublished" content="2010-01-05T16:04:53+01:00" class="date">
-            Jan 5, 2010 16:04:53
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/md5-fixed-point/">MD5 quine, fixed point</a></h1>
-
-        <span itemprop="articleBody">
-          <h1 id="md5-quines">MD5 quines</h1>
-
-<p>Sometimes I let my mind wonder and I get crazy questions. Today was a good example, I encountered a MD5 hash and I started to wonder, would there be a hash which would (when hashed again) be the same?</p>
-
-<p>Thus: MD5(x) = x</p>
-
-<p>This would be a kind of MD5 quine, when fed into the algorithm you get the original value back. This is actually called an MD5 fixed point.</p>
-
-<h1 id="information-ive-found">Information I’ve found</h1>
-
-<p>So I started investigating, soon I discovered <a href="http://www.mscs.dal.ca/~selinger/md5collision/">this</a> website about collisions. Its well known that all hashing algorithms must have collisions, you can’t always produce a unique hash for input larger then the output of course.</p>
-
-<p>The output of the MD5 sum is 128 bit (16 byte) long, so the input should also have the same length. But the MD5 algorithm is defined to have 512 bits as input. This isn’t really a problem because the algorithm will extend smaller input with padding. Lets assume the MD5 sum of any input is uniformly distributed over all possible sums, then the probability that a 128-bit string is a fixed point is 1/2^128. This isn’t a crazy assumption because all hashing-algorithms are designed to distribute the output as uniformly as possible to avoid collisions.</p>
-
-<p>So, the probability that no 128-bit string is a real fixed point is (1 - 1/2^128)^(2^128). The probability that there IS a fixed point is 1 - (1 - 1/2^128)^(2^128).</p>
-
-<p>Since the limit as N goes to infinity of (1 - 1/N)^N is 1/e, and 2^128 is most certainly a very large number, this probability is almost exactly 1 - 1/e = 63.21%.</p>
-
-<p>But, of course, there is no randomness involved here - there either is a fixed point or there isn’t. But, we can be 63.21% confident that there is a fixed point. (Also, notice that this number does not depend on the size of the keyspace - if MD5 sums were 32 bits or 1024 bits, the answer would be the same).</p>
-
-<h1 id="looking-for-the-fixed-point">Looking for the fixed point</h1>
-
-<p>I’ve just implemented a small program to look for these hashes, even though I know it will take millions of years to check all the numbers. But you never know, I might get lucky ;-)</p>
-
-<p>The first algorithm I created took a single random String as input and kept applying the algorithm to the output. Eventually it will:</p>
-
-<ol>
-  <li>Go into a loop</li>
-  <li>Find a fixed point (which is a loop of size 1)</li>
-</ol>
-
-<p>The weird thing is, if it ends up in a loop of size 1… I’ve found two things. Not only a md5 fixed point, which creates itself after applying the algorithm. But also an input-value that produces this md5 as output, a collision!</p>
-
-<h1 id="graph">Graph</h1>
-
-<p>Another interesting thing would be a complete graph of all md5 answers. Which loops can we find, which md5 has most collisions etc. But this would take eternity to calculate, even using all the machines in the world.</p>
-
-<h1 id="open-questions">Open questions</h1>
-
-<ul>
-  <li>Are there loops? (It is possible there aren’t any loops at all…?)</li>
-  <li>Are there loops of size 1, a.k.a. fixed points?</li>
-  <li>Which/how many 128 bit combinations can’t be created with the input values?</li>
-  <li>Which/how many collisions will you get with all the input values?</li>
-</ul>
-
-<p>More thoughts, errors, solutions..?</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/md5-fixed-point/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
