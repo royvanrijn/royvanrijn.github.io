@@ -117,6 +117,180 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2016/03/adding-var-val-to-java/" title="Pros and cons of JEP 286">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Pros and cons of JEP 286" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2016-03-21T11:15:15+01:00" class="date" />
+          <span itemprop="datePublished" content="2016-03-21T11:15:15+01:00" class="date">
+            Mar 21, 2016 11:15:15
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/03/adding-var-val-to-java/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/03/adding-var-val-to-java/">Pros and cons of JEP 286</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of weeks ago a new JDK Enhancement Proposal (JEP) has been published: <a href="http://openjdk.java.net/jeps/286">JEP 286</a></p>
+
+<p>It proposes ‘<strong>var</strong>’ and possible also ‘<strong>val</strong>’ as a way to declare local variables. This means that for local variables you don’t need to specify the type of your variable when it can be safely infered.</p>
+
+<p>Some examples:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before:</span>
+    <span class="kt">int</span> <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="c1">// After</span>
+    <span class="n">var</span> <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// infers int</span>
+    <span class="n">var</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>  <span class="c1">// infers ArrayList&lt;String&gt;</span></code></pre></figure>
+
+<p>Personally I’m not convinced this is a good idea for Java, but OTOH some of my colleagues and co-workers are very happy with the proposal.</p>
+
+<p>Let’s look at some of the pros and cons of this proposal.</p>
+
+<h2 id="pro-less-typing"><strong>Pro</strong>: Less typing!</h2>
+
+<p>There is one obvious pro: Less typing.</p>
+
+<p>‘var’ is just three characters, while most other local variables type names are much longer.</p>
+
+<p>Instead of typing <strong>int</strong>, <strong>List</strong>, <strong>Person</strong> or <strong>SpringObjectFactoryManagerTemplateProxyDelagate</strong> you just have <strong>var</strong>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Instead of:</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// You can now have:</span>
+    <span class="n">var</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+
+    <span class="c1">// We saved 10 keystrokes! (&lt;- probably less if you know shortcuts in your IDE)</span></code></pre></figure>
+
+<h2 id="con-readability"><strong>Con</strong>: Readability</h2>
+
+<p>The biggest advantage of Java over other languages is the readability. The language Java is a bit verbose, but this is actually a good thing when it comes to reading the code.</p>
+
+<blockquote>
+  <p>Code is read more than it is written</p>
+</blockquote>
+
+<p>Consider the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">var</span> <span class="n">myVariable</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="na">calculateSomething</span><span class="o">();</span></code></pre></figure>
+
+<p>What is the type of <em>myVariable</em>? When you are writing the code, you probably have a good idea why you called <em>dependency</em> and what you receive as return value.</p>
+
+<p>But when you are reading the code, there is no way of knowing what <em>myVariable</em> is… you probably need your IDE to tell you, or look at the code of the dependency.</p>
+
+<p>I personally think this is a con regarding the JEP. I’d rather have a verbose language where the IDE helps me with autocomplete and hide things… than having a language that <em>needs</em> an IDE to help me makes sense of the code.</p>
+
+<h2 id="pro-adding-var-doesnt-break-anything"><strong>Pro</strong>: Adding <strong>var</strong> doesn’t break anything</h2>
+
+<p>Some peope think (and argue) that adding this feature breaks backwards compatibility (because of the new keyword).</p>
+
+<p>But this is <strong>not</strong> true!</p>
+
+<p>When ‘var’ gets added it won’t be a keyword, it’ll be a ‘reserved type name’. This means that the following code for example would be working just fine:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// this compiles just fine:</span>
+    <span class="n">var</span> <span class="n">var</span> <span class="o">=</span> <span class="s">"var"</span><span class="o">;</span></code></pre></figure>
+
+<h2 id="con-rhs-versus-lhs"><strong>Con</strong>: RHS versus LHS</h2>
+
+<p>This JEP focusses on the LHS (left-hand side) declaration by removing the need to specify a type. But recently, in Java 7, Java has introduced the diamond operator to eliminate verbosity in the RHS (right-hand side) declaration. With JEP 286, these two collide:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before Java 7 'diamond operator':</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+
+    <span class="c1">// With Java 7 'diamond operator', removing generic type on RHS:</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="c1">// With JEP 286, we need to add the generic type again at the RHS...</span>
+    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+
+    <span class="c1">// Java, make up your mind!</span></code></pre></figure>
+
+<h2 id="pro-and-con-refactoring"><strong>Pro</strong> and <strong>con</strong>: Refactoring</h2>
+
+<p>Some people have argued that, after JEP 286, refactoring can become easier.
+Look at the following, silly, example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasClosed</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">var</span> <span class="n">list</span> <span class="o">=</span> <span class="n">getSomeList</span><span class="o">();</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">var</span> <span class="n">item</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="k">if</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">isClosed</span><span class="o">())</span> <span class="o">{</span>
+        		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        	<span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>No matter what <em>getSomeList()</em> returns, it should work as long as it has the method <em>isClosed</em>. I think this is a weird example, because normally you would define an <strong>interface</strong> with <em>isClosed</em> and every class that implements this interface can be replaced/refactored as well.</p>
+
+<p>There is a counter argument that can be made, refactoring can also be <em>dangerous</em> with JEP 286, look at this (crafted) example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">var</span> <span class="n">answer</span> <span class="o">=</span> <span class="n">SomeCode</span><span class="o">.</span><span class="na">generate</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">answer</span> <span class="o">+</span> <span class="mi">42</span><span class="o">);</span></code></pre></figure>
+
+<p>As long as the method <em>generate</em> returns a number the code works fine. But when someone changes the method to return an object or a String, it stops working without failing compilation. This argument however seems valid, but it would also break it you would have inlined the call to ‘<em>System.out.println(SomeCode.generate() + 2);</em>’.</p>
+
+<p>This might make the problem a bit harder and more widespread. I believe there are more cases this can go wrong.</p>
+
+<h2 id="try-it-out-for-yourself">Try it out for yourself</h2>
+
+<p>The best way to get a feel for JEP 286 is just to try it out yourself!</p>
+
+<p>There is a pre-compiled version of JDK-9 with JEP availabe for download at the website: <a href="http://iteratrlearning.com/jep286.html">iteratrlearning</a>.</p>
+
+<h2 id="conclusion"><strong>Conclusion</strong></h2>
+
+<p>After looking at a lot of examples I’m still not convinced that JEP 286 is good nor bad. It can go either way.
+There are some good <strong>pros</strong> but also quite a lot of <strong>cons</strong>.</p>
+
+<p>When discussing this JEP with co-workers and colleagues I often get the following reply:</p>
+
+<blockquote>
+  <p>The arguments you’re using have been used when C# adopted var/val, stop complaining, they did it.</p>
+</blockquote>
+
+<p>But did you know most coding guidelines for C# warn you for using ‘var’?</p>
+
+<p>Just read these <a href="https://msdn.microsoft.com/en-us/library/ff926074.aspx">guidelines from Microsoft</a>:</p>
+
+<blockquote>
+  <ul>
+    <li>Do not use var when the type is not apparent from the right side of the assignment.</li>
+    <li>Do not rely on the variable name to specify the type of the variable. It might not be correct.</li>
+    <li>Avoid the use of var in place of dynamic.</li>
+    <li>Use implicit typing to determine the type of the loop variable in for and foreach loops.</li>
+  </ul>
+</blockquote>
+
+<p>This, combined with readability, makes me lean towards a <em>no</em> for JEP 286 right now.</p>
+
+<p>How about you? Leave a comment!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2016/03/adding-var-val-to-java/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2016/01/jshell-api-design-problems/" title="JShell API, design problems?">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JShell API, design problems?" width="100" height="100" />
@@ -1288,81 +1462,6 @@ A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2015/02/shaved-faq/" title="Shaved FAQ">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Shaved FAQ" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2015-02-09T09:48:26+01:00" class="date" />
-          <span itemprop="datePublished" content="2015-02-09T09:48:26+01:00" class="date">
-            Feb 9, 2015 09:48:26
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2015/02/shaved-faq/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/02/shaved-faq/">Shaved FAQ</a></h1>
-
-        <span itemprop="articleBody">
-          <p><strong>What happened to your beard?</strong></p>
-
-<p>I shaved.</p>
-
-<p><strong>Have you lost a bet?</strong></p>
-
-<p>No.</p>
-
-<p><strong>Who are you? How did you get past security?</strong></p>
-
-<p>The same guy as last week and the months before that, I shaved, sorry to shock you, it happens.</p>
-
-<p><strong>Why did you grow a beard in the first place?</strong></p>
-
-<p>Because I felt like it.</p>
-
-<p><strong>Why did you shave?</strong></p>
-
-<p>Same reason I decided to grow a beard, I felt like it.</p>
-
-<p><strong>But why this Sunday?</strong></p>
-
-<p>Stop it, I shaved, it isn’t special, most men do it a couple of times a week, get over it!</p>
-
-<p><strong>It looks much better this way!</strong></p>
-
-<p>Thanks for the compliment, don’t get to attached, the beard will probably return.</p>
-
-<p><strong>You look so much younger!</strong></p>
-
-<p>I’m not.</p>
-
-<p><strong>It looks much worse without a beard!</strong></p>
-
-<p>Why do people comment so much on facial hair, I’m not judging your hair/clothing/weight etc.</p>
-
-<p>Anyway, to quote The Dude Lebowski: <em>Yeah, well that’s just your opinion, man.</em><br />
-(I’m trying to follow the philosophy and lifestyle of <a href="http://www.dudeism.com">dudeism</a>)</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2015/02/shaved-faq/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

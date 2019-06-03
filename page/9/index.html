@@ -117,6 +117,55 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/" title="iPhone locations on Google Maps with Javascript">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="iPhone locations on Google Maps with Javascript" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2011-04-26T14:34:27+02:00" class="date" />
+          <span itemprop="datePublished" content="2011-04-26T14:34:27+02:00" class="date">
+            Apr 26, 2011 14:34:27
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/iphone-locations-on-google-maps-with-javascript/">iPhone locations on Google Maps with Javascript</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Wow, great news!</p>
+
+<p>After my <a href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/">previous</a> blogpost a lot of people mailed me about the usability of my ‘iPhone location data to Google Earth’ tool. It was a command-line tool, and you needed to have Java 6 installed. The main goal was to show how it is done in Java, for other developers.</p>
+
+<p>When chatting to <a href="https://github.com/williame">Will</a> about this he suggested using Javascript instead. Soon he had the code working that could parse the iPhone backup files. He then contacted <a href="https://github.com/markolson">Mark Olson</a>, who helped him with the SQLLite format in Javascript. Together they finished it up so the resulting GPS data is shown in Google Maps.</p>
+
+<p>The result of their effort: <a href="http://markolson.github.com/js-sqlite-map-thing/">http://markolson.github.com/js-sqlite-map-thing/</a></p>
+
+<p>To use it, drag the backup files into the upper part of the website. It will parse the files, locate the data and display the track on Google Maps!<br />
+The source code can be found here: <a href="https://github.com/markolson/js-sqlite-map-thing">https://github.com/markolson/js-sqlite-map-thing</a></p>
+
+<p>Kudos to Will and Mark for this great application. Who knew Javascript could be this powerfull!?</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/iphone-locations-on-google-maps-with-javascript/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2011/04/reading-iphone-gps-data-from-backup-with-java/" title="Reading iPhone GPS data from backup (with Java)">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Reading iPhone GPS data from backup (with Java)" width="100" height="100" />
@@ -1520,96 +1569,6 @@ This will show everybody a couple of things:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/09/setter-vs-constructor-injection/" title="Setter vs Constructor injection">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Setter vs Constructor injection" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-09-20T22:59:44+02:00" class="date" />
-          <span itemprop="datePublished" content="2010-09-20T22:59:44+02:00" class="date">
-            Sep 20, 2010 22:59:44
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/setter-vs-constructor-injection/">Setter vs Constructor injection</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Recently I’ve had a discussion with a collegue about Setter vs Constructor injection. For those who don’t know what I’m talking about a quick example:</p>
-
-<p>Setter injection:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
-	
-	<span class="kd">private</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
-	
-	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">()</span> <span class="o">{</span>
-		<span class="c1">//Empty constructor
-</span>
-	<span class="o">}</span>
-
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setSomeDependency</span><span class="o">(</span><span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Constructor injection:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
-	
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
-	
-	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">(</span><span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Ever since I’ve used constructor injection, I’ve never wanted to go back. For a good reason I might add. Constructor injection is just better, no discussion. Please allow me to explain.</p>
-
-<h1 id="safe-construction">Safe construction</h1>
-
-<p>First of all there is safety. In the case of setter injection it is perfectly possible to create the object without calling the setter(s). This would leave SomeClass in an uninitialized state. With constructor injection this could never happen, you just can’t create the object without at least deliberately ignoring (null-ing) the arguments.</p>
-
-<p>Also, if you add a new dependency and forget to add the dependency in the XML… you’ll end up with weird behaviour and NPE’s while running your code. If you use constructor injection is would fail on startup because the correct constructor couldn’t be found. Failing early.</p>
-
-<h1 id="finalization">Finalization</h1>
-
-<p>In the case of constructor injection you can make the dependencies final, this is something you just can’t do with setter injection. This will further ensure the atomicity of SomeClass, it just can’t exist without its dependency. And there are many many more reasons using ‘final’ is a good idea (google it).</p>
-
-<h1 id="but-isnt-constructor-injection-less-readable">But… isn’t constructor injection less readable?</h1>
-
-<p>The only argument I’ve heard made against constructor injection is the fact that it becomes unreadable if you have too much incoming dependencies. But that argument is completely invalid!</p>
-
-<p>The problem isn’t the constructor injection, it is a code smell. If your class has too much incoming dependencies you should reconsider this class. There is a good chance it is doing too much or having too much responsibilities.</p>
-
-<p>So, it is actualy a good thing that constructor injection becomes aweful with too much dependencies, it is a code-smell! If the list of incoming dependencies grows too large you need to refactor, not blame constructor injection.</p>
-
-<p>With setter injection it wouldn’t be almost invisible, a bad thing.</p>
-
-<h1 id="conclusion">Conclusion…</h1>
-
-<p>In every single way constructor injection beats setter injection, so please only use constructor injection from now, k? bye!</p>
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
