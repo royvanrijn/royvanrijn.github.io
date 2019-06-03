@@ -336,13 +336,13 @@
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="cm">/**
      * LTseq from: http://www.cs.toronto.edu/~fbacchus/csc2512/at_most_k.pdf
      */</span>
-    <span class="kd">private</span> <span class="kt">int</span> <span class="nf">ltSeq</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">x</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lastFreeVariable</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">state</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="nf">ltSeq</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">x</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nextFreeVariable</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">state</span><span class="o">)</span> <span class="o">{</span>
 
         <span class="c1">// Build registry table:</span>
         <span class="kd">final</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">x</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">k</span><span class="o">];</span>
         <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
             <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">k</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
-                <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">lastFreeVariable</span><span class="o">++;</span>
+                <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">nextFreeVariable</span><span class="o">++;</span>
             <span class="o">}</span>
         <span class="o">}</span>
 
@@ -368,7 +368,7 @@
         <span class="o">}</span>
         <span class="c1">//(¬xn ∨ ¬sn−1,k)</span>
         <span class="n">writer</span><span class="o">.</span><span class="na">println</span><span class="o">((</span><span class="n">state</span><span class="o">?-</span><span class="mi">1</span><span class="o">:</span><span class="mi">1</span><span class="o">)*</span><span class="n">x</span><span class="o">[</span><span class="n">x</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">]+</span><span class="s">" "</span><span class="o">+-</span><span class="n">s</span><span class="o">[</span><span class="n">x</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">2</span><span class="o">][</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="o">]+</span><span class="s">" 0"</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">lastFreeVariable</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">nextFreeVariable</span><span class="o">;</span>
     <span class="o">}</span></code></pre></figure>
 
 <p>How can we use <code class="highlighter-rouge">at most N</code> for this puzzle? Well in case of N=10 we want to have both white and black to have <code class="highlighter-rouge">at least</code> 14 queens.
@@ -405,6 +405,10 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> <span class="n">W</span> 
 <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
 <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> </code></pre></figure>
+
+<p>I’ve uploaded all the code for this series to GitHub and called it: <a href="https://royvanrijn.com/blog/2019/05/sat-solving-part-one/">Boolshit</a></p>
+
+<p>You can find the code to generate the Peaceable Queens puzzle here.</p>
 
 <p>I hope this gives you an idea on how powerful SAT solvers are and how you can encode a problem into <code class="highlighter-rouge">DIMACS</code> format.</p>
 
