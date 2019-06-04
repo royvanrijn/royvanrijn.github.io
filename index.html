@@ -137,7 +137,19 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/05/sat-solving-part-one/">SAT solving: Introduction to SAT (part 1)</a></h1>
 
         <span itemprop="articleBody">
-          <p>Most software developers have never heard about SAT solvers, but they are amazingly powerful and the algorithms behind them are actually very easy to understand. The whole concept blew my mind when I first learned about how they worked and I’d love to explain it here.</p>
+          <p>Most software developers have never heard about SAT solvers, but they are amazingly powerful and the algorithms behind them are actually very easy to understand. The whole concept blew my mind when I learned about how they worked. This will be the first post in a series about SAT solving where we’ll end up building a simple solver in Java later on.</p>
+
+<p>In this first part of the series we’ll cover:</p>
+
+<ul>
+  <li>Look at what SAT is</li>
+  <li>Explain the SAT DIMACS format</li>
+  <li>Solve a puzzle: Peaceable Queens</li>
+</ul>
+
+<p style="text-align:center;">
+<img src="/images/peaceablequeens.png" alt="Peaceable Queen solution for N=8" />
+</p>
 
 <h1 id="what-is-sat">What is SAT?</h1>
 
@@ -173,7 +185,7 @@
 
 <h2 id="dimacs-format">DIMACS format</h2>
 
-<p>If we do one more step you’ll end up with a format called <code class="highlighter-rouge">DIMACS</code>, which is supported by almost all SAT solvers. The last steo is to replace the name of variable <code class="highlighter-rouge">A</code> with <code class="highlighter-rouge">1</code> and <code class="highlighter-rouge">B</code> becomes <code class="highlighter-rouge">2</code> etc. The <code class="highlighter-rouge">NOT</code> statement is just writing the number negative, so <code class="highlighter-rouge">~C</code> becomes <code class="highlighter-rouge">-3</code>.</p>
+<p>If we do one more step you’ll end up with a format called <code class="highlighter-rouge">DIMACS</code>, which is supported by almost all SAT solvers. The last step is to replace the name of variable <code class="highlighter-rouge">A</code> with <code class="highlighter-rouge">1</code> and <code class="highlighter-rouge">B</code> becomes <code class="highlighter-rouge">2</code> etc. The <code class="highlighter-rouge">NOT</code> statement is just writing the number negative, so <code class="highlighter-rouge">~C</code> becomes <code class="highlighter-rouge">-3</code>.</p>
 
 <p>Now add a <code class="highlighter-rouge">0</code> to the end of each line (as separator) and add a header which explains the amount of variables (= 3) and the amount of clauses (= 4) and you get:</p>
 

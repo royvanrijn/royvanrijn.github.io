@@ -5,13 +5,25 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 03 Jun 2019 18:52:20 +0200</pubDate>
-    <lastBuildDate>Mon, 03 Jun 2019 18:52:20 +0200</lastBuildDate>
+    <pubDate>Tue, 04 Jun 2019 09:25:52 +0200</pubDate>
+    <lastBuildDate>Tue, 04 Jun 2019 09:25:52 +0200</lastBuildDate>
     <generator>Jekyll v3.7.0</generator>
     
       <item>
         <title>SAT solving: Introduction to SAT (part 1)</title>
-        <description>&lt;p&gt;Most software developers have never heard about SAT solvers, but they are amazingly powerful and the algorithms behind them are actually very easy to understand. The whole concept blew my mind when I first learned about how they worked and I’d love to explain it here.&lt;/p&gt;
+        <description>&lt;p&gt;Most software developers have never heard about SAT solvers, but they are amazingly powerful and the algorithms behind them are actually very easy to understand. The whole concept blew my mind when I learned about how they worked. This will be the first post in a series about SAT solving where we’ll end up building a simple solver in Java later on.&lt;/p&gt;
+
+&lt;p&gt;In this first part of the series we’ll cover:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Look at what SAT is&lt;/li&gt;
+  &lt;li&gt;Explain the SAT DIMACS format&lt;/li&gt;
+  &lt;li&gt;Solve a puzzle: Peaceable Queens&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p style=&quot;text-align:center;&quot;&gt;
+&lt;img src=&quot;/images/peaceablequeens.png&quot; alt=&quot;Peaceable Queen solution for N=8&quot; /&gt;
+&lt;/p&gt;
 
 &lt;h1 id=&quot;what-is-sat&quot;&gt;What is SAT?&lt;/h1&gt;
 
@@ -47,7 +59,7 @@
 
 &lt;h2 id=&quot;dimacs-format&quot;&gt;DIMACS format&lt;/h2&gt;
 
-&lt;p&gt;If we do one more step you’ll end up with a format called &lt;code class=&quot;highlighter-rouge&quot;&gt;DIMACS&lt;/code&gt;, which is supported by almost all SAT solvers. The last steo is to replace the name of variable &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;B&lt;/code&gt; becomes &lt;code class=&quot;highlighter-rouge&quot;&gt;2&lt;/code&gt; etc. The &lt;code class=&quot;highlighter-rouge&quot;&gt;NOT&lt;/code&gt; statement is just writing the number negative, so &lt;code class=&quot;highlighter-rouge&quot;&gt;~C&lt;/code&gt; becomes &lt;code class=&quot;highlighter-rouge&quot;&gt;-3&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If we do one more step you’ll end up with a format called &lt;code class=&quot;highlighter-rouge&quot;&gt;DIMACS&lt;/code&gt;, which is supported by almost all SAT solvers. The last step is to replace the name of variable &lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;B&lt;/code&gt; becomes &lt;code class=&quot;highlighter-rouge&quot;&gt;2&lt;/code&gt; etc. The &lt;code class=&quot;highlighter-rouge&quot;&gt;NOT&lt;/code&gt; statement is just writing the number negative, so &lt;code class=&quot;highlighter-rouge&quot;&gt;~C&lt;/code&gt; becomes &lt;code class=&quot;highlighter-rouge&quot;&gt;-3&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Now add a &lt;code class=&quot;highlighter-rouge&quot;&gt;0&lt;/code&gt; to the end of each line (as separator) and add a header which explains the amount of variables (= 3) and the amount of clauses (= 4) and you get:&lt;/p&gt;
 
