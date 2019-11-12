@@ -162,22 +162,22 @@
 
 <p>First we’ll need to read in all the possible words we’re looking for. And using the new Java streams this is very easy. Just download one of the many online word-lists and do the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
 
         <span class="c1">// Store the words we find here:</span>
-        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
 
         <span class="c1">// Read in the lexicon, the list of possible words:</span>
-        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="nc">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
                 <span class="o">.</span><span class="na">stream</span><span class="o">()</span>                        <span class="c1">// Open the file as a stream</span>
                 <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span> <span class="c1">// Convert all the lines (one word per line) to uppercase</span>
-                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
 
 <p>It was never easier in Java to do File IO and manipulate collections.
 Next I embedded the entire puzzle and turned it into an array of Strings.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// The puzzle: (yeah, hardcoded, sue me.)</span>
-        <span class="n">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
                           <span class="s">"ARNOSTIASSTUNODJEOFN\n"</span> <span class="o">+</span>
                           <span class="s">"FMAMLAPCNNTPIKETYKXA\n"</span> <span class="o">+</span>
                           <span class="s">"UDHBISMUHBALTIGLCCSK\n"</span> <span class="o">+</span>
@@ -218,7 +218,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
 <p>Now we start building the possible word, using two new pointers (tx and ty):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="kt">int</span> <span class="n">ty</span> <span class="o">=</span> <span class="n">y</span><span class="o">,</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>                      <span class="c1">// Create two new pointers</span>
-                    <span class="n">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
+                    <span class="nc">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
 
 <p>While we are within the bounds of the puzzle we must travel in the current ‘direction’. This is done by adding the direction offset (from <a href="/blog/2019/01/longest-path/">previous post</a>) to the <strong>tx</strong> and <strong>ty</strong> pointers.</p>
 
@@ -247,7 +247,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
             <span class="o">}</span>
         <span class="o">}</span>
         <span class="c1">// Print the words:</span>
-        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
       <span class="o">}</span></code></pre></figure>
 
 <p>This prints the words, sorted, just as we want. <strong>Q.E.D.</strong>.</p>

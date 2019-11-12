@@ -162,11 +162,11 @@
 
 <p>Let me give an example, lets take the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+			<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 			<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 				<span class="c1">//Approve the request
 </span>
@@ -183,9 +183,9 @@
 
 <p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
     
 		<span class="k">if</span><span class="o">(</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
 			<span class="c1">//Approve the request
@@ -200,9 +200,9 @@
 	<span class="o">}</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-		<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+		<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
 		<span class="o">}</span>
@@ -214,9 +214,9 @@
 
 <p>Anyway, the next step in refactoring this code is using what I call “Inversion of Logic”. The idea is that you don’t continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you’ll lose a lot of nesting, making the code more readable. I’m going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
     
 		<span class="k">if</span><span class="o">(!</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
 			<span class="k">continue</span><span class="o">;</span>
@@ -233,11 +233,11 @@
 	<span class="o">}</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(!</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
-	<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+	<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">||</span> <span class="o">!</span><span class="n">tenant</span><span class="o">.</span><span class="na">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>

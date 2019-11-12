@@ -120,6 +120,8 @@
       </div> 
       <div class="right"> 
          
+          <a href="/blog/2019/11/sat-solver-in-java/" title="Next: SAT solving: Creating a solver in Java (part 2)">SAT solving: Creating a solver in Java (part 2) &raquo; </a> 
+         
       </div> 
       <div class="clear"></div> 
     </div> 
@@ -178,19 +180,19 @@
 
 <p>The line above can be broken up into four pieces:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">(</span><span class="n">A</span> <span class="n">OR</span> <span class="n">B</span> <span class="n">OR</span> <span class="o">~</span><span class="n">C</span><span class="o">)</span>  <span class="n">AND</span>
-<span class="o">(</span><span class="n">B</span> <span class="n">OR</span> <span class="n">C</span><span class="o">)</span>        <span class="n">AND</span>
-<span class="o">(~</span><span class="n">B</span><span class="o">)</span>            <span class="n">AND</span>
-<span class="o">(~</span><span class="n">A</span> <span class="n">OR</span> <span class="n">C</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">(</span><span class="no">A</span> <span class="no">OR</span> <span class="no">B</span> <span class="no">OR</span> <span class="o">~</span><span class="no">C</span><span class="o">)</span>  <span class="no">AND</span>
+<span class="o">(</span><span class="no">B</span> <span class="no">OR</span> <span class="no">C</span><span class="o">)</span>        <span class="no">AND</span>
+<span class="o">(~</span><span class="no">B</span><span class="o">)</span>            <span class="no">AND</span>
+<span class="o">(~</span><span class="no">A</span> <span class="no">OR</span> <span class="no">C</span><span class="o">)</span></code></pre></figure>
 
 <p>Each line is called a ‘clause’. Those clauses are connected together using <code class="highlighter-rouge">AND</code> statements. A <code class="highlighter-rouge">clause</code> can only contain variables (or negated variables) joined together by <code class="highlighter-rouge">OR</code>.</p>
 
 <p>Because each clause will have <code class="highlighter-rouge">OR</code> between the <code class="highlighter-rouge">variables</code> and the end of the clause is always an <code class="highlighter-rouge">AND</code> statement, those things can be removed from the statement, turning it into:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="n">A</span>    <span class="n">B</span>   <span class="o">~</span><span class="n">C</span>
- <span class="n">B</span>    <span class="n">C</span>
-<span class="o">~</span><span class="n">B</span>
-<span class="o">~</span><span class="n">A</span>    <span class="n">C</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="no">A</span>    <span class="no">B</span>   <span class="o">~</span><span class="no">C</span>
+ <span class="no">B</span>    <span class="no">C</span>
+<span class="o">~</span><span class="no">B</span>
+<span class="o">~</span><span class="no">A</span>    <span class="no">C</span></code></pre></figure>
 
 <h2 id="dimacs-format">DIMACS format</h2>
 
@@ -207,16 +209,16 @@
 <p>This is a valid input file for almost all SAT solvers. You can run this for example in <a href="http://minisat.se/">minisat</a>:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="err">$</span> <span class="n">minisat</span> <span class="n">input</span><span class="o">.</span><span class="na">cnf</span> <span class="n">output</span><span class="o">.</span><span class="na">cnf</span>
-<span class="o">============================[</span> <span class="n">Problem</span> <span class="n">Statistics</span> <span class="o">]=============================</span>
+<span class="o">============================[</span> <span class="nc">Problem</span> <span class="nc">Statistics</span> <span class="o">]=============================</span>
 <span class="o">|</span>                                                                             <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Number</span> <span class="n">of</span> <span class="nl">variables:</span>             <span class="mi">3</span>                                         <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Number</span> <span class="n">of</span> <span class="nl">clauses:</span>               <span class="mi">2</span>                                         <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Parse</span> <span class="nl">time:</span>                   <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Simplification</span> <span class="nl">time:</span>          <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Number</span> <span class="n">of</span> <span class="nl">variables:</span>             <span class="mi">3</span>                                         <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Number</span> <span class="n">of</span> <span class="nl">clauses:</span>               <span class="mi">2</span>                                         <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Parse</span> <span class="nl">time:</span>                   <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Simplification</span> <span class="nl">time:</span>          <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
 <span class="o">|</span>                                                                             <span class="o">|</span>
-<span class="o">============================[</span> <span class="n">Search</span> <span class="n">Statistics</span> <span class="o">]==============================</span>
-<span class="o">|</span> <span class="n">Conflicts</span> <span class="o">|</span>          <span class="n">ORIGINAL</span>         <span class="o">|</span>          <span class="n">LEARNT</span>          <span class="o">|</span> <span class="n">Progress</span> <span class="o">|</span>
-<span class="o">|</span>           <span class="o">|</span>    <span class="n">Vars</span>  <span class="n">Clauses</span> <span class="n">Literals</span> <span class="o">|</span>    <span class="n">Limit</span>  <span class="n">Clauses</span> <span class="n">Lit</span><span class="o">/</span><span class="n">Cl</span> <span class="o">|</span>          <span class="o">|</span>
+<span class="o">============================[</span> <span class="nc">Search</span> <span class="nc">Statistics</span> <span class="o">]==============================</span>
+<span class="o">|</span> <span class="nc">Conflicts</span> <span class="o">|</span>          <span class="no">ORIGINAL</span>         <span class="o">|</span>          <span class="no">LEARNT</span>          <span class="o">|</span> <span class="nc">Progress</span> <span class="o">|</span>
+<span class="o">|</span>           <span class="o">|</span>    <span class="nc">Vars</span>  <span class="nc">Clauses</span> <span class="nc">Literals</span> <span class="o">|</span>    <span class="nc">Limit</span>  <span class="nc">Clauses</span> <span class="nc">Lit</span><span class="o">/</span><span class="nc">Cl</span> <span class="o">|</span>          <span class="o">|</span>
 <span class="o">===============================================================================</span>
 <span class="o">===============================================================================</span>
 <span class="n">restarts</span>              <span class="o">:</span> <span class="mi">1</span>
@@ -224,15 +226,15 @@
 <span class="n">decisions</span>             <span class="o">:</span> <span class="mi">1</span>              <span class="o">(</span><span class="mf">0.00</span> <span class="o">%</span> <span class="n">random</span><span class="o">)</span> <span class="o">(</span><span class="mi">405</span> <span class="o">/</span><span class="n">sec</span><span class="o">)</span>
 <span class="n">propagations</span>          <span class="o">:</span> <span class="mi">3</span>              <span class="o">(</span><span class="mi">1214</span> <span class="o">/</span><span class="n">sec</span><span class="o">)</span>
 <span class="n">conflict</span> <span class="n">literals</span>     <span class="o">:</span> <span class="mi">0</span>              <span class="o">(</span> <span class="n">nan</span> <span class="o">%</span> <span class="n">deleted</span><span class="o">)</span>
-<span class="n">Memory</span> <span class="n">used</span>           <span class="o">:</span> <span class="mf">0.17</span> <span class="n">MB</span>
-<span class="n">CPU</span> <span class="n">time</span>              <span class="o">:</span> <span class="mf">0.002471</span> <span class="n">s</span>
+<span class="nc">Memory</span> <span class="n">used</span>           <span class="o">:</span> <span class="mf">0.17</span> <span class="no">MB</span>
+<span class="no">CPU</span> <span class="n">time</span>              <span class="o">:</span> <span class="mf">0.002471</span> <span class="n">s</span>
 
-<span class="n">SATISFIABLE</span></code></pre></figure>
+<span class="no">SATISFIABLE</span></code></pre></figure>
 
 <p>And print the output:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="err">$</span> <span class="n">cat</span> <span class="n">output</span><span class="o">.</span><span class="na">cnf</span>
-<span class="n">SAT</span>
+<span class="no">SAT</span>
 <span class="mi">1</span> <span class="o">-</span><span class="mi">2</span> <span class="mi">3</span> <span class="mi">0</span></code></pre></figure>
 
 <p>Now we can see what a SAT solver actually does. It takes a boolean expression and tries to find a ‘solution’. It tries to find a particular combination of <code class="highlighter-rouge">literals</code> so all the clauses are <code class="highlighter-rouge">true</code>. If it is able to find one, it stops and returns <code class="highlighter-rouge">SAT</code>. When it is unable to find a valid assignment it returns <code class="highlighter-rouge">UNSAT</code>, the problem can’t be solved.</p>
@@ -313,12 +315,12 @@
 
 <p>First we’re going to introduce two new <code class="highlighter-rouge">variables</code>, I’ll just continue using free numbers, <code class="highlighter-rouge">20</code> and <code class="highlighter-rouge">21</code>. Those will represent the top row for white and black.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Encode</span> <span class="n">white</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">20</span><span class="o">:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Encode</span> <span class="n">white</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">20</span><span class="o">:</span>
 <span class="o">-</span><span class="mi">1</span> <span class="mi">20</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">2</span> <span class="mi">20</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">3</span> <span class="mi">20</span> <span class="mi">0</span>
 
-<span class="n">Encode</span> <span class="n">black</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">21</span><span class="o">:</span>
+<span class="nc">Encode</span> <span class="n">black</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">21</span><span class="o">:</span>
 <span class="o">-</span><span class="mi">10</span> <span class="mi">21</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">11</span> <span class="mi">21</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">12</span> <span class="mi">21</span> <span class="mi">0</span></code></pre></figure>
@@ -391,9 +393,9 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 <p>I ended up doing the thing that works:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// Make sure we have at least k pieces for white and black:</span>
-        <span class="kt">int</span> <span class="n">freeVariable</span> <span class="o">=</span> <span class="o">(</span><span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">*</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">whitePieces</span><span class="o">,</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">blackPieces</span><span class="o">,</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">freeVariable</span> <span class="o">=</span> <span class="o">(</span><span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">*</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">whitePieces</span><span class="o">,</span> <span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">blackPieces</span><span class="o">,</span> <span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
 
         <span class="c1">// ... encode rows, diagonals, columns ...</span></code></pre></figure>
 
@@ -407,16 +409,16 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 
 <p>And if you change this back into a chess board we can see valid solution for N=10 with 14 queens each!</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> </code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> </code></pre></figure>
 
 <p>I’ve uploaded all the code for this series to GitHub and called it: <a href="https://royvanrijn.com/blog/2019/05/sat-solving-part-one/">Boolshit</a></p>
 

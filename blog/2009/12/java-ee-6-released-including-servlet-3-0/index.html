@@ -161,7 +161,7 @@
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Servlet</span><span class="o">(</span><span class="n">urlMappings</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span> <span class="s">"/bar"</span><span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="o">{</span>
      <span class="nd">@GET</span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="c1">//Handle the GET
 </span>
      <span class="o">}</span>
@@ -170,11 +170,11 @@
 <p>And this was my suggestion on how to improve it (see second article/link):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServletMapping</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"myServlet"</span><span class="o">,</span> <span class="n">mapping</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span> <span class="s">"/bar"</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
 
      <span class="nd">@Override</span> <span class="c1">//keep strong typing!
 </span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="o">...</span>
      <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -182,11 +182,11 @@
 <p>And this is from the final release:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"myServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span><span class="s">"/bar"</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
 
      <span class="nd">@Override</span> <span class="c1">//keep strong typing!
 </span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="o">...</span>
      <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>

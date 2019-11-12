@@ -98,6 +98,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -112,6 +114,272 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2017/01/vikipedia-a-java-youtube-bot/" title="Vikipedia: A Java YouTube bot">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Vikipedia: A Java YouTube bot" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2017-01-30T13:28:12+01:00" class="date" />
+          <span itemprop="datePublished" content="2017-01-30T13:28:12+01:00" class="date">
+            Jan 30, 2017 13:28:12
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/01/vikipedia-a-java-youtube-bot/">Vikipedia: A Java YouTube bot</a></h1>
+
+        <span itemprop="articleBody">
+          <p>YouTube, the future of television. I’ve got a lot of subscriptions to YouTube channels that deliver quality content, and those shows are ‘cast’ (using my Chromecast) to my TV. Another thing I often do is look up information, for example I watch talks from programming conferences like <a href="https://www.youtube.com/channel/UCCBVCTuk6uJrN3iFV_3vurg/videos">Devoxx</a> using YouTube.</p>
+
+<p>This gave me an idea, what if I can take some free information (like Wikipedia, all creative commons) and use that to create content for YouTube? Maybe I’ll even get some views :-)</p>
+
+<p>So this is what I’ve come up with, the following video is generated completely automatically:</p>
+
+<iframe id="randomVikipediaVideo" width="560" height="315" src="https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw" frameborder="0" allowfullscreen=""></iframe>
+
+<script>
+
+function nextVideo(autoplay) {
+
+    /* Don't always insert the same video in the article, spread the views across the videos randomly: */
+    var iframe = document.getElementById('randomVikipediaVideo');
+    var allVideos = ["dw_HP2AeYIU","VXNElLG9t_Q","2shv5Fv7ZNg","mnYrSUiLIgg","N45qnVlEAHw","1qBaUYcXJWM","ayZCJizN604","Z6N4bJDs9m4","AX4Ex5nYQqM","w9QF30yOGag","gruzWYNhE04","5rKxcZKIOP0","T-QvHcEMHEc","I4BR-pA9APc","QsbM9R0qAWE","4kPdhwVCAck","vV3JjOLOc0o","YU1UFQr9ezA","-6XJK7-L4Qk","1Uxn51TtA24","UknPDIoHVYc","WmTwh7AsaJQ","8dNTnrA_5gY","EH1MytpdcpM","bavzjaZLCJc","vro8u3N4HBc","k-LDzwP8jbs","dGPQUHKlabc","VlC1q_Edqj0","-zOb7D33SCE","OtyjkvlMJQY","ta3S29-evYY","KNTMCnZTp4k","UaH7hZXIiso","zIWxkcpc4cI","c5Ql0T-DHWM","whC5odvJmzA","lRpBMLmxQ3A","OEkTxgxFxm8","wzHdr1cG9qY","hRAU_4VPtVE","y8AO2YmnRgU","EzkyZefY5QI","RHmfvXO4dAc","krXrsq5MXmE","7KSlXBn9BFU","t0xr4dreV8g","wsX4dZj21pU","46OeYWZNXC4","u90MHVbJWLQ","j6DrUXCi55I","e5RxuXO1MGw","yQ12Q03RQ8M","1NU6c4CoOa4","l0EcOf-ivSI","Z1HSEsLo2M0","qDbl0gxu7Dc","EVztRfoZHQ0","yq-s6RegMzY","Mvx7WMFZ-ec","rynm5ii1gKI","hnDQzbAhQW0","RJBUHNiW_LA","z7PDxRpEuCM","GWYoMnviUTo","KJnKrh4HqO8","Qj18ci7ahXU","LVPTjW0HWCE","kKYJGL5zOdA","Gy3uG2sB0EI","EobwR1VvP6U","1e3oKKtT9Uc","9HT1Jq-pJsU","4mmTbQhYSe8","aCBmsv-Z0pY","XkytdbikWwQ","Kvh0Ks-xp_Q","Yo7Rro5aIJo","xlUjTuo11v4","3XpyQCxAFhE","upGOccVyjPk","U1XToo-yA0o","iTXIDqoozxY","Mpnaojg9CGg","G1Akiwn2b0k","YgEuC4B54Qw","owCh8KOVa1k","VE23gPaLWoI","ZKFksbkTKzI","xB1pPhgUSFo","2y9Nen8GedM","DmTxZSL0ezQ","S6L9d9oMP8k","NeaNEY_-HsQ","3lOEjy3G8zs","fabUIVQJS-U","AjlP3xVboPI","DOLK4E9CN44","xevdO-i_5X8","iBsClalmitY","tVAudOBNpSY","U5uXj1ITxvM","8ly91g6SpQY","Lx-QCSrwPVg","3Wd-AX8znpY","HVSxw2asHmw","BgtgmoAljkg","LEa03im5k5A","GofEE8LOGs4","86Swgtxs6Po","i3d1LspMBIU","PirEmJOo6CE","Lv6VILwZz1M","7YmUhQwq2YU","exePCusCm9k","H3PD7frrI_8","ghTqYWxoVrA","4rPNThNEQO4","P3o36TonBXE","5VsQd2ovTHY","HmwWy97ef5A","-0QlVaGlk1E","zO3Rl-rh6Bs","o9pkhKm_kAI","y5_fnfMm1_o","n9MQM919MDI","u73-_ofPYwA","WXWcfUwRWK8","PpyKc8dc4iQ","naEG81DttQk","4bMcrDV1vJs","BWNUqERTWyo","UCgOm1WvWB8","PjRJf-3i7wA","gCokmHyYIsk","o7Fkorc8xw4","0N81aj-0v8I","0Sts7wqwuhI","KmxQ9YvYP8U","1NuL1LFJqN4","EI9U85KR00k","sKTZ39Z55kM","RqGQRHwqD1Q","ToJ1hL_UxR8","BzVFH7dudGI","4YV-kJsnTY4","Hh1Ktyion00","cS0DksC2ThE","vVhUdj_6AJI","WBGEAkHIdEY","OhNypsK8dgs","KWgxgSwNQeg","wBq0yFH1NKA","by_kgenndME","Q3PfF8KQnnQ","qyubdFmpOzY","Fd4OuSQKSYc","M91jqRCuwSE","SZeFzFvvnww","1x9mR-8Jlk8","v60DhhXigj8","L2EtzWbmsSM","8OEh0WRIZpU","A6Fq0BDKUkI","B0fISmMwe0o","UJvXxTLMNCc","Oyit-UF0hU0","sJnT-ZBx-aw","w9DhHHmxkxk","09s8AsA_1_8","WpULC6QbFs8","oooZW-0Ib00","D6doByXH2qg","YNskJwjp2qs","GCwyct06ewQ","1wwGHpuoTRY","xCjBcNHVMN8","XXjCXeov7MU","j5pp75JMHLg","tN0Xhw1kXek","dnKc7ujewTg","508DpfT1xjM","7eeef5LwqBc","L3BFStFNPUc","b7Ap5MoqYOI","xBdrHXqTU9w","N7zUVxlp4kU","tqfJ3x337VE","jG4XesjoSfw","z79-HH7SgmA","Uu3qbMp9DVs","au8KcahWxG4","k2mDwz01YZk","f-vvDNc5mT0","Idg7R-9OI74","mhxE8xaaFi0","XryqTofd1tE","4yItBLDG6pc","zuKkQpziypw","9ewf9WEYy2M","uZK0M_K34MU","UIwzSvZYvBY","du0aqYDnd0Q","jy9azLipJbA","J-6yhQRz6_o","N3N2mQ7laF4","LtxnksrTXG0","-jqVIXfCkBI","P3MZsfQ4its","YVU1Ko9xKkU","s1R40DPur88","wfgny3djwGk","YLZ2x1-r6AQ","fUQX7gPNr7I","Cru4l_KrDv0","D1iuOpxeytw","FGhk31NdBoY","YPSW9YpFlu0","2ZST_JEpfRU","ZwH0E4EypOg","HA19BfHDrFk","blpoR8ooqI0","uI0KwvCqFVw","PoAI247TCWo","tF1gASEhQEQ","aZKK6d5IDbI","_jEgK66-ixg","2cb4Vt8EBEY","eXhlj12yOkM","-X9sVpmzkko","JTpPXmyER94","KDSkPksssrI","LV52_vn82tM","cvAu2-xaJ7k","KMq8JJYSSVM","92PtXvteSeI","obf4rmqWNfY","-0PT7-_5y58","5tzT5Aa2w58","-s9m266PR3A","xTyZVhbQ2l8","xNZgiBLUqWA","60zr04WK_7k","2wQegUuMv-A","SKeHyxQMBlg","7_n560myhjA","88TdVV7swU4","wpqmuNaET48","FVym7WQTBCM","oOm1eMCiNbQ","cgS1FTromKY","gLITbNSHRQ8","P_rMQK5w8lY","boJKjmTK_lg","QkiOMJ0nO-0","Wu8YElT21fQ","jcRegawJ4DY","Q_OW_A5uyYo","QQNVmwHBC1Y","MgasuaHMZow","c9M2OSRrLbY","rs-blPkEmSc","8IXc5BmlGBc","yrjrb_wK0fg","JLxWvfUO2lM","t0QIsLg7kxM","DZFKdRVzymw","_S5Njfgm0GA","bcd5L_UHATo","fvwi4hKxTFU","GnSUGxgUT54","d0y3Q-00ZNA","XBDsnpsmTYs","RrL4OcobwYI","5zf76gHJGto","_NoLH86yO7k","ub2uWc_mndk","RUqSACHf-Qo","XaUHVOpXCuA","Lo7qvHIWICk","MHw4wQ44ZjY","__yMErSqfK0","4atX5oRvoTU","R2Qd9Vf40g4","2m2UFpaB8NY","GyE0Z_1A6_M","LWnbLpF3AlU","mYQTMJnO6hs","dRl8xPKoXlQ","UabkSkq5wUs","lZ9e_43F0Vw","SK4NaWuUUhM","H2CMnpmSH1Y","WeKMvlBuDgc","9Ta7PW8cDL4","CXRRwU5k3U8","dwAlC6zcvl4","MoKrxAWu5Wk","S7uoR1gVw_A","6_hpi9qSz_M","VmwiIZ7OV6Y","NOS4reuwl-o","CSrD1srzfWE","KRH33rHzeh8","F6MBzJF7mTo","IRSb4qBbaGQ","L7Z3O1vw6bo","h6bTtr9qMf4","MUlyzmxEZ4I","OM7tycgoZyE","kEgajhCjKVU","Py0_yYTs3i4","Nwrlzz5L9Zc","RNmLNxM1cQg","jgih4zIJJQ0","Sclpx3BN4TQ","rTIvHfYbw_8","yJQXTCXlaDY","tHTXjVR-KlQ","ASue7eEeaYU","KwNNFTAYgYU","FgYHaJlEIws","b3EDCuFDlX8","9U3CAcmJB5M","_Gfhivl4oxY","-7DDBHcU8sU","RzGxbeOeF_E","IAnpo_fWCFs","lJGnVjwhxn4","4UWXEhA2_lw","nQi44X0yky8","dl8JAi-oy2E","qhdxInl7FnM","mI1FPIzucvI","uCsPGI_fKLY","b-HqkyuD1bw","Pf34zP-r0Vw","203nO3CQx8E","VTBS73N9HAA","mYiS70eXi2Y","nL7DkuSzTME","8gYPuHs3a3w","-6clJ54425g","ENEt6YPP-bA","3dcub25B8vo","c0C2q4uC2lU","vP1XuZFnCuY","d8eQGh2hmZs","DnwVCpFUa8c","o13RQmWafQQ","Fzeq5q7fZec","Rc3BiJyptyQ","0MTZ_4TpeCs","NWAlGoRayI8","_CxnGtd5wRc","GsJ52VMmOTA","4xoPkMY9jTY","FbVZX4QpLt0","vR8nfv-nuRw","hPDjW_WDLjE","Xt-KS-7yxIY","Af2EbXntrNo","YcWjPXF61bw","REFb1N0IOTU","Xq7RGuyXHac","0ZNk6o4eQW0","ndBFMQ4cfVg","1g3BJOTOjdg","Vw1noAhipyU","CzRRqzh2rc8","8AlSU3uYgwE","Fm4Hwq3yIv8","ox43bEl6Zd8","pZiOS2hX984","gYOE1g9t6WA","lqQ_R0A1Sjk","Fkzh2BXYX4c","F3M1Afx-foY","IVnxLf4VwnM","C2hzcRh8A94","UX5fDO8-CQ8","XwX-DcngYV8","YBsWk-mxIo0","vgcLJVrRlEg","wnAddG_K7DI","j5uKfryafHA","wIiIbwASTqc","EhtwtkSvWyA","769WvedTtbw","GyVMfFetXsI","nyIKQ5D123Q","STjTk8jwoQw","wMPyviYwxWU","0bD6qoS2sz4","v2F-dCCB-jY","qPVkEm7apu0","ZlCQKTIT3xA","_00UwBZX9p8","9OpPtRH61SM","Lgsw-yPW7d4","RIkobdBlBZ4","Iq_pCB-Dl8w","SzxXJQxdO9c","dkpEcuOHcSA","N71fY05Lsxg","szOc2LWxQHY","73bKxGIHYrs","qWL_QRAAH38","dDzkglVA6o8","GRo09AmIMak","fby9mwcYdnY","qY_FxwvWA_o","oIU6UL-coG0","6BrtQYvRy4g","UjWFmAEA79A","MpPWOGB3FuA","nrg-D07wy1M","WswpDPrmVM4","tl24wXyIONo","iHSN9Y-Vf_8","KLNPjVbwb7Q","-ihJHRKhIFQ","nE4YbY0sNH8","mZpSx73ozao","X01cwva4g8Q","t0rBJ2gxk9g","pvD8gIIUkyM","-Iv9fO-q5-I","-__thIfjTO4","zQf51_qR0zY","J0U_Gmw7MaI","mEUAdBA8w0Q","NfFZMjGmWVc","Lil5_uWyFbY","ejtUgTgppwU","QGIUnYo4UpQ","ibTsY0YlW6g","lwbcUgwM5l8","nbnh_kdDBfw","ucElDXT1Ygs","XtG7KQuTcio","tYIo5ApR9Eg","ZuTtJotj-LI","Ws_qpfu4CD0","bMLtbEUngkg","D1WpvfHFt0Y","m9RqegSPQsg","mgJ5hiy0WKw","rtfJGm6Rml0","JEv9tyXOnnc","UYiHvh9E2pU","TyooQUmlcOA","dcVWjjfgguU",];
+
+    var videoId = allVideos[Math.floor(Math.random()*allVideos.length)];
+    iframe.src = 'https://www.youtube.com/embed/' + videoId + "?autoplay=" + autoplay;
+
+}
+
+nextVideo(0);
+
+</script>
+
+<form>
+
+<button onclick="nextVideo(1);return false">Click to play next random video</button>
+
+</form>
+
+<h1 id="step-1-wikipedia-api">Step 1: Wikipedia API</h1>
+
+<p>The first step in creating these videos was to get some actual freely available content. For this I chose to use Wikipedia. This can be accessed using JSON/REST, and to quickly hack this into place I decided to use a framework called ‘Unirest’. This makes the while prototype easy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// API URI for the English Wikipedia</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">"https://en.wikipedia.org/w/api.php"</span><span class="o">;</span>
+
+<span class="c1">// Using a 'search query', name of the page, retrieve the content:</span>
+<span class="kd">private</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getPageContent</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">query</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">UnirestException</span> <span class="o">{</span>
+    <span class="c1">//Example URI created for query 'Stack Overflow': https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
+    <span class="nc">HttpResponse</span><span class="o">&lt;</span><span class="nc">JsonNode</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="nc">Unirest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="no">ENGLISH_WIKIPEDIA</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"format"</span><span class="o">,</span> <span class="s">"json"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"action"</span><span class="o">,</span> <span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"prop"</span><span class="o">,</span> <span class="s">"extracts"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"titles"</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"redirects"</span><span class="o">,</span> <span class="s">"true"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">asJson</span><span class="o">();</span>
+
+    <span class="nc">JSONObject</span> <span class="n">pagesObject</span> <span class="o">=</span> <span class="n">response</span>
+            <span class="o">.</span><span class="na">getBody</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">getObject</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"query"</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"pages"</span><span class="o">);</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">pageKey</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
+        <span class="nc">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">"extract"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The resulting JSON (see this <a href="https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true">example</a>) contains the Wikipedia page in simple processed HTML. From this HTML I used a library called ‘Jsoup’ to extract the plain text. The first alinea of text contains the introduction of the topic, this is what I’ve decided to use as content for the video. Initially I had <em>all</em> the content of the page in the videos, but they quickly turned out to be 30+ minutes long and very boring.</p>
+
+<p>This is the code I used to go from HTML to the first alinea of text:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * Clean the HTML, get inner text of first alinea and break into sentences.
+ * @param htmlContent
+ * @return
+ */</span>
+<span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">cleanAndBreakIntoSentences</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">htmlContent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Document</span> <span class="n">document</span> <span class="o">=</span> <span class="nc">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
+
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">fullText</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">Elements</span> <span class="n">elements</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="na">body</span><span class="o">().</span><span class="na">children</span><span class="o">();</span>
+
+    <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">Element</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="k">while</span><span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+        <span class="nc">Element</span> <span class="n">elem</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+
+        <span class="c1">// All the text is contained in paragraph elements:</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"p"</span><span class="o">))</span> <span class="o">{</span>
+
+            <span class="nc">String</span> <span class="n">source</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="na">text</span><span class="o">();</span>
+
+            <span class="c1">// Break the text into sentences using the smart JDK 'BreakIterator':</span>
+            <span class="nc">BreakIterator</span> <span class="n">breakIterator</span> <span class="o">=</span> <span class="nc">BreakIterator</span><span class="o">.</span><span class="na">getSentenceInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
+            <span class="n">breakIterator</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+            <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">first</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span> <span class="n">end</span> <span class="o">!=</span> <span class="nc">BreakIterator</span><span class="o">.</span><span class="na">DONE</span><span class="o">;</span> <span class="n">start</span> <span class="o">=</span> <span class="n">end</span><span class="o">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">fullText</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">start</span><span class="o">,</span><span class="n">end</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// If we reach a header, stop processing, we only need the first section/alinea:</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"h2"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// We break on the first (sub-) title:</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">fullText</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="step-2-stunning-visuals-with-java-2d">Step 2: Stunning visuals with Java 2D</h1>
+
+<p>We have some text, now how do we turn this into a video? We need visuals! I decided to cut the content into seperate lines, and for each line I have a single ‘slide’. This is an (buffered) image created using Java’s 2D API and saved to file.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+ * For each sentence, create a buffered image and paint some text on this.
+ * We need the text to be 'wrapped', for this I repurpose a JTextArea, on a JPanel.
+ * 
+ * Also increase the font size so the text fits on the screen.
+ */</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">paintText</span><span class="o">(</span><span class="nc">Graphics2D</span> <span class="n">g2</span><span class="o">,</span> <span class="nc">String</span> <span class="n">text</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JPanel</span><span class="o">();</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+    <span class="nc">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JTextArea</span><span class="o">();</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="nc">BorderFactory</span><span class="o">.</span><span class="na">createEmptyBorder</span><span class="o">(</span><span class="no">BORDER_SIZE</span><span class="o">,</span> <span class="no">BORDER_SIZE</span><span class="o">,</span> <span class="no">BORDER_SIZE</span><span class="o">,</span> <span class="no">BORDER_SIZE</span><span class="o">));</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setWrapStyleWord</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setLineWrap</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">text</span><span class="o">);</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+    <span class="kt">int</span> <span class="n">fontSize</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="c1">// Increase the font size as long as it fits on screen (and don't go bigger than 100, looks ugly):</span>
+    <span class="k">while</span><span class="o">(</span><span class="n">area</span><span class="o">.</span><span class="na">getPreferredScrollableViewportSize</span><span class="o">().</span><span class="na">getHeight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">1080</span> <span class="o">&amp;&amp;</span> <span class="n">fontSize</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">fontSize</span> <span class="o">+=</span> <span class="mi">10</span><span class="o">;</span>
+        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nc">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="nc">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nc">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="nc">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">area</span><span class="o">);</span>
+
+    <span class="c1">// Print this panel on the Graphics2D object (which is a BufferedImage)</span>
+    <span class="n">panel</span><span class="o">.</span><span class="na">printAll</span><span class="o">(</span><span class="n">g2</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<h1 id="step-3-text-to-speech">Step 3: Text-To-Speech</h1>
+
+<p>Instead of using a Java Text-To-Speech (TTS) library, which aren’t very clear or good, I decided to use the build-in OS/X command ‘say’.
+On the command line you can execute: <code class="highlighter-rouge">say Hello world!</code></p>
+
+<p>The ‘say’ command supports different voices and also has the ability to store the output in a file. Which is perfect for us!</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Execute the say command with a given filename, voice and sentence to speak:</span>
+    <span class="kd">final</span> <span class="nc">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">"say -o "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">" -v "</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">" -r 210 "</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
+
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="nc">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+        <span class="nc">String</span> <span class="n">line1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">line1</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line1</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+
+    <span class="c1">// Wait for the say-command to finish</span>
+    <span class="n">p</span><span class="o">.</span><span class="na">waitFor</span><span class="o">();</span></code></pre></figure>
+
+<h1 id="step-4-putting-it-all-together">Step 4: Putting it all together</h1>
+
+<p>What do we have now? A list of sentences from Wikipedia, for each sentence we have an image and we have an audio snippet created with TTS. Now it is time to put everything together and create a video.
+The easiest way to do this is to use ffmpeg, a powerful command line video tool. To make this easier I created a small method ‘executeCommandLine’ which does the same thing as the snippet with ‘Runtime.getRuntime().exec’ shown above.</p>
+
+<p>Combine the image (png file) and the TTS audio (mp4 file) into a series of MPG files:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="k">for</span><span class="o">(</span><span class="nc">VikipediaSentence</span> <span class="n">sentence</span> <span class="o">:</span> <span class="n">sentences</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="na">getFilename</span><span class="o">();</span>
+        <span class="c1">//Combine audio and image into a short video:</span>
+        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -loop 1 -y -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".png -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mp4 -tune stillimage -shortest "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mpg"</span><span class="o">);</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>We now have a series of small MPG files. They need to be combined into a single video. For this we need a text file which contains a list of all the MPG files. This is stored on disc and next we execute the following command:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//merge all:</span>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg"</span><span class="o">);</span></code></pre></figure>
+
+<p>Next we convert the video from one large MPG to MP4 file (which is a nicer, compressed format):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//convert to mp4:</span>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4"</span><span class="o">);</span></code></pre></figure>
+
+<p>And to add a little more ‘production value’ I’ve gone online and found some soothing (free, creative commons) background music. This music is looped into a large audio file of 50 minutes (enough for all videos). Again using ffmpeg the audio is mixed in:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// add background music:</span>
+<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4"</span><span class="o">);</span></code></pre></figure>
+
+<p>There it is, we have a complete video with text audio, text visuals and background music! Only one thing left to do, uploading to YouTube!</p>
+
+<h1 id="step-5-uploading-everything-to-youtube">Step 5: Uploading everything to YouTube</h1>
+
+<p>To automate the process of uploading, I first needed a place to put the videos, so I created a new YouTube channel named: <a href="https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw">Vikipedia</a></p>
+
+<p>Next we can use the Google YouTube Data API. It turns out this is <em>very</em> easy and well documented. I don’t even need to share the code I wrote here because I used the example from Google’s website itself! Check out this <a href="https://developers.google.com/youtube/v3/code_samples/java#upload_a_video">amazing documentation</a>. Very detailed and does exactly what I needed it to do.</p>
+
+<p>The example code takes a video file and uploads it. The only things I changed were setting the correct description, I was ready to generate all the content!</p>
+
+<h1 id="not-implemented-yet">Not implemented (yet?)</h1>
+
+<p>Things I wanted to implement (but didn’t and probably never will):</p>
+
+<ul>
+  <li>Add a little color to the videos (black and white is boring)</li>
+  <li>Add <a href="https://trac.ffmpeg.org/wiki/Waveform">waveform</a> from ffmpeg (just to keep it visually interesing)</li>
+  <li>Download (did this) and use (didn’t do this) the images from the Wikipedia page and add those to the video</li>
+</ul>
+
+<h1 id="final-thoughts">Final thoughts</h1>
+
+<ul>
+  <li>Yes, it is pretty easy to hack together a bot to create YouTube videos.</li>
+  <li>No, the quality isn’t <em>that</em> good… yet?</li>
+  <li>Yes, it can be made in a single afternoon!</li>
+  <li>No, I’m not going to automate the spidering of Wikipedia and upload a million videos… (but I could easily do that!)</li>
+</ul>
+
+<p>Up to now all the videos created are based on a small list of ‘hot topics’ I found on Wikipedia and Twitter. I don’t want to automate the entire process and flood YouTube, the content just isn’t good enough for that. But it was a fun project for a lazy afternoon! I’ve learned a lot of new tricks, maybe you can benefit from that as well.</p>
+
+<p>The next thing I want to do with the 400+ YouTube videos I’ve generated is to see how (and if) people are going to watch them. Do they show up in the search results? Which topics are searched and watched? Maybe more on that in a future post!</p>
+
+<p>Do <strong>you</strong> have any good ideas on how to generate videos, let me know in the <strong>comments</strong>!
+I’ve created a bot that generates music some years, maybe I should improve that bot to upload its own YouTube music videos? ;-)</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -157,7 +425,7 @@
 
 <p>It is possible to set a bound with a wildcard on the declaration side:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shelter</span><span class="o">&lt;</span><span class="n">X</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shelter</span><span class="o">&lt;</span><span class="no">X</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
 	<span class="o">...</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -169,33 +437,33 @@
 
 <p>The following code uses the ‘extends’ keyword to create the <strong>in</strong>-variable:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Using extends we create an 'in' variable:</span>
-    <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="n">inAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
+    <span class="nc">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">inAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the inAnimals we can read: Animal (not subclasses)</span>
-    <span class="n">Animal</span> <span class="n">animal</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- reading Animal is fine</span>
-    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can't read Cat</span>
+    <span class="nc">Animal</span> <span class="n">animal</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- reading Animal is fine</span>
+    <span class="nc">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can't read Cat</span>
 
     <span class="c1">// We can write: nothing (!) making it almost read-only</span>
-    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <p>There is also the ‘super’ keyword (not very common) to create an <strong>out</strong>-variable use side:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Using super we create an 'out' variable, setting an upper bound:</span>
-    <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Cat</span><span class="o">&gt;</span> <span class="n">outAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
+    <span class="nc">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="nc">Cat</span><span class="o">&gt;</span> <span class="n">outAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the outAnimals we can read: object (no superclasses!)</span>
-    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, illegal</span>
-    <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- we can only read object</span>
+    <span class="nc">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, illegal</span>
+    <span class="nc">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- we can only read object</span>
 
     <span class="c1">// On the write side, we've set a bound to Cat:</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <h2 id="so-what-is-jep-300">So what is JEP 300?</h2>
 
@@ -209,8 +477,8 @@
 
 <p>For example look at the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">interface</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="n">contravariant</span> <span class="n">T</span><span class="o">,</span> <span class="n">covariant</span> <span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-        <span class="n">R</span> <span class="nf">apply</span><span class="o">(</span><span class="n">T</span> <span class="n">arg</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">interface</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="n">contravariant</span> <span class="no">T</span><span class="o">,</span> <span class="n">covariant</span> <span class="no">R</span><span class="o">&gt;</span> <span class="o">{</span>
+        <span class="no">R</span> <span class="nf">apply</span><span class="o">(</span><span class="no">T</span> <span class="n">arg</span><span class="o">);</span>
     
     <span class="o">}</span>
     <span class="c1">// other possible syntaxes are Function&lt;-T, +R&gt; or Function&lt;in T, out R&gt;</span></code></pre></figure>
@@ -229,52 +497,52 @@
 
 <p>The next proposal Mark has submitted is about using Enums with Generics. Look at the following example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="nc">Pet</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
+    <span class="no">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="no">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="no">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
-    <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+    <span class="nc">Animal</span> <span class="n">animal</span><span class="o">;</span>
 
-    <span class="n">Pet</span><span class="o">(</span><span class="n">Animal</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Pet</span><span class="o">(</span><span class="nc">Animal</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">animal</span> <span class="o">=</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Animal</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Animal</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>We have an enum with three pets. These pets have an instance of an animal inside them. And we have a way of retrieving them.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: "Bella"</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="nc">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: "Bella"</span></code></pre></figure>
 
 <p>But one thing we can’t do it call the method “.bark()” on BELLA, because we don’t know this is a Dog.</p>
 
 <p>The proposal JEP 301 wants to make it possible to correlate a specific type to an enum constant:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span><span class="o">&lt;</span><span class="n">A</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="nc">Pet</span><span class="o">&lt;</span><span class="no">A</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">&lt;</span><span class="n">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
+    <span class="no">BELLA</span><span class="o">&lt;</span><span class="nc">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="no">BUDDY</span><span class="o">&lt;</span><span class="nc">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="no">TIGGER</span><span class="o">&lt;</span><span class="nc">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
-    <span class="n">A</span> <span class="n">animal</span><span class="o">;</span>
+    <span class="no">A</span> <span class="n">animal</span><span class="o">;</span>
 
-    <span class="n">Pet</span><span class="o">(</span><span class="n">A</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Pet</span><span class="o">(</span><span class="no">A</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">animal</span> <span class="o">=</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">A</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="no">A</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Having coupled the Dog type to enum BELLA it should now we possible to call:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">bark</span><span class="o">();</span> <span class="c1">// WOOF!</span>
-<span class="n">Pet</span><span class="o">.</span><span class="na">TIGGER</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">purr</span><span class="o">();</span> <span class="c1">// Purrrrrrrrr.....</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">bark</span><span class="o">();</span> <span class="c1">// WOOF!</span>
+<span class="nc">Pet</span><span class="o">.</span><span class="na">TIGGER</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">purr</span><span class="o">();</span> <span class="c1">// Purrrrrrrrr.....</span></code></pre></figure>
 
 <h1 id="jep-302-lambda-leftovers">JEP 302: Lambda Leftovers</h1>
 
@@ -286,11 +554,11 @@
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Predicate</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="nc">Predicate</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
    <span class="o">...</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Function</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">function</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="nc">Function</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">function</span><span class="o">)</span> <span class="o">{</span>
    <span class="o">...</span>
 <span class="o">}</span>
 
@@ -312,23 +580,23 @@
 <p>Starting with Java 8 the use of an underscore as lambda argument caused a warning and from Java 9 the use of an underscore became an error. This allows future Java versions beyond 9 to be able to use the underscore for other purposes. And one of those purposes is to bring it back as a default variable name. Not causing collisions if used multiple times and it can’t be used as variable by calling _.toString() for example.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Ignore the second parameter, just use i:</span>
-<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+<span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
 
 <span class="c1">// Even possible, ignore both:</span>
-<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"someString"</span><span class="o">;</span>
+<span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"someString"</span><span class="o">;</span>
     </code></pre></figure>
 
 <h2 id="shadowing-of-parameters">Shadowing of parameters</h2>
 
 <p>Another small change that is proposed is allowing to shadow parameters. For example look at the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">computeSomeKey</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
+<span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">computeSomeKey</span><span class="o">();</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">key</span> <span class="o">-&gt;</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="c1">// compile error, key already defined</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>  <span class="c1">// compile error, can't redefine key inside this scope</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>  <span class="c1">// compile error, can't redefine key inside this scope</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 
@@ -337,11 +605,11 @@
 <p>One possible drawback is readability, and I too think that this might be a problem.
 For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theInitialKey"</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
+<span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theInitialKey"</span><span class="o">;</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theShadowKey"</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theShadowKey"</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 
@@ -1257,11 +1525,11 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>Example (old skool, Java 7):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
     <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+        <span class="nc">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
         <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+            <span class="nc">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span></code></pre></figure>
 
@@ -1275,15 +1543,15 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
 
     <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
 
 <p>Or the shorter ‘fluid’ version:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
         <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
         <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
         <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
@@ -1304,13 +1572,13 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>It is just an easy method to call:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
 
 <p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
     <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
     <span class="o">}</span></code></pre></figure>
 
 <p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>
@@ -1463,26 +1731,26 @@ Some people have warned me that I’m being <em>too</em> optimistic. But time wi
 <p>Look at the following example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Proposed var: (saves 3 characters)</span>
-    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+    <span class="kt">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span>
 
     <span class="c1">// Flipped diamond operator: (larger, but more readable IMHO)</span>
-    <span class="n">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span></code></pre></figure>
+    <span class="nc">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span></code></pre></figure>
 
 <p>In this case adding var/val doesn’t improve much, we still need to specify our generics <em>somewhere</em>, and now it has moved.</p>
 
 <p>But look at the following example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
-    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// Proposed var:</span>
-    <span class="n">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="kt">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// Flipped diamond operator:</span>
-    <span class="n">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
+    <span class="nc">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
 
 <p>The thing is: There is much more to win on the LHS with the diamond operator than we currently have with the RHS diamond. In most cases you’re going to call code that has already defined the typing, in all those cases you can skip it LHS.</p>
 
@@ -1493,106 +1761,6 @@ Some people have warned me that I’m being <em>too</em> optimistic. But time wi
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2016/03/flipping-the-diamond/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/03/java-mail-message-as-download/" title="JavaMail API: Message in EML format">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaMail API: Message in EML format" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-03-22T11:15:15+01:00" class="date" />
-          <span itemprop="datePublished" content="2016-03-22T11:15:15+01:00" class="date">
-            Mar 22, 2016 11:15:15
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/03/java-mail-message-as-download/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/03/java-mail-message-as-download/">JavaMail API: Message in EML format</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Our application was already using JavaMail (javax.mail.*) as a way to inform our users. But for logging purposes we wanted to store all the emails we send in our database (and make them downloadable using our GUI).</p>
-
-<p>It turns out this is pretty easy to do!</p>
-
-<p>Let’s start with some very basic email code we already had in place:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Some method to construct a MimeMessage:</span>
-    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
-
-    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
-
-<p>What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.</p>
-
-<p>It turns out there is a convinient method for doing just that: <em>message.writeTo(OutputStream)</em></p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
-
-    <span class="c1">// Retrieve the entire message as byte[]:</span>
-    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
-    <span class="n">message</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
-    <span class="kt">byte</span><span class="o">[]</span> <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
-
-    <span class="c1">// Next we store the byte[] in our database (JPA) entity:</span>
-    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
-    <span class="n">mailArchive</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">archivedMail</span><span class="o">);</span>
-
-    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
-
-<p>Our own little POJO entity (<em>ArchivedMail</em>) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.</p>
-
-<p>We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Add the Wicket link-component to our page:</span>
-    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">"wicketLinkId"</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
-
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
-                <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-                    <span class="c1">// When clicked output a stream which contains the raw byte[]:</span>
-                    <span class="n">output</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">getModelObject</span><span class="o">().</span><span class="na">getBytes</span><span class="o">());</span>
-                <span class="o">}</span>
-
-                <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="n">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="c1">// Add the content type for an EML file:</span>
-                    <span class="k">return</span> <span class="s">"message/rfc822"</span><span class="o">;</span>
-                <span class="o">}</span>
-            <span class="o">};</span>
-
-            <span class="c1">// Schedule the handler to return our resource stream (with a fancy name):</span>
-            <span class="n">getRequestCycle</span><span class="o">().</span><span class="na">scheduleRequestHandlerAfterCurrent</span><span class="o">(</span>
-                <span class="k">new</span> <span class="nf">ResourceStreamRequestHandler</span><span class="o">(</span><span class="n">resourceStream</span><span class="o">).</span><span class="na">setFileName</span><span class="o">(</span><span class="s">"mail.eml"</span><span class="o">));</span>
-        <span class="o">}</span>
-    <span class="o">});</span></code></pre></figure>
-
-<h2 id="conclusion">Conclusion</h2>
-
-<p>Using JavaMail (javax.mail) it is very easy to get the ‘raw’ contents of an email when sending it.</p>
-
-<p>This can be stored and downloaded in EML-format. It contains everything you need, mime, multipart, attachements and all the from/to headers.</p>
-
-<p>Happy coding!</p>
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/03/java-mail-message-as-download/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

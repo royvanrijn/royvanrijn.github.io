@@ -154,20 +154,20 @@
 
 <p>For example the piece of code below:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span> <span class="o">{</span> 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span> <span class="o">{</span> 
 
     <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
+        <span class="nc">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
         <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
-<span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="n">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
+<span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nc">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
 
 <p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
 For example Eclipse says:</p>
@@ -183,10 +183,10 @@ For example Eclipse says:</p>
 
 <p>The solution to this problem is very simple, but most neglect to use it:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="nc">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
 
     <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="n">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="nc">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>

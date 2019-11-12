@@ -98,6 +98,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -112,6 +114,80 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/01/movies-as-porn/" title="What if your favourite movie was remade as porno">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="What if your favourite movie was remade as porno" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-01-15T15:45:57+01:00" class="date" />
+          <span itemprop="datePublished" content="2010-01-15T15:45:57+01:00" class="date">
+            Jan 15, 2010 15:45:57
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/movies-as-porn/">What if your favourite movie was remade as porno</a></h1>
+
+        <span itemprop="articleBody">
+          <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
+
+<p>My collegues and I were discussing this, and we came up with a top 10. We’ve also started a twitter <a href="http://hashtags.org/moviesasporn">hashtag</a>.</p>
+
+<h1 id="top-10">Top 10</h1>
+
+<ol>
+  <li>Shaving Ryan’s Privates (everybodies favourite)</li>
+  <li>The Curious Taste of Benjamin’s Bottom</li>
+  <li>Honey, I shagged the kids</li>
+  <li>Missionary Impossible III</li>
+  <li>Good Will Humping</li>
+  <li>Free my Willy</li>
+  <li>Legally Boned</li>
+  <li>I Know Who you did last Summer</li>
+  <li>Schindler’s Fist</li>
+  <li>Cliff Banger</li>
+</ol>
+
+<h1 id="honourable-mentions">Honourable mentions</h1>
+
+<p>And some honourable mentions to the titles that just didn’t make the list:</p>
+
+<ul>
+  <li>When Harry ate Sally</li>
+  <li>Saturday Night Beaver</li>
+  <li>Spankenstein</li>
+  <li>Swollow Hal</li>
+  <li>Sorest Rump</li>
+  <li>Bangs of New York</li>
+  <li>American Bangster</li>
+  <li>Thighs Wide Shut</li>
+  <li>Citizen Came</li>
+  <li>The Green Milf</li>
+  <li>The Porn Identity</li>
+  <li>Crouching Woman, Hidden Camera</li>
+</ul>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -318,9 +394,9 @@ In our case it would be: <em>/flows/module1/module1-flow.xml</em></p>
 
 <span class="kn">import</span> <span class="nn">com.sun.facelets.impl.ResourceResolver</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassPathResourceResolver</span> <span class="kd">implements</span> <span class="n">ResourceResolver</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassPathResourceResolver</span> <span class="kd">implements</span> <span class="nc">ResourceResolver</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="n">URL</span> <span class="nf">resolveUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="no">URL</span> <span class="nf">resolveUrl</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
 	    <span class="k">return</span> <span class="nf">getClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -335,18 +411,18 @@ Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t 
 <span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
 
-<span class="kd">class</span> <span class="nc">CustomClassPathContextResource</span> <span class="kd">extends</span> <span class="n">ClassPathResource</span> <span class="kd">implements</span> <span class="n">ContextResource</span> <span class="o">{</span>
+<span class="kd">class</span> <span class="nc">CustomClassPathContextResource</span> <span class="kd">extends</span> <span class="nc">ClassPathResource</span> <span class="kd">implements</span> <span class="nc">ContextResource</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">,</span> <span class="nc">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">classLoader</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPathWithinContext</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getPathWithinContext</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="nf">getPath</span><span class="o">();</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Resource</span> <span class="nf">createRelative</span><span class="o">(</span><span class="n">String</span> <span class="n">relativePath</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">pathToUse</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">applyRelativePath</span><span class="o">(</span><span class="n">getPath</span><span class="o">(),</span> <span class="n">relativePath</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="nc">Resource</span> <span class="nf">createRelative</span><span class="o">(</span><span class="nc">String</span> <span class="n">relativePath</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">pathToUse</span> <span class="o">=</span> <span class="nc">StringUtils</span><span class="o">.</span><span class="na">applyRelativePath</span><span class="o">(</span><span class="n">getPath</span><span class="o">(),</span> <span class="n">relativePath</span><span class="o">);</span>
         <span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">pathToUse</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -364,23 +440,23 @@ Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t 
 <span class="kn">import</span> <span class="nn">org.springframework.core.io.ResourceLoader</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.springframework.webflow.definition.registry.FlowDefinitionRegistry</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlowRegistryClassPathPostProcessor</span> <span class="kd">implements</span> <span class="n">BeanPostProcessor</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlowRegistryClassPathPostProcessor</span> <span class="kd">implements</span> <span class="nc">BeanPostProcessor</span> <span class="o">{</span>
 	
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessBeforeInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">postProcessBeforeInitialization</span><span class="o">(</span><span class="nc">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="nc">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">BeansException</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
     <span class="o">}</span>
     
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessAfterInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">bean</span> <span class="k">instanceof</span> <span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">alterRegistry</span><span class="o">((</span><span class="n">FlowDefinitionRegistry</span><span class="o">)</span> <span class="n">bean</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">postProcessAfterInitialization</span><span class="o">(</span><span class="nc">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="nc">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">BeansException</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">bean</span> <span class="k">instanceof</span> <span class="nc">FlowDefinitionRegistry</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">alterRegistry</span><span class="o">((</span><span class="nc">FlowDefinitionRegistry</span><span class="o">)</span> <span class="n">bean</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
     <span class="o">}</span>
     
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">alterRegistry</span><span class="o">(</span><span class="n">FlowDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">flowId</span> <span class="o">:</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinitionIds</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinition</span><span class="o">(</span><span class="n">flowId</span><span class="o">).</span><span class="na">getApplicationContext</span><span class="o">();</span>
-            <span class="n">overrideResourceLoader</span><span class="o">((</span><span class="n">GenericApplicationContext</span><span class="o">)</span> <span class="n">ctx</span><span class="o">);</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">alterRegistry</span><span class="o">(</span><span class="nc">FlowDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="n">flowId</span> <span class="o">:</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinitionIds</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getFlowDefinition</span><span class="o">(</span><span class="n">flowId</span><span class="o">).</span><span class="na">getApplicationContext</span><span class="o">();</span>
+            <span class="n">overrideResourceLoader</span><span class="o">((</span><span class="nc">GenericApplicationContext</span><span class="o">)</span> <span class="n">ctx</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
     
@@ -393,16 +469,16 @@ Spring Web Flow is currently giving us a FileSystemResource, and this doesn’t 
      * 
      * @param ctx
      */</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">overrideResourceLoader</span><span class="o">(</span><span class="n">GenericApplicationContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
-    	<span class="kd">final</span> <span class="n">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">"flows/"</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">""</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">"/"</span><span class="o">);</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">overrideResourceLoader</span><span class="o">(</span><span class="nc">GenericApplicationContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="kd">final</span> <span class="nc">ClassPathResource</span> <span class="n">cpr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathResource</span><span class="o">(</span><span class="s">"flows/"</span><span class="o">+</span><span class="n">ctx</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="s">""</span><span class="o">).</span><span class="na">getFilename</span><span class="o">()+</span><span class="s">"/"</span><span class="o">);</span>
 
-    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="n">ctx</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">new</span> <span class="nc">ResourceLoader</span><span class="o">()</span> <span class="o">{</span>
         	
-        	<span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getClassLoader</span><span class="o">()</span> <span class="o">{</span>
+        	<span class="kd">public</span> <span class="nc">ClassLoader</span> <span class="nf">getClassLoader</span><span class="o">()</span> <span class="o">{</span>
         		<span class="k">return</span> <span class="n">cpr</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">();</span>
         	<span class="o">}</span>
 
-        	<span class="kd">public</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(</span><span class="n">String</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="kd">public</span> <span class="nc">Resource</span> <span class="nf">getResource</span><span class="o">(</span><span class="nc">String</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
         		<span class="k">return</span> <span class="k">new</span> <span class="nf">CustomClassPathContextResource</span><span class="o">(</span><span class="n">cpr</span><span class="o">.</span><span class="na">getPath</span><span class="o">()</span> <span class="o">+</span> <span class="n">location</span><span class="o">,</span> <span class="n">getClassLoader</span><span class="o">());</span>
         	<span class="o">}</span>
         <span class="o">});</span>
@@ -497,11 +573,11 @@ etc…</p>
 
 <p>Let me give an example, lets take the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+			<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 			<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 				<span class="c1">//Approve the request
 </span>
@@ -518,9 +594,9 @@ etc…</p>
 
 <p>Its a basic car-rental service and is has some logic before a request is processed. To make this code more readable and maintainable we can do two things. Of course it would be better to factor out the validation-logic into another piece of code. So lets do that first:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
     
 		<span class="k">if</span><span class="o">(</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
 			<span class="c1">//Approve the request
@@ -535,9 +611,9 @@ etc…</p>
 	<span class="o">}</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
-		<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+		<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="o">&amp;&amp;</span> <span class="n">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
 		<span class="o">}</span>
@@ -549,9 +625,9 @@ etc…</p>
 
 <p>Anyway, the next step in refactoring this code is using what I call “Inversion of Logic”. The idea is that you don’t continue nesting if something is true, but instead inverse it, and bail out if something is false. The big advantage is that you’ll lose a lot of nesting, making the code more readable. I’m going to do this in two places, first in the processRequest for-loop, and second in the validateRequest method.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processRequests</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">RentalRequest</span><span class="o">&gt;</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
 	
-	<span class="k">for</span> <span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span> <span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span> <span class="o">:</span> <span class="n">requests</span><span class="o">)</span> <span class="o">{</span>
     
 		<span class="k">if</span><span class="o">(!</span><span class="n">validateRequest</span><span class="o">(</span><span class="n">rentalRequest</span><span class="o">))</span> <span class="o">{</span>
 			<span class="k">continue</span><span class="o">;</span>
@@ -568,11 +644,11 @@ etc…</p>
 	<span class="o">}</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="n">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">validateRequest</span><span class="o">(</span><span class="nc">RentalRequest</span> <span class="n">rentalRequest</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(!</span><span class="n">rentalRequest</span><span class="o">.</span><span class="na">isFormFilledCorrectly</span><span class="o">())</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
-	<span class="n">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
+	<span class="nc">Tenant</span> <span class="n">tenant</span> <span class="o">=</span> <span class="n">rentalRequest</span><span class="o">.</span><span class="na">getTenant</span><span class="o">();</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">tenant</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">||</span> <span class="o">!</span><span class="n">tenant</span><span class="o">.</span><span class="na">checkLicenceStillValid</span><span class="o">(</span><span class="n">tenant</span><span class="o">))</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
@@ -643,7 +719,7 @@ ELSE proceed</em></p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Servlet</span><span class="o">(</span><span class="n">urlMappings</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span> <span class="s">"/bar"</span><span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="o">{</span>
      <span class="nd">@GET</span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="c1">//Handle the GET
 </span>
      <span class="o">}</span>
@@ -652,11 +728,11 @@ ELSE proceed</em></p>
 <p>And this was my suggestion on how to improve it (see second article/link):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ServletMapping</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"myServlet"</span><span class="o">,</span> <span class="n">mapping</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span> <span class="s">"/bar"</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
 
      <span class="nd">@Override</span> <span class="c1">//keep strong typing!
 </span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="o">...</span>
      <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -664,11 +740,11 @@ ELSE proceed</em></p>
 <p>And this is from the final release:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"myServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span><span class="o">={</span><span class="s">"/foo"</span><span class="o">,</span><span class="s">"/bar"</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
 
      <span class="nd">@Override</span> <span class="c1">//keep strong typing!
 </span>
-     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
           <span class="o">...</span>
      <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -767,19 +843,19 @@ ELSE proceed</em></p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CalculatorTest</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD1</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">TOADD2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">ANSWER</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="no">TOADD1</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="no">TOADD2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="no">ANSWER</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
 	
 	<span class="nd">@Test</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAdd</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">Calculator</span> <span class="n">calculator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">();</span>
+		<span class="nc">Calculator</span> <span class="n">calculator</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Calculator</span><span class="o">();</span>
 		
-		<span class="n">Integer</span> <span class="n">returnedAnswer</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">TOADD1</span><span class="o">,</span> <span class="n">TOADD2</span><span class="o">);</span>
+		<span class="nc">Integer</span> <span class="n">returnedAnswer</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">TOADD1</span><span class="o">,</span> <span class="no">TOADD2</span><span class="o">);</span>
 		
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">"The answer of "</span> <span class="o">+</span> <span class="n">TOADD1</span> <span class="o">+</span> <span class="s">"+"</span> <span class="o">+</span> <span class="n">TOADD2</span> <span class="o">+</span>
-			<span class="s">" should be "</span> <span class="o">+</span> <span class="n">ANSWER</span> <span class="o">+</span> <span class="s">" but was "</span> <span class="o">+</span> <span class="n">returnedAnswer</span><span class="o">,</span> 
-			<span class="n">ANSWER</span><span class="o">,</span> <span class="n">returnedAnswer</span><span class="o">);</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">"The answer of "</span> <span class="o">+</span> <span class="no">TOADD1</span> <span class="o">+</span> <span class="s">"+"</span> <span class="o">+</span> <span class="no">TOADD2</span> <span class="o">+</span>
+			<span class="s">" should be "</span> <span class="o">+</span> <span class="no">ANSWER</span> <span class="o">+</span> <span class="s">" but was "</span> <span class="o">+</span> <span class="n">returnedAnswer</span><span class="o">,</span> 
+			<span class="no">ANSWER</span><span class="o">,</span> <span class="n">returnedAnswer</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -830,9 +906,9 @@ ELSE proceed</em></p>
 <p>A small example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> 
-	<span class="kd">extends</span> <span class="n">AbstractDependencyInjectionSpringContextTests</span> <span class="o">{</span>
+	<span class="kd">extends</span> <span class="nc">AbstractDependencyInjectionSpringContextTests</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">PersonService</span> <span class="n">personService</span><span class="o">;</span>
 
 	<span class="cm">/**
 	 * Integration test for my calculator.
@@ -841,7 +917,7 @@ ELSE proceed</em></p>
 	<span class="nd">@Test</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
+		<span class="nc">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
 		
 		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
 		
@@ -853,8 +929,8 @@ ELSE proceed</em></p>
 	 * Provide the test with a configuration
 	 */</span>
 	<span class="nd">@Override</span>
-	<span class="kd">protected</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">getConfigLocations</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">"my-test-applicationcontext.xml"</span> <span class="o">};</span>
+	<span class="kd">protected</span> <span class="nc">String</span><span class="o">[]</span> <span class="nf">getConfigLocations</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nc">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">"my-test-applicationcontext.xml"</span> <span class="o">};</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -869,12 +945,12 @@ ELSE proceed</em></p>
 <span class="kn">import</span> <span class="nn">org.springframework.test.context.ContextConfiguration</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringJUnit4ClassRunner</span><span class="o">;</span>
 
-<span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@RunWith</span><span class="o">(</span><span class="nc">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 <span class="nd">@ContextConfiguration</span><span class="o">(</span><span class="n">locations</span><span class="o">=</span> <span class="o">{</span> <span class="s">"my-test-applicationcontext.xml"</span> <span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> <span class="o">{</span>
 
 	<span class="nd">@Autowired</span>
-	<span class="kd">private</span> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">PersonService</span> <span class="n">personService</span><span class="o">;</span>
 
 	<span class="cm">/**
 	 * Integration test for my calculator.
@@ -883,7 +959,7 @@ ELSE proceed</em></p>
 	<span class="nd">@Test</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAddPerson</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="n">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
+		<span class="nc">Person</span> <span class="n">p</span> <span class="o">=</span> <span class="o">...</span>
 		
 		<span class="n">personService</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
 		
@@ -1343,13 +1419,13 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">people</span><span class="o">)</span><span class="err"> </span><span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="nc">Person</span> <span class="nl">p:</span><span class="n">people</span><span class="o">)</span><span class="err"> </span><span class="o">{</span>
 <span class="err">   </span><span class="n">p</span><span class="o">.</span><span class="na">imagine</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLover</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLover</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
 <span class="err">   </span><span class="k">if</span><span class="o">(</span><span class="s">"Billy Jean"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
 <span class="err">      </span><span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 <span class="err">   </span><span class="o">}</span>
@@ -1358,13 +1434,13 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 <hr />
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="o">;</span> <span class="n">i</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
-<span class="err">   </span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"MMmmmMMmmm"</span><span class="o">);</span>
+<span class="err">   </span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"MMmmmMMmmm"</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"test dummy"</span><span class="o">);</span></code></pre></figure>
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">bird</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">String</span> <span class="n">bird</span><span class="o">;</span>
 <span class="n">bird</span> <span class="o">=</span> <span class="s">"word"</span><span class="o">;</span></code></pre></figure>
 
 <hr />
@@ -1373,8 +1449,8 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Submarine</span> <span class="n">submarine</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Submarine</span><span class="o">(</span><span class="k">new</span> <span class="n">Color</span><span class="o">(</span><span class="mi">255</span><span class="o">,</span><span class="mi">255</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
-<span class="k">for</span><span class="o">(</span><span class="n">Person</span> <span class="nl">p:</span><span class="n">all</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Submarine</span> <span class="n">submarine</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Submarine</span><span class="o">(</span><span class="k">new</span> <span class="nc">Color</span><span class="o">(</span><span class="mi">255</span><span class="o">,</span><span class="mi">255</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
+<span class="k">for</span><span class="o">(</span><span class="nc">Person</span> <span class="nl">p:</span><span class="n">all</span><span class="o">)</span> <span class="o">{</span>
 <span class="err">   </span><span class="n">submarine</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1392,7 +1468,7 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 <hr />
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">time</span> <span class="o">==</span> <span class="n">hammer</span><span class="o">)</span> <span class="o">{</span>
-<span class="err">   </span><span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="err">   </span><span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <hr />
@@ -1403,7 +1479,7 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
      <span class="k">this</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">religion</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1421,18 +1497,18 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Leaf</span> <span class="nl">leaf:</span><span class="n">leafs</span><span class="o">)</span> <span class="o">{</span>
-<span class="err">   </span><span class="n">leaf</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="n">Color</span><span class="o">(</span><span class="mi">139</span><span class="o">,</span><span class="mi">69</span><span class="o">,</span><span class="mi">19</span><span class="o">));</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="nc">Leaf</span> <span class="nl">leaf:</span><span class="n">leafs</span><span class="o">)</span> <span class="o">{</span>
+<span class="err">   </span><span class="n">leaf</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nc">Color</span><span class="o">(</span><span class="mi">139</span><span class="o">,</span><span class="mi">69</span><span class="o">,</span><span class="mi">19</span><span class="o">));</span>
 <span class="o">}</span>
-<span class="n">sky</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="n">Color</span><span class="o">.</span><span class="na">GRAY</span><span class="o">);</span></code></pre></figure>
+<span class="n">sky</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="nc">Color</span><span class="o">.</span><span class="na">GRAY</span><span class="o">);</span></code></pre></figure>
 
 <hr />
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="n">Thing</span> <span class="nl">thing:</span><span class="n">stuff</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span><span class="nc">Thing</span> <span class="nl">thing:</span><span class="n">stuff</span><span class="o">)</span> <span class="o">{</span>
 <span class="err">   </span><span class="n">aintGotNo</span><span class="o">(</span><span class="n">thing</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="n">complainAboutGod</span><span class="o">();</span>
-<span class="k">for</span><span class="o">(</span><span class="n">Part</span> <span class="nl">part:</span><span class="n">bodyparts</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">for</span><span class="o">(</span><span class="nc">Part</span> <span class="nl">part:</span><span class="n">bodyparts</span><span class="o">)</span> <span class="o">{</span>
 <span class="err">   </span><span class="n">gotMy</span><span class="o">(</span><span class="n">part</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="n">gotMy</span><span class="o">(</span><span class="n">life</span><span class="o">);</span>
@@ -1497,20 +1573,20 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
 <p>For example the piece of code below:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span> <span class="o">{</span> 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span> <span class="o">{</span> 
 
     <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
-        <span class="n">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="n">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
+        <span class="nc">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
         <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
-<span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="n">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
+<span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nc">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
 
 <p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
 For example Eclipse says:</p>
@@ -1526,10 +1602,10 @@ For example Eclipse says:</p>
 
 <p>The solution to this problem is very simple, but most neglect to use it:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="nc">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
 
     <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="n">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="nc">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1622,94 +1698,6 @@ Can we throw fifteen? Err… no, sorry…</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/son-of-darts/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/quine-mccluskey/" title="Quine - McCluskey">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Quine - McCluskey" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-04T15:55:20+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-04T15:55:20+01:00" class="date">
-            Dec 4, 2009 15:55:20
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/quine-mccluskey/">Quine - McCluskey</a></h1>
-
-        <span itemprop="articleBody">
-          <p>About a week ago I had a discussion with a fellow programmer about some boolean logic. We had three parameters, something like:</p>
-
-<ol>
-  <li>personHasInsurence (A)</li>
-  <li>personNeedsInsurence (B)</li>
-  <li>personIsKnownAtThisAgency (C)</li>
-</ol>
-
-<p>We also had two particulair cases for an insurance page:</p>
-
-<p>Case 1:<br />
-Person has insurence and isn’t yet known at this agency</p>
-
-<p>Case 2:<br />
-Person doesn’t have insurence, needs insurence and is known at this agency</p>
-
-<p>Case 3:<br />
-Person doesn’t have insurence, doesn’t need insurence and is known at this agency</p>
-
-<p>So the view-logic was a bit complex:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
-    <span class="n">showPage</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Then I remebered something I learned at school some time ago. So called <a href="http://en.wikipedia.org/wiki/Karnaugh_map">karnaugh maps</a>. I’ve completely forgotten how to use them, but I knew it was possible to calculate the shortest form to comply to the logic rules. When looking further I found the so called “<a href="http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm">Quine McCluskey</a>“-algorithm, and I decided to implement it (just to learn how it works).</p>
-
-<h1 id="quine---mccluskey-algorithm">Quine - McCluskey algorithm</h1>
-
-<p>First of, lets go through a couple of terms.</p>
-
-<p>Minterm: A small boolean function which has all the different input variables, <strong>once</strong>. So for example, a minterm using the above variables would be: ABC (A and B and C), or A’BC (not A and B and C).</p>
-
-<p>The first thing you do using this algorithm is that you find so called “prime implicants”. An implicant is a combination of one (or more) minterms, and a prime implicant is a implicant which can’t be combined with other implicants (for more details, read the wikipage with examples)!</p>
-
-<p>After combining all the minterm of your case(s), you’ll end up with a “prime implicant chart”. This is a chart with all the prime implicants and the fields they cover. Sometimes its easy to spot “essential prime implicants”. That is, implicants which are unique in covering a field. You have to use these implicants in the final logic.</p>
-
-<p>When you have multiple options left to combine to cover all the fields, you can use <a href="http://en.wikipedia.org/wiki/Petrick's_method">Petrick’s Method</a> to select the best/smallest option.</p>
-
-<p>Using the above example, if you minimize, you’ll come down to:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">((!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">))</span> <span class="o">{</span>
-    <span class="n">showPage</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The algorithm is pretty fun to program, and its a bit different from most algorithms I’ve seen lately!</p>
-
-<p>And if you need something even faster, try out <a href="http://en.wikipedia.org/wiki/Espresso_heuristic_logic_minimizer">Espresso</a>!</p>
-
-<p>ps. I love browsing this page: <a href="http://en.wikipedia.org/wiki/List_of_algorithms">List of algorithms</a><br />
-But OTOH, its kind of depressing I still have soo much to learn.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

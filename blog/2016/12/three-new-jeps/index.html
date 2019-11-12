@@ -168,7 +168,7 @@
 
 <p>It is possible to set a bound with a wildcard on the declaration side:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shelter</span><span class="o">&lt;</span><span class="n">X</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shelter</span><span class="o">&lt;</span><span class="no">X</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
 	<span class="o">...</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -180,33 +180,33 @@
 
 <p>The following code uses the ‘extends’ keyword to create the <strong>in</strong>-variable:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Using extends we create an 'in' variable:</span>
-    <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="n">inAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
+    <span class="nc">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">inAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the inAnimals we can read: Animal (not subclasses)</span>
-    <span class="n">Animal</span> <span class="n">animal</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- reading Animal is fine</span>
-    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can't read Cat</span>
+    <span class="nc">Animal</span> <span class="n">animal</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- reading Animal is fine</span>
+    <span class="nc">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">inAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, we can't read Cat</span>
 
     <span class="c1">// We can write: nothing (!) making it almost read-only</span>
-    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="n">inAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <p>There is also the ‘super’ keyword (not very common) to create an <strong>out</strong>-variable use side:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Using super we create an 'out' variable, setting an upper bound:</span>
-    <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Cat</span><span class="o">&gt;</span> <span class="n">outAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
+    <span class="nc">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="nc">Cat</span><span class="o">&gt;</span> <span class="n">outAnimals</span> <span class="o">=</span> <span class="n">animals</span><span class="o">;</span>
 
     <span class="c1">// From the outAnimals we can read: object (no superclasses!)</span>
-    <span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, illegal</span>
-    <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- we can only read object</span>
+    <span class="nc">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- compile error, illegal</span>
+    <span class="nc">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">outAnimals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// &lt;- we can only read object</span>
 
     <span class="c1">// On the write side, we've set a bound to Cat:</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
-    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">());</span> <span class="c1">// &lt;- correct!</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span>
+    <span class="n">outAnimals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Animal</span><span class="o">());</span> <span class="c1">// &lt;- compile error</span></code></pre></figure>
 
 <h2 id="so-what-is-jep-300">So what is JEP 300?</h2>
 
@@ -220,8 +220,8 @@
 
 <p>For example look at the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">interface</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="n">contravariant</span> <span class="n">T</span><span class="o">,</span> <span class="n">covariant</span> <span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-        <span class="n">R</span> <span class="nf">apply</span><span class="o">(</span><span class="n">T</span> <span class="n">arg</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">interface</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="n">contravariant</span> <span class="no">T</span><span class="o">,</span> <span class="n">covariant</span> <span class="no">R</span><span class="o">&gt;</span> <span class="o">{</span>
+        <span class="no">R</span> <span class="nf">apply</span><span class="o">(</span><span class="no">T</span> <span class="n">arg</span><span class="o">);</span>
     
     <span class="o">}</span>
     <span class="c1">// other possible syntaxes are Function&lt;-T, +R&gt; or Function&lt;in T, out R&gt;</span></code></pre></figure>
@@ -240,52 +240,52 @@
 
 <p>The next proposal Mark has submitted is about using Enums with Generics. Look at the following example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="nc">Pet</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
+    <span class="no">BELLA</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="no">BUDDY</span><span class="o">(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="no">TIGGER</span><span class="o">(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
-    <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+    <span class="nc">Animal</span> <span class="n">animal</span><span class="o">;</span>
 
-    <span class="n">Pet</span><span class="o">(</span><span class="n">Animal</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Pet</span><span class="o">(</span><span class="nc">Animal</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">animal</span> <span class="o">=</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Animal</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Animal</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>We have an enum with three pets. These pets have an instance of an animal inside them. And we have a way of retrieving them.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: "Bella"</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="nc">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span> <span class="c1">// prints: "Bella"</span></code></pre></figure>
 
 <p>But one thing we can’t do it call the method “.bark()” on BELLA, because we don’t know this is a Dog.</p>
 
 <p>The proposal JEP 301 wants to make it possible to correlate a specific type to an enum constant:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="n">Pet</span><span class="o">&lt;</span><span class="n">A</span> <span class="kd">extends</span> <span class="n">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">enum</span> <span class="nc">Pet</span><span class="o">&lt;</span><span class="no">A</span> <span class="kd">extends</span> <span class="nc">Animal</span><span class="o">&gt;</span> <span class="o">{</span>
 
-    <span class="n">BELLA</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
-    <span class="n">BUDDY</span><span class="o">&lt;</span><span class="n">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
-    <span class="n">TIGGER</span><span class="o">&lt;</span><span class="n">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
+    <span class="no">BELLA</span><span class="o">&lt;</span><span class="nc">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Bella"</span><span class="o">)),</span>
+    <span class="no">BUDDY</span><span class="o">&lt;</span><span class="nc">Dog</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Dog</span><span class="o">(</span><span class="s">"Buddy"</span><span class="o">)),</span>
+    <span class="no">TIGGER</span><span class="o">&lt;</span><span class="nc">Cat</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">Cat</span><span class="o">(</span><span class="s">"Tigger"</span><span class="o">));</span>
 
-    <span class="n">A</span> <span class="n">animal</span><span class="o">;</span>
+    <span class="no">A</span> <span class="n">animal</span><span class="o">;</span>
 
-    <span class="n">Pet</span><span class="o">(</span><span class="n">A</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Pet</span><span class="o">(</span><span class="no">A</span> <span class="n">animal</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">animal</span> <span class="o">=</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">A</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="no">A</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">animal</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Having coupled the Dog type to enum BELLA it should now we possible to call:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">bark</span><span class="o">();</span> <span class="c1">// WOOF!</span>
-<span class="n">Pet</span><span class="o">.</span><span class="na">TIGGER</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">purr</span><span class="o">();</span> <span class="c1">// Purrrrrrrrr.....</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Pet</span><span class="o">.</span><span class="na">BELLA</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">bark</span><span class="o">();</span> <span class="c1">// WOOF!</span>
+<span class="nc">Pet</span><span class="o">.</span><span class="na">TIGGER</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">purr</span><span class="o">();</span> <span class="c1">// Purrrrrrrrr.....</span></code></pre></figure>
 
 <h1 id="jep-302-lambda-leftovers">JEP 302: Lambda Leftovers</h1>
 
@@ -297,11 +297,11 @@
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Predicate</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="nc">Predicate</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
    <span class="o">...</span>
 <span class="o">}</span>
 
-<span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Function</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">function</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="nc">Function</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">function</span><span class="o">)</span> <span class="o">{</span>
    <span class="o">...</span>
 <span class="o">}</span>
 
@@ -323,23 +323,23 @@
 <p>Starting with Java 8 the use of an underscore as lambda argument caused a warning and from Java 9 the use of an underscore became an error. This allows future Java versions beyond 9 to be able to use the underscore for other purposes. And one of those purposes is to bring it back as a default variable name. Not causing collisions if used multiple times and it can’t be used as variable by calling _.toString() for example.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Ignore the second parameter, just use i:</span>
-<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+<span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">biss</span> <span class="o">=</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
 
 <span class="c1">// Even possible, ignore both:</span>
-<span class="n">BiFunction</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"someString"</span><span class="o">;</span>
+<span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">b2</span> <span class="o">=</span> <span class="o">(</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"someString"</span><span class="o">;</span>
     </code></pre></figure>
 
 <h2 id="shadowing-of-parameters">Shadowing of parameters</h2>
 
 <p>Another small change that is proposed is allowing to shadow parameters. For example look at the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">computeSomeKey</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
+<span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">computeSomeKey</span><span class="o">();</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">key</span> <span class="o">-&gt;</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="c1">// compile error, key already defined</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>  <span class="c1">// compile error, can't redefine key inside this scope</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>  <span class="c1">// compile error, can't redefine key inside this scope</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 
@@ -348,11 +348,11 @@
 <p>One possible drawback is readability, and I too think that this might be a problem.
 For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theInitialKey"</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="o">...</span>
+<span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theInitialKey"</span><span class="o">;</span>
 
 <span class="n">map</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theShadowKey"</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"theShadowKey"</span><span class="o">;</span> <span class="c1">// &lt;- delete this</span>
     <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 <span class="o">});</span></code></pre></figure>
 

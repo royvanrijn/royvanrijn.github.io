@@ -192,21 +192,21 @@
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoadTestController</span> <span class="o">{</span>
 
     <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/loadtest"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
 
-        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
 
-        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+        <span class="nc">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Random</span><span class="o">();</span>
 
         <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
             <span class="kt">long</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">long</span><span class="o">[</span><span class="mi">1000000</span><span class="o">];</span>
             <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">l</span><span class="o">++)</span> <span class="o">{</span>
                 <span class="n">data</span><span class="o">[</span><span class="n">l</span><span class="o">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">();</span>
             <span class="o">}</span>
-            <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
         <span class="o">}</span>
 
-        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 

@@ -163,11 +163,11 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>Example (old skool, Java 7):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
     <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+        <span class="nc">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
         <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+            <span class="nc">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span></code></pre></figure>
 
@@ -181,15 +181,15 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
-    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
 
     <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
 
 <p>Or the shorter ‘fluid’ version:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
         <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
         <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
         <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
@@ -210,13 +210,13 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
 <p>It is just an easy method to call:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
 
 <p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
     <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
     <span class="o">}</span></code></pre></figure>
 
 <p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>

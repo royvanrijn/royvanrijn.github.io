@@ -169,7 +169,7 @@ Person doesn’t have insurence, doesn’t need insurence and is known at this a
 
 <p>So the view-logic was a bit complex:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="n">C</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="no">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="no">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="no">A</span> <span class="o">&amp;&amp;</span> <span class="no">B</span> <span class="o">&amp;&amp;</span> <span class="no">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(!</span><span class="no">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="no">B</span> <span class="o">&amp;&amp;</span> <span class="no">C</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
     <span class="n">showPage</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -189,7 +189,7 @@ Person doesn’t have insurence, doesn’t need insurence and is known at this a
 
 <p>Using the above example, if you minimize, you’ll come down to:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">((!</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="n">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">C</span><span class="o">))</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">((!</span><span class="no">A</span> <span class="o">&amp;&amp;</span> <span class="no">C</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="no">A</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="no">C</span><span class="o">))</span> <span class="o">{</span>
     <span class="n">showPage</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 

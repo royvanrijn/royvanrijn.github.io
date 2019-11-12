@@ -160,23 +160,23 @@
 
 <p>The corresponding Java code could be something like:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Credentials</span> <span class="n">credentials</span><span class="o">;</span>
-<span class="kd">private</span> <span class="n">AccountDetails</span> <span class="n">accountDetails</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">Credentials</span> <span class="n">credentials</span><span class="o">;</span>
+<span class="kd">private</span> <span class="nc">AccountDetails</span> <span class="n">accountDetails</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenTheUserLogsInWithUsernameAndPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">credentials</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Credentials</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenTheUserLogsInWithUsernameAndPassword</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Credentials</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">andAsksFotTheAccountDetails</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">accountDetails</span> <span class="o">=</span> <span class="n">mySystem</span><span class="o">.</span><span class="na">getAccountDetails</span><span class="o">(</span><span class="n">credentials</span><span class="o">);</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">displayedFullname</span><span class="o">(</span><span class="n">String</span> <span class="n">fullname</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">displayedFullname</span><span class="o">(</span><span class="nc">String</span> <span class="n">fullname</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="n">fullname</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getFullename</span><span class="o">());</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">websitesContains</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="nl">website:</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getWebsites</span><span class="o">())</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">websitesContains</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="nl">website:</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getWebsites</span><span class="o">())</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">website</span><span class="o">))</span> <span class="o">{</span>
             <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         <span class="o">}</span>
@@ -192,19 +192,19 @@
 
 <p>The first ingredient we need to test Swing GUI’s in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Window</span> <span class="n">mainWindow</span><span class="o">;</span>
-<span class="kd">private</span> <span class="n">JFrame</span> <span class="n">mainFrame</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">Window</span> <span class="n">mainWindow</span><span class="o">;</span>
+<span class="kd">private</span> <span class="nc">JFrame</span> <span class="n">mainFrame</span><span class="o">;</span>
     
 <span class="c1">//Called from the Suite Set Up page:
 </span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">launchNonkey</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">mainWindow</span> <span class="o">=</span> <span class="n">WindowInterceptor</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="n">Trigger</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">mainWindow</span> <span class="o">=</span> <span class="nc">WindowInterceptor</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="nc">Trigger</span><span class="o">()</span> <span class="o">{</span>
         <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
             <span class="k">new</span> <span class="nf">OurApplication</span><span class="o">().</span><span class="na">launch</span><span class="o">();</span>
             <span class="c1">// Get the main JFrame from Spring, used directly in some cases instead of UISpec4J
 </span>
-            <span class="n">mainFrame</span> <span class="o">=</span> <span class="n">BeanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"mainFrame"</span><span class="o">,</span> <span class="n">MainFrame</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">mainFrame</span> <span class="o">=</span> <span class="nc">BeanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"mainFrame"</span><span class="o">,</span> <span class="nc">MainFrame</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">});</span>
 <span class="o">}</span></code></pre></figure>
@@ -213,13 +213,13 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//In some fixture:
 </span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">loginWithUsernameAndPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">loginWithUsernameAndPassword</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//UISpec4J uses JComponent.setName() for lookup:
 </span>
-    <span class="n">Panel</span> <span class="n">loginPanel</span> <span class="o">=</span> <span class="n">nonKey</span><span class="o">.</span><span class="na">mainWindow</span><span class="o">.</span><span class="na">getPanel</span><span class="o">(</span><span class="s">"loginPanel"</span><span class="o">);</span> 
-    <span class="kd">final</span> <span class="n">TextBox</span> <span class="n">usernameTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"usernameTextbox"</span><span class="o">);</span>
+    <span class="nc">Panel</span> <span class="n">loginPanel</span> <span class="o">=</span> <span class="n">nonKey</span><span class="o">.</span><span class="na">mainWindow</span><span class="o">.</span><span class="na">getPanel</span><span class="o">(</span><span class="s">"loginPanel"</span><span class="o">);</span> 
+    <span class="kd">final</span> <span class="nc">TextBox</span> <span class="n">usernameTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"usernameTextbox"</span><span class="o">);</span>
     <span class="n">usernameTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">TextBox</span> <span class="n">passwordTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"passwordTextbox"</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="nc">TextBox</span> <span class="n">passwordTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"passwordTextbox"</span><span class="o">);</span>
     <span class="n">passwordTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
     
     <span class="n">loginPanel</span><span class="o">.</span><span class="na">getButton</span><span class="o">(</span><span class="s">"loginButton"</span><span class="o">).</span><span class="na">click</span><span class="o">();</span>
@@ -241,42 +241,42 @@
 
 <p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn’t work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingSlimService</span> <span class="kd">extends</span> <span class="n">SocketService</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingSlimService</span> <span class="kd">extends</span> <span class="nc">SocketService</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">SwingSlimService</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">SwingSlimService</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">verbose</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">parseCommandLine</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">startWithFactory</span><span class="o">(</span><span class="n">args</span><span class="o">,</span> <span class="k">new</span> <span class="n">SwingJavaSlimFactory</span><span class="o">());</span> <span class="c1">//&lt;-- custom SwingJavaSlimFactory!
+            <span class="n">startWithFactory</span><span class="o">(</span><span class="n">args</span><span class="o">,</span> <span class="k">new</span> <span class="nc">SwingJavaSlimFactory</span><span class="o">());</span> <span class="c1">//&lt;-- custom SwingJavaSlimFactory!
 </span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
             <span class="n">parseCommandLineFailed</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parseCommandLineFailed</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Invalid command line arguments:"</span> <span class="o">+</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parseCommandLineFailed</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Invalid command line arguments:"</span> <span class="o">+</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
     <span class="o">}</span>
 
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">startWithFactory</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="n">SlimFactory</span> <span class="n">slimFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">startWithFactory</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="nc">SlimFactory</span> <span class="n">slimFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="k">new</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimFactory</span><span class="o">.</span><span class="na">getSlimServer</span><span class="o">(</span><span class="n">verbose</span><span class="o">));</span>
     <span class="o">}</span>
 
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">parseCommandLine</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="n">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandLine</span><span class="o">(</span><span class="s">"[-v] port"</span><span class="o">);</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">parseCommandLine</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="nc">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CommandLine</span><span class="o">(</span><span class="s">"[-v] port"</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">commandLine</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
             <span class="n">verbose</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">hasOption</span><span class="o">(</span><span class="s">"v"</span><span class="o">);</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">portString</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">getArgument</span><span class="o">(</span><span class="s">"port"</span><span class="o">);</span>
-            <span class="n">port</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">portString</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="nc">String</span> <span class="n">portString</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">getArgument</span><span class="o">(</span><span class="s">"port"</span><span class="o">);</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">portString</span><span class="o">);</span>
             <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">port</span><span class="o">,</span> <span class="kd">final</span> <span class="n">SlimServer</span> <span class="n">slimServer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">port</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">SlimServer</span> <span class="n">slimServer</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimServer</span><span class="o">);</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
     <span class="o">}</span>
@@ -284,10 +284,10 @@
 
 <p>Next we needed a custom JavaSlimFactory:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingJavaSlimFactory</span> <span class="kd">extends</span> <span class="n">JavaSlimFactory</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingJavaSlimFactory</span> <span class="kd">extends</span> <span class="nc">JavaSlimFactory</span> <span class="o">{</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">StatementExecutorInterface</span> <span class="nf">getStatementExecutor</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">StatementExecutorInterface</span> <span class="nf">getStatementExecutor</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="k">new</span> <span class="nf">SwingStatementExecutor</span><span class="o">();</span> <span class="c1">//&lt;-- custom SwingStatementExecutor!
 </span>
     <span class="o">}</span>
@@ -303,78 +303,78 @@
 <span class="cm">/**
  * HaMIS custom StatementExecutor, to call and create in the EDT thread
  */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingStatementExecutor</span> <span class="kd">implements</span> <span class="n">StatementExecutorInterface</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingStatementExecutor</span> <span class="kd">implements</span> <span class="nc">StatementExecutorInterface</span> <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">StatementExecutor</span> <span class="n">wrapped</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StatementExecutor</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">StatementExecutor</span> <span class="n">wrapped</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StatementExecutor</span><span class="o">();</span>
 
-    <span class="kd">private</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">EDTRunnable</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">EDTRunnable</span> <span class="kd">implements</span> <span class="nc">Runnable</span> <span class="o">{</span>
 
-        <span class="kd">private</span> <span class="n">Object</span> <span class="n">returnValue</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="nc">Object</span> <span class="n">returnValue</span><span class="o">;</span>
 
         <span class="nd">@Override</span>
         <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
 
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setReturnValue</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">returnValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setReturnValue</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Object</span> <span class="n">returnValue</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">this</span><span class="o">.</span><span class="na">returnValue</span> <span class="o">=</span> <span class="n">returnValue</span><span class="o">;</span>
         <span class="o">}</span>
 
-        <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getReturnValue</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getReturnValue</span><span class="o">()</span> <span class="o">{</span>
             <span class="k">return</span> <span class="n">returnValue</span><span class="o">;</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">call</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">call</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">caller</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">caller</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
                 <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
             <span class="o">}</span>
         <span class="o">};</span>
-        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">caller</span><span class="o">);</span>
+        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">caller</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">callAndAssign</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">variable</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">methodName</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">callAndAssign</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">variable</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">callAndAssigner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">callAndAssigner</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
                 <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">callAndAssign</span><span class="o">(</span><span class="n">variable</span><span class="o">,</span> <span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
             <span class="o">}</span>
         <span class="o">};</span>
-        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">callAndAssigner</span><span class="o">);</span>
+        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">callAndAssigner</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">callAndAssigner</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">create</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 
-        <span class="kd">final</span> <span class="n">EDTRunnable</span> <span class="n">creater</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">creater</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
 
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
                 <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
             <span class="o">}</span>
         <span class="o">};</span>
-        <span class="n">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">creater</span><span class="o">);</span>
+        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">creater</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">creater</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">addPath</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">addPath</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">addPath</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getInstance</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">instanceName</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getInstance</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">instanceName</span><span class="o">);</span>
     <span class="o">}</span>
 
@@ -384,7 +384,7 @@
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVariable</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVariable</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">wrapped</span><span class="o">.</span><span class="na">setVariable</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
     <span class="o">}</span>
 
@@ -398,15 +398,15 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EDTRunner</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="kd">final</span> <span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">SwingUtilities</span><span class="o">.</span><span class="na">isEventDispatchThread</span><span class="o">())</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">SwingUtilities</span><span class="o">.</span><span class="na">isEventDispatchThread</span><span class="o">())</span> <span class="o">{</span>
             <span class="n">r</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
             <span class="k">try</span> <span class="o">{</span>
-                <span class="n">EventQueue</span><span class="o">.</span><span class="na">invokeAndWait</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">InterruptedException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">EventQueue</span><span class="o">.</span><span class="na">invokeAndWait</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">InterruptedException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">InvocationTargetException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">InvocationTargetException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -415,8 +415,8 @@
 
 <p>The only thing left to do is to instruct Fitnesse to use our SlimService instead of the default implementation. This is done using the following parameter in our main page:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">!</span><span class="n">define</span> <span class="n">TEST_SYSTEM</span> <span class="o">{</span><span class="n">slim</span><span class="o">}</span>
-<span class="o">!</span><span class="n">define</span> <span class="n">TEST_RUNNER</span> <span class="o">{</span><span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">.</span><span class="na">SwingSlimService</span><span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">!</span><span class="n">define</span> <span class="no">TEST_SYSTEM</span> <span class="o">{</span><span class="n">slim</span><span class="o">}</span>
+<span class="o">!</span><span class="n">define</span> <span class="no">TEST_RUNNER</span> <span class="o">{</span><span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">.</span><span class="na">SwingSlimService</span><span class="o">}</span></code></pre></figure>
 
 <p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you’re done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
 

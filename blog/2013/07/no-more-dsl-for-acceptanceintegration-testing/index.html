@@ -169,16 +169,16 @@
 <p>This is something the testers and product owners can read and understand. Behind this layer of text Fitnesse will try to execute pieces of code. This is left as an exercise for the programmers to complete. They’ll need to write something like:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">GivenAShip:</span>
-<span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">category</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setCallSign</span><span class="o">(</span><span class="n">String</span> <span class="n">callSign</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">setShipnumber</span><span class="o">(</span><span class="n">String</span> <span class="n">shipnumber</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="nc">String</span> <span class="n">id</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">setCategory</span><span class="o">(</span><span class="nc">String</span> <span class="n">category</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">setCallSign</span><span class="o">(</span><span class="nc">String</span> <span class="n">callSign</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">setShipnumber</span><span class="o">(</span><span class="nc">String</span> <span class="n">shipnumber</span><span class="o">);</span>
 <span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span> <span class="c1">//Stores the ship in the database
 </span>
 
 <span class="nl">AnchorageScenarios:</span>
-<span class="kt">void</span> <span class="nf">whenAShipCalledReachedThePort</span><span class="o">(</span><span class="n">String</span> <span class="n">shipName</span><span class="o">);</span>
+<span class="kt">void</span> <span class="nf">whenAShipCalledReachedThePort</span><span class="o">(</span><span class="nc">String</span> <span class="n">shipName</span><span class="o">);</span>
 <span class="kt">void</span> <span class="nf">andItReportsAnchorDown</span><span class="o">();</span>
 <span class="kt">boolean</span> <span class="nf">theShipIsShownInTheListOfAnchoredVessels</span><span class="o">();</span>
 <span class="kt">int</span> <span class="nf">theListOfAnchoredVesselsNowHasSize</span><span class="o">();</span></code></pre></figure>
@@ -212,7 +212,7 @@
 <span class="nd">@SuiteSetUp</span><span class="o">({</span>   <span class="c1">// This is called once for all the methods in the class below
 </span>
 	<span class="nd">@Execute</span><span class="o">(</span>
-			<span class="n">type</span> <span class="o">=</span> <span class="n">ShipExecutor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+			<span class="n">type</span> <span class="o">=</span> <span class="nc">ShipExecutor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
 			<span class="n">data</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"1001"</span><span class="o">,</span> <span class="s">"Maersk Bali"</span><span class="o">,</span> <span class="s">"TANKER"</span><span class="o">,</span> <span class="s">"D6DZ8"</span><span class="o">,</span> <span class="s">"7420211"</span> <span class="o">})</span>
 	<span class="o">})</span>
 <span class="o">})</span>
@@ -226,12 +226,12 @@
 
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">givingCommandAnchorDownCausesShipToAppearInList</span><span class="o">()</span> <span class="o">{</span>
 
-		<span class="kd">final</span> <span class="n">AnchorageScenarios</span> <span class="n">scenarios</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnchorageScenarios</span><span class="o">();</span>
+		<span class="kd">final</span> <span class="nc">AnchorageScenarios</span> <span class="n">scenarios</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AnchorageScenarios</span><span class="o">();</span>
 
 		<span class="n">scenarios</span><span class="o">.</span><span class="na">whenAShipReachedThePortCalled</span><span class="o">(</span><span class="s">"Maersk Bali"</span><span class="o">);</span>
 		<span class="n">scenarios</span><span class="o">.</span><span class="na">andItReportsAnchorDown</span><span class="o">();</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">scenarios</span><span class="o">.</span><span class="na">theShipIsShownInTheListOfAnchoredVessels</span><span class="o">());</span>
-		<span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">scenarios</span><span class="o">.</span><span class="na">theListOfAnchoredVesselsNowHasSize</span><span class="o">());</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">scenarios</span><span class="o">.</span><span class="na">theShipIsShownInTheListOfAnchoredVessels</span><span class="o">());</span>
+		<span class="nc">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">scenarios</span><span class="o">.</span><span class="na">theListOfAnchoredVesselsNowHasSize</span><span class="o">());</span>
 	<span class="o">}</span>
 
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">anotherTestHere</span><span class="o">()</span> <span class="o">{</span>
@@ -242,23 +242,23 @@
 <p>Using Jitness (<em>working title</em>) the scenarios will be implemented in exactly the same way we’ve already been doing. This makes it easier to transition from Fitnesse to this code.<br />
 The only bit of ‘magic’ is the execute annotation. You can write executors like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShipExecutor</span> <span class="kd">implements</span> <span class="n">Executor</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShipExecutor</span> <span class="kd">implements</span> <span class="nc">Executor</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">ShipRepository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ShipRepository</span><span class="o">();</span>
+	<span class="kd">private</span> <span class="nc">ShipRepository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShipRepository</span><span class="o">();</span>
 
 	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
                 <span class="n">repository</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
 	<span class="o">}</span>
 	
 	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">after</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">after</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
                 <span class="n">repository</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
 	<span class="o">}</span>
 
-        <span class="kd">private</span> <span class="n">Ship</span> <span class="nf">parse</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="nc">Ship</span> <span class="nf">parse</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="k">new</span> <span class="nf">ShipBuilder</span><span class="o">()</span>
-                         <span class="o">.</span><span class="na">id</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">])</span>
+                         <span class="o">.</span><span class="na">id</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">])</span>
                          <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span>
                          <span class="o">.</span><span class="na">category</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">2</span><span class="o">])</span>
                          <span class="o">.</span><span class="na">callSign</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span>

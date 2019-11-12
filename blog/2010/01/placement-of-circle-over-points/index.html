@@ -177,12 +177,12 @@ First I loop over all the points, and I check if there are points located at <st
 
 <p>It works like this (psuedocode):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="no">FIELD_SIZE</span> <span class="o">)</span>
+	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="no">FIELD_SIZE</span> <span class="o">)</span>
+		<span class="nc">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
 		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
-			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span> <span class="nc">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="no">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
 				<span class="n">pixelScore</span><span class="o">++;</span>
 			<span class="o">}</span>
 		<span class="o">}</span>
@@ -214,13 +214,13 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <p>Here is the pseudocode (from Wikipedia):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span><span class="o">,</span><span class="no">P</span><span class="o">,</span><span class="no">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="no">P</span> <span class="n">and</span> <span class="no">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="no">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
     <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="n">X</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
+        <span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="no">P</span> <span class="err">⋂</span> <span class="no">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="no">X</span> <span class="err">⋂</span> <span class="no">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+        <span class="no">P</span> <span class="o">:=</span> <span class="no">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="no">X</span> <span class="o">:=</span> <span class="no">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
 
 <p>But I ran into a little problem, I’d made a false assumption… If you have a triangle of three points, with all legs size N, and then draw a circle from the center… none of the points fall into the circle.</p>
 
@@ -230,17 +230,17 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <p>Then I desected the Bron-Kerbosch algorithm, and decided to change it a bit. This is what I ended up with:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerboschVanRijn</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">BronKerboschVanRijn</span><span class="o">(</span><span class="no">R</span><span class="o">,</span><span class="no">P</span><span class="o">,</span><span class="no">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="no">P</span> <span class="n">and</span> <span class="no">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="no">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
     <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span><span class="o">),</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">X</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="nc">InCircle</span><span class="o">({</span><span class="no">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="no">P</span><span class="o">),</span> <span class="nc">InCircle</span><span class="o">({</span><span class="no">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="no">X</span><span class="o">))</span>
+        <span class="no">P</span> <span class="o">:=</span> <span class="no">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="no">X</span> <span class="o">:=</span> <span class="no">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
         
-<span class="n">InCircle</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">):</span>
-    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="n">A</span>
-    <span class="k">return</span> <span class="n">all</span> <span class="n">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="n">A</span></code></pre></figure>
+<span class="nc">InCircle</span><span class="o">(</span><span class="no">A</span><span class="o">,</span> <span class="no">B</span><span class="o">):</span>
+    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="no">A</span>
+    <span class="k">return</span> <span class="n">all</span> <span class="no">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="no">A</span></code></pre></figure>
 
 <p>This returns all the maximal cliques that fall into our circle, and we are always sure they fall into our circle..! I think this will always generate the perfect solution, just as the heat map. In this the above picture, this algorithm produces the red circle.</p>
 

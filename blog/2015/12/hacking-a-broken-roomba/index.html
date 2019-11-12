@@ -193,25 +193,25 @@ Every couple of weeks we organize a hack-day at work. Being a (Java) software co
 <p>Like I said, the serial commands needed to drive the Roomba are perfectly documented. Using the GNU RXTX library (RXTXcomm.jar) we can write the following Java code:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// On the Raspberry Pi the Serial communication pins are connected to /dev/ttyAMA0</span>
-    <span class="n">CommPortIdentifier</span> <span class="n">portIdentifier</span> <span class="o">=</span> <span class="n">CommPortIdentifier</span><span class="o">.</span><span class="na">getPortIdentifier</span><span class="o">(</span><span class="s">"/dev/ttyAMA0"</span><span class="o">);</span>
+    <span class="nc">CommPortIdentifier</span> <span class="n">portIdentifier</span> <span class="o">=</span> <span class="nc">CommPortIdentifier</span><span class="o">.</span><span class="na">getPortIdentifier</span><span class="o">(</span><span class="s">"/dev/ttyAMA0"</span><span class="o">);</span>
     <span class="k">if</span><span class="o">(</span> <span class="n">portIdentifier</span><span class="o">.</span><span class="na">isCurrentlyOwned</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"Error: Port is currently in use"</span> <span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"Error: Port is currently in use"</span> <span class="o">);</span>
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="n">CommPort</span> <span class="n">commPort</span> <span class="o">=</span> <span class="n">portIdentifier</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="mi">2000</span><span class="o">);</span>
+        <span class="nc">CommPort</span> <span class="n">commPort</span> <span class="o">=</span> <span class="n">portIdentifier</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="mi">2000</span><span class="o">);</span>
 
-        <span class="k">if</span><span class="o">(</span> <span class="n">commPort</span> <span class="k">instanceof</span> <span class="n">SerialPort</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">SerialPort</span> <span class="n">serialPort</span> <span class="o">=</span> <span class="o">(</span> <span class="n">SerialPort</span> <span class="o">)</span><span class="n">commPort</span><span class="o">;</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">commPort</span> <span class="k">instanceof</span> <span class="nc">SerialPort</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">SerialPort</span> <span class="n">serialPort</span> <span class="o">=</span> <span class="o">(</span> <span class="nc">SerialPort</span> <span class="o">)</span><span class="n">commPort</span><span class="o">;</span>
             <span class="n">serialPort</span><span class="o">.</span><span class="na">setSerialPortParams</span><span class="o">(</span>
                     <span class="mi">115200</span><span class="o">,</span>
-                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">DATABITS_8</span><span class="o">,</span>
-                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">STOPBITS_1</span><span class="o">,</span>
-                    <span class="n">SerialPort</span><span class="o">.</span><span class="na">PARITY_NONE</span> <span class="o">);</span>
+                    <span class="nc">SerialPort</span><span class="o">.</span><span class="na">DATABITS_8</span><span class="o">,</span>
+                    <span class="nc">SerialPort</span><span class="o">.</span><span class="na">STOPBITS_1</span><span class="o">,</span>
+                    <span class="nc">SerialPort</span><span class="o">.</span><span class="na">PARITY_NONE</span> <span class="o">);</span>
 
-            <span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
-            <span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">();</span>
+            <span class="nc">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+            <span class="nc">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="n">serialPort</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">();</span>
 
-            <span class="o">(</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="n">SerialReader</span><span class="o">(</span> <span class="n">in</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
-            <span class="o">(</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="n">SerialWriter</span><span class="o">(</span> <span class="n">out</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
+            <span class="o">(</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="nc">SerialReader</span><span class="o">(</span> <span class="n">in</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
+            <span class="o">(</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="nc">SerialWriter</span><span class="o">(</span> <span class="n">out</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">start</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span></code></pre></figure>
 
@@ -227,7 +227,7 @@ Every couple of weeks we organize a hack-day at work. Being a (Java) software co
     
     <span class="o">...</span> <span class="n">snip</span> <span class="o">...</span>
 
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">out</span><span class="o">,</span> <span class="kt">int</span><span class="o">...</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="nc">OutputStream</span> <span class="n">out</span><span class="o">,</span> <span class="kt">int</span><span class="o">...</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
         <span class="c1">// Sigh, unsigned Java:</span>
         <span class="kt">byte</span><span class="o">[]</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
         <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>

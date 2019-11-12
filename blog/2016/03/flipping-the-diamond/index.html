@@ -157,26 +157,26 @@
 <p>Look at the following example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// Proposed var: (saves 3 characters)</span>
-    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+    <span class="kt">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span>
 
     <span class="c1">// Flipped diamond operator: (larger, but more readable IMHO)</span>
-    <span class="n">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span></code></pre></figure>
+    <span class="nc">List</span><span class="o">&lt;&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span></code></pre></figure>
 
 <p>In this case adding var/val doesn’t improve much, we still need to specify our generics <em>somewhere</em>, and now it has moved.</p>
 
 <p>But look at the following example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Java 7 with diamond operator:</span>
-    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// Proposed var:</span>
-    <span class="n">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="kt">var</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// Flipped diamond operator:</span>
-    <span class="n">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
+    <span class="nc">Map</span><span class="o">&lt;&gt;</span> <span class="n">someMap</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span></code></pre></figure>
 
 <p>The thing is: There is much more to win on the LHS with the diamond operator than we currently have with the RHS diamond. In most cases you’re going to call code that has already defined the typing, in all those cases you can skip it LHS.</p>
 

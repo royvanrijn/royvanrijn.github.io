@@ -214,7 +214,7 @@ This example code is in the public domain.
 <span class="c1">// notes to play, corresponding to the 3 sensors:
 </span>
 <span class="kt">int</span> <span class="n">notes</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span>
-  <span class="n">NOTE_A4</span><span class="o">,</span> <span class="n">NOTE_B4</span><span class="o">,</span><span class="n">NOTE_C3</span> <span class="o">};</span>
+  <span class="no">NOTE_A4</span><span class="o">,</span> <span class="no">NOTE_B4</span><span class="o">,</span><span class="no">NOTE_C3</span> <span class="o">};</span>
 
 <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
 
@@ -238,16 +238,16 @@ This example code is in the public domain.
 
 <p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
-<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">"Sensor value: "</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
-<span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="no">A0</span><span class="o">);</span> 
+<span class="nc">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">"Sensor value: "</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
+<span class="nc">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
 
 <p>This little piece of code above gives unpredictable results because ‘stringThree’ never got an initial value before you started concatenating different data types. Instead you’ll have to do:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">A0</span><span class="o">);</span> 
-<span class="n">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">"Sensor value: "</span><span class="o">;</span>
-<span class="n">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="n">stringOne</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
-<span class="n">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="no">A0</span><span class="o">);</span> 
+<span class="nc">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">"Sensor value: "</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="n">stringOne</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
+<span class="nc">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
 
 <p>Weird…! But I really suggest trying out the Arduino, give it a chance and you’ll probably like it and learn a lot about electronics and microcontrollers.</p>
 

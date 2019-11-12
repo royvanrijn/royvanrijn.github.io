@@ -210,23 +210,23 @@
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeEndpoint</span> <span class="o">{</span>
 
    <span class="nd">@OnOpen</span> <span class="c1">//Awww no this is where is goes wrong... it already says onOpen below</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onOpen</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onOpen</span><span class="o">(</span><span class="nc">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
       <span class="o">...</span>
    <span class="o">}</span>
 
    <span class="nd">@OnClose</span> <span class="c1">//No no no...</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClose</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClose</span><span class="o">(</span><span class="nc">Session</span> <span class="n">session</span><span class="o">)</span> <span class="o">{</span>
       <span class="o">...</span>
    <span class="o">}</span>
 
    <span class="nd">@OnError</span> <span class="c1">//NO!</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">error</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">error</span><span class="o">(</span><span class="nc">Session</span> <span class="n">session</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
       <span class="o">...</span>
    <span class="o">}</span>
 
    <span class="nd">@OnMessage</span> <span class="c1">//...</span>
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">textMessage</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Text message: "</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">textMessage</span><span class="o">(</span><span class="nc">Session</span> <span class="n">session</span><span class="o">,</span> <span class="nc">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Text message: "</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
    <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 

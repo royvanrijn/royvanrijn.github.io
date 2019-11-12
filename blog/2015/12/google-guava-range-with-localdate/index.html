@@ -153,9 +153,9 @@
 <p>First I started looking at JodaTime itself, it has support for Interval(s). But there is a ‘problem’, Interval is based around <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>s, and <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html">LocalDate</a> is a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadablePartial.html">ReadablePartial</a>, not a <a href="http://www.joda.org/joda-time/apidocs/org/joda/time/ReadableInstant.html">ReadableInstant</a>! So to make my code work I had to do the following:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Interval (the JodaTime way)</span>
-    <span class="kd">private</span> <span class="n">Interval</span> <span class="nf">createInterval</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">DateTime</span> <span class="n">fromDateTime</span> <span class="o">=</span> <span class="n">fromDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
-        <span class="n">DateTime</span> <span class="n">toDateTime</span> <span class="o">=</span> <span class="n">toDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">Interval</span> <span class="nf">createInterval</span><span class="o">(</span><span class="nc">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="nc">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DateTime</span> <span class="n">fromDateTime</span> <span class="o">=</span> <span class="n">fromDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
+        <span class="nc">DateTime</span> <span class="n">toDateTime</span> <span class="o">=</span> <span class="n">toDate</span><span class="o">.</span><span class="na">toDateTimeAtStartOfDay</span><span class="o">();</span>
         <span class="k">return</span> <span class="k">new</span> <span class="nf">Interval</span><span class="o">(</span><span class="n">fromDateTime</span><span class="o">,</span> <span class="n">toDateTime</span><span class="o">);</span>
     <span class="o">}</span>
 
@@ -167,8 +167,8 @@
 <p>Using Range made the code much smaller and easier to read:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Use two LocalDate instances to create an Range (the Google Guava way)</span>
-    <span class="kd">private</span> <span class="n">Range</span><span class="o">&lt;</span><span class="n">LocalDate</span><span class="o">&gt;</span> <span class="nf">createRange</span><span class="o">(</span><span class="n">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="n">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">Range</span><span class="o">.</span><span class="na">closedOpen</span><span class="o">(</span><span class="n">fromDate</span><span class="o">,</span> <span class="n">toDate</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="nc">Range</span><span class="o">&lt;</span><span class="nc">LocalDate</span><span class="o">&gt;</span> <span class="nf">createRange</span><span class="o">(</span><span class="nc">LocalDate</span> <span class="n">fromDate</span><span class="o">,</span> <span class="nc">LocalDate</span> <span class="n">toDate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Range</span><span class="o">.</span><span class="na">closedOpen</span><span class="o">(</span><span class="n">fromDate</span><span class="o">,</span> <span class="n">toDate</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="c1">// To check:</span>

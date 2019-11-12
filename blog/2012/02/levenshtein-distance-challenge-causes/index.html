@@ -173,44 +173,44 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriendlyCauses</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-		<span class="n">FriendlyCauses</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriendlyCauses</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">FriendlyCauses</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FriendlyCauses</span><span class="o">();</span>
 		<span class="n">s</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
 	<span class="o">}</span>
 
-	<span class="n">TrieNode</span><span class="o">[]</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
+	<span class="nc">TrieNode</span><span class="o">[]</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
 
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-		<span class="kt">long</span> <span class="n">timeBefore</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-		<span class="n">File</span> <span class="n">wordList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"word.list"</span><span class="o">);</span>
-		<span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">wordList</span><span class="o">));</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="kt">long</span> <span class="n">timeBefore</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+		<span class="nc">File</span> <span class="n">wordList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"word.list"</span><span class="o">);</span>
+		<span class="nc">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="n">wordList</span><span class="o">));</span>
 
 		<span class="kt">int</span> <span class="n">wordsAdded</span> <span class="o">=</span> <span class="n">buildTrie</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Done building the Trie; "</span> <span class="o">+</span> <span class="n">wordsAdded</span> <span class="o">+</span> <span class="s">" words added."</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Done building the Trie; "</span> <span class="o">+</span> <span class="n">wordsAdded</span> <span class="o">+</span> <span class="s">" words added."</span><span class="o">);</span>
 		<span class="n">findFriends</span><span class="o">(</span><span class="s">"causes"</span><span class="o">);</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Amount of friends found: "</span> <span class="o">+</span> <span class="n">countWords</span><span class="o">(</span><span class="n">root</span><span class="o">));</span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Total time: "</span> <span class="o">+</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">timeBefore</span><span class="o">)</span> <span class="o">+</span> <span class="s">"ms"</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Amount of friends found: "</span> <span class="o">+</span> <span class="n">countWords</span><span class="o">(</span><span class="n">root</span><span class="o">));</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Total time: "</span> <span class="o">+</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">timeBefore</span><span class="o">)</span> <span class="o">+</span> <span class="s">"ms"</span><span class="o">);</span>
 	<span class="o">}</span>
 
 	<span class="cm">/**
 	 * This method builds the complete trie with all the words.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">buildTrie</span><span class="o">(</span><span class="n">BufferedReader</span> <span class="n">reader</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">buildTrie</span><span class="o">(</span><span class="nc">BufferedReader</span> <span class="n">reader</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
 		<span class="kt">int</span> <span class="n">wordsAdded</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 		<span class="k">while</span> <span class="o">(</span><span class="n">reader</span><span class="o">.</span><span class="na">ready</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">String</span> <span class="n">next</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+			<span class="nc">String</span> <span class="n">next</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
 			<span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">next</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">-</span> <span class="mi">97</span><span class="o">;</span>
-			<span class="n">TrieNode</span> <span class="n">current</span> <span class="o">=</span> <span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">];</span>
+			<span class="nc">TrieNode</span> <span class="n">current</span> <span class="o">=</span> <span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">];</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">current</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">]</span> <span class="o">=</span> <span class="n">current</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">();</span>
+				<span class="n">root</span><span class="o">[</span><span class="n">start</span><span class="o">]</span> <span class="o">=</span> <span class="n">current</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TrieNode</span><span class="o">();</span>
 			<span class="o">}</span>
 			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">next</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 				<span class="kt">int</span> <span class="n">nextIndex</span> <span class="o">=</span> <span class="n">next</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="mi">97</span><span class="o">;</span>
 				<span class="k">if</span> <span class="o">(</span><span class="n">current</span><span class="o">.</span><span class="na">children</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-					<span class="n">current</span><span class="o">.</span><span class="na">children</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
+					<span class="n">current</span><span class="o">.</span><span class="na">children</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TrieNode</span><span class="o">[</span><span class="mi">26</span><span class="o">];</span>
 				<span class="o">}</span>
 				<span class="k">if</span> <span class="o">(</span><span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-					<span class="n">TrieNode</span> <span class="n">deeper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrieNode</span><span class="o">();</span>
+					<span class="nc">TrieNode</span> <span class="n">deeper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TrieNode</span><span class="o">();</span>
 					<span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">]</span> <span class="o">=</span> <span class="n">deeper</span><span class="o">;</span>
 				<span class="o">}</span>
 				<span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">nextIndex</span><span class="o">];</span>
@@ -224,10 +224,10 @@
 	<span class="kd">private</span> <span class="kd">class</span> <span class="nc">TrieNode</span> <span class="o">{</span>
 		<span class="c1">// The children:
 </span>
-		<span class="n">TrieNode</span><span class="o">[]</span> <span class="n">children</span><span class="o">;</span>
+		<span class="nc">TrieNode</span><span class="o">[]</span> <span class="n">children</span><span class="o">;</span>
 		<span class="c1">// If this node is the end of a word, store the word here:
 </span>
-		<span class="n">String</span> <span class="n">word</span><span class="o">;</span>
+		<span class="nc">String</span> <span class="n">word</span><span class="o">;</span>
 		<span class="c1">// This boolean indicates that the current node is a friend.
 </span>
 		<span class="kt">boolean</span> <span class="n">isFriend</span><span class="o">;</span>
@@ -235,13 +235,13 @@
 
 	<span class="c1">// Temporary buffer of friends to investigate further:
 </span>
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">friendsToFind</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+	<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">friendsToFind</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;();</span>
 
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">findFriends</span><span class="o">(</span><span class="n">String</span> <span class="n">word</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">findFriends</span><span class="o">(</span><span class="nc">String</span> <span class="n">word</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">friendsToFind</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
 
 		<span class="k">while</span> <span class="o">(</span><span class="n">friendsToFind</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">String</span> <span class="n">friend</span> <span class="o">=</span> <span class="n">friendsToFind</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+			<span class="nc">String</span> <span class="n">friend</span> <span class="o">=</span> <span class="n">friendsToFind</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 
 			<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">friend</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
 
@@ -263,10 +263,10 @@
 	<span class="cm">/**
 	 * Walk the complete Trie again finding all the friends
 	 */</span>
-	<span class="kd">private</span> <span class="kt">int</span> <span class="nf">countWords</span><span class="o">(</span><span class="n">TrieNode</span><span class="o">[]</span> <span class="n">ts</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="nf">countWords</span><span class="o">(</span><span class="nc">TrieNode</span><span class="o">[]</span> <span class="n">ts</span><span class="o">)</span> <span class="o">{</span>
 		<span class="kt">int</span> <span class="n">amount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">26</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-			<span class="n">TrieNode</span> <span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="nc">TrieNode</span> <span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 				<span class="k">if</span> <span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">isFriend</span><span class="o">)</span> <span class="o">{</span>
 					<span class="n">amount</span><span class="o">++;</span>
@@ -286,7 +286,7 @@
 	 * given word. When a friend is found, mark it and add it to a list. The new
 	 * friend needs to be processed further on.
 	 */</span>
-	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">searchTrieForWord</span><span class="o">(</span><span class="n">TrieNode</span> <span class="n">node</span><span class="o">,</span> <span class="kt">int</span> <span class="n">letter</span><span class="o">,</span> <span class="n">String</span> <span class="n">word</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">previousRow</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">void</span> <span class="nf">searchTrieForWord</span><span class="o">(</span><span class="nc">TrieNode</span> <span class="n">node</span><span class="o">,</span> <span class="kt">int</span> <span class="n">letter</span><span class="o">,</span> <span class="nc">String</span> <span class="n">word</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">previousRow</span><span class="o">)</span> <span class="o">{</span>
 
 		<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">previousRow</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
 		<span class="kt">byte</span><span class="o">[]</span> <span class="n">currentRow</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
@@ -296,14 +296,14 @@
 
 		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 			<span class="kt">int</span> <span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">currentRow</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-			<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+			<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
 					<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
 
 			<span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">letter</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
 						<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
 			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
+				<span class="n">newCurrentRowValue</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">newCurrentRowValue</span><span class="o">,</span>
 						<span class="n">previousRow</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
 			<span class="o">}</span>
 			<span class="k">if</span> <span class="o">(</span><span class="n">newCurrentRowValue</span> <span class="o">&lt;</span> <span class="n">minElement</span><span class="o">)</span> <span class="o">{</span>
@@ -323,7 +323,7 @@
 
 		<span class="k">if</span> <span class="o">(</span><span class="n">minElement</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-				<span class="n">TrieNode</span> <span class="n">child</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="nc">TrieNode</span> <span class="n">child</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">children</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
 				<span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 					<span class="n">searchTrieForWord</span><span class="o">(</span><span class="n">child</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">97</span><span class="o">,</span> <span class="n">word</span><span class="o">,</span> <span class="n">currentRow</span><span class="o">);</span>
 				<span class="o">}</span>

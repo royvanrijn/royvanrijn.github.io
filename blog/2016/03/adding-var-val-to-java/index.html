@@ -156,11 +156,11 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before:</span>
     <span class="kt">int</span> <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// After</span>
-    <span class="n">var</span> <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// infers int</span>
-    <span class="n">var</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>  <span class="c1">// infers ArrayList&lt;String&gt;</span></code></pre></figure>
+    <span class="kt">var</span> <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// infers int</span>
+    <span class="kt">var</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;();</span>  <span class="c1">// infers ArrayList&lt;String&gt;</span></code></pre></figure>
 
 <p>Personally I’m not convinced this is a good idea for Java, but OTOH some of my colleagues and co-workers are very happy with the proposal.</p>
 
@@ -175,10 +175,10 @@
 <p>Instead of typing <strong>int</strong>, <strong>List</strong>, <strong>Person</strong> or <strong>SpringObjectFactoryManagerTemplateProxyDelagate</strong> you just have <strong>var</strong>.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Instead of:</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// You can now have:</span>
-    <span class="n">var</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
+    <span class="kt">var</span> <span class="n">myList</span> <span class="o">=</span> <span class="n">someMethod</span><span class="o">();</span>
 
     <span class="c1">// We saved 10 keystrokes! (&lt;- probably less if you know shortcuts in your IDE)</span></code></pre></figure>
 
@@ -192,7 +192,7 @@
 
 <p>Consider the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">var</span> <span class="n">myVariable</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="na">calculateSomething</span><span class="o">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kt">var</span> <span class="n">myVariable</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="na">calculateSomething</span><span class="o">();</span></code></pre></figure>
 
 <p>What is the type of <em>myVariable</em>? When you are writing the code, you probably have a good idea why you called <em>dependency</em> and what you receive as return value.</p>
 
@@ -209,20 +209,20 @@
 <p>When ‘var’ gets added it won’t be a keyword, it’ll be a ‘reserved type name’. This means that the following code for example would be working just fine:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// this compiles just fine:</span>
-    <span class="n">var</span> <span class="n">var</span> <span class="o">=</span> <span class="s">"var"</span><span class="o">;</span></code></pre></figure>
+    <span class="kt">var</span> <span class="kt">var</span> <span class="o">=</span> <span class="s">"var"</span><span class="o">;</span></code></pre></figure>
 
 <h2 id="con-rhs-versus-lhs"><strong>Con</strong>: RHS versus LHS</h2>
 
 <p>This JEP focusses on the LHS (left-hand side) declaration by removing the need to specify a type. But recently, in Java 7, Java has introduced the diamond operator to eliminate verbosity in the RHS (right-hand side) declaration. With JEP 286, these two collide:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Before Java 7 'diamond operator':</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span>
 
     <span class="c1">// With Java 7 'diamond operator', removing generic type on RHS:</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
 
     <span class="c1">// With JEP 286, we need to add the generic type again at the RHS...</span>
-    <span class="n">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+    <span class="kt">var</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span>
 
     <span class="c1">// Java, make up your mind!</span></code></pre></figure>
 
@@ -232,8 +232,8 @@
 Look at the following, silly, example:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasClosed</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">var</span> <span class="n">list</span> <span class="o">=</span> <span class="n">getSomeList</span><span class="o">();</span>
-        <span class="k">for</span><span class="o">(</span><span class="n">var</span> <span class="n">item</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="n">list</span> <span class="o">=</span> <span class="n">getSomeList</span><span class="o">();</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">var</span> <span class="n">item</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
         	<span class="k">if</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">isClosed</span><span class="o">())</span> <span class="o">{</span>
         		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         	<span class="o">}</span>
@@ -245,8 +245,8 @@ Look at the following, silly, example:</p>
 
 <p>There is a counter argument that can be made, refactoring can also be <em>dangerous</em> with JEP 286, look at this (crafted) example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">var</span> <span class="n">answer</span> <span class="o">=</span> <span class="n">SomeCode</span><span class="o">.</span><span class="na">generate</span><span class="o">();</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">answer</span> <span class="o">+</span> <span class="mi">42</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kt">var</span> <span class="n">answer</span> <span class="o">=</span> <span class="nc">SomeCode</span><span class="o">.</span><span class="na">generate</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">answer</span> <span class="o">+</span> <span class="mi">42</span><span class="o">);</span></code></pre></figure>
 
 <p>As long as the method <em>generate</em> returns a number the code works fine. But when someone changes the method to return an object or a String, it stops working without failing compilation. This argument however seems valid, but it would also break it you would have inlined the call to ‘<em>System.out.println(SomeCode.generate() + 2);</em>’.</p>
 

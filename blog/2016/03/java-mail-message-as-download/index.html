@@ -155,45 +155,45 @@
 <p>Let’s start with some very basic email code we already had in place:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Some method to construct a MimeMessage:</span>
-    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+    <span class="nc">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
 
-    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+    <span class="nc">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
 
 <p>What we need to do now is to ‘render’ the entire email in a binary format, including all the possible attachements, multipart things, from and to headers etc.</p>
 
 <p>It turns out there is a convinient method for doing just that: <em>message.writeTo(OutputStream)</em></p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="n">createMailMessage</span><span class="o">(</span><span class="n">input</span><span class="o">);</span> <span class="c1">// some method to construct a MimeMessage</span>
 
     <span class="c1">// Retrieve the entire message as byte[]:</span>
-    <span class="n">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+    <span class="nc">ByteArrayOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">();</span>
     <span class="n">message</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
     <span class="kt">byte</span><span class="o">[]</span> <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
 
     <span class="c1">// Next we store the byte[] in our database (JPA) entity:</span>
-    <span class="n">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+    <span class="nc">ArchivedMail</span> <span class="n">archivedMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArchivedMail</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">contents</span><span class="o">,</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
     <span class="n">mailArchive</span><span class="o">.</span><span class="na">store</span><span class="o">(</span><span class="n">archivedMail</span><span class="o">);</span>
 
-    <span class="n">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
+    <span class="nc">Transport</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre></figure>
 
 <p>Our own little POJO entity (<em>ArchivedMail</em>) is stored in the database with some additional information that allows us to search the messages. The final step is to make a download link and present the email in a readable format to the users.</p>
 
 <p>We’re using Wicket and thus the following example is Wicket code, but you could just as easily create a Servlet to return the data:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Add the Wicket link-component to our page:</span>
-    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Link</span><span class="o">&lt;</span><span class="n">ArchivedMail</span><span class="o">&gt;(</span><span class="s">"wicketLinkId"</span><span class="o">,</span> <span class="n">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Link</span><span class="o">&lt;</span><span class="nc">ArchivedMail</span><span class="o">&gt;(</span><span class="s">"wicketLinkId"</span><span class="o">,</span> <span class="nc">Model</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">somemail</span><span class="o">))</span> <span class="o">{</span>
 
         <span class="nd">@Override</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nc">IResourceStream</span> <span class="n">resourceStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AbstractResourceStreamWriter</span><span class="o">()</span> <span class="o">{</span>
                 <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="nc">OutputStream</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
                     <span class="c1">// When clicked output a stream which contains the raw byte[]:</span>
                     <span class="n">output</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">getModelObject</span><span class="o">().</span><span class="na">getBytes</span><span class="o">());</span>
                 <span class="o">}</span>
 
                 <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="n">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getContentType</span><span class="o">()</span> <span class="o">{</span>
                     <span class="c1">// Add the content type for an EML file:</span>
                     <span class="k">return</span> <span class="s">"message/rfc822"</span><span class="o">;</span>
                 <span class="o">}</span>

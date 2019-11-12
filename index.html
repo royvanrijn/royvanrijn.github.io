@@ -117,6 +117,359 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/11/sat-solver-in-java/" title="SAT solving: Creating a solver in Java (part 2)">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="SAT solving: Creating a solver in Java (part 2)" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-11-11T21:42:12+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-11-11T21:42:12+01:00" class="date">
+            Nov 11, 2019 21:42:12
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/sat-solver-in-java/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/11/sat-solver-in-java/">SAT solving: Creating a solver in Java (part 2)</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This is the second blogpost in a series about SAT solving. Today we’re going to build a simple solver in <code class="highlighter-rouge">Java</code>.
+Before continuing, if you don’t know what a SAT solver is, read [part one][].</p>
+
+<p>The algorithm we’re going to implement is called <a href="https://en.wikipedia.org/wiki/DPLL_algorithm">DPLL</a> (Davis Putnam Logemann Loveland).</p>
+
+<h1 id="input-parsing">Input parsing</h1>
+
+<p>The input we’ll accept is in <code class="highlighter-rouge">DIMACS</code> format. For now we can just skip the <code class="highlighter-rouge">p</code>-line with all the settings and just parse all the numbers.
+Here is an example input:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">p</span> <span class="n">cnf</span> <span class="mi">3</span> <span class="mi">4</span>
+ <span class="mi">1</span>  <span class="mi">2</span> <span class="o">-</span><span class="mi">3</span>  <span class="mi">0</span>
+ <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">0</span>
+<span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
+<span class="o">-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">0</span></code></pre></figure>
+
+<p>In Java we can parse this entire file with almost a one liner (don’t do this in production code):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// Read a DIMACS file and turn into a list of clauses:</span>
+        <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">clauses</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">lines</span><span class="o">(</span><span class="nc">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">inputFile</span><span class="o">))</span>
+                <span class="c1">// Trim the lines:</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">,</span> <span class="s">" "</span><span class="o">).</span><span class="na">trim</span><span class="o">())</span>
+                <span class="c1">// Only parse lines ending with a 0:</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">" 0"</span><span class="o">))</span>
+                <span class="c1">// Turn each line into a list of integers:</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">line</span>
+                        <span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">line</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">))</span>
+                        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">())</span>
+                <span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span></code></pre></figure>
+
+<h1 id="unit-propagation">Unit propagation</h1>
+
+<p>The next step in creating a (slow) SAT solver is to implement the following pseudo code:</p>
+
+<h2 id="step-1a-find-all-the-unit-variables">Step 1a: Find all the unit variables</h2>
+
+<p>Find all the unit variables <code class="highlighter-rouge">(-4 0)</code>. These are clauses that have just a single (active) variable. If a clause has just a single variable, it has to be true. So in this case we mark <code class="highlighter-rouge">4</code> as false.</p>
+
+<h2 id="step-1b-process-all-unit-variables">Step 1b: Process all unit variables</h2>
+
+<p>Now we go over all the other clauses that contain this variable <code class="highlighter-rouge">-4</code> or the inverse (<code class="highlighter-rouge">4</code>).</p>
+
+<p>If the clause has <code class="highlighter-rouge">-4</code> (which we now know is <code class="highlighter-rouge">true</code>), we mark this entire clause as ‘satisfied’.</p>
+
+<p>If the clause contains the inverse of the variable, in this case <code class="highlighter-rouge">4</code>, we know that particular variable will never become <code class="highlighter-rouge">true</code>, so we remove it from the list.</p>
+
+<p>Lets try step 1 with the following example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="mi">1</span>  <span class="mi">4</span>  <span class="mi">2</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span>
+ <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">0</span>
+<span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
+<span class="o">-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span>
+<span class="o">-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span>
+<span class="o">-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span></code></pre></figure>
+
+<p>We have a single unit variable, <code class="highlighter-rouge">-2</code>, so we mark this variable as <code class="highlighter-rouge">true</code>. Next we apply step 1b:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span>
+
+<span class="o">[</span><span class="mi">1</span>  <span class="mi">4</span> <span class="mi">2</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span>
+<span class="o">[</span><span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">3</span> <span class="mi">0</span><span class="o">]</span>
+<span class="o">[-</span><span class="mi">2</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span>
+<span class="o">[-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span></code></pre></figure>
+
+<p>Now we have a new unit variable, <code class="highlighter-rouge">3 0</code>. This again can be processed:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span>
+
+<span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span>
+<span class="o">[</span><span class="mi">3</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">3</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">2</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">3</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
+<span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span></code></pre></figure>
+
+<p>And now we are done with the <code class="highlighter-rouge">unit propagation</code>. We are now left with two clauses that both are not a unit clause.</p>
+
+<h2 id="step-2-gamble-on-a-variable">Step 2: Gamble on a variable</h2>
+
+<p>First we repeat step 1 until there are no unit clauses left. Now we need to take a gamble. In this case we have unresolved: -1, 1, 4 and -6, 6. We need to pick one of these and try it.</p>
+
+<p>Let’s pick <code class="highlighter-rouge">6</code>.</p>
+
+<p>Again, we process this, if a clause contains <code class="highlighter-rouge">6</code> we mark it as <code class="highlighter-rouge">true</code>. If a clause contains <code class="highlighter-rouge">-6</code> we remove that variable as alive variable.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span>
+
+ <span class="mi">1</span>  <span class="mi">4</span>  <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span> <span class="nl">becomes:</span> <span class="mi">1</span> <span class="mi">4</span> <span class="mi">0</span>
+<span class="o">-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span> <span class="n">is</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">6</span><span class="o">)</span></code></pre></figure>
+
+<p>Now we go back to step 1 and repeat.</p>
+
+<h2 id="conflict">Conflict</h2>
+
+<p>There are two possible ways this loop will end.</p>
+
+<p>1) There are no clauses left, everything it <code class="highlighter-rouge">true</code>. In this case we have reached <code class="highlighter-rouge">SAT</code>.
+2) We run into a situation that we have a conflict (!)</p>
+
+<p>A conflict happens when we have a situation that can’t happen. For example when we have the following situation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span>
+ <span class="mi">1</span> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
+ <span class="mi">1</span>  <span class="mi">2</span>  <span class="mi">0</span></code></pre></figure>
+
+<p>In this case we have <code class="highlighter-rouge">-1</code> as a unit clause, we assign this variable. Now we process the following lines and what happens? We are left with:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
+  <span class="mi">2</span>  <span class="mi">0</span></code></pre></figure>
+
+<p>This is a <strong>conflict</strong>, we can’t have <code class="highlighter-rouge">-2</code> AND <code class="highlighter-rouge">2</code>. It can’t be true and false at the same time.</p>
+
+<p>In the case of a conflict we backtrack back to the last decision point where we gambled. Reset everything and try a different variable.</p>
+
+<h2 id="nothing-left-to-gamble-unsat">Nothing left to gamble? UNSAT</h2>
+
+<p>If, at a certain point, you’ve run out of options to gamble on, we are also done. We’ve proven there is <strong>no</strong> way to assign the variables to satisfy all the clauses. In this case we can return <code class="highlighter-rouge">UNSAT</code>.</p>
+
+<h1 id="put-this-into-code">Put this into code:</h1>
+
+<p>If you put the above algorithm into Java code you might end up with something like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">royvanrijn</span><span class="o">.</span><span class="na">boolish</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Comparator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DPLLSolver</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">DPLLSolver</span><span class="o">().</span><span class="na">solve</span><span class="o">(</span><span class="s">"dimacs/example.cnf"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">solve</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">inputFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+
+        <span class="c1">// Read a DIMACS file and turn into a list of clauses:</span>
+        <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">lines</span><span class="o">(</span><span class="nc">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">inputFile</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">,</span> <span class="s">" "</span><span class="o">).</span><span class="na">trim</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">" 0"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Clause:</span><span class="o">:</span><span class="k">new</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="n">processDPLL</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literals</span><span class="o">);</span>
+
+        <span class="c1">// If we get here, we are unable to assign SAT, so we are UNSAT:</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Got to the end, UNSAT"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">processDPLL</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">// Check if we have no more clauses that are unsatisfied:</span>
+        <span class="k">if</span><span class="o">(!</span><span class="n">clauses</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">filter</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">).</span><span class="na">findAny</span><span class="o">().</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
+            <span class="c1">// We are done, SAT!</span>
+            <span class="n">exitWithSAT</span><span class="o">(</span><span class="n">literals</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">newLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="c1">// Step 1a: Find unit clauses:</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unitPropagation</span> <span class="o">=</span> <span class="n">findUnitClauses</span><span class="o">(</span><span class="n">clauses</span><span class="o">);</span>
+
+        <span class="c1">// Step 1b: Process the unit variables (new units can be created while processing):</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">unitPropagation</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+
+            <span class="c1">// Remove this unit from all clauses:</span>
+            <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">unit</span> <span class="o">:</span> <span class="n">unitPropagation</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// Detect conflicts: We can not have both unit and -unit in the set, if there is we've hit a conflict.</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">unitPropagation</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">unit</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="c1">// Undo everything we've done and return.</span>
+                    <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">literal</span> <span class="o">:</span> <span class="n">newLiterals</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo unit: "</span> <span class="o">+</span> <span class="n">literal</span><span class="o">);</span>
+                        <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literal</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    <span class="k">return</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">newLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">unit</span><span class="o">);</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Applying unit: "</span> <span class="o">+</span> <span class="n">unit</span><span class="o">);</span>
+                <span class="n">applyStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">unit</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">unitPropagation</span><span class="o">.</span><span class="na">removeAll</span><span class="o">(</span><span class="n">newLiterals</span><span class="o">);</span>
+
+            <span class="c1">// Look if we've created new unit clauses:</span>
+            <span class="n">unitPropagation</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">findUnitClauses</span><span class="o">(</span><span class="n">clauses</span><span class="o">));</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Get all the unassignedLiterals from the alive clauses:</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unassignedLiterals</span> <span class="o">=</span> <span class="n">clauses</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">stream</span><span class="o">()).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">decisionLiteral</span> <span class="o">:</span> <span class="n">unassignedLiterals</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Gambling/deciding on: "</span> <span class="o">+</span> <span class="n">decisionLiteral</span><span class="o">);</span>
+            <span class="n">applyStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">decisionLiteral</span><span class="o">);</span>
+
+            <span class="c1">// Go deeper with a fresh list:</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">deeperAssignedLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">();</span>
+            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">literals</span><span class="o">);</span>
+            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">newLiterals</span><span class="o">);</span>
+            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">decisionLiteral</span><span class="o">);</span>
+
+            <span class="n">processDPLL</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">deeperAssignedLiterals</span><span class="o">);</span>
+
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo gambling: "</span> <span class="o">+</span> <span class="n">decisionLiteral</span><span class="o">);</span>
+            <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">decisionLiteral</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Undo all we've done this step:</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">literal</span> <span class="o">:</span> <span class="n">newLiterals</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo units: "</span> <span class="o">+</span> <span class="n">literal</span><span class="o">);</span>
+            <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literal</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * When applying a step, keep all the dead literals (variables) so we can undo.
+     *
+     * @param clauses
+     * @param literal
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">applyStep</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="n">literal</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">remove</span><span class="o">((</span><span class="nc">Integer</span><span class="o">)</span> <span class="o">(-</span><span class="n">literal</span><span class="o">));</span>
+                    <span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(-</span><span class="n">literal</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * Because we are backtracking we need to be able to undo all the steps in a clause, so we keep all the information
+     *
+     * @param clauses
+     * @param literal
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">undoStep</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="n">literal</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">&amp;&amp;</span> <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">remove</span><span class="o">((</span><span class="nc">Integer</span><span class="o">)</span> <span class="o">(-</span><span class="n">literal</span><span class="o">));</span>
+                <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(-</span><span class="n">literal</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">findUnitClauses</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unitPropagation</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="c1">// Check if there are unit clauses:</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">isUnitClause</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">unitPropagation</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">unitPropagation</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">exitWithSAT</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// We are done:</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"SAT"</span><span class="o">);</span>
+
+        <span class="c1">// Sort the output as absolute values.</span>
+        <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">literals</span><span class="o">,</span> <span class="nc">Comparator</span><span class="o">.</span><span class="na">comparingInt</span><span class="o">(</span><span class="nl">Math:</span><span class="o">:</span><span class="n">abs</span><span class="o">));</span>
+
+        <span class="c1">// TODO: We might not list all the input variables here, some are not needed and can be + or -.</span>
+
+        <span class="c1">// And print:</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">literals</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">n</span><span class="o">)).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">(</span><span class="s">" "</span><span class="o">))</span> <span class="o">+</span> <span class="s">" 0"</span><span class="o">);</span>
+
+        <span class="c1">// Bye bye.</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Clause</span> <span class="o">{</span>
+
+        <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unassignedLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">deadLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">clauseSatisfied</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="kd">private</span> <span class="nf">Clause</span><span class="o">(</span><span class="nc">String</span> <span class="n">inputLine</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">unassignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span>
+                    <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">inputLine</span>
+                            <span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">inputLine</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">)</span>
+                            <span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">))</span>
+                            <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">)</span>
+                            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
+        <span class="o">}</span>
+
+        <span class="kt">boolean</span> <span class="nf">isUnitClause</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">!</span><span class="n">clauseSatisfied</span> <span class="o">&amp;&amp;</span> <span class="n">unassignedLiterals</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This is all. This algorithm can solve <strong>any</strong> problem that can be turned into a SAT problem, which are a lot of mathematical problems.</p>
+
+<p><code class="highlighter-rouge">DPPL</code> isn’t the fastest algorithm, a lot of improvements can be made (part 3?). For example we can learn new clauses during analysis, and instead of backtracking to the last decision moment, sometimes you can backtrack to a much earlier decision moment, making the resolution much faster.</p>
+
+<p>But the basic algorithm to solve SAT, is very simple indeed.</p>
+
+<p><a href="/blog/2019/05/sat-solving-part-one/">part one</a></p>
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/sat-solver-in-java/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2019/05/sat-solving-part-one/" title="SAT solving: Introduction to SAT (part 1)">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="SAT solving: Introduction to SAT (part 1)" width="100" height="100" />
@@ -169,19 +522,19 @@
 
 <p>The line above can be broken up into four pieces:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">(</span><span class="n">A</span> <span class="n">OR</span> <span class="n">B</span> <span class="n">OR</span> <span class="o">~</span><span class="n">C</span><span class="o">)</span>  <span class="n">AND</span>
-<span class="o">(</span><span class="n">B</span> <span class="n">OR</span> <span class="n">C</span><span class="o">)</span>        <span class="n">AND</span>
-<span class="o">(~</span><span class="n">B</span><span class="o">)</span>            <span class="n">AND</span>
-<span class="o">(~</span><span class="n">A</span> <span class="n">OR</span> <span class="n">C</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">(</span><span class="no">A</span> <span class="no">OR</span> <span class="no">B</span> <span class="no">OR</span> <span class="o">~</span><span class="no">C</span><span class="o">)</span>  <span class="no">AND</span>
+<span class="o">(</span><span class="no">B</span> <span class="no">OR</span> <span class="no">C</span><span class="o">)</span>        <span class="no">AND</span>
+<span class="o">(~</span><span class="no">B</span><span class="o">)</span>            <span class="no">AND</span>
+<span class="o">(~</span><span class="no">A</span> <span class="no">OR</span> <span class="no">C</span><span class="o">)</span></code></pre></figure>
 
 <p>Each line is called a ‘clause’. Those clauses are connected together using <code class="highlighter-rouge">AND</code> statements. A <code class="highlighter-rouge">clause</code> can only contain variables (or negated variables) joined together by <code class="highlighter-rouge">OR</code>.</p>
 
 <p>Because each clause will have <code class="highlighter-rouge">OR</code> between the <code class="highlighter-rouge">variables</code> and the end of the clause is always an <code class="highlighter-rouge">AND</code> statement, those things can be removed from the statement, turning it into:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="n">A</span>    <span class="n">B</span>   <span class="o">~</span><span class="n">C</span>
- <span class="n">B</span>    <span class="n">C</span>
-<span class="o">~</span><span class="n">B</span>
-<span class="o">~</span><span class="n">A</span>    <span class="n">C</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="no">A</span>    <span class="no">B</span>   <span class="o">~</span><span class="no">C</span>
+ <span class="no">B</span>    <span class="no">C</span>
+<span class="o">~</span><span class="no">B</span>
+<span class="o">~</span><span class="no">A</span>    <span class="no">C</span></code></pre></figure>
 
 <h2 id="dimacs-format">DIMACS format</h2>
 
@@ -198,16 +551,16 @@
 <p>This is a valid input file for almost all SAT solvers. You can run this for example in <a href="http://minisat.se/">minisat</a>:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="err">$</span> <span class="n">minisat</span> <span class="n">input</span><span class="o">.</span><span class="na">cnf</span> <span class="n">output</span><span class="o">.</span><span class="na">cnf</span>
-<span class="o">============================[</span> <span class="n">Problem</span> <span class="n">Statistics</span> <span class="o">]=============================</span>
+<span class="o">============================[</span> <span class="nc">Problem</span> <span class="nc">Statistics</span> <span class="o">]=============================</span>
 <span class="o">|</span>                                                                             <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Number</span> <span class="n">of</span> <span class="nl">variables:</span>             <span class="mi">3</span>                                         <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Number</span> <span class="n">of</span> <span class="nl">clauses:</span>               <span class="mi">2</span>                                         <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Parse</span> <span class="nl">time:</span>                   <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
-<span class="o">|</span>  <span class="n">Simplification</span> <span class="nl">time:</span>          <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Number</span> <span class="n">of</span> <span class="nl">variables:</span>             <span class="mi">3</span>                                         <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Number</span> <span class="n">of</span> <span class="nl">clauses:</span>               <span class="mi">2</span>                                         <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Parse</span> <span class="nl">time:</span>                   <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
+<span class="o">|</span>  <span class="nc">Simplification</span> <span class="nl">time:</span>          <span class="mf">0.00</span> <span class="n">s</span>                                       <span class="o">|</span>
 <span class="o">|</span>                                                                             <span class="o">|</span>
-<span class="o">============================[</span> <span class="n">Search</span> <span class="n">Statistics</span> <span class="o">]==============================</span>
-<span class="o">|</span> <span class="n">Conflicts</span> <span class="o">|</span>          <span class="n">ORIGINAL</span>         <span class="o">|</span>          <span class="n">LEARNT</span>          <span class="o">|</span> <span class="n">Progress</span> <span class="o">|</span>
-<span class="o">|</span>           <span class="o">|</span>    <span class="n">Vars</span>  <span class="n">Clauses</span> <span class="n">Literals</span> <span class="o">|</span>    <span class="n">Limit</span>  <span class="n">Clauses</span> <span class="n">Lit</span><span class="o">/</span><span class="n">Cl</span> <span class="o">|</span>          <span class="o">|</span>
+<span class="o">============================[</span> <span class="nc">Search</span> <span class="nc">Statistics</span> <span class="o">]==============================</span>
+<span class="o">|</span> <span class="nc">Conflicts</span> <span class="o">|</span>          <span class="no">ORIGINAL</span>         <span class="o">|</span>          <span class="no">LEARNT</span>          <span class="o">|</span> <span class="nc">Progress</span> <span class="o">|</span>
+<span class="o">|</span>           <span class="o">|</span>    <span class="nc">Vars</span>  <span class="nc">Clauses</span> <span class="nc">Literals</span> <span class="o">|</span>    <span class="nc">Limit</span>  <span class="nc">Clauses</span> <span class="nc">Lit</span><span class="o">/</span><span class="nc">Cl</span> <span class="o">|</span>          <span class="o">|</span>
 <span class="o">===============================================================================</span>
 <span class="o">===============================================================================</span>
 <span class="n">restarts</span>              <span class="o">:</span> <span class="mi">1</span>
@@ -215,15 +568,15 @@
 <span class="n">decisions</span>             <span class="o">:</span> <span class="mi">1</span>              <span class="o">(</span><span class="mf">0.00</span> <span class="o">%</span> <span class="n">random</span><span class="o">)</span> <span class="o">(</span><span class="mi">405</span> <span class="o">/</span><span class="n">sec</span><span class="o">)</span>
 <span class="n">propagations</span>          <span class="o">:</span> <span class="mi">3</span>              <span class="o">(</span><span class="mi">1214</span> <span class="o">/</span><span class="n">sec</span><span class="o">)</span>
 <span class="n">conflict</span> <span class="n">literals</span>     <span class="o">:</span> <span class="mi">0</span>              <span class="o">(</span> <span class="n">nan</span> <span class="o">%</span> <span class="n">deleted</span><span class="o">)</span>
-<span class="n">Memory</span> <span class="n">used</span>           <span class="o">:</span> <span class="mf">0.17</span> <span class="n">MB</span>
-<span class="n">CPU</span> <span class="n">time</span>              <span class="o">:</span> <span class="mf">0.002471</span> <span class="n">s</span>
+<span class="nc">Memory</span> <span class="n">used</span>           <span class="o">:</span> <span class="mf">0.17</span> <span class="no">MB</span>
+<span class="no">CPU</span> <span class="n">time</span>              <span class="o">:</span> <span class="mf">0.002471</span> <span class="n">s</span>
 
-<span class="n">SATISFIABLE</span></code></pre></figure>
+<span class="no">SATISFIABLE</span></code></pre></figure>
 
 <p>And print the output:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="err">$</span> <span class="n">cat</span> <span class="n">output</span><span class="o">.</span><span class="na">cnf</span>
-<span class="n">SAT</span>
+<span class="no">SAT</span>
 <span class="mi">1</span> <span class="o">-</span><span class="mi">2</span> <span class="mi">3</span> <span class="mi">0</span></code></pre></figure>
 
 <p>Now we can see what a SAT solver actually does. It takes a boolean expression and tries to find a ‘solution’. It tries to find a particular combination of <code class="highlighter-rouge">literals</code> so all the clauses are <code class="highlighter-rouge">true</code>. If it is able to find one, it stops and returns <code class="highlighter-rouge">SAT</code>. When it is unable to find a valid assignment it returns <code class="highlighter-rouge">UNSAT</code>, the problem can’t be solved.</p>
@@ -304,12 +657,12 @@
 
 <p>First we’re going to introduce two new <code class="highlighter-rouge">variables</code>, I’ll just continue using free numbers, <code class="highlighter-rouge">20</code> and <code class="highlighter-rouge">21</code>. Those will represent the top row for white and black.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Encode</span> <span class="n">white</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">20</span><span class="o">:</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Encode</span> <span class="n">white</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">20</span><span class="o">:</span>
 <span class="o">-</span><span class="mi">1</span> <span class="mi">20</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">2</span> <span class="mi">20</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">3</span> <span class="mi">20</span> <span class="mi">0</span>
 
-<span class="n">Encode</span> <span class="n">black</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">21</span><span class="o">:</span>
+<span class="nc">Encode</span> <span class="n">black</span> <span class="n">row</span> <span class="n">as</span> <span class="mi">21</span><span class="o">:</span>
 <span class="o">-</span><span class="mi">10</span> <span class="mi">21</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">11</span> <span class="mi">21</span> <span class="mi">0</span>
 <span class="o">-</span><span class="mi">12</span> <span class="mi">21</span> <span class="mi">0</span></code></pre></figure>
@@ -382,9 +735,9 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 <p>I ended up doing the thing that works:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// Make sure we have at least k pieces for white and black:</span>
-        <span class="kt">int</span> <span class="n">freeVariable</span> <span class="o">=</span> <span class="o">(</span><span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">*</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">whitePieces</span><span class="o">,</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">blackPieces</span><span class="o">,</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">freeVariable</span> <span class="o">=</span> <span class="o">(</span><span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">*</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">whitePieces</span><span class="o">,</span> <span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">freeVar</span> <span class="o">=</span> <span class="n">ltSeq</span><span class="o">(</span><span class="n">blackPieces</span><span class="o">,</span> <span class="no">N</span><span class="o">*</span><span class="no">N</span> <span class="o">-</span> <span class="n">k</span><span class="o">,</span> <span class="n">freeVar</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
 
         <span class="c1">// ... encode rows, diagonals, columns ...</span></code></pre></figure>
 
@@ -398,16 +751,16 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 
 <p>And if you change this back into a chess board we can see valid solution for N=10 with 14 queens each!</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="n">W</span> <span class="n">W</span> <span class="n">W</span> 
-<span class="o">.</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
-<span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="n">B</span> <span class="n">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> </code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="no">W</span> <span class="no">W</span> <span class="no">W</span> 
+<span class="o">.</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> 
+<span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="no">B</span> <span class="no">B</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> <span class="o">.</span> </code></pre></figure>
 
 <p>I’ve uploaded all the code for this series to GitHub and called it: <a href="https://royvanrijn.com/blog/2019/05/sat-solving-part-one/">Boolshit</a></p>
 
@@ -609,22 +962,22 @@ So I switched <code class="highlighter-rouge">at least 14</code> of white and bl
 
 <p>First we’ll need to read in all the possible words we’re looking for. And using the new Java streams this is very easy. Just download one of the many online word-lists and do the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
 
         <span class="c1">// Store the words we find here:</span>
-        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">foundWords</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
 
         <span class="c1">// Read in the lexicon, the list of possible words:</span>
-        <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">lexicon</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="nc">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">((</span><span class="s">"Lexicon.txt"</span><span class="o">)))</span> 
                 <span class="o">.</span><span class="na">stream</span><span class="o">()</span>                        <span class="c1">// Open the file as a stream</span>
                 <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span> <span class="c1">// Convert all the lines (one word per line) to uppercase</span>
-                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>    <span class="c1">// Store this in a list.</span></code></pre></figure>
 
 <p>It was never easier in Java to do File IO and manipulate collections.
 Next I embedded the entire puzzle and turned it into an array of Strings.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// The puzzle: (yeah, hardcoded, sue me.)</span>
-        <span class="n">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">lines</span> <span class="o">=</span> <span class="o">(</span><span class="s">"TZKRAMONHSMARIONRDBU\n"</span> <span class="o">+</span>
                           <span class="s">"ARNOSTIASSTUNODJEOFN\n"</span> <span class="o">+</span>
                           <span class="s">"FMAMLAPCNNTPIKETYKXA\n"</span> <span class="o">+</span>
                           <span class="s">"UDHBISMUHBALTIGLCCSK\n"</span> <span class="o">+</span>
@@ -665,7 +1018,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
 <p>Now we start building the possible word, using two new pointers (tx and ty):</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">                    <span class="kt">int</span> <span class="n">ty</span> <span class="o">=</span> <span class="n">y</span><span class="o">,</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>                      <span class="c1">// Create two new pointers</span>
-                    <span class="n">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
+                    <span class="nc">String</span> <span class="n">word</span> <span class="o">=</span> <span class="s">""</span> <span class="o">+</span> <span class="n">lines</span><span class="o">[</span><span class="n">ty</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">tx</span><span class="o">);</span> <span class="c1">// Start with the initial character</span></code></pre></figure>
 
 <p>While we are within the bounds of the puzzle we must travel in the current ‘direction’. This is done by adding the direction offset (from <a href="/blog/2019/01/longest-path/">previous post</a>) to the <strong>tx</strong> and <strong>ty</strong> pointers.</p>
 
@@ -694,7 +1047,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
             <span class="o">}</span>
         <span class="o">}</span>
         <span class="c1">// Print the words:</span>
-        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+        <span class="n">foundWords</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
       <span class="o">}</span></code></pre></figure>
 
 <p>This prints the words, sorted, just as we want. <strong>Q.E.D.</strong>.</p>
@@ -809,7 +1162,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
     <span class="k">if</span><span class="o">(</span><span class="n">n_row</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">n_row</span> <span class="o">&lt;</span> <span class="n">maze</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;&amp;</span> <span class="n">n_col</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">n_col</span> <span class="o">&lt;</span> <span class="n">maze</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
         
         <span class="c1">// A valid neighbor:</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Neighbor: "</span> <span class="o">+</span> <span class="n">n_row</span> <span class="o">+</span> <span class="s">","</span> <span class="o">+</span> <span class="n">n_col</span> <span class="o">+</span> <span class="s">": "</span> <span class="o">+</span> <span class="n">maze</span><span class="o">[</span><span class="n">n_row</span><span class="o">][</span><span class="n">n_col</span><span class="o">]);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Neighbor: "</span> <span class="o">+</span> <span class="n">n_row</span> <span class="o">+</span> <span class="s">","</span> <span class="o">+</span> <span class="n">n_col</span> <span class="o">+</span> <span class="s">": "</span> <span class="o">+</span> <span class="n">maze</span><span class="o">[</span><span class="n">n_row</span><span class="o">][</span><span class="n">n_col</span><span class="o">]);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1019,7 +1372,7 @@ Next I embedded the entire puzzle and turned it into an array of Strings.</p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">spark</span><span class="o">.</span><span class="na">Spark</span><span class="o">.*;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">get</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">,</span> <span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">res</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="s">"Hello World"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1176,7 +1529,7 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
       <span class="o">}</span>
     <span class="o">]</span>
   <span class="o">},</span>
-  <span class="o">(</span><span class="n">and</span> <span class="n">some</span> <span class="n">more</span><span class="o">,</span> <span class="n">see</span> <span class="n">GitHub</span> <span class="k">for</span> <span class="n">details</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">and</span> <span class="n">some</span> <span class="n">more</span><span class="o">,</span> <span class="n">see</span> <span class="nc">GitHub</span> <span class="k">for</span> <span class="n">details</span><span class="o">)</span>
   <span class="o">...</span></code></pre></figure>
 
 <p>Also xerces needed a resource bundle to load:</p>
@@ -1187,16 +1540,16 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 <p>Now again a problem with Hibernate and resources. I got the following <code class="highlighter-rouge">StringIndexOutOfBoundsException</code> running the application:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Caused</span> <span class="nl">by:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">:</span> <span class="n">String</span> <span class="n">index</span> <span class="n">out</span> <span class="n">of</span> <span class="nl">range:</span> <span class="o">-</span><span class="mi">1</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Throwable</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">Throwable</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">265</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Exception</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">Exception</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">66</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">RuntimeException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">62</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">IndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">IndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">56</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="n">StringIndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">69</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1967</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">archive</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">ArchiveHelper</span><span class="o">.</span><span class="na">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">ArchiveHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">45</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="n">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">256</span><span class="o">)</span>
-  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="n">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">240</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Caused</span> <span class="nl">by:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">:</span> <span class="nc">String</span> <span class="n">index</span> <span class="n">out</span> <span class="n">of</span> <span class="nl">range:</span> <span class="o">-</span><span class="mi">1</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Throwable</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="nc">Throwable</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">265</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Exception</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="nc">Exception</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">66</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="nc">RuntimeException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">62</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">IndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="nc">IndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">56</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringIndexOutOfBoundsException</span><span class="o">.&lt;</span><span class="n">init</span><span class="o">&gt;(</span><span class="nc">StringIndexOutOfBoundsException</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">69</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1967</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">archive</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">ArchiveHelper</span><span class="o">.</span><span class="na">getJarURLFromURLEntry</span><span class="o">(</span><span class="nc">ArchiveHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">45</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="nc">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">256</span><span class="o">)</span>
+  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">jpa</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">PersistenceXmlParser</span><span class="o">.</span><span class="na">parsePersistenceXml</span><span class="o">(</span><span class="nc">PersistenceXmlParser</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">240</span><span class="o">)</span></code></pre></figure>
 
 <p>It turns out due to the way GraalVM labels its resources we get to a point where Hibernate is confused. It calls the following code with the wrong parameters:</p>
 
@@ -1207,7 +1560,7 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
   <li>entry: “/META-INF/persistence.xml”</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="no">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="no">URL</span> <span class="n">url</span><span class="o">,</span> <span class="nc">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IllegalArgumentException</span> <span class="o">{</span>
    <span class="o">...</span>
    <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span> <span class="mi">0</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">entry</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
    <span class="o">...</span></code></pre></figure>
@@ -1218,14 +1571,14 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 
 <p>I used <code class="highlighter-rouge">Math.max(0, file.length() - entry.length())</code> to fix getting a ‘-1’ in the substring:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="no">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="no">URL</span> <span class="n">url</span><span class="o">,</span> <span class="nc">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IllegalArgumentException</span> <span class="o">{</span>
    <span class="o">...</span>
-   <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span> <span class="mi">0</span><span class="o">,</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">entry</span><span class="o">.</span><span class="na">length</span><span class="o">()));</span>
+   <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span> <span class="mi">0</span><span class="o">,</span> <span class="nc">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">entry</span><span class="o">.</span><span class="na">length</span><span class="o">()));</span>
    <span class="o">...</span></code></pre></figure>
 
 <p>And of course, a new problem pops up. Again with the resources, GraalVM seems to have put <code class="highlighter-rouge">resource</code> as a protocol of all the loaded resources. Opening the resource using an <code class="highlighter-rouge">java.lang.URL</code> caused more problems in <code class="highlighter-rouge">ArchiveHelper</code> because GraalVM doesn’t recognise ‘resource’ as a valid protocol (huh?). This meant I needed to make another small patch in the shadowed <code class="highlighter-rouge">ArchiveHelper</code>:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalArgumentException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="no">URL</span> <span class="nf">getJarURLFromURLEntry</span><span class="o">(</span><span class="no">URL</span> <span class="n">url</span><span class="o">,</span> <span class="nc">String</span> <span class="n">entry</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IllegalArgumentException</span> <span class="o">{</span>
    <span class="o">...</span>
    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span> <span class="s">"resource"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">protocol</span><span class="o">))</span> <span class="o">{</span>
       <span class="c1">// FIX: Added for GraalVM, just return the URL</span>
@@ -1245,7 +1598,7 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PortableMBeanFactory</span> <span class="o">{</span>
 
     <span class="cm">/** Just return null, GraalVM doesn't support MBeans/JMX */</span>
-    <span class="kd">public</span> <span class="n">MBeanServer</span> <span class="nf">getMBeanServer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">MBeanServer</span> <span class="nf">getMBeanServer</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> <span class="c1">// Do nothing.</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1255,7 +1608,7 @@ Call path from entry point to oracle.jdbc.driver.OracleTimeoutThreadPerVM.stopWa
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">...</span>
 <span class="k">try</span> <span class="o">{</span>
    <span class="k">new</span> <span class="nf">OraclePKIProvider</span><span class="o">();</span>
-<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">var3</span><span class="o">)</span> <span class="o">{</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">var3</span><span class="o">)</span> <span class="o">{</span>
    <span class="o">;</span>
 <span class="o">}</span>
 <span class="o">...</span></code></pre></figure>
@@ -1484,8 +1837,8 @@ GraalVM 1.0.0-rc6 (build 25.71-b01-internal-jvmci-0.48, mixed mode)</code></pre>
 <p>Next up, let’s create a “Hello World” application in Java:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="o">{</span>
-   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World"</span><span class="o">);</span>
+   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World"</span><span class="o">);</span>
    <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1691,7 +2044,7 @@ royvanrijn/graal-helloworld                                 latest              
 
 <p>Initially I encountered some issues, some of the tests didn’t work against Java 8 and the tests wouldn’t even start against Java 9+. But eventually I got it working by excluding a couple of benchmarks with the following parameters:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="nc">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
 
 <h1 id="testing">Testing</h1>
 
@@ -1708,19 +2061,19 @@ royvanrijn/graal-helloworld                                 latest              
   <li>Start Docker:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">v</span> <span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="nl">SPECjvm2008:</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span> <span class="n">adoptopenjdk</span><span class="o">/</span><span class="n">openjdk8</span><span class="o">-</span><span class="n">openj9</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">v</span> <span class="o">/</span><span class="nc">Projects</span><span class="o">/</span><span class="nl">SPECjvm2008:</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="nc">SPECjvm2008</span> <span class="n">adoptopenjdk</span><span class="o">/</span><span class="n">openjdk8</span><span class="o">-</span><span class="n">openj9</span> <span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span></code></pre></figure>
 
 <ul>
   <li>Go to the correct directory:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">cd</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">SPECjvm2008</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">cd</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="nc">SPECjvm2008</span></code></pre></figure>
 
 <ul>
   <li>Run the (working) tests:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">Xmx600m</span> <span class="o">-</span><span class="n">jar</span> <span class="n">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="nc">Xmx600m</span> <span class="o">-</span><span class="n">jar</span> <span class="nc">SPECjvm2008</span><span class="o">.</span><span class="na">jar</span> <span class="n">startup</span><span class="o">.</span><span class="na">helloworld</span> <span class="n">startup</span><span class="o">.</span><span class="na">compiler</span><span class="o">.</span><span class="na">compiler</span>  <span class="n">startup</span><span class="o">.</span><span class="na">compress</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">startup</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">startup</span><span class="o">.</span><span class="na">mpegaudio</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">fft</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">lu</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sor</span> <span class="n">startup</span><span class="o">.</span><span class="na">scimark</span><span class="o">.</span><span class="na">sparse</span> <span class="n">startup</span><span class="o">.</span><span class="na">serial</span> <span class="n">startup</span><span class="o">.</span><span class="na">sunflow</span> <span class="n">startup</span><span class="o">.</span><span class="na">xml</span><span class="o">.</span><span class="na">validation</span> <span class="n">compiler</span><span class="o">.</span><span class="na">compiler</span> <span class="n">compress</span> <span class="n">crypto</span><span class="o">.</span><span class="na">aes</span> <span class="n">crypto</span><span class="o">.</span><span class="na">rsa</span> <span class="n">crypto</span><span class="o">.</span><span class="na">signverify</span> <span class="n">derby</span> <span class="n">mpegaudio</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">large</span> <span class="n">scimark</span><span class="o">.</span><span class="na">fft</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">lu</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sor</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">sparse</span><span class="o">.</span><span class="na">small</span> <span class="n">scimark</span><span class="o">.</span><span class="na">monte_carlo</span> <span class="n">serial</span> <span class="n">sunflow</span> <span class="n">xml</span><span class="o">.</span><span class="na">validation</span></code></pre></figure>
 
 <h1 id="results">Results</h1>
 
@@ -1823,21 +2176,21 @@ Never decided anything based on some online benchmark.</p>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoadTestController</span> <span class="o">{</span>
 
     <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/loadtest"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
 
-        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
 
-        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+        <span class="nc">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Random</span><span class="o">();</span>
 
         <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
             <span class="kt">long</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">long</span><span class="o">[</span><span class="mi">1000000</span><span class="o">];</span>
             <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">l</span><span class="o">++)</span> <span class="o">{</span>
                 <span class="n">data</span><span class="o">[</span><span class="n">l</span><span class="o">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">();</span>
             <span class="o">}</span>
-            <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
         <span class="o">}</span>
 
-        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -2022,13 +2375,13 @@ If the rumoured memory improvements are true, might there be a performance hit? 
 <span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemEat</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">List</span> <span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span> <span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
         <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
             <span class="kt">byte</span> <span class="n">b</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1048576</span><span class="o">];</span>
             <span class="n">l</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-            <span class="n">Runtime</span> <span class="n">rt</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">();</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"free memory: "</span> <span class="o">+</span> <span class="n">rt</span><span class="o">.</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">);</span>
+            <span class="nc">Runtime</span> <span class="n">rt</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"free memory: "</span> <span class="o">+</span> <span class="n">rt</span><span class="o">.</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -2497,272 +2850,6 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2017/01/vikipedia-a-java-youtube-bot/" title="Vikipedia: A Java YouTube bot">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Vikipedia: A Java YouTube bot" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2017-01-30T13:28:12+01:00" class="date" />
-          <span itemprop="datePublished" content="2017-01-30T13:28:12+01:00" class="date">
-            Jan 30, 2017 13:28:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/01/vikipedia-a-java-youtube-bot/">Vikipedia: A Java YouTube bot</a></h1>
-
-        <span itemprop="articleBody">
-          <p>YouTube, the future of television. I’ve got a lot of subscriptions to YouTube channels that deliver quality content, and those shows are ‘cast’ (using my Chromecast) to my TV. Another thing I often do is look up information, for example I watch talks from programming conferences like <a href="https://www.youtube.com/channel/UCCBVCTuk6uJrN3iFV_3vurg/videos">Devoxx</a> using YouTube.</p>
-
-<p>This gave me an idea, what if I can take some free information (like Wikipedia, all creative commons) and use that to create content for YouTube? Maybe I’ll even get some views :-)</p>
-
-<p>So this is what I’ve come up with, the following video is generated completely automatically:</p>
-
-<iframe id="randomVikipediaVideo" width="560" height="315" src="https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw" frameborder="0" allowfullscreen=""></iframe>
-
-<script>
-
-function nextVideo(autoplay) {
-
-    /* Don't always insert the same video in the article, spread the views across the videos randomly: */
-    var iframe = document.getElementById('randomVikipediaVideo');
-    var allVideos = ["dw_HP2AeYIU","VXNElLG9t_Q","2shv5Fv7ZNg","mnYrSUiLIgg","N45qnVlEAHw","1qBaUYcXJWM","ayZCJizN604","Z6N4bJDs9m4","AX4Ex5nYQqM","w9QF30yOGag","gruzWYNhE04","5rKxcZKIOP0","T-QvHcEMHEc","I4BR-pA9APc","QsbM9R0qAWE","4kPdhwVCAck","vV3JjOLOc0o","YU1UFQr9ezA","-6XJK7-L4Qk","1Uxn51TtA24","UknPDIoHVYc","WmTwh7AsaJQ","8dNTnrA_5gY","EH1MytpdcpM","bavzjaZLCJc","vro8u3N4HBc","k-LDzwP8jbs","dGPQUHKlabc","VlC1q_Edqj0","-zOb7D33SCE","OtyjkvlMJQY","ta3S29-evYY","KNTMCnZTp4k","UaH7hZXIiso","zIWxkcpc4cI","c5Ql0T-DHWM","whC5odvJmzA","lRpBMLmxQ3A","OEkTxgxFxm8","wzHdr1cG9qY","hRAU_4VPtVE","y8AO2YmnRgU","EzkyZefY5QI","RHmfvXO4dAc","krXrsq5MXmE","7KSlXBn9BFU","t0xr4dreV8g","wsX4dZj21pU","46OeYWZNXC4","u90MHVbJWLQ","j6DrUXCi55I","e5RxuXO1MGw","yQ12Q03RQ8M","1NU6c4CoOa4","l0EcOf-ivSI","Z1HSEsLo2M0","qDbl0gxu7Dc","EVztRfoZHQ0","yq-s6RegMzY","Mvx7WMFZ-ec","rynm5ii1gKI","hnDQzbAhQW0","RJBUHNiW_LA","z7PDxRpEuCM","GWYoMnviUTo","KJnKrh4HqO8","Qj18ci7ahXU","LVPTjW0HWCE","kKYJGL5zOdA","Gy3uG2sB0EI","EobwR1VvP6U","1e3oKKtT9Uc","9HT1Jq-pJsU","4mmTbQhYSe8","aCBmsv-Z0pY","XkytdbikWwQ","Kvh0Ks-xp_Q","Yo7Rro5aIJo","xlUjTuo11v4","3XpyQCxAFhE","upGOccVyjPk","U1XToo-yA0o","iTXIDqoozxY","Mpnaojg9CGg","G1Akiwn2b0k","YgEuC4B54Qw","owCh8KOVa1k","VE23gPaLWoI","ZKFksbkTKzI","xB1pPhgUSFo","2y9Nen8GedM","DmTxZSL0ezQ","S6L9d9oMP8k","NeaNEY_-HsQ","3lOEjy3G8zs","fabUIVQJS-U","AjlP3xVboPI","DOLK4E9CN44","xevdO-i_5X8","iBsClalmitY","tVAudOBNpSY","U5uXj1ITxvM","8ly91g6SpQY","Lx-QCSrwPVg","3Wd-AX8znpY","HVSxw2asHmw","BgtgmoAljkg","LEa03im5k5A","GofEE8LOGs4","86Swgtxs6Po","i3d1LspMBIU","PirEmJOo6CE","Lv6VILwZz1M","7YmUhQwq2YU","exePCusCm9k","H3PD7frrI_8","ghTqYWxoVrA","4rPNThNEQO4","P3o36TonBXE","5VsQd2ovTHY","HmwWy97ef5A","-0QlVaGlk1E","zO3Rl-rh6Bs","o9pkhKm_kAI","y5_fnfMm1_o","n9MQM919MDI","u73-_ofPYwA","WXWcfUwRWK8","PpyKc8dc4iQ","naEG81DttQk","4bMcrDV1vJs","BWNUqERTWyo","UCgOm1WvWB8","PjRJf-3i7wA","gCokmHyYIsk","o7Fkorc8xw4","0N81aj-0v8I","0Sts7wqwuhI","KmxQ9YvYP8U","1NuL1LFJqN4","EI9U85KR00k","sKTZ39Z55kM","RqGQRHwqD1Q","ToJ1hL_UxR8","BzVFH7dudGI","4YV-kJsnTY4","Hh1Ktyion00","cS0DksC2ThE","vVhUdj_6AJI","WBGEAkHIdEY","OhNypsK8dgs","KWgxgSwNQeg","wBq0yFH1NKA","by_kgenndME","Q3PfF8KQnnQ","qyubdFmpOzY","Fd4OuSQKSYc","M91jqRCuwSE","SZeFzFvvnww","1x9mR-8Jlk8","v60DhhXigj8","L2EtzWbmsSM","8OEh0WRIZpU","A6Fq0BDKUkI","B0fISmMwe0o","UJvXxTLMNCc","Oyit-UF0hU0","sJnT-ZBx-aw","w9DhHHmxkxk","09s8AsA_1_8","WpULC6QbFs8","oooZW-0Ib00","D6doByXH2qg","YNskJwjp2qs","GCwyct06ewQ","1wwGHpuoTRY","xCjBcNHVMN8","XXjCXeov7MU","j5pp75JMHLg","tN0Xhw1kXek","dnKc7ujewTg","508DpfT1xjM","7eeef5LwqBc","L3BFStFNPUc","b7Ap5MoqYOI","xBdrHXqTU9w","N7zUVxlp4kU","tqfJ3x337VE","jG4XesjoSfw","z79-HH7SgmA","Uu3qbMp9DVs","au8KcahWxG4","k2mDwz01YZk","f-vvDNc5mT0","Idg7R-9OI74","mhxE8xaaFi0","XryqTofd1tE","4yItBLDG6pc","zuKkQpziypw","9ewf9WEYy2M","uZK0M_K34MU","UIwzSvZYvBY","du0aqYDnd0Q","jy9azLipJbA","J-6yhQRz6_o","N3N2mQ7laF4","LtxnksrTXG0","-jqVIXfCkBI","P3MZsfQ4its","YVU1Ko9xKkU","s1R40DPur88","wfgny3djwGk","YLZ2x1-r6AQ","fUQX7gPNr7I","Cru4l_KrDv0","D1iuOpxeytw","FGhk31NdBoY","YPSW9YpFlu0","2ZST_JEpfRU","ZwH0E4EypOg","HA19BfHDrFk","blpoR8ooqI0","uI0KwvCqFVw","PoAI247TCWo","tF1gASEhQEQ","aZKK6d5IDbI","_jEgK66-ixg","2cb4Vt8EBEY","eXhlj12yOkM","-X9sVpmzkko","JTpPXmyER94","KDSkPksssrI","LV52_vn82tM","cvAu2-xaJ7k","KMq8JJYSSVM","92PtXvteSeI","obf4rmqWNfY","-0PT7-_5y58","5tzT5Aa2w58","-s9m266PR3A","xTyZVhbQ2l8","xNZgiBLUqWA","60zr04WK_7k","2wQegUuMv-A","SKeHyxQMBlg","7_n560myhjA","88TdVV7swU4","wpqmuNaET48","FVym7WQTBCM","oOm1eMCiNbQ","cgS1FTromKY","gLITbNSHRQ8","P_rMQK5w8lY","boJKjmTK_lg","QkiOMJ0nO-0","Wu8YElT21fQ","jcRegawJ4DY","Q_OW_A5uyYo","QQNVmwHBC1Y","MgasuaHMZow","c9M2OSRrLbY","rs-blPkEmSc","8IXc5BmlGBc","yrjrb_wK0fg","JLxWvfUO2lM","t0QIsLg7kxM","DZFKdRVzymw","_S5Njfgm0GA","bcd5L_UHATo","fvwi4hKxTFU","GnSUGxgUT54","d0y3Q-00ZNA","XBDsnpsmTYs","RrL4OcobwYI","5zf76gHJGto","_NoLH86yO7k","ub2uWc_mndk","RUqSACHf-Qo","XaUHVOpXCuA","Lo7qvHIWICk","MHw4wQ44ZjY","__yMErSqfK0","4atX5oRvoTU","R2Qd9Vf40g4","2m2UFpaB8NY","GyE0Z_1A6_M","LWnbLpF3AlU","mYQTMJnO6hs","dRl8xPKoXlQ","UabkSkq5wUs","lZ9e_43F0Vw","SK4NaWuUUhM","H2CMnpmSH1Y","WeKMvlBuDgc","9Ta7PW8cDL4","CXRRwU5k3U8","dwAlC6zcvl4","MoKrxAWu5Wk","S7uoR1gVw_A","6_hpi9qSz_M","VmwiIZ7OV6Y","NOS4reuwl-o","CSrD1srzfWE","KRH33rHzeh8","F6MBzJF7mTo","IRSb4qBbaGQ","L7Z3O1vw6bo","h6bTtr9qMf4","MUlyzmxEZ4I","OM7tycgoZyE","kEgajhCjKVU","Py0_yYTs3i4","Nwrlzz5L9Zc","RNmLNxM1cQg","jgih4zIJJQ0","Sclpx3BN4TQ","rTIvHfYbw_8","yJQXTCXlaDY","tHTXjVR-KlQ","ASue7eEeaYU","KwNNFTAYgYU","FgYHaJlEIws","b3EDCuFDlX8","9U3CAcmJB5M","_Gfhivl4oxY","-7DDBHcU8sU","RzGxbeOeF_E","IAnpo_fWCFs","lJGnVjwhxn4","4UWXEhA2_lw","nQi44X0yky8","dl8JAi-oy2E","qhdxInl7FnM","mI1FPIzucvI","uCsPGI_fKLY","b-HqkyuD1bw","Pf34zP-r0Vw","203nO3CQx8E","VTBS73N9HAA","mYiS70eXi2Y","nL7DkuSzTME","8gYPuHs3a3w","-6clJ54425g","ENEt6YPP-bA","3dcub25B8vo","c0C2q4uC2lU","vP1XuZFnCuY","d8eQGh2hmZs","DnwVCpFUa8c","o13RQmWafQQ","Fzeq5q7fZec","Rc3BiJyptyQ","0MTZ_4TpeCs","NWAlGoRayI8","_CxnGtd5wRc","GsJ52VMmOTA","4xoPkMY9jTY","FbVZX4QpLt0","vR8nfv-nuRw","hPDjW_WDLjE","Xt-KS-7yxIY","Af2EbXntrNo","YcWjPXF61bw","REFb1N0IOTU","Xq7RGuyXHac","0ZNk6o4eQW0","ndBFMQ4cfVg","1g3BJOTOjdg","Vw1noAhipyU","CzRRqzh2rc8","8AlSU3uYgwE","Fm4Hwq3yIv8","ox43bEl6Zd8","pZiOS2hX984","gYOE1g9t6WA","lqQ_R0A1Sjk","Fkzh2BXYX4c","F3M1Afx-foY","IVnxLf4VwnM","C2hzcRh8A94","UX5fDO8-CQ8","XwX-DcngYV8","YBsWk-mxIo0","vgcLJVrRlEg","wnAddG_K7DI","j5uKfryafHA","wIiIbwASTqc","EhtwtkSvWyA","769WvedTtbw","GyVMfFetXsI","nyIKQ5D123Q","STjTk8jwoQw","wMPyviYwxWU","0bD6qoS2sz4","v2F-dCCB-jY","qPVkEm7apu0","ZlCQKTIT3xA","_00UwBZX9p8","9OpPtRH61SM","Lgsw-yPW7d4","RIkobdBlBZ4","Iq_pCB-Dl8w","SzxXJQxdO9c","dkpEcuOHcSA","N71fY05Lsxg","szOc2LWxQHY","73bKxGIHYrs","qWL_QRAAH38","dDzkglVA6o8","GRo09AmIMak","fby9mwcYdnY","qY_FxwvWA_o","oIU6UL-coG0","6BrtQYvRy4g","UjWFmAEA79A","MpPWOGB3FuA","nrg-D07wy1M","WswpDPrmVM4","tl24wXyIONo","iHSN9Y-Vf_8","KLNPjVbwb7Q","-ihJHRKhIFQ","nE4YbY0sNH8","mZpSx73ozao","X01cwva4g8Q","t0rBJ2gxk9g","pvD8gIIUkyM","-Iv9fO-q5-I","-__thIfjTO4","zQf51_qR0zY","J0U_Gmw7MaI","mEUAdBA8w0Q","NfFZMjGmWVc","Lil5_uWyFbY","ejtUgTgppwU","QGIUnYo4UpQ","ibTsY0YlW6g","lwbcUgwM5l8","nbnh_kdDBfw","ucElDXT1Ygs","XtG7KQuTcio","tYIo5ApR9Eg","ZuTtJotj-LI","Ws_qpfu4CD0","bMLtbEUngkg","D1WpvfHFt0Y","m9RqegSPQsg","mgJ5hiy0WKw","rtfJGm6Rml0","JEv9tyXOnnc","UYiHvh9E2pU","TyooQUmlcOA","dcVWjjfgguU",];
-
-    var videoId = allVideos[Math.floor(Math.random()*allVideos.length)];
-    iframe.src = 'https://www.youtube.com/embed/' + videoId + "?autoplay=" + autoplay;
-
-}
-
-nextVideo(0);
-
-</script>
-
-<form>
-
-<button onclick="nextVideo(1);return false">Click to play next random video</button>
-
-</form>
-
-<h1 id="step-1-wikipedia-api">Step 1: Wikipedia API</h1>
-
-<p>The first step in creating these videos was to get some actual freely available content. For this I chose to use Wikipedia. This can be accessed using JSON/REST, and to quickly hack this into place I decided to use a framework called ‘Unirest’. This makes the while prototype easy:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// API URI for the English Wikipedia</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ENGLISH_WIKIPEDIA</span> <span class="o">=</span> <span class="s">"https://en.wikipedia.org/w/api.php"</span><span class="o">;</span>
-
-<span class="c1">// Using a 'search query', name of the page, retrieve the content:</span>
-<span class="kd">private</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getPageContent</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">query</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnirestException</span> <span class="o">{</span>
-    <span class="c1">//Example URI created for query 'Stack Overflow': https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true</span>
-    <span class="n">HttpResponse</span><span class="o">&lt;</span><span class="n">JsonNode</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="n">Unirest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ENGLISH_WIKIPEDIA</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"format"</span><span class="o">,</span> <span class="s">"json"</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"action"</span><span class="o">,</span> <span class="s">"query"</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"prop"</span><span class="o">,</span> <span class="s">"extracts"</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"titles"</span><span class="o">,</span> <span class="n">query</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">queryString</span><span class="o">(</span><span class="s">"redirects"</span><span class="o">,</span> <span class="s">"true"</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">asJson</span><span class="o">();</span>
-
-    <span class="n">JSONObject</span> <span class="n">pagesObject</span> <span class="o">=</span> <span class="n">response</span>
-            <span class="o">.</span><span class="na">getBody</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">getObject</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"query"</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">"pages"</span><span class="o">);</span>
-    <span class="k">if</span><span class="o">(</span><span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">pageKey</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">keys</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
-        <span class="n">String</span> <span class="n">htmlContent</span> <span class="o">=</span> <span class="n">pagesObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">pageKey</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">"extract"</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The resulting JSON (see this <a href="https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=extracts&amp;titles=Stack%20Overflow&amp;redirects=true">example</a>) contains the Wikipedia page in simple processed HTML. From this HTML I used a library called ‘Jsoup’ to extract the plain text. The first alinea of text contains the introduction of the topic, this is what I’ve decided to use as content for the video. Initially I had <em>all</em> the content of the page in the videos, but they quickly turned out to be 30+ minutes long and very boring.</p>
-
-<p>This is the code I used to go from HTML to the first alinea of text:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
- * Clean the HTML, get inner text of first alinea and break into sentences.
- * @param htmlContent
- * @return
- */</span>
-<span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">cleanAndBreakIntoSentences</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">htmlContent</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Document</span> <span class="n">document</span> <span class="o">=</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">htmlContent</span><span class="o">);</span>
-
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">fullText</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-    <span class="n">Elements</span> <span class="n">elements</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="na">body</span><span class="o">().</span><span class="na">children</span><span class="o">();</span>
-
-    <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Element</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
-    <span class="k">while</span><span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">Element</span> <span class="n">elem</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-
-        <span class="c1">// All the text is contained in paragraph elements:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"p"</span><span class="o">))</span> <span class="o">{</span>
-
-            <span class="n">String</span> <span class="n">source</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="na">text</span><span class="o">();</span>
-
-            <span class="c1">// Break the text into sentences using the smart JDK 'BreakIterator':</span>
-            <span class="n">BreakIterator</span> <span class="n">breakIterator</span> <span class="o">=</span> <span class="n">BreakIterator</span><span class="o">.</span><span class="na">getSentenceInstance</span><span class="o">(</span><span class="n">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
-            <span class="n">breakIterator</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
-            <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">first</span><span class="o">();</span>
-            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span> <span class="n">end</span> <span class="o">!=</span> <span class="n">BreakIterator</span><span class="o">.</span><span class="na">DONE</span><span class="o">;</span> <span class="n">start</span> <span class="o">=</span> <span class="n">end</span><span class="o">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">breakIterator</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
-                <span class="n">fullText</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">start</span><span class="o">,</span><span class="n">end</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="c1">// If we reach a header, stop processing, we only need the first section/alinea:</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">elem</span><span class="o">.</span><span class="na">is</span><span class="o">(</span><span class="s">"h2"</span><span class="o">))</span> <span class="o">{</span>
-            <span class="c1">// We break on the first (sub-) title:</span>
-            <span class="k">break</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">fullText</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="step-2-stunning-visuals-with-java-2d">Step 2: Stunning visuals with Java 2D</h1>
-
-<p>We have some text, now how do we turn this into a video? We need visuals! I decided to cut the content into seperate lines, and for each line I have a single ‘slide’. This is an (buffered) image created using Java’s 2D API and saved to file.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
- * For each sentence, create a buffered image and paint some text on this.
- * We need the text to be 'wrapped', for this I repurpose a JTextArea, on a JPanel.
- * 
- * Also increase the font size so the text fits on the screen.
- */</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">paintText</span><span class="o">(</span><span class="n">Graphics2D</span> <span class="n">g2</span><span class="o">,</span> <span class="n">String</span> <span class="n">text</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JPanel</span><span class="o">();</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span> <span class="mi">1080</span><span class="o">));</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-
-    <span class="n">JTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JTextArea</span><span class="o">();</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="k">new</span> <span class="n">Dimension</span><span class="o">(</span><span class="mi">1920</span><span class="o">,</span><span class="mi">1080</span><span class="o">));</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="n">BorderFactory</span><span class="o">.</span><span class="na">createEmptyBorder</span><span class="o">(</span><span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">,</span> <span class="n">BORDER_SIZE</span><span class="o">));</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setWrapStyleWord</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setLineWrap</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">text</span><span class="o">);</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-
-    <span class="kt">int</span> <span class="n">fontSize</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
-    <span class="c1">// Increase the font size as long as it fits on screen (and don't go bigger than 100, looks ugly):</span>
-    <span class="k">while</span><span class="o">(</span><span class="n">area</span><span class="o">.</span><span class="na">getPreferredScrollableViewportSize</span><span class="o">().</span><span class="na">getHeight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">1080</span> <span class="o">&amp;&amp;</span> <span class="n">fontSize</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">fontSize</span> <span class="o">+=</span> <span class="mi">10</span><span class="o">;</span>
-        <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span><span class="o">));</span>
-    <span class="o">}</span>
-    <span class="n">area</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="n">Font</span><span class="o">(</span><span class="s">"Futura"</span><span class="o">,</span> <span class="n">Font</span><span class="o">.</span><span class="na">PLAIN</span><span class="o">,</span> <span class="n">fontSize</span> <span class="o">-</span> <span class="mi">10</span><span class="o">));</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">area</span><span class="o">);</span>
-
-    <span class="c1">// Print this panel on the Graphics2D object (which is a BufferedImage)</span>
-    <span class="n">panel</span><span class="o">.</span><span class="na">printAll</span><span class="o">(</span><span class="n">g2</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<h1 id="step-3-text-to-speech">Step 3: Text-To-Speech</h1>
-
-<p>Instead of using a Java Text-To-Speech (TTS) library, which aren’t very clear or good, I decided to use the build-in OS/X command ‘say’.
-On the command line you can execute: <code class="highlighter-rouge">say Hello world!</code></p>
-
-<p>The ‘say’ command supports different voices and also has the ability to store the output in a file. Which is perfect for us!</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="c1">// Execute the say command with a given filename, voice and sentence to speak:</span>
-    <span class="kd">final</span> <span class="n">Process</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">"say -o "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">" -v "</span> <span class="o">+</span> <span class="n">voice</span> <span class="o">+</span> <span class="s">" -r 210 "</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
-
-    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-        <span class="n">BufferedReader</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
-        <span class="n">String</span> <span class="n">line1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">line1</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line1</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
-
-    <span class="c1">// Wait for the say-command to finish</span>
-    <span class="n">p</span><span class="o">.</span><span class="na">waitFor</span><span class="o">();</span></code></pre></figure>
-
-<h1 id="step-4-putting-it-all-together">Step 4: Putting it all together</h1>
-
-<p>What do we have now? A list of sentences from Wikipedia, for each sentence we have an image and we have an audio snippet created with TTS. Now it is time to put everything together and create a video.
-The easiest way to do this is to use ffmpeg, a powerful command line video tool. To make this easier I created a small method ‘executeCommandLine’ which does the same thing as the snippet with ‘Runtime.getRuntime().exec’ shown above.</p>
-
-<p>Combine the image (png file) and the TTS audio (mp4 file) into a series of MPG files:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="k">for</span><span class="o">(</span><span class="n">VikipediaSentence</span> <span class="n">sentence</span> <span class="o">:</span> <span class="n">sentences</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="na">getFilename</span><span class="o">();</span>
-        <span class="c1">//Combine audio and image into a short video:</span>
-        <span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -loop 1 -y -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".png -i "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mp4 -tune stillimage -shortest "</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">".mpg"</span><span class="o">);</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>We now have a series of small MPG files. They need to be combined into a single video. For this we need a text file which contains a list of all the MPG files. This is stored on disc and next we execute the following command:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//merge all:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -f concat -safe 0 -i output/snippet_list.txt -c copy output/output.mpg"</span><span class="o">);</span></code></pre></figure>
-
-<p>Next we convert the video from one large MPG to MP4 file (which is a nicer, compressed format):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//convert to mp4:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mpg -c:v libx264 -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest output/output.mp4"</span><span class="o">);</span></code></pre></figure>
-
-<p>And to add a little more ‘production value’ I’ve gone online and found some soothing (free, creative commons) background music. This music is looped into a large audio file of 50 minutes (enough for all videos). Again using ffmpeg the audio is mixed in:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// add background music:</span>
-<span class="n">executeCommandLine</span><span class="o">(</span><span class="s">"ffmpeg -i output/output.mp4 -i input/background_loop.mp3 -filter_complex amerge -c:v copy -c:a aac -strict experimental output/finaloutput.mp4"</span><span class="o">);</span></code></pre></figure>
-
-<p>There it is, we have a complete video with text audio, text visuals and background music! Only one thing left to do, uploading to YouTube!</p>
-
-<h1 id="step-5-uploading-everything-to-youtube">Step 5: Uploading everything to YouTube</h1>
-
-<p>To automate the process of uploading, I first needed a place to put the videos, so I created a new YouTube channel named: <a href="https://www.youtube.com/channel/UCSjEbLaNj1yKFgQpjLoqkUw">Vikipedia</a></p>
-
-<p>Next we can use the Google YouTube Data API. It turns out this is <em>very</em> easy and well documented. I don’t even need to share the code I wrote here because I used the example from Google’s website itself! Check out this <a href="https://developers.google.com/youtube/v3/code_samples/java#upload_a_video">amazing documentation</a>. Very detailed and does exactly what I needed it to do.</p>
-
-<p>The example code takes a video file and uploads it. The only things I changed were setting the correct description, I was ready to generate all the content!</p>
-
-<h1 id="not-implemented-yet">Not implemented (yet?)</h1>
-
-<p>Things I wanted to implement (but didn’t and probably never will):</p>
-
-<ul>
-  <li>Add a little color to the videos (black and white is boring)</li>
-  <li>Add <a href="https://trac.ffmpeg.org/wiki/Waveform">waveform</a> from ffmpeg (just to keep it visually interesing)</li>
-  <li>Download (did this) and use (didn’t do this) the images from the Wikipedia page and add those to the video</li>
-</ul>
-
-<h1 id="final-thoughts">Final thoughts</h1>
-
-<ul>
-  <li>Yes, it is pretty easy to hack together a bot to create YouTube videos.</li>
-  <li>No, the quality isn’t <em>that</em> good… yet?</li>
-  <li>Yes, it can be made in a single afternoon!</li>
-  <li>No, I’m not going to automate the spidering of Wikipedia and upload a million videos… (but I could easily do that!)</li>
-</ul>
-
-<p>Up to now all the videos created are based on a small list of ‘hot topics’ I found on Wikipedia and Twitter. I don’t want to automate the entire process and flood YouTube, the content just isn’t good enough for that. But it was a fun project for a lazy afternoon! I’ve learned a lot of new tricks, maybe you can benefit from that as well.</p>
-
-<p>The next thing I want to do with the 400+ YouTube videos I’ve generated is to see how (and if) people are going to watch them. Do they show up in the search results? Which topics are searched and watched? Maybe more on that in a future post!</p>
-
-<p>Do <strong>you</strong> have any good ideas on how to generate videos, let me know in the <strong>comments</strong>!
-I’ve created a bot that generates music some years, maybe I should improve that bot to upload its own YouTube music videos? ;-)</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

@@ -158,9 +158,9 @@
 
 <p>To counter this the ‘<em>default</em>’ keyword is introduced. Just like an abstract method in an abstract class you can now add some default behaviour to interfaces. This means for example that the List interface can be extended with default logic which can be overwritten (but doesn’t have to be). For example, see the following new ‘default’ method from the Iterable interface:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
-	<span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="nc">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
+	<span class="k">for</span> <span class="o">(</span><span class="no">T</span> <span class="n">t</span> <span class="o">:</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
     	<span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -172,7 +172,7 @@ Some more info, examples and other solutions can be found <a href="http://zerotu
 
 <p>There is a new problem that will become larger once there are more and more extentions as default methods. There is a possibility of colliding default methods. This will still break backwards compatibility. For example the List interface and the Set interface both have:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">default</span> <span class="nc">Spliterator</span><span class="o">&lt;</span><span class="no">E</span><span class="o">&gt;</span> <span class="nf">spliterator</span><span class="o">()</span></code></pre></figure>
 
 <p>Now (crazy example) I’ve made something called <strong>MyListSet</strong> which implements all methods from List and also all methods from Set. This compiles fine in every Java version but will suddenly fail against Java 1.8. Both List and Set have the same <em>spilerator()</em> on the same level and will thus collide with the following exception:</p>
 

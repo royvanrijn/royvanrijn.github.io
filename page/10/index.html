@@ -98,6 +98,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -112,6 +114,77 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/" title="(Annotated) Field injection vs Constructor injection">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="(Annotated) Field injection vs Constructor injection" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-09-21T11:35:41+02:00" class="date" />
+          <span itemprop="datePublished" content="2010-09-21T11:35:41+02:00" class="date">
+            Sep 21, 2010 11:35:41
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">(Annotated) Field injection vs Constructor injection</a></h1>
+
+        <span itemprop="articleBody">
+          <p>A couple of people replied to my last article about constructor vs setter injection that they prefer a third option, field injection. This is a slight variant of setter injection in which we magically let the setter dissapear.</p>
+
+<p>So, another blogpost here!</p>
+
+<p>Let me first show what field injection looks like:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Apple</span> <span class="o">{</span>  
+    <span class="nd">@Inject</span>  
+    <span class="kd">private</span> <span class="nc">Orange</span> <span class="n">orange</span><span class="o">;</span>  
+<span class="o">}</span></code></pre></figure>
+
+<p>This is an example from the PicoContainer website, but Spring and Google Guice can do this too. So, you ask, what is wrong with this?</p>
+
+<h1 id="testability">Testability</h1>
+
+<p>I want the classes I write to be testable. Every class needs a test, and every class needs to be tested without the help of any other dependency. For every dependency in my class I want to be able to use a stub/mock implementation.</p>
+
+<p>With constructor injection this is easy, just do new SomeClass(…). But this just can’t be done with field injection..! How do you test these classes? You have no way to construct the objects without bytecode-magic. You cannot create an instance of the above Apple class with its dependencies without using the DI-framework. And the last thing I want is the DI-framework in my unit tests. It makes the test slow, and as we all know, tests need to run as fast as possible to be effective.</p>
+
+<h1 id="final-is-still-tricky">Final is still tricky</h1>
+
+<p>When using field injection your fields can be made private, but you can’t make them final (!!). This is a common mistake, but look at the Google Guice wiki: <a href="http://code.google.com/p/google-guice/wiki/Injections">http://code.google.com/p/google-guice/wiki/Injections</a>.</p>
+
+<p>Note the <strong>warning</strong>: “Avoid using field injection with final fields, which has weak semantics.”</p>
+
+<h1 id="code-smell-is-wanted">Code smell is wanted</h1>
+
+<p>And the final thing I don’t like about field injection… it looks good. This is a bad thing! I tried to explain this in the previous blogpost, but failed I guess. When using constructor injection you’ll notice when it gets ugly, you’ll see that long ugly constructor… and you’ll refactor the class. When using field injection this warning is forgotten.</p>
+
+<p>Large constructor equals bad design. Don’t fix this by changing to setter or field injection, fix the underlying problem and improve your class granularity. The fact that is looks bad with more then 2 or 3 arguments is actually a big <strong>plus</strong>!</p>
+
+<h1 id="annotations">Annotations</h1>
+
+<p>Yes, annotations bind you to the framework, and they are evil. But so is XML. I have to agree on one thing, annotations (javax.inject) are a good thing. But still use constructor injection with these annotations please!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -143,14 +216,14 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
 	
-	<span class="kd">private</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
 	
 	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">()</span> <span class="o">{</span>
 		<span class="c1">//Empty constructor
 </span>
 	<span class="o">}</span>
 
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setSomeDependency</span><span class="o">(</span><span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setSomeDependency</span><span class="o">(</span><span class="nc">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -159,9 +232,9 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
 	
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">final</span> <span class="nc">SomeDependency</span> <span class="n">someDependency</span><span class="o">;</span>
 	
-	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">(</span><span class="kd">final</span> <span class="n">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nf">SomeClass</span><span class="o">(</span><span class="kd">final</span> <span class="nc">SomeDependency</span> <span class="n">someDependency</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">someDependency</span> <span class="o">=</span> <span class="n">someDependency</span><span class="o">;</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -658,10 +731,10 @@ Wouldn’t it be great if we can program something of our own that gives that sa
 
 <p>But it turned out it was very easy:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="nc">AudioFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormat</span><span class="o">();</span> <span class="c1">//Fill AudioFormat with the wanted settings
 </span>
-<span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="n">TargetDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
-<span class="kd">final</span> <span class="n">TargetDataLine</span> <span class="n">line</span> <span class="o">=</span> <span class="o">(</span><span class="n">TargetDataLine</span><span class="o">)</span> <span class="n">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+<span class="nc">DataLine</span><span class="o">.</span><span class="na">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DataLine</span><span class="o">.</span><span class="na">Info</span><span class="o">(</span><span class="nc">TargetDataLine</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">format</span><span class="o">);</span>
+<span class="kd">final</span> <span class="nc">TargetDataLine</span> <span class="n">line</span> <span class="o">=</span> <span class="o">(</span><span class="nc">TargetDataLine</span><span class="o">)</span> <span class="nc">AudioSystem</span><span class="o">.</span><span class="na">getLine</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
 <span class="n">line</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">format</span><span class="o">);</span>
 <span class="n">line</span><span class="o">.</span><span class="na">start</span><span class="o">();</span></code></pre></figure>
 
@@ -670,7 +743,7 @@ Wouldn’t it be great if we can program something of our own that gives that sa
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// In another thread I start:
 </span>
 
-<span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+<span class="nc">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">();</span>
 <span class="n">running</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
 
 <span class="k">try</span> <span class="o">{</span>
@@ -681,14 +754,14 @@ Wouldn’t it be great if we can program something of our own that gives that sa
         <span class="o">}</span>
     <span class="o">}</span>
     <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"I/O problems: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"I/O problems: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Using this method it is easy to open the microphone and record all the sounds! The AudioFormat I’m currently using is:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">AudioFormat</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">AudioFormat</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
     <span class="kt">float</span> <span class="n">sampleRate</span> <span class="o">=</span> <span class="mi">44100</span><span class="o">;</span>
     <span class="kt">int</span> <span class="n">sampleSizeInBits</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
     <span class="kt">int</span> <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//mono
@@ -747,24 +820,24 @@ There is just one problem, if you transform the data into the frequency domain y
 
 <span class="kd">final</span> <span class="kt">int</span> <span class="n">totalSize</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
 
-<span class="kt">int</span> <span class="n">amountPossible</span> <span class="o">=</span> <span class="n">totalSize</span><span class="o">/</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">amountPossible</span> <span class="o">=</span> <span class="n">totalSize</span><span class="o">/</span><span class="nc">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span>
 
 <span class="c1">//When turning into frequency domain we'll need complex numbers:
 </span>
-<span class="n">Complex</span><span class="o">[][]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">amountPossible</span><span class="o">][];</span>
+<span class="nc">Complex</span><span class="o">[][]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Complex</span><span class="o">[</span><span class="n">amountPossible</span><span class="o">][];</span>
 
 <span class="c1">//For all the chunks:
 </span>
 <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">times</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">times</span> <span class="o">&lt;</span> <span class="n">amountPossible</span><span class="o">;</span> <span class="n">times</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">Complex</span><span class="o">[]</span> <span class="n">complex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">[</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">];</span>
-    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="nc">Complex</span><span class="o">[]</span> <span class="n">complex</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Complex</span><span class="o">[</span><span class="nc">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">];</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="nc">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">;</span><span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
         <span class="c1">//Put the time domain data into a complex number with imaginary part as 0:
 </span>
-        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="n">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="n">complex</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Complex</span><span class="o">(</span><span class="n">audio</span><span class="o">[(</span><span class="n">times</span><span class="o">*</span><span class="nc">Harvester</span><span class="o">.</span><span class="na">CHUNK_SIZE</span><span class="o">)+</span><span class="n">i</span><span class="o">],</span> <span class="mi">0</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="c1">//Perform FFT analysis on the chunk:
 </span>
-    <span class="n">results</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="n">FFT</span><span class="o">.</span><span class="na">fft</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span>
+    <span class="n">results</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="no">FFT</span><span class="o">.</span><span class="na">fft</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="c1">//Done!</span></code></pre></figure>
@@ -781,19 +854,19 @@ To show the data I hacked this together:</p>
 </span>
         <span class="c1">// In this case I use Math.log to get a more managable number (used for color)
 </span>
-        <span class="kt">double</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()+</span><span class="mi">1</span><span class="o">);</span>
+        <span class="kt">double</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()+</span><span class="mi">1</span><span class="o">);</span>
 
         <span class="c1">// The more blue in the color the more intensity for a given frequency point:
 </span>
-        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="n">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
+        <span class="n">g2d</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="k">new</span> <span class="nc">Color</span><span class="o">(</span><span class="mi">0</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">10</span><span class="o">,(</span><span class="kt">int</span><span class="o">)</span><span class="n">magnitude</span><span class="o">*</span><span class="mi">20</span><span class="o">));</span>
         <span class="c1">// Fill:
 </span>
         <span class="n">g2d</span><span class="o">.</span><span class="na">fillRect</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="n">blockSizeX</span><span class="o">,</span> <span class="o">(</span><span class="n">size</span><span class="o">-</span><span class="n">line</span><span class="o">)*</span><span class="n">blockSizeY</span><span class="o">,</span><span class="n">blockSizeX</span><span class="o">,</span><span class="n">blockSizeY</span><span class="o">);</span>
 		
         <span class="c1">// I used a improviced logarithmic scale and normal scale:
 </span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">logModeEnabled</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">freq</span> <span class="o">+=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">));</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">logModeEnabled</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="nc">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">freq</span> <span class="o">+=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">*</span> <span class="nc">Math</span><span class="o">.</span><span class="na">log10</span><span class="o">(</span><span class="n">line</span><span class="o">));</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
             <span class="n">freq</span><span class="o">++;</span>
         <span class="o">}</span>
@@ -822,10 +895,10 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//For every line of data:
 </span>
 
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">LOWER_LIMIT</span><span class="o">;</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="n">UPPER_LIMIT</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">freq</span><span class="o">++)</span> <span class="o">{</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">freq</span> <span class="o">=</span> <span class="no">LOWER_LIMIT</span><span class="o">;</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="no">UPPER_LIMIT</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">freq</span><span class="o">++)</span> <span class="o">{</span>
     <span class="c1">//Get the magnitude:
 </span>
-    <span class="kt">double</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+    <span class="kt">double</span> <span class="n">mag</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">freq</span><span class="o">].</span><span class="na">abs</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
 
     <span class="c1">//Find out which range we are in:
 </span>
@@ -841,7 +914,7 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 
 <span class="c1">//Write the points to a file:
 </span>
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">AMOUNT_OF_POINTS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="no">AMOUNT_OF_POINTS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
     <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">recordPoints</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">"\t"</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="n">fw</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
@@ -850,13 +923,13 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 </span>
 
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">RANGE</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">40</span><span class="o">,</span><span class="mi">80</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span><span class="mi">180</span><span class="o">,</span> <span class="n">UPPER_LIMIT</span><span class="o">+</span><span class="mi">1</span><span class="o">};</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="no">RANGE</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">40</span><span class="o">,</span><span class="mi">80</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span><span class="mi">180</span><span class="o">,</span> <span class="no">UPPER_LIMIT</span><span class="o">+</span><span class="mi">1</span><span class="o">};</span>
 
 <span class="c1">//Find out in which range
 </span>
 <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">(</span><span class="kt">int</span> <span class="n">freq</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="k">while</span><span class="o">(</span><span class="n">RANGE</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">freq</span><span class="o">)</span> <span class="n">i</span><span class="o">++;</span>
+    <span class="k">while</span><span class="o">(</span><span class="no">RANGE</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">freq</span><span class="o">)</span> <span class="n">i</span><span class="o">++;</span>
         <span class="k">return</span> <span class="n">i</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -900,15 +973,15 @@ If you look at the song as spectral image it shows a nice spiral. Another song, 
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Using a little bit of error-correction, damping
 </span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">FUZ_FACTOR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">FUZ_FACTOR</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
 
-<span class="kd">private</span> <span class="kt">long</span> <span class="nf">hash</span><span class="o">(</span><span class="n">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\t"</span><span class="o">);</span>
-    <span class="kt">long</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
-    <span class="kt">long</span> <span class="n">p4</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">3</span><span class="o">]);</span>
-    <span class="k">return</span>  <span class="o">(</span><span class="n">p4</span><span class="o">-(</span><span class="n">p4</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p3</span><span class="o">-(</span><span class="n">p3</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p2</span><span class="o">-(</span><span class="n">p2</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="o">(</span><span class="n">p1</span><span class="o">-(</span><span class="n">p1</span><span class="o">%</span><span class="n">FUZ_FACTOR</span><span class="o">));</span>
+<span class="kd">private</span> <span class="kt">long</span> <span class="nf">hash</span><span class="o">(</span><span class="nc">String</span> <span class="n">line</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="n">p</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\t"</span><span class="o">);</span>
+    <span class="kt">long</span> <span class="n">p1</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p2</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p3</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
+    <span class="kt">long</span> <span class="n">p4</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">p</span><span class="o">[</span><span class="mi">3</span><span class="o">]);</span>
+    <span class="k">return</span>  <span class="o">(</span><span class="n">p4</span><span class="o">-(</span><span class="n">p4</span><span class="o">%</span><span class="no">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p3</span><span class="o">-(</span><span class="n">p3</span><span class="o">%</span><span class="no">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100000</span> <span class="o">+</span> <span class="o">(</span><span class="n">p2</span><span class="o">-(</span><span class="n">p2</span><span class="o">%</span><span class="no">FUZ_FACTOR</span><span class="o">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="o">(</span><span class="n">p1</span><span class="o">-(</span><span class="n">p1</span><span class="o">%</span><span class="no">FUZ_FACTOR</span><span class="o">));</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Now I create two data sets:</p>
@@ -1270,10 +1343,10 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 
 <p>Lets start with a piece of business logic, in a world where we don’t have null-values:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="nc">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="nc">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
@@ -1281,12 +1354,12 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 
 <p>This looks good and understandable! But this isn’t what I see in most projects. Usually I see code like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-	    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+	    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
 	    <span class="k">if</span><span class="o">(</span><span class="n">accounts</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-	    	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-	    	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="nc">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="nc">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="nc">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
 	    		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 	    			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
 	    		<span class="o">}</span>
@@ -1304,13 +1377,13 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 
 <p>The first strategy we can follow is based on <a href="/blog/2009/12/inversion_of_logic/">inversion of logic</a> which I’ve blogged about before. The idea is that we exit early, this will improve the readability of our method. Lets see that happens to our method is we follow this pattern:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
-	<span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-   	<span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-   	<span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+   	<span class="nc">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="nc">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+   	<span class="k">for</span><span class="o">(</span><span class="nc">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
    		<span class="k">if</span><span class="o">(</span><span class="n">account</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
    			<span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
    		<span class="o">}</span>
@@ -1327,29 +1400,29 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 <p>The good thing is that current IDE’s are implementing the @NotNull and @Nullable annotations. With these annotations you can tell other programmers, your IDE and static code analysis tools what your idea was when creating a method:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
-<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPerson</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="nc">Person</span> <span class="nf">getPerson</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">return</span> <span class="n">something</span><span class="o">.</span><span class="na">retrievePerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
 <span class="o">}</span>
     
 
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">getPerson</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+	<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
 	<span class="c1">//Causes warning: getPerson is Nullable, thus this is a possible NPE! 
 </span>
 <span class="o">}</span></code></pre></figure>
 
 <p>It also helps you to clearly state your assumed preconditions:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printPersonName</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
 	<span class="c1">//Very good, we know we won't get a NPE here! 
 </span>
 <span class="o">}</span>
     
     
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeThis</span><span class="o">()</span> <span class="o">{</span>
-	<span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nc">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="n">printPersonName</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
 	<span class="c1">//Causes warning: person might be null, thus can cause a NPE!
 </span>
@@ -1360,10 +1433,10 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 <p>It will also help you correct possible coding errors:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
-<span class="kd">public</span> <span class="n">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="nc">Person</span> <span class="nf">getPersonFromDatabase</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
 	<span class="c1">//Use JPQL
 </span>
-	<span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT p FROM Person p WHERE p.id = :value"</span><span class="o">);</span>
+	<span class="nc">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT p FROM Person p WHERE p.id = :value"</span><span class="o">);</span>
 	<span class="n">q</span><span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"value"</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
 	<span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="na">getSingleResult</span><span class="o">();</span>
 	<span class="c1">//The IDE will complain about this. 
@@ -1378,10 +1451,10 @@ All these decisions are made with arguments, pro’s and con’s, write those do
 If you do this to the Person object above, and all its fields, you will end up with the beautiful clean code of the first example. No checks, its just always filled by contract. The only thing you want to add is information about the parameters:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@NotNull</span>
-<span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="nc">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+    <span class="nc">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="nc">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
@@ -1395,36 +1468,36 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Person</span> <span class="o">{</span>
 
-	<span class="n">String</span> <span class="nf">getName</span><span class="o">();</span>
-	<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+	<span class="nc">String</span> <span class="nf">getName</span><span class="o">();</span>
+	<span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">);</span>
 
-	<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
+	<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">();</span>
 	
 	<span class="c1">//..etc..
 </span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NullPerson</span> <span class="kd">implements</span> <span class="nc">Person</span> <span class="o">{</span>
 	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
 
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>The huge advantage is that you can always safely call “person.getName()” and “person.getAccounts()” because even if you have a NullPerson the object still exists. This Null-Object is obviously usually a <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a>.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Set</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">BigDecimal</span> <span class="nf">getBalance</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="na">getAccounts</span><span class="o">();</span>
                 <span class="c1">//NullPerson returns empty list, no more NPE!
 </span>
-    <span class="n">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
-    <span class="k">for</span><span class="o">(</span><span class="n">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">BigDecimal</span> <span class="n">totalBalance</span> <span class="o">=</span> <span class="nc">BigDecimal</span><span class="o">.</span><span class="na">ZERO</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Account</span> <span class="nl">account:</span> <span class="n">accounts</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">totalBalance</span> <span class="o">=</span> <span class="n">totalBalance</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getBalance</span><span class="o">());</span>
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">totalBalance</span><span class="o">;</span>
@@ -1432,29 +1505,29 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <p>A more elaborate but general version of this pattern is the <a href="http://martinfowler.com/eaaCatalog/specialCase.html">special case pattern</a>, named by Martin Fowler. Instead of just having a Null-special case you could also develop:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnknownPerson</span> <span class="kd">implements</span> <span class="nc">Person</span> <span class="o">{</span>
 	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
 
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
 	<span class="o">}</span>
 
 <span class="o">}</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="n">Person</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InvalidatedPerson</span> <span class="kd">implements</span> <span class="nc">Person</span> <span class="o">{</span>
 	
-	<span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="s">""</span><span class="o">;</span>
 	<span class="o">}</span>
 	
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{}</span>
 
-	<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Account</span><span class="o">&gt;</span> <span class="nf">getAccounts</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1466,7 +1539,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <p>For a time there was speculation that the Safe-null-operator would make its way into Java 7 through Project Coin. If you’ve programmed in Groovy you might have seen it before:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">return</span> <span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()?.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1482,7 +1555,7 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <p>If you would now write this code it would be:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">String</span> <span class="nf">getFirstLetterOfName</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span><span class="o">(</span><span class="n">person</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
@@ -1494,8 +1567,8 @@ If you do this to the Person object above, and all its fields, you will end up w
 
 <p>You could also give a default value:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">"Anonymous"</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printName</span><span class="o">(</span><span class="nc">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">person</span><span class="o">?.</span><span class="na">getName</span><span class="o">()</span> <span class="o">?:</span> <span class="s">"Anonymous"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>If person or getName() produce a null the “?:” operator will return the default String.</p>
@@ -1569,12 +1642,12 @@ First I loop over all the points, and I check if there are points located at <st
 
 <p>It works like this (psuedocode):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="n">FIELD_SIZE</span> <span class="o">)</span>
-		<span class="n">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="no">FIELD_SIZE</span> <span class="o">)</span>
+	<span class="k">for</span><span class="o">(</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="n">to</span> <span class="no">FIELD_SIZE</span> <span class="o">)</span>
+		<span class="nc">Point</span> <span class="n">pixel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">);</span>
 		<span class="n">pixelScore</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-		<span class="k">for</span><span class="o">(</span> <span class="n">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
-			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span> <span class="nc">Point</span> <span class="nl">point:</span> <span class="n">points</span> <span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span> <span class="n">point</span><span class="o">.</span><span class="na">distance</span><span class="o">(</span><span class="n">pixel</span><span class="o">)</span> <span class="o">&lt;</span> <span class="no">CIRCLE_RADIUS</span><span class="o">*</span><span class="mi">2</span> <span class="o">)</span> <span class="o">{</span>
 				<span class="n">pixelScore</span><span class="o">++;</span>
 			<span class="o">}</span>
 		<span class="o">}</span>
@@ -1606,13 +1679,13 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <p>Here is the pseudocode (from Wikipedia):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span><span class="o">,</span><span class="no">P</span><span class="o">,</span><span class="no">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="no">P</span> <span class="n">and</span> <span class="no">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="no">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
     <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="n">X</span> <span class="err">⋂</span> <span class="n">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
+        <span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="no">P</span> <span class="err">⋂</span> <span class="no">N</span><span class="o">(</span><span class="n">v</span><span class="o">),</span> <span class="no">X</span> <span class="err">⋂</span> <span class="no">N</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+        <span class="no">P</span> <span class="o">:=</span> <span class="no">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="no">X</span> <span class="o">:=</span> <span class="no">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span></code></pre></figure>
 
 <p>But I ran into a little problem, I’d made a false assumption… If you have a triangle of three points, with all legs size N, and then draw a circle from the center… none of the points fall into the circle.</p>
 
@@ -1622,17 +1695,17 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <p>Then I desected the Bron-Kerbosch algorithm, and decided to change it a bit. This is what I ended up with:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">BronKerboschVanRijn</span><span class="o">(</span><span class="n">R</span><span class="o">,</span><span class="n">P</span><span class="o">,</span><span class="n">X</span><span class="o">):</span>
-    <span class="k">if</span> <span class="n">P</span> <span class="n">and</span> <span class="n">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
-        <span class="n">report</span> <span class="n">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">BronKerboschVanRijn</span><span class="o">(</span><span class="no">R</span><span class="o">,</span><span class="no">P</span><span class="o">,</span><span class="no">X</span><span class="o">):</span>
+    <span class="k">if</span> <span class="no">P</span> <span class="n">and</span> <span class="no">X</span> <span class="n">are</span> <span class="n">both</span> <span class="nl">empty:</span>
+        <span class="n">report</span> <span class="no">R</span> <span class="n">as</span> <span class="n">a</span> <span class="n">maximal</span> <span class="n">clique</span>
     <span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">v</span> <span class="n">in</span> <span class="nl">P:</span>
-        <span class="n">BronKerbosch1</span><span class="o">(</span><span class="n">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">P</span><span class="o">),</span> <span class="n">InCircle</span><span class="o">({</span><span class="n">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="n">X</span><span class="o">))</span>
-        <span class="n">P</span> <span class="o">:=</span> <span class="n">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
-        <span class="n">X</span> <span class="o">:=</span> <span class="n">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="nc">BronKerbosch1</span><span class="o">(</span><span class="no">R</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">},</span> <span class="nc">InCircle</span><span class="o">({</span><span class="no">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="no">P</span><span class="o">),</span> <span class="nc">InCircle</span><span class="o">({</span><span class="no">R</span><span class="o">,</span><span class="n">v</span><span class="o">},</span> <span class="no">X</span><span class="o">))</span>
+        <span class="no">P</span> <span class="o">:=</span> <span class="no">P</span> <span class="err">\</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
+        <span class="no">X</span> <span class="o">:=</span> <span class="no">X</span> <span class="err">⋃</span> <span class="o">{</span><span class="n">v</span><span class="o">}</span>
         
-<span class="n">InCircle</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">):</span>
-    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="n">A</span>
-    <span class="k">return</span> <span class="n">all</span> <span class="n">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="n">A</span></code></pre></figure>
+<span class="nc">InCircle</span><span class="o">(</span><span class="no">A</span><span class="o">,</span> <span class="no">B</span><span class="o">):</span>
+    <span class="n">calculate</span> <span class="n">minimal</span> <span class="n">enclosing</span> <span class="n">circle</span> <span class="k">for</span> <span class="n">points</span> <span class="no">A</span>
+    <span class="k">return</span> <span class="n">all</span> <span class="no">B</span> <span class="n">that</span> <span class="nf">are</span> <span class="o">(</span><span class="n">euclidean</span> <span class="n">distance</span><span class="o">)</span> <span class="n">inside</span> <span class="no">A</span></code></pre></figure>
 
 <p>This returns all the maximal cliques that fall into our circle, and we are always sure they fall into our circle..! I think this will always generate the perfect solution, just as the heat map. In this the above picture, this algorithm produces the red circle.</p>
 
@@ -1805,7 +1878,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 
 <span class="o">}</span></code></pre></figure>
 
@@ -1820,16 +1893,16 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>The implementation of this DAO isn’t really interesting, lets just pretent it goes to the database:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="n">MilkDAO</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Puts order in database
 </span>
 	<span class="o">}</span>
@@ -1840,15 +1913,15 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Create a new service:
 	 */</span>
 	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">(</span>
+		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">(</span>
 				<span class="c1">//With SQLConnection or something
 </span>
 				<span class="o">);</span>
@@ -1857,10 +1930,10 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		<span class="c1">//Save the order:
@@ -1877,7 +1950,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
 
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">();</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">();</span>
 	
 	<span class="nd">@Test</span>
 	<span class="cm">/**
@@ -1889,8 +1962,8 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
 		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 		
@@ -1923,15 +1996,15 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	<span class="cm">/**
 	 * Here we save the mapping:
 	 */</span>
-	<span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Class</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Create the mapping
 	 */</span>
 	<span class="kd">static</span> <span class="o">{</span>
-		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
-		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">());</span>
-		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">Class</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;();</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">());</span>
 	<span class="o">}</span>
 	
 	<span class="cm">/**
@@ -1942,7 +2015,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 * @param clazz
 	 * @param impl
 	 */</span>
-	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="no">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">clazz</span><span class="o">,</span> <span class="n">impl</span><span class="o">);</span>
 	<span class="o">}</span>
 
@@ -1952,9 +2025,9 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 * @param requestedClass
 	 * @return
 	 */</span>
-	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">get</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">get</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">mapping</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">))</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
+			<span class="k">return</span> <span class="o">(</span><span class="no">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
 		<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Doesn't exist"</span><span class="o">);</span>
 		<span class="o">}</span>
@@ -1969,21 +2042,21 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		
 		<span class="c1">//Save the order:
 </span>
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -1995,7 +2068,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
 
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">();</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">();</span>
 	
 	<span class="c1">//@Test
 </span>
@@ -2008,13 +2081,13 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
 		<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.
 </span>
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
-			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 				<span class="c1">//Check if the customer = testUser
 </span>
 				<span class="c1">//Check if the amountOfBottles = 5;
@@ -2022,7 +2095,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 			<span class="o">}</span>
 		<span class="o">});</span>
 		
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 			<span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -2037,26 +2110,26 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * The milkDao is given to us by our creator.
 	 * 
 	 * @param milkDao
 	 */</span>
-	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
 	<span class="o">}</span>
 	
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		
@@ -2070,13 +2143,13 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 	
-	<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-	<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 	
 	<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.
 </span>
-	<span class="n">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
-		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">//Check if the customer = testUser
 </span>
 			<span class="c1">//Check if the amountOfBottles = 5;
@@ -2084,7 +2157,7 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 		<span class="o">}</span>
 	<span class="o">};</span>
 	
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
 	
 	<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
@@ -2097,21 +2170,21 @@ Then I googled a bit and found the term ‘<a href="http://en.wikipedia.org/wiki
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkApplication</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkApplication</span><span class="o">();</span>
 		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
 	<span class="o">}</span>
 
 	<span class="kd">public</span> <span class="nf">MilkApplication</span><span class="o">()</span> <span class="o">{</span>
 		<span class="c1">//-----   Provide wiring:  -----
 </span>
-		<span class="n">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">();</span>
-		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
+		<span class="nc">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">();</span>
+		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
 		<span class="c1">//------------------------------
 </span>
 	<span class="o">}</span>
 	
-	<span class="kd">private</span> <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Do stuff:
@@ -2141,9 +2214,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 <p>Now you’ll still need to retrieve these “beans” from Spring, this can be done using our old-friend the Factory!<br />
 It’ll look something like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathXmlApplicationContext</span><span class="o">(</span>
-	<span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">"applicationContext.xml"</span><span class="o">});</span>
-<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"milkRequestService"</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathXmlApplicationContext</span><span class="o">(</span>
+	<span class="k">new</span> <span class="nc">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">"applicationContext.xml"</span><span class="o">});</span>
+<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"milkRequestService"</span><span class="o">);</span></code></pre></figure>
 
 <p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
 
@@ -2155,7 +2228,7 @@ It’ll look something like this:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="n">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="nc">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
 	<span class="cm">/**
@@ -2163,7 +2236,7 @@ It’ll look something like this:</p>
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using ‘Constructor Injection’:</p>
@@ -2174,7 +2247,7 @@ It’ll look something like this:</p>
  * @param milkDao
  */</span>
 <span class="nd">@Inject</span>
-<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -2182,8 +2255,8 @@ It’ll look something like this:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkApplication</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkApplication</span><span class="o">();</span>
 		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
 	<span class="o">}</span>
 	
@@ -2192,9 +2265,9 @@ It’ll look something like this:</p>
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 		
-	    <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
-	    <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
-	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+	    <span class="nc">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="nc">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
+	    <span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
+	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
 		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">"Roy van Rijn"</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
 	<span class="o">}</span>
@@ -2218,80 +2291,6 @@ It’ll look something like this:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/dependency-injection-dissection/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/01/movies-as-porn/" title="What if your favourite movie was remade as porno">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="What if your favourite movie was remade as porno" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-01-15T15:45:57+01:00" class="date" />
-          <span itemprop="datePublished" content="2010-01-15T15:45:57+01:00" class="date">
-            Jan 15, 2010 15:45:57
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/movies-as-porn/">What if your favourite movie was remade as porno</a></h1>
-
-        <span itemprop="articleBody">
-          <p>What if your favourite movie was remade as a porn movie? How would it be called, what would the title be?</p>
-
-<p>My collegues and I were discussing this, and we came up with a top 10. We’ve also started a twitter <a href="http://hashtags.org/moviesasporn">hashtag</a>.</p>
-
-<h1 id="top-10">Top 10</h1>
-
-<ol>
-  <li>Shaving Ryan’s Privates (everybodies favourite)</li>
-  <li>The Curious Taste of Benjamin’s Bottom</li>
-  <li>Honey, I shagged the kids</li>
-  <li>Missionary Impossible III</li>
-  <li>Good Will Humping</li>
-  <li>Free my Willy</li>
-  <li>Legally Boned</li>
-  <li>I Know Who you did last Summer</li>
-  <li>Schindler’s Fist</li>
-  <li>Cliff Banger</li>
-</ol>
-
-<h1 id="honourable-mentions">Honourable mentions</h1>
-
-<p>And some honourable mentions to the titles that just didn’t make the list:</p>
-
-<ul>
-  <li>When Harry ate Sally</li>
-  <li>Saturday Night Beaver</li>
-  <li>Spankenstein</li>
-  <li>Swollow Hal</li>
-  <li>Sorest Rump</li>
-  <li>Bangs of New York</li>
-  <li>American Bangster</li>
-  <li>Thighs Wide Shut</li>
-  <li>Citizen Came</li>
-  <li>The Green Milf</li>
-  <li>The Porn Identity</li>
-  <li>Crouching Woman, Hidden Camera</li>
-</ul>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/movies-as-porn/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

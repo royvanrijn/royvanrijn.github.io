@@ -152,34 +152,34 @@
 
 <p>Let me show you how this works:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">JShell</span> <span class="n">shell</span> <span class="o">=</span> <span class="n">JShell</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">"int i = 10;"</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="nc">JShell</span> <span class="n">shell</span> <span class="o">=</span> <span class="nc">JShell</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">"int i = 10;"</span><span class="o">);</span></code></pre></figure>
 
 <p>What have we done here? Well first we’ve created an instance of the JShell. This is just like starting the command line tool. Now we can call the <em>eval()</em> function to evaluate Java code. As a result you receive so called <em>SnippetEvent</em>s, these are classes containing the information about what happened. Let’s see what the code above returns:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="k">for</span><span class="o">(</span><span class="n">SnippetEvent</span> <span class="n">event</span> <span class="o">:</span> <span class="n">events</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="k">for</span><span class="o">(</span><span class="nc">SnippetEvent</span> <span class="n">event</span> <span class="o">:</span> <span class="n">events</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
         <span class="o">}</span>
 
         <span class="c1">//Output: SnippetEvent(snippet=Snippet:VariableKey(i)#1-int i = 10;,previousStatus=NONEXISTENT,status=VALID,isSignatureChange=true,causeSnippetnullvalue=10)</span></code></pre></figure>
 
 <p>There is quite some information in there, the event contains the actual ‘snippet’, the piece of code that was executed. Also there is a previous state, status and some other information. This is where the JShell API starts to feel weird to me. To get the <em>Snippet</em> from the <em>SnippetEvent</em> we can call the following method:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">SnippetEvent</span> <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="nc">SnippetEvent</span> <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 
         <span class="c1">// To get the information, we call snippet (not getSnippet()):</span>
-        <span class="n">Snippet</span> <span class="n">snippet</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">snippet</span><span class="o">();</span>
+        <span class="nc">Snippet</span> <span class="n">snippet</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">snippet</span><span class="o">();</span>
 
         <span class="c1">// Next we cast our snippet to the correct subclass:</span>
-        <span class="n">VarSnippet</span> <span class="n">vSnippet</span> <span class="o">=</span> <span class="o">(</span><span class="n">VarSnippet</span><span class="o">)</span> <span class="n">snippet</span><span class="o">;</span>
+        <span class="nc">VarSnippet</span> <span class="n">vSnippet</span> <span class="o">=</span> <span class="o">(</span><span class="nc">VarSnippet</span><span class="o">)</span> <span class="n">snippet</span><span class="o">;</span>
 
         <span class="c1">// Now we can retrieve information, for example the type we've created:</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">vSnippet</span><span class="o">.</span><span class="na">typeName</span><span class="o">());</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">vSnippet</span><span class="o">.</span><span class="na">typeName</span><span class="o">());</span>
 
         <span class="c1">//Output: int</span>
 
         <span class="c1">// We can also get the 'value' of the SnippetEvent:</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
 
         <span class="c1">//Output: 10</span></code></pre></figure>
 
@@ -195,8 +195,8 @@
 
 <p>Next is the question regarding the usage of Strings. Why is the value() a String when we’ve clearly made something an int? Even worse, let’s create something that is not a primitive:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="n">List</span><span class="o">&lt;</span><span class="n">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">"jdk.jshell.JShell.create();"</span><span class="o">);</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">value</span><span class="o">());</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SnippetEvent</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="s">"jdk.jshell.JShell.create();"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">events</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">value</span><span class="o">());</span>
 
         <span class="c1">//Output: jdk.jshell.JShell@4cc0edeb</span></code></pre></figure>
 

@@ -158,14 +158,14 @@
 
 <p>In Java you can set a exception handlers on Threads. You can set a handler on a Thread, but it is also possible to set a default exception handler. It is very easy:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomUncaughtExceptionHandler</span> <span class="kd">implements</span> <span class="n">UncaughtExceptionHandler</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomUncaughtExceptionHandler</span> <span class="kd">implements</span> <span class="nc">UncaughtExceptionHandler</span> <span class="o">{</span>
 
     <span class="kd">public</span> <span class="nf">CustomUncaughtExceptionHandler</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Thread</span><span class="o">.</span><span class="na">setDefaultUncaughtExceptionHandler</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">setDefaultUncaughtExceptionHandler</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="kd">final</span> <span class="n">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">//do something here!    
 </span>
     <span class="o">}</span>
@@ -181,26 +181,26 @@
 
 <p>In Java there are actually two methods of creating a screenshot. The first method is the easiest, using the Java Robot:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Robot</span> <span class="n">robot</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Robot</span><span class="o">();</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Robot</span> <span class="n">robot</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Robot</span><span class="o">();</span>
  
-<span class="n">BufferedImage</span> <span class="n">screenShot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="na">createScreenCapture</span><span class="o">(</span><span class="k">new</span> <span class="n">Rectangle</span><span class="o">(</span><span class="n">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getScreenSize</span><span class="o">()));</span></code></pre></figure>
+<span class="nc">BufferedImage</span> <span class="n">screenShot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="na">createScreenCapture</span><span class="o">(</span><span class="k">new</span> <span class="nc">Rectangle</span><span class="o">(</span><span class="nc">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getScreenSize</span><span class="o">()));</span></code></pre></figure>
 
 <p>Very easy, but this can contain a LOT of information about the moment the exception occurs. It may provide valuable information. But we encountered a major security problem with the above method. Java will create an actual screenshot, the size of your application. But it doesn’t know if your application is currently the active window..! When we did tests we saw screenshots with Skype messages in screen and browsers being active… We can’t invade the lives of our users and send this information over the mail!</p>
 
 <p>So I decided to search for something less invasive. The main frame of our application has a paint method, and most of the time this method can still be called if we have an exception. It is possible to create our own Graphics object and let the main frame paint itself into memory. So eventually I settled on the code below:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">BufferedImage</span> <span class="nf">createScreenshot</span><span class="o">()</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">BufferedImage</span> <span class="nf">createScreenshot</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
         <span class="c1">// Try to repaint the main frame of our application:
 </span>
         <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getWidth</span><span class="o">();</span>
         <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">getHeight</span><span class="o">();</span>
-        <span class="n">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedImage</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">BufferedImage</span><span class="o">.</span><span class="na">TYPE_INT_RGB</span><span class="o">);</span>
+        <span class="nc">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedImage</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="nc">BufferedImage</span><span class="o">.</span><span class="na">TYPE_INT_RGB</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">screenshotComponent</span><span class="o">.</span><span class="na">paintAll</span><span class="o">(</span><span class="n">image</span><span class="o">.</span><span class="na">getGraphics</span><span class="o">());</span>
         <span class="c1">// We can't use Robot, it might capture a bit too much information
 </span>
         <span class="k">return</span> <span class="n">image</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// Screen can't be captured, don't throw exception, else we'll end up in a loop :-)
 </span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
@@ -219,25 +219,25 @@
 
 <p>To create the email it is easy to create MimeBodyParts which contain the text, the only part a bit more complicated it to add the screenshot inside the email, this can be done using:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">MimeBodyPart</span> <span class="nf">createImagePart</span><span class="o">(</span><span class="kd">final</span> <span class="n">BufferedImage</span> <span class="n">screenshot</span><span class="o">)</span>
-		<span class="kd">throws</span> <span class="n">MessagingException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nc">MimeBodyPart</span> <span class="nf">createImagePart</span><span class="o">(</span><span class="kd">final</span> <span class="nc">BufferedImage</span> <span class="n">screenshot</span><span class="o">)</span>
+		<span class="kd">throws</span> <span class="nc">MessagingException</span> <span class="o">{</span>
     
 	<span class="k">if</span> <span class="o">(</span><span class="n">screenshot</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
     
-	<span class="n">MimeBodyPart</span> <span class="n">imagePart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MimeBodyPart</span><span class="o">();</span>
-	<span class="n">ByteArrayOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+	<span class="nc">MimeBodyPart</span> <span class="n">imagePart</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MimeBodyPart</span><span class="o">();</span>
+	<span class="nc">ByteArrayOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">();</span>
 	<span class="k">try</span> <span class="o">{</span>
-		<span class="n">ImageIO</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">screenshot</span><span class="o">,</span> <span class="s">"jpg"</span><span class="o">,</span> <span class="n">outputStream</span><span class="o">);</span>
-	<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ioException</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">ImageIO</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">screenshot</span><span class="o">,</span> <span class="s">"jpg"</span><span class="o">,</span> <span class="n">outputStream</span><span class="o">);</span>
+	<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">ioException</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">// Impossible to get the screenshot, return null and continue without it
 </span>
 		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
 	<span class="o">}</span>
     
-	<span class="n">DataSource</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayDataSource</span><span class="o">(</span><span class="n">outputStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">"image/jpeg"</span><span class="o">);</span>
-	<span class="n">imagePart</span><span class="o">.</span><span class="na">setDataHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">DataHandler</span><span class="o">(</span><span class="n">source</span><span class="o">));</span>
+	<span class="nc">DataSource</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayDataSource</span><span class="o">(</span><span class="n">outputStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">"image/jpeg"</span><span class="o">);</span>
+	<span class="n">imagePart</span><span class="o">.</span><span class="na">setDataHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">DataHandler</span><span class="o">(</span><span class="n">source</span><span class="o">));</span>
 	<span class="n">imagePart</span><span class="o">.</span><span class="na">setFileName</span><span class="o">(</span><span class="s">"screenshot.jpg"</span><span class="o">);</span>
 	<span class="n">imagePart</span><span class="o">.</span><span class="na">setContentID</span><span class="o">(</span><span class="s">"&lt;screenshot&gt;"</span><span class="o">);</span>
 	<span class="k">return</span> <span class="n">imagePart</span><span class="o">;</span>

@@ -165,7 +165,7 @@
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 
 <span class="o">}</span></code></pre></figure>
 
@@ -180,16 +180,16 @@
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>The implementation of this DAO isn’t really interesting, lets just pretent it goes to the database:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="n">MilkDAO</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkDAODatabaseImpl</span> <span class="kd">implements</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Puts order in database
 </span>
 	<span class="o">}</span>
@@ -200,15 +200,15 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkDAO</span> <span class="n">milkDAO</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Create a new service:
 	 */</span>
 	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">(</span>
+		<span class="n">milkDAO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">(</span>
 				<span class="c1">//With SQLConnection or something
 </span>
 				<span class="o">);</span>
@@ -217,10 +217,10 @@
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		<span class="c1">//Save the order:
@@ -237,7 +237,7 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
 
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">();</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">();</span>
 	
 	<span class="nd">@Test</span>
 	<span class="cm">/**
@@ -249,8 +249,8 @@
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
 		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 		
@@ -283,15 +283,15 @@
 	<span class="cm">/**
 	 * Here we save the mapping:
 	 */</span>
-	<span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Class</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">mapping</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Create the mapping
 	 */</span>
 	<span class="kd">static</span> <span class="o">{</span>
-		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
-		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">());</span>
-		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">Class</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;();</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">());</span>
+		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">());</span>
 	<span class="o">}</span>
 	
 	<span class="cm">/**
@@ -302,7 +302,7 @@
 	 * @param clazz
 	 * @param impl
 	 */</span>
-	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">replaceMapping</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="no">T</span> <span class="n">impl</span><span class="o">)</span> <span class="o">{</span>
 		<span class="n">mapping</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">clazz</span><span class="o">,</span> <span class="n">impl</span><span class="o">);</span>
 	<span class="o">}</span>
 
@@ -312,9 +312,9 @@
 	 * @param requestedClass
 	 * @return
 	 */</span>
-	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">get</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">get</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requestedClass</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span><span class="o">(</span><span class="n">mapping</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">))</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
+			<span class="k">return</span> <span class="o">(</span><span class="no">T</span><span class="o">)</span><span class="n">mapping</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">requestedClass</span><span class="o">);</span>
 		<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
 			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Doesn't exist"</span><span class="o">);</span>
 		<span class="o">}</span>
@@ -329,21 +329,21 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		
 		<span class="c1">//Save the order:
 </span>
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">saveOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -355,7 +355,7 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceTest</span> <span class="o">{</span>
 
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">();</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">();</span>
 	
 	<span class="c1">//@Test
 </span>
@@ -368,13 +368,13 @@
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 		
-		<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-		<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+		<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 		
 		<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.
 </span>
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="n">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
-			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">replaceMapping</span><span class="o">(</span><span class="nc">MilkDAO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+			<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 				<span class="c1">//Check if the customer = testUser
 </span>
 				<span class="c1">//Check if the amountOfBottles = 5;
@@ -382,7 +382,7 @@
 			<span class="o">}</span>
 		<span class="o">});</span>
 		
-		<span class="n">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+		<span class="nc">MilkFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 			<span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 	<span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -397,26 +397,26 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="n">MilkRequestService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkRequestServiceImpl</span> <span class="kd">implements</span> <span class="nc">MilkRequestService</span> <span class="o">{</span>
 
-	<span class="kd">private</span> <span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * The milkDao is given to us by our creator.
 	 * 
 	 * @param milkDao
 	 */</span>
-	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
 	<span class="o">}</span>
 	
 	<span class="cm">/**
 	 * Place a new order for milk.
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">processOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Log the order:
 </span>
-		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LOG: Customer "</span> <span class="o">+</span> <span class="n">customer</span> <span class="o">+</span> <span class="s">" wants "</span>
 				<span class="o">+</span> <span class="n">amountOfBottles</span> <span class="o">+</span> <span class="s">" bottle"</span>
 				<span class="o">+</span> <span class="o">((</span><span class="n">amountOfBottles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">?</span> <span class="s">"s"</span> <span class="o">:</span> <span class="s">""</span><span class="o">));</span>
 		
@@ -430,13 +430,13 @@
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProcessOrder</span><span class="o">()</span> <span class="o">{</span>
 	
-	<span class="kd">final</span> <span class="n">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
-	<span class="kd">final</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="nc">String</span> <span class="n">customer</span> <span class="o">=</span> <span class="s">"testUser"</span><span class="o">;</span>
+	<span class="kd">final</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
 	
 	<span class="c1">//Better use a mock here, for example using Mockito or EasyMock.
 </span>
-	<span class="n">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
-		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">MilkDAO</span> <span class="n">testMilkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAO</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">//Check if the customer = testUser
 </span>
 			<span class="c1">//Check if the amountOfBottles = 5;
@@ -444,7 +444,7 @@
 		<span class="o">}</span>
 	<span class="o">};</span>
 	
-	<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
+	<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">testMilkDao</span><span class="o">);</span>
 	
 	<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
@@ -457,21 +457,21 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkApplication</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkApplication</span><span class="o">();</span>
 		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
 	<span class="o">}</span>
 
 	<span class="kd">public</span> <span class="nf">MilkApplication</span><span class="o">()</span> <span class="o">{</span>
 		<span class="c1">//-----   Provide wiring:  -----
 </span>
-		<span class="n">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkDAODatabaseImpl</span><span class="o">();</span>
-		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
+		<span class="nc">MilkDAO</span> <span class="n">milkDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkDAODatabaseImpl</span><span class="o">();</span>
+		<span class="n">milkRequestService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">milkDao</span><span class="o">);</span>
 		<span class="c1">//------------------------------
 </span>
 	<span class="o">}</span>
 	
-	<span class="kd">private</span> <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span><span class="o">;</span>
 	
 	<span class="cm">/**
 	 * Do stuff:
@@ -501,9 +501,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 <p>Now you’ll still need to retrieve these “beans” from Spring, this can be done using our old-friend the Factory!<br />
 It’ll look something like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathXmlApplicationContext</span><span class="o">(</span>
-	<span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">"applicationContext.xml"</span><span class="o">});</span>
-<span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"milkRequestService"</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathXmlApplicationContext</span><span class="o">(</span>
+	<span class="k">new</span> <span class="nc">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">"applicationContext.xml"</span><span class="o">});</span>
+<span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"milkRequestService"</span><span class="o">);</span></code></pre></figure>
 
 <p>This instructs Spring to load the XML file and create all the objects. Then we retrieve the milkRequestService and it is fully wired and ready to use!</p>
 
@@ -515,7 +515,7 @@ It’ll look something like this:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">nl</span><span class="o">.</span><span class="na">redcode</span><span class="o">.</span><span class="na">examples</span><span class="o">.</span><span class="na">milkman</span><span class="o">;</span>
 
-<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="n">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ImplementedBy</span><span class="o">(</span><span class="nc">MilkDAODatabaseImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MilkDAO</span> <span class="o">{</span>
 
 	<span class="cm">/**
@@ -523,7 +523,7 @@ It’ll look something like this:</p>
 	 * @param customer
 	 * @param amountOfBottles
 	 */</span>
-	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="n">String</span> <span class="n">customer</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveOrder</span><span class="o">(</span><span class="nc">String</span> <span class="n">customer</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">amountOfBottles</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>We also do this to the MilkRequestService. Next we tell Guice where to inject these implementations, in this case using ‘Constructor Injection’:</p>
@@ -534,7 +534,7 @@ It’ll look something like this:</p>
  * @param milkDao
  */</span>
 <span class="nd">@Inject</span>
-<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="n">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="nf">MilkRequestServiceImpl</span><span class="o">(</span><span class="nc">MilkDAO</span> <span class="n">milkDao</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">this</span><span class="o">.</span><span class="na">milkDao</span> <span class="o">=</span> <span class="n">milkDao</span><span class="o">;</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -542,8 +542,8 @@ It’ll look something like this:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MilkApplication</span> <span class="o">{</span>
 
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MilkApplication</span><span class="o">();</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">MilkApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MilkApplication</span><span class="o">();</span>
 		<span class="n">app</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
 	<span class="o">}</span>
 	
@@ -552,9 +552,9 @@ It’ll look something like this:</p>
 	 */</span>
 	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
 		
-	    <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
-	    <span class="n">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
-	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+	    <span class="nc">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="nc">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">();</span>
+	    <span class="nc">MilkRequestService</span> <span class="n">milkRequestService</span> <span class="o">=</span> 
+	        <span class="n">injector</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">MilkRequestService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
 		<span class="n">milkRequestService</span><span class="o">.</span><span class="na">processOrder</span><span class="o">(</span><span class="s">"Roy van Rijn"</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
 	<span class="o">}</span>

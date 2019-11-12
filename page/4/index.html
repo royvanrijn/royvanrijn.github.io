@@ -98,6 +98,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -112,6 +114,172 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2015/02/paper-sizes/" title="Paper sizes">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/paper_sizes.png" alt="Paper sizes" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2015-02-11T14:00:25+01:00" class="date" />
+          <span itemprop="datePublished" content="2015-02-11T14:00:25+01:00" class="date">
+            Feb 11, 2015 14:00:25
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/02/paper-sizes/">Paper sizes</a></h1>
+
+        <span itemprop="articleBody">
+          <p><strong>Update Apr 22, 2016</strong>: I’ve made a video which explains most of what is in this blogpost:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/bWMGfFHr1ww"></iframe>
+
+<h1 id="two-standards">Two standards</h1>
+
+<p>Yes, this blogpost is about paper. This has absolutely nothing to do with programming, but there is a beautiful piece of math involved.</p>
+
+<p>There are two major standards of paper sizes in the world. The most widely used is <a href="http://en.wikipedia.org/wiki/ISO_216">ISO-216</a>, more commonly known as the A-series, as in ‘A4’ size. This system is used almost everywhere in the world, the main exceptions are United States and Canada. In the United States they use their own <a href="http://en.wikipedia.org/wiki/Letter_%28paper_size%29">US Letter</a> standard.</p>
+
+<h1 id="us-letter">US Letter</h1>
+
+<p>The standard US Letter has a size of: 216 mm x 279 mm (8.5 by 11 inches) and a ratio of 1,291666666666667.<br />
+(I’ll explain why this ratio is important in the math part below!).</p>
+
+<p>The origin of this size is very vague and lost in history. Most origins say (from Wikipedia):</p>
+
+<blockquote>
+  <p>The 11” length of the standard paper being about a quarter of “the average maximum stretch of an experienced vatman’s arms.”</p>
+</blockquote>
+
+<p>Basically US Letter is a standard because it is a standard, don’t ask questions, just deal with it.</p>
+
+<h1 id="iso-216-the-a-standard">ISO-216, the A-standard</h1>
+
+<p>The letter size of the ISO standard is A4. The size is 210 mm × 297 mm and has a ratio of √2 (math!).</p>
+
+<p>The ratio is what makes this standard superior. This of course isn’t a coincidence. Smart people have thought about these sizes, it became a standard because it was superior. The ‘magic’ property A4 paper size has is that is consists of exactly two A5 papers side-by-side. In turn, two of these A4 papers make up the larger A3 paper. This makes it very easy for example to make a booklet in A5 format consisting of folded A4 papers. Also if you scale up a document in A5 it’ll exactly fit A4. If you want to use a copier and print two A5 pages on A4 paper, go ahead! This is impossible to do with US Letter, you’ll end up with white spaces or stretched documents!</p>
+
+<h2 id="aspect-ratio-math">Aspect ratio math</h2>
+
+<p>How does this work mathematically? The magic hides in the fact that 2 / √2 = √2. Imagine we have a piece of paper with long side A and short side B. If we fold the long side and create a new paper size with B and C, what is the aspect ratio?</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Given:
+A/B = √2 (aspect ratio)
+C = A/2 (new short length is A folded in half)
+
+So what is the new aspect ratio of B/C?
+B/C = B/(A/2)
+
+B/(A/2) = 2/(A/B)
+
+2/(A/B) = 2/√2
+
+2/√2 = √2!</code></pre></figure>
+
+<p>When you start with the aspect ratio of √2, the resulting folded aspect ratio is again √2. You can keep doing this.</p>
+
+<p>Lets take the largest standard paper size, A0: 841 × 1189. What happens when we fold it? Well: 841 becomes the long side, 1189/2=594.5 the short side. This is indeed the A1 paper size (594 mm x 841 mm). It will keep the magic √2 aspect ratio!</p>
+
+<h2 id="size-of-a0-paper">Size of A0 paper</h2>
+
+<p>Now that we can explain the aspect ratio, we still don’t know how we ended up with the magic numbers 210 mm × 297 mm. This number originates simply because the A0 paper size is defined as having an aspect ratio of √2 and a surface area of 1 m2.</p>
+
+<p><strong>This is all you need to know, √2 and 1m2.</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Given:
+A*B = 1m2 = 1000² (our paper size)
+A/B = √2 (our ratio)</code></pre></figure>
+
+<p>The first formula we need is:</p>
+
+<blockquote>
+  <p>area = (diagonal²) / (ratio + (1/ratio))</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">When we plug in the given values:
+1000² = (diagonal²) / (√2 + (1/√2))
+
+diagonal² = (√2 + (1/√2)) × 1000² ≅ 2121320.34
+
+Remember our magic aspect ratio: 
+A / B = √2:
+B = A × √2
+
+With our old pal Pythagoras we now know:
+diagonal² = A² + B² (= 2121320.34)
+
+Let's get rid of B²:
+diagonal² = A² + (A * √2)²
+
+Now we can simplify:
+diagonal² = A² + (A × √2)²
+diagonal² = A² + 2 × A²
+diagonal² = 3 × A²
+
+And easily calculate the result:
+3 × A² = 2121320.34
+
+A = √(2121320.34 / 3) ≅ 840.89
+B = A × √2 ≅ 1189.20</code></pre></figure>
+
+<p>We started with just two simple numbers, ratio: √2 and area: 1m2 and now we’ve ended up with the A0 paper, 841 mm and 1189 mm!<br />
+To calculate the rest of the A-series you just take:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">A' = B / 2
+B' = A</code></pre></figure>
+
+<p>Mathematically folding it in half results in: 594 mm x 841 mm = exactly the A1 paper size!</p>
+
+<p><img src="/images/reference_iso_paper_size-300x226.jpg" alt="reference_iso_paper_size" class="aligncenter" /></p>
+
+<h1 id="keep-on-folding">Keep on folding</h1>
+
+<p>When we take an A4 paper and keep folding it, we get the following aspects (aspects fluctuate a little bit due to rounding):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">A4	210 mm × 297 mm ratio: 1.414
+A5	148 mm × 210 mm ratio: 1.419
+A6	105 mm × 148 mm ratio: 1.409
+A7	74  mm × 105 mm ratio: 1.418
+A8	52  mm × 74  mm ratio: 1.423
+A9	37  mm × 52  mm ratio: 1.405
+A10	26  mm × 37  mm ratio: 1.423</code></pre></figure>
+
+<p>But what do you end up with folding the US Letter? Let’s see:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">216 mm x 279 mm ratio: 1.291
+139 mm x 216 mm ratio: 1.554 &lt;- What?
+108 mm x 139 mm ratio: 1.287 &lt;- Ah..
+69  mm x 108 mm ratio: 1.565 &lt;- HUH!?
+54  mm x 69  mm ratio: 1.278
+34  mm x 54  mm ratio: 1.588
+27  mm x 34  mm ratio: 1.259 &lt;- Oh god...</code></pre></figure>
+
+<p>This fluctuating ratio results in so much wasted space, ink, paper! And it is just ugly! If you decide to scale something up from A5 to A4 it instantly fits, if you scale something in US Letter… you’ll either have to crop or stretch or leave unprinted paper.</p>
+
+<p>US Letter is bad for the environment!</p>
+
+<p>Ban the US Letter standard, <strong>hurray for math</strong>!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2015/02/paper-sizes/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -528,11 +696,11 @@ The big advantage was that we had a complete set of tests that:</p>
 
 <p>Some of you might not be familiar with the terminology ‘REPL’, it is short for Read Evaluate Print Loop. It is hard to explain exactly what it does, but very easy to demonstrate:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="n">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Java</span> <span class="n">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="n">Version</span> <span class="mf">0.23</span>
-<span class="o">|</span>  <span class="n">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">|</span>  <span class="nc">Welcome</span> <span class="n">to</span> <span class="n">the</span> <span class="nc">Java</span> <span class="no">REPL</span> <span class="n">mock</span><span class="o">-</span><span class="n">up</span> <span class="o">--</span> <span class="nc">Version</span> <span class="mf">0.23</span>
+<span class="o">|</span>  <span class="nc">Type</span> <span class="o">/</span><span class="n">help</span> <span class="k">for</span> <span class="n">help</span>
 
-<span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
-<span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
+<span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
+<span class="nc">Hello</span> <span class="nc">World</span><span class="o">!</span>
 
 <span class="o">-&gt;</span></code></pre></figure>
 
@@ -654,14 +822,14 @@ We all know why this is important:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Before:
 </span>
-<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="no">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// .. do something ..
 </span>
 <span class="o">}</span>
 
 <span class="c1">// After:
 </span>
-<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">if</span><span class="o">(</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="no">THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// .. do something ..
 </span>
 <span class="o">}</span></code></pre></figure>
@@ -1176,179 +1344,6 @@ Are you just a selection of atoms clumped together?</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2014/06/raspberry-pi-emulation-on-os-x/" title="Raspberry Pi emulation on OS X">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Raspberry Pi emulation on OS X" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2014-06-04T13:44:42+02:00" class="date" />
-          <span itemprop="datePublished" content="2014-06-04T13:44:42+02:00" class="date">
-            Jun 4, 2014 13:44:42
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">Raspberry Pi emulation on OS X</a></h1>
-
-        <span itemprop="articleBody">
-          <h1 id="disclaimerspoiler">Disclaimer/spoiler:</h1>
-
-<p>Building for a Raspberry Pi in an emulator is just as slow as on the actual Pi. There is a slightly faster method involving <a href="http://sentryytech.blogspot.nl/2013/02/faster-compiling-on-emulated-raspberry.html">chroot</a>. But if you really want speed you’ll have to set up a <a href="http://www.openframeworks.cc/setup/raspberrypi/Raspberry-Pi-Cross-compiling-guide.html">cross compiler environment</a> or try <a href="http://www.jaredwolff.com/blog/cross-compiling-on-mac-osx-for-raspberry-pi/">this other cross compiler setup</a>.</p>
-
-<p>Also: Links in the article below seem to be broken and it might not work anymore.</p>
-
-<h1 id="original-outdated-article">Original (outdated) article:</h1>
-
-<p>Today a colleague and I wanted to install <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGR">gnuradio</a> on a Raspberry Pi. This can than be combined with the amazing RTL-SDR dongle. This dongle this is a DVB-T USB stick, but can be turned into full software defined radio.</p>
-
-<p>More information on that can be found here: <a href="http://www.rtl-sdr.com/about-rtl-sdr/">http://www.rtl-sdr.com/about-rtl-sdr/</a>.</p>
-
-<h2 id="compiling-gnuradio">Compiling gnuradio</h2>
-
-<p>When trying to compile gnuradio on the RPi (Raspberry Pi) we followed <a href="http://k1gto.blogspot.nl/2012/09/compiling-gnuradio-on-raspberry-pi-raspi.html">this</a> description. But we quickly ran into a problem, compiling would take 20+ hours!</p>
-
-<p>After running ‘make’ and grabbing a cup of coffee we set ourself a new goal, is it possible to emulate the RPi on our fast Macbook instead?</p>
-
-<h2 id="qemu">qemu</h2>
-
-<p>After following a couple of guides that didn’t work we finally managed to get Qemu up and running, this is what we did:</p>
-
-<ul>
-  <li>Install and upgrade Xcode to 4.3 or above</li>
-  <li>Install the latest version of <a href="http://mxcl.github.com/homebrew/">Homebrew</a></li>
-</ul>
-
-<p>Now we need to modify the Homebrew formula (which downloads and install qemu) to the correct version:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ vi /usr/local/Library/Formula/qemu.rb</code></pre></figure>
-
-<p>I’m using the osx$ prefix for commands that are executed on your OS X machine, pi$ for commands on the virtual Raspberry Pi.</p>
-
-<p>Use the following file to get the working version 1.7.1 (other versions had SCSI problems): <strong>qemu.rb</strong></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">require 'formula'
-
-class Qemu &lt; Formula
-  homepage 'http://www.qemu.org/'
-  url 'http://wiki.qemu.org/download/qemu-1.7.1.tar.bz2'
-
-  depends_on 'jpeg'
-  depends_on 'gnutls'
-  depends_on 'glib'
-
-  fails_with :clang do
-    build 318
-  end
-
-  def install
-    system "./configure", "--prefix=#{prefix}",
-                          "--cc=#{ENV.cc}",
-                          "--host-cc=#{ENV.cc}",
-                          "--enable-cocoa",
-                          "--disable-bsd-user",
-                          "--disable-guest-agent"
-    system "make install"
-  end
-end</code></pre></figure>
-
-<p>After setting qemu.rb to the correct version you can install qemu:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ brew install qemu --env=std --cc=gcc-4.2</code></pre></figure>
-
-<p>Now check if qemu is installed correctly:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -version
-QEMU emulator version 1.7.1, Copyright (c) 2003-2008 Fabrice Bellard</code></pre></figure>
-
-<p>Now we need to download two thing:</p>
-
-<ol>
-  <li>Linux kernel</li>
-  <li>Raspbian image</li>
-</ol>
-
-<p>To download the linux kernel:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ curl http://xecdesign.com/downloads/linux-qemu/kernel-qemu &gt; kernel-qemu</code></pre></figure>
-
-<p>Now we’ve downloaded the latest version of the <a href="http://www.raspberrypi.org/downloads/">raspbian image</a>.<br />
-In our case: 2014-01-07-wheezy-raspbian.img</p>
-
-<h3 id="first-boot">First boot</h3>
-
-<p>Now it is time to start the image in the emulator:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
-
-<p>This first boot is a bit special because we only initialize /bin/bash. This is because we need to make two changes to the system:</p>
-
-<p>We need to add a comment to this file:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ vi /etc/ld.so.preload</code></pre></figure>
-
-<p>Comment this line by placing a # in front of the line:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so</code></pre></figure>
-
-<p>Now create the following file:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ vi /etc/udev/rules.d/90-qemu.rules</code></pre></figure>
-
-<p>And put in the following content: <strong>90-qemu.rules</strong></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">KERNEL=="sda", SYMLINK+="mmcblk0"
-KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
-KERNEL=="sda2", SYMLINK+="root"</code></pre></figure>
-
-<p>Now we can stop the emulator and make one final change, the image file is a bit small and we need to increase the size before we continue:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-img resize 2014-01-07-wheezy-raspbian.img +8G</code></pre></figure>
-
-<p>From now on we can do a normal boot (save this command) by removing the “init=/bin/bash” part:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">osx$ qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -kernel kernel-qemu -hda 2014-01-07-wheezy-raspbian.img</code></pre></figure>
-
-<p>The last thing we need to do to get our virtual Raspberry Pi up and running is:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pi$ sudo ln -snf mmcblk0p2 /dev/root
-pi$ sudo raspi-config</code></pre></figure>
-
-<p>In this menu, you can “Expand filesystem” to make use of the increased image size (need to reboot afterwards).</p>
-
-<p>Now you are ready to explore the raspberry pi without actually needing one.</p>
-
-<h2 id="broken-sources">(Broken) sources:</h2>
-<p><a href="https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X">https://github.com/psema4/pine/wiki/Installing-QEMU-on-OS-X</a><br />
-<a href="http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/">http://xecdesign.com/qemu-emulating-raspberry-pi-the-easy-way/</a></p>
-
-<p>Some problems we’ve encountered:</p>
-
-<ul>
-  <li>qemu raspberry pi boot getting stuck in ‘scsi’ loop (fixed by using version 1.7.1)</li>
-  <li>Disk size problems, resize didn’t work, expand filesystem didn’t work (fixed expanding and using ln -snf)</li>
-</ul>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

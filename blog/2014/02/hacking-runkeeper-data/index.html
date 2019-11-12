@@ -197,20 +197,20 @@ com/royvanrijn/running/gpx/package-info.java</code></pre></figure>
 
 <p>Now I can open the GPX files in Java and extract the GPS locations and time like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="n">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">"com.royvanrijn.running.gpx"</span><span class="o">);</span>
-<span class="n">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
-<span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="n">JAXBElement</span><span class="o">&lt;</span><span class="n">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">JAXBContext</span> <span class="n">jc</span> <span class="o">=</span> <span class="nc">JAXBContext</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="s">"com.royvanrijn.running.gpx"</span><span class="o">);</span>
+<span class="nc">Unmarshaller</span> <span class="n">unmarshaller</span> <span class="o">=</span> <span class="n">jc</span><span class="o">.</span><span class="na">createUnmarshaller</span><span class="o">();</span>
+<span class="nc">JAXBElement</span><span class="o">&lt;</span><span class="nc">GpxType</span><span class="o">&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="o">(</span><span class="nc">JAXBElement</span><span class="o">&lt;</span><span class="nc">GpxType</span><span class="o">&gt;)</span> <span class="n">unmarshaller</span><span class="o">.</span><span class="na">unmarshal</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">TrkType</span><span class="o">&gt;</span> <span class="n">tracks</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">getTrk</span><span class="o">();</span></code></pre></figure>
 
 <p>The next thing I did was translate the lat+long+time waypoints into ‘legs’ consisting of meters+seconds.<br />
 Those legs can be used to check for a record during longer runs, like this:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">analyze</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
-	<span class="n">List</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Leg</span><span class="o">&gt;();</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">analyze</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Leg</span><span class="o">&gt;</span> <span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
+	<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Leg</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Leg</span><span class="o">&gt;();</span>
 	
 	<span class="kt">double</span> <span class="n">runningDistance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
-	<span class="k">for</span><span class="o">(</span><span class="n">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">for</span><span class="o">(</span><span class="nc">Leg</span> <span class="nl">leg:</span><span class="n">legs</span><span class="o">)</span> <span class="o">{</span>
 		<span class="c1">//Add next leg to the tail:
 </span>
 		<span class="n">cache</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">leg</span><span class="o">);</span>
