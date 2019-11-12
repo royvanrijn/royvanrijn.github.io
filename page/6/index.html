@@ -119,6 +119,173 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2013/10/building-openjdk-on-windows/" title="Building OpenJDK on Windows">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Building OpenJDK on Windows" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2013-10-13T20:05:14+02:00" class="date" />
+          <span itemprop="datePublished" content="2013-10-13T20:05:14+02:00" class="date">
+            Oct 13, 2013 20:05:14
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2013/10/building-openjdk-on-windows/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/building-openjdk-on-windows/">Building OpenJDK on Windows</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Tomorrow I’ll be enjoying an OpenJDK hack session with Martijn Verburg (aka The Diabolical Developer). To prepare for this session he told us to follow the <a href="https://java.net/projects/adoptopenjdk/pages/AdoptOpenJDKBuildInstructions">AdoptOpenJDK build instructions</a>.</p>
+
+<p>Most <em>cool</em> developers today seem to be using OS/X, but some of us are stuck on Windows laptops. I actually choose to stick with Windows 7 because every single client I’ve worked for has Windows workstations and only require the application to run on Windows. But anyway Martijn said: <em>“Getting OpenJDK to build on Linux/Mac would be easy, Windows can be dicey”</em></p>
+
+<p>With a bit of Googling and some small problems I’ve got it working just fine on my Windows 7 (64 bit). Most information I got was from <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">this</a> write-up, but I encountered some problems and could skip some steps I didn’t need.</p>
+
+<p>All the tools mentioned are <strong>free</strong>, but you <em>will</em> have to install some Microsoft Visual C++ packages to compile (which most Java programmers try to avoid).</p>
+
+<h1 id="windows-sdk-for-windows-71">Windows SDK for Windows 7.1</h1>
+
+<p>Instead of the blogpost above mentioning this step second, I recommend doing it first. If you install VisualC++ 2010 Express first this step might fail with some weird error. The solution? Uninstall VisualC++ 2010 Express and first install Windows SDK for Windows 7.1.</p>
+
+<p>So go here and install: <a href="http://www.microsoft.com/download/en/details.aspx?id=8279">http://www.microsoft.com/download/en/details.aspx?id=8279</a></p>
+
+<h1 id="microsoft-visualc-2010-express">Microsoft VisualC++ 2010 Express</h1>
+
+<p>Next install VisualC++ 2010 Express (beware, Microsoft tries to install another version, pick 2010 Express):<br />
+<a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express</a><br />
+And next Windows Imaging Component (64-bit):<br />
+<a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=1385">http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=1385</a></p>
+
+<h1 id="cygwin-64-bit">Cygwin (64 bit)</h1>
+
+<p>For some reason I ran into problems early on using the 64 bit Cygwin, so I decided to install the 64 bit version as well. This worked, so I recommend doing this.<br />
+During the installation you’ll need to add some development packages:</p>
+
+<ul>
+  <li>binutils</li>
+  <li>cpio</li>
+  <li>diffutils</li>
+  <li>file</li>
+  <li>gawk</li>
+  <li>gcc-core</li>
+  <li>m4</li>
+  <li>unzip</li>
+  <li>zip</li>
+</ul>
+
+<p>I might have forgotten one or two, this will probably popup during the ‘configure’ step below. If you find a missing package, please tell me and I’ll update the post.</p>
+
+<h1 id="make">make</h1>
+
+<p>The version of ‘make’ that is packaged with Cygwin doesn’t work with OpenJDK. Instead we need to download the source from <a href="http://ftp.gnu.org/gnu/make/">http://ftp.gnu.org/gnu/make/</a>. I picked version 3.82 (this one is mentioned on the OpenJDK page). I downloaded and unzipped the source code here: <strong>C:\Projects\OpenJDK\make-3-82</strong></p>
+
+<p>To compile, fire up Cygwin and type:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/c/Projects/OpenJDK/make-3.82
+$ ./configure
+$ make</code></pre></figure>
+
+<p>Now you could take the generated ‘make.exe’ and place it into the Cygwin bin directory, but this isn’t needed.</p>
+
+<h1 id="freetype">freetype</h1>
+
+<p>Next we need to have Freetype, this step is done exacly like descriped <a href="https://weblogs.java.net/blog/simonis/archive/2011/10/28/yaojowbi-yet-another-openjdk-windows-build-instruction">here</a>. Only do the ‘Freetype’ chapter generating the lib and dll.</p>
+
+<p>Once you’ve generated the lib+dll, make a new directory (I used <strong>C:\Projects\OpenJDK\freetype</strong>). Add the ‘include’ directory from the freetype source code used in the step before. Also create a ‘lib’ directory and place the generated lib and dll in it.</p>
+
+<h1 id="hgantjdk7">Hg/Ant/JDK7</h1>
+
+<p>The other article mentions you’ll need to install TortoiseHg, Apache Ant and a current JDK 7 (as bootstrap). I didn’t have to do this because I already had all three installed. But please go ahead, they are probably needed:</p>
+
+<ul>
+  <li><a href="http://tortoisehg.bitbucket.org/download">TortoiseHg</a></li>
+  <li><a href="http://ant.apache.org/bindownload.cgi">Apache Ant</a></li>
+  <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7</a> (make sure this JDK 7, 64 bit, is set as JAVA_HOME)</li>
+</ul>
+
+<h1 id="getting-openjdk-sources">Getting OpenJDK sources</h1>
+
+<p>The other article mentions a lot of PATH requirements that need to be set. I didn’t encounter this at all because I configured my build in another way. First we’ll need to get the OpenJDK source code.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/
+$ mkdir jdk8_tl
+$ hg clone http://hg.openjdk.java.net/jdk8/tl jdk8_tl
+$ cd jdk8_tl
+$ ./get_source.sh</code></pre></figure>
+
+<p>This will create a new directory: /cygdrive/C/Projects/OpenJDK/jdk8_tl with all the sources!</p>
+
+<h1 id="configure">Configure</h1>
+
+<p>Now we need to configure a build for OpenJDK. Instead of just calling ‘./configure’ we’ll need to add a few extra options, we’ll need to point it to the correct MAKE directory and we need to include our custom build freetype.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">./configure MAKE=/cygdrive/C/Projects/OpenJDK/make-3.82/make.exe with_freetype=/cygdrive/C/Projects/OpenJDK/freetype</code></pre></figure>
+
+<p>This will throw a lot of warnings, but in the end it should print something like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">* OpenJDK target: OS: windows, CPU architecture: x86, address length: 64
+
+Tools summary:
+* Environment:    cygwin version 1.7.25(0.270/5/3) (root at /cygdrive/c/Development/cygwin64)
+* Boot JDK:       java version "1.7.0_40"  Java(TM) SE Runtime Environment (build 1.7.0_40-b43)  Java HotSpot(TM) 64-Bit Server VM (build 24.0-b56, mixed mode)  (at /cygdrive/c/progra~1/java/jdk17~1.0_4)
+* C Compiler:     Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
+* C++ Compiler:   Microsoft CL.EXE version 16.00.30319.01 (at /cygdrive/c/progra~2/micros~1.0/vc/bin/amd64/cl)
+
+Build performance summary:
+* Cores to use:   7
+* Memory limit:   16373 MB
+* ccache status:  not available for your system</code></pre></figure>
+
+<p>After the configure step you should have a new build directory added.<br />
+Mine was located at: <strong>/cygdrive/C/Projects/OpenJDK/jdk8_tl/build/windows-x86_64-normal-server-release</strong></p>
+
+<h1 id="build-it">Build it</h1>
+
+<p>The next thing I did was to build everything, this can take anywhere from 10 to 40 minutes, my build took 20 minutes.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+$ /cygdrive/C/Projects/OpenJDK/make-3.82/make.exe clean images</code></pre></figure>
+
+<p>After a long wait and a lot of warnings and messages it says it created your very own JDK 8 build. Time to give it a try:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd /cygdrive/C/Projects/OpenJDK/jdk8_tl
+$ cd build/windows-x86_64-normal-server-release/images/j2sdk-image
+$ bin/java -version</code></pre></figure>
+
+<p><img src="/images/814989381.jpg" alt="OpenJDK build completed" /></p>
+
+<p><strong>It worked!</strong></p>
+
+<p>Like I said before, I encountered some problems and errors along the way. Most involved the wrong Cygwin (32 bit), this caused bash to crash (STATUS_ACCESS_VIOLATION) during the configure phase. Also I ran into a problem installing ‘Microsoft SDK for Windows 7.1’ which required me to first uninstall Microsoft VisualC++ 2010. Another problem was not installing ‘diff’ in Cygwin (diffutils) so the build found some other diff.exe (from Git?) which gave differences during the actual build causing it to stop.</p>
+
+<p>I might have forgotten to write down some step, if you encounter any problem (and solve them) please tell me so I can update this post!</p>
+
+<h1 id="todo">Todo</h1>
+
+<p>One thing I should add is ‘<strong>ccache</strong>’. This tool greatly improves the build speed because it caches all unchanged classes/files. It was in Cygwin (32 bit) but it is missing in Cygwin (64 bit)… I’ll have to compile and install it myself. This is one thing I haven’t tried yet, but I probably should do!</p>
+
+<p><strong>Update:</strong> I’ve tried compiling and using ccache-3.1.9, but this broke the build. I might try different versions but for now I’ll just skip ‘clean’-ing altogether :-)</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2013/10/building-openjdk-on-windows/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2013/10/to-be-or-not-to-be-agile/" title="To be or not to be... Agile!">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="To be or not to be... Agile!" width="100" height="100" />
@@ -1420,190 +1587,6 @@ Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error dur
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/09/stacktraces-should-be-inverted/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/" title="Hacking with the Mara-Naboisho Lion Project">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hacking with the Mara-Naboisho Lion Project" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2012-09-11T20:05:40+02:00" class="date" />
-          <span itemprop="datePublished" content="2012-09-11T20:05:40+02:00" class="date">
-            Sep 11, 2012 20:05:40
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">Hacking with the Mara-Naboisho Lion Project</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Yesterday a friend of mine pointed me to the following thread:<br />
-<a href="https://github.com/giving/giving.github.com/issues/11">https://github.com/giving/giving.github.com/issues/11</a></p>
-
-<p><img src="/images/lion-with-collar.jpg" alt="lion-with-collar" class="alignright" /></p>
-
-<h1 id="givinggithubcom">giving.github.com</h1>
-
-<p>Giving.github is a project that tries to bring people together. There are a lot of programmers looking for fun projects in the world, and so are scientists/charities and other people with problems!</p>
-
-<p>Be sure to check it out, maybe you can help somebody as well.</p>
-
-<h1 id="mara-naboisho-lion-project">Mara-Naboisho Lion Project</h1>
-
-<p>One of the problems posted to giving.github has something to do with Lion collars. The Mara-Naboisho Lion Project has a couple of collars and some files, but no idea what the data inside the files mean. Their initial description was:</p>
-
-<p>The Mara-Naboisho Lion Project has asked for our help decoding and plotting the positions of lions fitted with GPS collars.</p>
-
-<p>They receive SMSes from the collars:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">File: Collar07854_100806210058.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0806100028008c13ef348a0039d0fe000de8
-71004cc92b5ca92d6213ef26640039d108000de86b004cc92d5ca92d
-5d13ef18620039d101000de865004cc92c5ca92d5813ef0a930039d0
-fc000de864004cc9311c682d5413eefc170039d045000de7d4004cc9
-5b7c692c5013eeee280039d0ff000de85f004cc92a7c692d6fffffff
-ffffffffffffffffffffffffffffffffffff
-    
-File: Collar07854_100807060011.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0807020038008c13efb2eb0039d0ed000de8
-53004cc92e3cea2d8813efa5060039d0fb000de860004cc9291c6a2d
-8413ef96fd0039d0fc000de85e004cc92d5c6a2d7f13ef88e00039d0
-f6000de85a004cc92b5c6a2d7b13ef7ad80039d0fa000de85a004cc9
-327c6a2d77ffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffff</code></pre></figure>
-
-<p>These are presumably SMS PDUs, although simple online decoders don’t seem to make much sense of them. There’s the ASCII text “IRIDIUM” in them, presumably being the SMSC or sender or something string, as IRIDIUM is a satellite telephone system and presumably the bearer when the collars send up their positions.</p>
-
-<p>What format is it, and how do we decode it?</p>
-
-<h1 id="not-sms-pdu">Not SMS PDU</h1>
-
-<p>This is where I started analyzing, and I quickly ruled out that the hex-code is pure PDU (which can easily be translated). It seems to be some dialect/own protocol.</p>
-
-<p>The first major breakthrough was realizing that there is one big header that both files have in common, and the real message starts with <strong>0A</strong>. And the two messages after that have a repeating pattern:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Common header?
-
-074952494449554d000000000000000
-0000000000000000000000000000000
-040f333030303334303132323937383
-9300000000000000000000000000000
-0000f10a
-
-Sub header?
-SMS 1: 0806100028008c13
-SMS 2: 0807020038008c13
-
-
-Message #1:
-ef348a0039d0fe000de871004cc92b5ca92d6213
-ef26640039d108000de86b004cc92d5ca92d5d13
-ef18620039d101000de865004cc92c5ca92d5813
-ef0a930039d0fc000de864004cc9311c682d5413
-eefc170039d045000de7d4004cc95b7c692c5013
-eeee280039d0ff000de85f004cc92a7c692d6fff
-ffffffffffffffffffffffffffffffffffffffff
-
-Message #2:
-efb2eb0039d0ed000de853004cc92e3cea2d8813
-efa5060039d0fb000de860004cc9291c6a2d8413
-ef96fd0039d0fc000de85e004cc92d5c6a2d7f13
-ef88e00039d0f6000de85a004cc92b5c6a2d7b13
-ef7ad80039d0fa000de85a004cc9327c6a2d77ff
-ffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffff</code></pre></figure>
-
-<p>This sure adds some structure to the files. I also guessed the first file has actually 6 entries and the second file has only 5 entries.</p>
-
-<h1 id="first-field-deciphered">First field deciphered</h1>
-
-<p>The second breakthrough came through Twitter. I posted this problem in a tweet and after a couple of hours I got a reply that there was progress on the <a href="http://stackoverflow.com/questions/12347625/decode-sms-reporting-gps-positions-of-lions-in-kenya">stackoverflow</a> question.</p>
-
-<p>This was DStibbe’s reply:</p>
-
-<p>-——————————————————————————–<br />
-Perhaps the ‘13’ is not part of the headers but the message instead?<br />
-The messages would then be:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Message #1
-13ef 348a 0039 d0fe 000d e871 004c c92b 5ca9 2d62
-13ef 2664 0039 d108 000d e86b 004c c92d 5ca9 2d5d
-13ef 1862 0039 d101 000d e865 004c c92c 5ca9 2d58
-13ef 0a93 0039 d0fc 000d e864 004c c931 1c68 2d54
-13ee fc17 0039 d045 000d e7d4 004c c95b 7c69 2c50
-13ee ee28 0039 d0ff 000d e85f 004c c92a 7c69 2d6f
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff
-
-Message #2
-13ef b2eb 0039 d0ed 000d e853 004c c92e 3cea 2d88
-13ef a506 0039 d0fb 000d e860 004c c929 1c6a 2d84
-13ef 96fd 0039 d0fc 000d e85e 004c c92d 5c6a 2d7f
-13ef 88e0 0039 d0f6 000d e85a 004c c92b 5c6a 2d7b
-13ef 7ad8 0039 d0fa 000d e85a 004c c932 7c6a 2d77
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff</code></pre></figure>
-
-<p>It does seem like a log , with the message for Aug 06 (guessing) has 6 entries and the second from Aug 07 having 7.<br />
-What would a collar record? I’m guessing longitude,latitude and timestamp?</p>
-
-<p>Chances are high that the first eight digits represent the timestamp. They are incremental from bottom to top.</p>
-
-<p>Eg. 13ef348a = 334443658.<br />
-334443658 seconds = 10 years, 8 months, 6 days, 23:00:58</p>
-
-<p>This matches the date in the title of the first sms: Collar07854_<strong>100806 210058</strong>.SMS<br />
-It even matches the timestamp minus 2 hrs in the title!<br />
--——————————————————————————–</p>
-
-<h1 id="more-information">More information</h1>
-
-<p>At this point the progress stopped a bit, we couldn’t get the other bytes translated. There seemed to be certain integer values: 0039 d0ed for example. This probably isn’t floating point (which we thought it would be, latitude/longitude/altitude) because floating point numbers have the exponent in the first 11 bits. When a number starts with 00’s it doesn’t have the exponent part filled.</p>
-
-<p>So we asked the project for some more information, for example about the recorded data (where/when) and the manufacturer of the collars.<br />
-They gave us <a href="https://gist.github.com/3698320">this KML file</a>, and this company name: Vectronic-Aerospace.</p>
-
-<h1 id="latlon-ive-got-you">Lat/lon, I’ve got you!</h1>
-
-<p>The biggest part we wanted to decipher was the lan/lon location (that is what the researchers want to have). I came to this breakthrough after reading a <a href="http://www.vectronic-aerospace.com/files/Flyer-GPS_Plus-Data_Manager.pdf">PDF</a> file from Vectronic-Aerospace’s website. It has some screenshots from their original software (why aren’t they using that free software?!). In these screenshots I noticed integer coordinates very close to the integers I’ve managed to get from the hex-data! It was called ECEF data, this is X,Y,<strong>Z</strong> data! Until now my guess was that the SMS files had lat/lon coded in binary, but it has XYZ information.</p>
-
-<p>After a quick google I managed to find some code to translate from ECEF coordinates to lat/lon and it gave me the following location:<br />
-Lat: 52.43067054630929<br />
-Lon: 13.525755535406619<br />
-Height: 88.99500464554876</p>
-
-<p>When plotted in Google Maps it gave me a location in Germany, at first I thought it was another dead end, but then I looked <a href="http://www.vectronic-aerospace.com/index.php?p=contact">here</a>. It turns out it was the EXACT location of Vectronic Aerospace, the creators of the collar! Problem solved.</p>
-
-<h1 id="whats-next">What’s next?</h1>
-
-<p>There are still some mysteries, for example… what are the last bytes? Looking at the screenshots in the PDF I suspect it would be main battery voltage, backup voltage and temperature. The project also probably wants to integrate the collar files with the website. And there are of course a lot more <a href="http://giving.github.com/">giving.github.com</a> problems to solve!</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

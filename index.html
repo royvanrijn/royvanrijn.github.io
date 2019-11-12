@@ -117,6 +117,109 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/11/the-world-of-biased-algorithms/" title="The world of biased algorithms">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The world of biased algorithms" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-11-12T13:11:24+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-11-12T13:11:24+01:00" class="date">
+            Nov 12, 2019 13:11:24
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/11/the-world-of-biased-algorithms/">The world of biased algorithms</a></h1>
+
+        <span itemprop="articleBody">
+          <p>The world is changing, more and more people are openly against racism, against gender discrimination, very much pro equality. People and companies are being called out when they do discriminate and there is a big movement against bias (in general).</p>
+
+<p>One problematic thing though, for me as a programmer, is the backlash against ‘biased algorithms’.</p>
+
+<h1 id="algorithms">Algorithms</h1>
+
+<p>What are algorithms?</p>
+
+<p>If you look up the definition <a href="https://en.wikipedia.org/wiki/Algorithm">wikipedia</a> you’ll find:</p>
+
+<blockquote>
+  <p>A sequence of instructions, typically to solve a class of problems or perform a computation. Algorithms are unambiguous specifications for performing calculation, data processing, automated reasoning, and other tasks.</p>
+</blockquote>
+
+<p>In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.</p>
+
+<h1 id="bias-in-algorithms">Bias in algorithms</h1>
+
+<p>The problem here is <em>bias</em>. What is the problem with bias in algorithms?</p>
+
+<p>Suppose we have an algorithm that determines if you do or don’t get a loan, and also determines the interest rate. This is great, before this system the bank had a human that was responsible for applying/declining loans, now a the computer can do this.</p>
+
+<p>Now of course, it would be very bad if the programmer and product owners came up with the following rule:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">applicant</span><span class="o">.</span><span class="na">isFemale</span><span class="o">())</span> <span class="o">{</span>
+   <span class="n">loan</span><span class="o">.</span><span class="na">addInterest</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span> 
+<span class="o">}</span></code></pre></figure>
+
+<p>If is easy to state this rule is discriminating against a particular gender, we <strong>don’t</strong> want this discrimination.</p>
+
+<p>But what if a certain car insurance charges 5% extra for male drivers under 25 with DUI charge? That kind of makes sense, it is <em>still</em> discrimination though, but we do allow this. It is a slippery slope.</p>
+
+<p>The good thing though is: The rules are clear. Before there might have been a racist human doing the declines, now it is clear.</p>
+
+<h1 id="bias-in-aiml">Bias in A.I./ML</h1>
+
+<p>The real problem though starts when you enter the world of AI, big data and machine learning. Now a programmer is no longer writing the readable rules. A machine is using a lot of data to make the best possible decision and find (invisible) correlations.</p>
+
+<p>What is the ‘best decision’? Well, most of the time it is looking at the past, minimizing risk or cost, mimicking human behaviour. This is where a lot of bias comes from and it makes sense.</p>
+
+<p>If you want everyone to be treated equally, there is no need for a complex algorithm in the first place. The sole purpose of these algorithms is to treat every individual differently based on certain traits. Sometimes we think these traits are obvious and <em>valid</em>, sometimes we think these traits racist and idiotic, but a computer/A.I. system doesn’t know the difference.</p>
+
+<p>A reason A.I. declines a loan:</p>
+
+<ul>
+  <li>People with irregular income and a poor credit history &gt; we’re okay with this.</li>
+  <li>Female from Easy Kentucky above 40 with a daughter &gt; wait, what?</li>
+</ul>
+
+<p>The algorithm is probably right though, it is minimizing risk. And while analyzing the given data it found some correlation. This might be because the humans that historically did the job before the algorithm had a certain bias and it was trained on that data, or there actually is a bigger risk for females from East Kentucky based on historic data.</p>
+
+<h1 id="minimizing-bad-bias">Minimizing ‘bad’ bias</h1>
+
+<p>So there are <strong>good</strong> and <strong>bad</strong> bias, how can we use this? Well, if you are training the loan application, give it the ‘right’ data. Train the model with historic data that has income and credit history data, but not the fields for ‘race’ and ‘gender’.</p>
+
+<p>There, problem solved.</p>
+
+<p>Or not? It turns out those A.I. systems are very stubborn in finding correlations. If we don’t give the system any race information, but we do give the system an address and there is a current (or historic) correlation between race and loan declines… the A.I. might secretly group together people based on where they live. There are examples of this, where certain poorer black neighbourhoods are being discriminated against/biased without the system knowing anything about these neighbourhoods or the race of the people living there.</p>
+
+<h1 id="algorithms-are-bias">Algorithms <strong>are</strong> bias</h1>
+
+<p>The algorithmic bias problem isn’t going away, it will probably become much worse. Systems are getting more (and more) data and it will find many more correlations using this data.</p>
+
+<p>It is impossible to have algorithms without bias because these decision-making algorithms <strong>are</strong> bias. The whole reason they exist is to add some bias into a neutral decision.</p>
+
+<p>What’s your thought on this? Send me a tweet: @<a href="https://twitter.com/royvanrijn">royvanrijn</a></p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2019/11/sat-solver-in-java/" title="SAT solving: Creating a solver in Java (part 2)">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="SAT solving: Creating a solver in Java (part 2)" width="100" height="100" />
@@ -2796,60 +2899,6 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2017/02/javaone-rock-star-2016/" title="JavaOne Rock Star 2016">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/rockstar.png" alt="JavaOne Rock Star 2016" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2017-02-01T09:28:12+01:00" class="date" />
-          <span itemprop="datePublished" content="2017-02-01T09:28:12+01:00" class="date">
-            Feb 1, 2017 09:28:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/02/javaone-rock-star-2016/">JavaOne Rock Star 2016</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Today I got an email with the subject: “Congratulations JavaOne 2016 Rock Star!”. It turns out the JavaOne 2016 Ignite session was voted enough to receive a JavaOne <a href="https://www.oracle.com/javaone/rock-star-wall-of-fame.html">Rock Star</a> Award!</p>
-
-<p>I was so excited, elated even!</p>
-
-<p><img src="/images/rockstar1.gif" alt="Rocking that talk" /></p>
-
-<p>But I quickly found out that the JavaOne Rock Star lifestyle <strong>isn’t</strong> as much fun as it sounds.</p>
-
-<ul>
-  <li>Being 3 hours late for a meeting, even a Rock Star can’t do that.</li>
-  <li>Peeing in the corner of your office while holding a bottle of Jack Daniels, still not appreciated.</li>
-  <li>Wearing ripped jeans, a leather jacket and other than that just chest hair, is considered <em>too</em> casual.</li>
-  <li>The groupies? It is like answering random Stack Overflow questions, non-stop, face to face.</li>
-  <li>After each coding session, smashing your MacBook on the floor… quickly becomes expensive.</li>
-</ul>
-
-<p><img src="/images/drunk-wombat.jpg" alt="Drunk Wombat holding bottle of Jack Daniels" class="aligncenter" /></p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
