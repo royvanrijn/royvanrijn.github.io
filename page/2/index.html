@@ -119,6 +119,66 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2017/06/inverse-conways-law/" title="Inverse Conway's law">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Inverse Conway's law" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2017-06-22T14:28:12+02:00" class="date" />
+          <span itemprop="datePublished" content="2017-06-22T14:28:12+02:00" class="date">
+            Jun 22, 2017 14:28:12
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/06/inverse-conways-law/">Inverse Conway's law</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Today I got to present at <a href="http://www.devoxx.pl">Devoxx Poland</a> on being agile and managing your architecture.</p>
+
+<p>One of the points I made during the talk had to do with Conway’s Law. For those unfamiliar with it, here it is:</p>
+
+<blockquote>
+  <p>organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations <cite>M. Conway</cite></p>
+</blockquote>
+
+<p>This basically means that the code you create is likely to reflect the way the people and teams in your company communicate. For example, banks are usually pretty strict and have a tendency to document things. The code written at banks in turn have the tendency to use SOAP for example, verbose and strict.</p>
+
+<p>The project I’m currently working on has a very agile mindset, we change a lot and have open communication. This reflects in our codebase as well, all the code is easy to understand and easy to change (thankfully!).</p>
+
+<p>But lately we’ve started to move away from our old monolith and we’ve began cutting it up into microservices. That’s when I noticed something odd, which I call the <strong>Inverse Conway’s Law</strong> (maybe it is <strong>Roy’s Law</strong>?):</p>
+
+<blockquote>
+  <p>organisations which radically change their system design should expect changes in communication structure <cite>Roy van Rijn</cite></p>
+</blockquote>
+
+<p>What does this mean?</p>
+
+<p>We’ve started to move towards a microservice environment, where each team has a responsibility over a couple of services. They’ve developed it and they <em>own</em> it. This ownership completely changed the culture in our team. Up to now if the monolithic backend was broken or offline, everyone was hurting and everyone wanted to fix this as soon as possible. With microservices, this is gone. The first thing we now do is check which microservice failed. If it isn’t theirs, it is not their problem, it’s someone elses problem now!</p>
+
+<p>This is just one example on how changing the design of our system changed the culture and team dynamic. It is one thing that sounds logical when you think about it, but I didn’t expect this before we started the transition.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2017/02/javaone-rock-star-2016/" title="JavaOne Rock Star 2016">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/rockstar.png" alt="JavaOne Rock Star 2016" width="100" height="100" />
@@ -1672,79 +1732,6 @@ Before diving into that discussion, lets take a look at what Optional does and h
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/04/the-collapse-of-java-ee/" title="The collapse of Java EE?">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="The collapse of Java EE?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-04-25T10:10:09+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-04-25T10:10:09+02:00" class="date">
-            Apr 25, 2016 10:10:09
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/the-collapse-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/04/the-collapse-of-java-ee/">The collapse of Java EE?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>Recently there has been a lot of discussion about the state of Java EE and Oracle’s stewardship. There seems to be happening a lot. There is the fact that a lot of evangelist are leaving Oracle. There have been (Twitter) ‘fights’ between developers from Pivotal and Reza Rahman. And there are the Java EE Guardians, a group formed by Reza after he left Oracle.</p>
-
-<p>And during the last JCP ‘<a href="https://jcp.org/aboutJava/communityprocess/ec-public/materials/2016-04-05/April-2016-Public-Minutes.html">Executive Committee Meeting Minutes</a>’ the London Java Community (LJC) openly expressed their worries:</p>
-
-<blockquote>
-  <p>Martijn said that while he recognizes Oracle’s absolute right to pursue a product strategy and allocate resources in ways that meet their business interests, the LJC is concerned that the lack of progress and the absence of any explanation from Oracle is doing significant harm to the Java community and ecosystem.</p>
-
-  <p>He explained that “splinter groups” are discussing taking over both the code work and thought leadership of Java EE, and that many companies are building proprietary frameworks such as microservices stacks, leading to even more fragmentation.</p>
-</blockquote>
-
-<p>There are splinter groups forming, companies are building frameworks and stacks without following Java EE or contributing to future Java EE specs. People in the blogosphere/tweetosphere are complaining and worrying about it… but is it really a problem?</p>
-
-<p>In my personal opinion: <strong>No</strong>.</p>
-
-<p>There have always been companies experimenting, pioneering new technologies, without following Java EE specifications. This is for example how the Spring Framework got as big as it did. Remember however: Spring really shaped the future of Java EE, without it we might still be coding EntityBeans.</p>
-
-<p>I think it might not even be a bad thing for Java EE to take a little break. There is a lot of unproven technology happening at the moment, for example there are the reactive frameworks and everything related to microservices. The landscape is changing quickly right now.</p>
-
-<p>The worst thing that Java EE can do is to come up with their own new standards for these technologies while we, as developers, haven’t really worked out the quirks yet. Historically the best Java EE specs (IMHO) are the ones that came late to the party. But those are built on years of experimentation and crystallization. Those specs looked at everything the market had to offer, brought the relevant groups together and made it work.</p>
-
-<h2 id="so-there-is-nothing-wrong">So there is nothing wrong?</h2>
-
-<p>There is one big danger to Java EE right now. It is the fact people are complaining. If we don’t stop this, it might all become a selffulfilling prophecy.</p>
-
-<p>Instead of worrying about Java EE, lets build tools and frameworks that are worth becoming an official spec. For example, look at the work <a href="http://blog.joda.org/">Stephen Colebourne</a> did with <a href="http://www.joda.org/joda-time/">Joda Time</a>. He was fed up with the horrible <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Date.html">java.util.Date</a> and decided to make something better. After years of programming and growing a huge fanbase it was finally turned into an excellent specification (<a href="https://jcp.org/en/jsr/detail?id=310">JSR-310</a>).</p>
-
-<p>If you look at it, the most important thing Java EE might have done for us is bringing the relevant groups together, share ideas and distill the best practices (and writing those down as specifications). It is exactly the opposite of what is happening right now. I don’t mind splinter groups forming, if they get the right people together and work together towards forming solid specifications and implementations, why not?</p>
-
-<p>I’m pretty sure Oracle (with Java EE) will take a look at the proposals and adopt them.</p>
-
-<p>The most important thing is that we keep working together!</p>
-
-<p><strong>Update</strong>:
-Some people have warned me that I’m being <em>too</em> optimistic. But time will tell, maybe Oracle will kill off Java EE, maybe they won’t. Maybe everything will take a turn for the worse, maybe it won’t.</p>
-
-<p>For now I’ll just do what the Dalai Lama suggests: Choose to be optimistic, it feels better.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/the-collapse-of-java-ee/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

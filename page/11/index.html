@@ -119,6 +119,64 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/01/guess-the-algorithm/" title="Guess the algorithm">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Guess the algorithm" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-01-23T21:54:24+01:00" class="date" />
+          <span itemprop="datePublished" content="2010-01-23T21:54:24+01:00" class="date">
+            Jan 23, 2010 21:54:24
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/01/guess-the-algorithm/">Guess the algorithm</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Yesterday I found and programmed a nice little algorithm. I’m not going to tell you (yet) what it does and how its called, but I’ll just show the code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">function</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">while</span><span class="o">(</span><span class="n">x</span><span class="o">!=</span><span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">((</span><span class="n">x</span><span class="o">&amp;</span><span class="mi">1</span><span class="o">)==</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">r</span><span class="o">+=</span><span class="n">y</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">x</span><span class="o">&gt;&gt;&gt;=</span><span class="mi">1</span><span class="o">;</span>
+		<span class="n">y</span><span class="o">&lt;&lt;=</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>So tell me, what does this do, and what is the algorithm called?</p>
+
+<p><strong>Edit:</strong></p>
+
+<p>And indeed (it was a simple one) the correct solution is multiplication, and to be specific, Ethiopian or <a href="http://mathworld.wolfram.com/RussianMultiplication.html">Russian Multiplication</a>.</p>
+
+<p>I’ll probably do more, harder ones, in the future..!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2010/01/guess-the-algorithm/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2010/01/dependency-injection-dissection/" title="Learn to use Dependency Injection">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Learn to use Dependency Injection" width="100" height="100" />
@@ -1997,101 +2055,6 @@ As you might already know, I am an atheist. Yes, in my opinion there is no God, 
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/java-generics-for-compare/" title="Java Generics for Compare">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Java Generics for Compare" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-04T16:35:15+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-04T16:35:15+01:00" class="date">
-            Dec 4, 2009 16:35:15
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/java-generics-for-compare/">Java Generics for Compare</a></h1>
-
-        <span itemprop="articleBody">
-          <p>I’ve been developing with Java 5+ for quite a while now. Not all developers are this lucky, some are still stuck with 1.4… some even with 1.3! But my clients all made the excellent step forward to Java 5 (some even to 6). The problem is, they moved the runtime/JDK but forget to move their developers!</p>
-
-<p>In Java 5 the language brings some good improvements, the for-loop is easy to understand, and almost all the developers are using this by now. The problem starts with generics. There is a part most developers understand, the Collections API. Almost all programmers use lists now as: List<Integer> instead of a plain old List. This is a good start, but it must not end here! First, I must admit, generics in Java can sometimes be hard and confusing (when using &lt;? extends X&gt; and &lt;? super X&gt;). So I'm not going to talk about any of this 'hard stuff'. Its the use of 'easy' generics that can our lifes so much easier.</Integer></p>
-
-<p>For example the piece of code below:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span> <span class="o">{</span> 
-
-    <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">LabelPlaceholder</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o1</span><span class="o">;</span>
-        <span class="nc">LabelPlaceholder</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LabelPlaceholder</span><span class="o">)</span> <span class="n">o2</span><span class="o">;</span>
-        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Of course, there seems to be not much wrong with the code, I see it all the time. Yes, the code breaks if you put something else in the comparator, but hey… the Javadoc says it only accepts LabelPlaceholders! So lets use this code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">List</span> <span class="n">holders</span> <span class="o">=</span> <span class="n">fillList</span><span class="o">();</span>
-<span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">holders</span><span class="o">,</span> <span class="k">new</span> <span class="nc">LabelPlaceholderComparator</span><span class="o">());</span></code></pre></figure>
-
-<p>Done! Its working and no problems right? Not quite, your IDE (Eclipse in my case) complains about this code.<br />
-For example Eclipse says:</p>
-
-<p><em>Type safety: The expression of type LabelPlaceholderComparator needs unchecked conversion to conform to Comparator&lt;? super T&gt;</em></p>
-
-<p>At this point, most programmers at the company I work for now will just ignore this warning. They might even add:<br />
-<em>@SuppressWarnings(“unchecked”)</em></p>
-
-<p>What a shame… Lets just examine this warning, what is Eclipse trying to tell us here? The compiler doesn’t know we created the Comparator with only LabelPlaceholders in mind. But the compiler does know (with generics) that the List only contains LabelPlaceholders. So the warning is (in understandable English):</p>
-
-<p><em>I’ve got a list here of T (LabelPlaceholders) and a Comparator for Objects, this can go wrong! I’d rather have a specific Comparator for this job. Do you have one for me?</em></p>
-
-<p>The solution to this problem is very simple, but most neglect to use it:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LabelPlaceholderComparator</span> <span class="kd">implements</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="nc">LabelPlaceholder</span><span class="o">&gt;</span> <span class="o">{</span> 
-
-    <span class="cm">/**{@inheritDoc */</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">LabelPlaceholder</span> <span class="n">p1</span><span class="o">,</span> <span class="nc">LabelPlaceholder</span> <span class="n">p2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">p1</span><span class="o">.</span><span class="na">getLabel</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">p2</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As you can see, the code is much smaller. The interface is now generified, it knows we are going to compare LabelPlaceholders now, nothing more, nothing less. Also, we don’t have to cast anymore, because of the generics you can’t put anything else in there.</p>
-
-<p>So, lets go to the conclusion: Why is the latter code better code?</p>
-
-<ol>
-  <li>As you can see, the code is smaller!</li>
-  <li>There are no casts, the code is safer (no ClassCastException or eleborate class checks)</li>
-  <li>If somebody uses your code, he/she knows what kind of objects the Comparator can handle. You don’t have to read the Javadoc or the code to see what it does.</li>
-</ol>
-
-<p>Throughout the projects I encounter I keep finding examples of places where generics would have made the code smaller/safer/more understandable. For some reason the programmers still only use generics on collections. So, even though generics aren’t perfect, please use them where/when you can, it’ll always add clarity to the code, and most of the time it’ll also make your code safer, and in some cases the code gets smaller because you can leave away casts and class-checks.</p>
-
-<p>Don’t ever let me see public int compare(Object o1, Object o2); again!</p>
-
-<p>(You see, it is possible for me to have a discussion about Java generics without mentioning <a href="http://gafter.blogspot.com/2006/11/reified-generics-for-java.html">reified generics</a>!)</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

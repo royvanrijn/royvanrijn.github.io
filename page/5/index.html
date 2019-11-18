@@ -119,6 +119,49 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2014/06/devoxx-uk-2014-the-video/" title="Devoxx UK 2014: the video">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Devoxx UK 2014: the video" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2014-06-18T10:13:30+02:00" class="date" />
+          <span itemprop="datePublished" content="2014-06-18T10:13:30+02:00" class="date">
+            Jun 18, 2014 10:13:30
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx-uk-2014-the-video/">Devoxx UK 2014: the video</a></h1>
+
+        <span itemprop="articleBody">
+          <p>I’ve been filming again at Devoxx UK, here is the final cut:</p>
+
+<iframe type="text/html" src="https://player.vimeo.com/video/98478630" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+
+<p>Brings back so many great memories.</p>
+
+<p><em>Including the night in the pub when ‘we’ won against Spain, 5-1</em></p>
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2014/06/devoxx-uk-2014/" title="Review: Devoxx UK 2014">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="Review: Devoxx UK 2014" width="100" height="100" />
@@ -1653,120 +1696,6 @@ Some more info, examples and other solutions can be found <a href="http://zerotu
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2013/10/java-default-methods-future-problem/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2013/10/openjdk-and-xkcd-random-number/" title="OpenJDK and XKCD: Random number">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="OpenJDK and XKCD: Random number" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2013-10-15T16:47:44+02:00" class="date" />
-          <span itemprop="datePublished" content="2013-10-15T16:47:44+02:00" class="date">
-            Oct 15, 2013 16:47:44
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2013/10/openjdk-and-xkcd-random-number/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/10/openjdk-and-xkcd-random-number/">OpenJDK and XKCD: Random number</a></h1>
-
-        <span itemprop="articleBody">
-          <p>A couple of days ago a our <a href="http://www.jpoint.nl">JPoint</a> hackathon we discussed building (Adopt) OpenJDK. After finding out a better way to build OpenJDK on Windows (<a href="/blog/2013/10/building-openjdk-on-windows/">read it here</a>), I’ve made my first improvement to OpenJDK.</p>
-
-<p>This is a famous XKCD cartoon I wanted to implement:<br />
-<a href="http://xkcd.com/221/"><img src="/images/random_number.png" alt="getRandomNumber() { return 4; } // chosen by fair dice roll, guaranteed to be random" /></a></p>
-
-<p>Where do we get started? Actually it turned out it is fairly easy to make this ‘improvement’. We just need to find the correct source file and do a build as described <a href="/blog/2013/10/building-openjdk-on-windows/">here</a>.</p>
-
-<p>Instead of the HotSpot core (which is all written in C) the JDK libraries are just classes/Java files. If you want to look at these Java files you’ll need to browse to <strong>[openjdk]/jdk/src/share/classes</strong>. There you’ll find familiar directories/packages like “java.*”, “javax.*” and even “sun.*”.</p>
-
-<p>The file we need to change to <em>improve</em> Random is of course: <strong>[openjdk]/jdk/src/share/classes/java/util/Random.java</strong></p>
-
-<p>Now we browse until we find:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
- * Returns the next pseudorandom, uniformly distributed {@code int}
- * value from this random number generator's sequence. The general
- * contract of {@code nextInt} is that one {@code int} value is
- * pseudorandomly generated and returned. All 2&lt;sup&gt;32&lt;/sup&gt; possible
- * {@code int} values are produced with (approximately) equal probability.
- *
- * &lt;p&gt;The method {@code nextInt} is implemented by class {@code Random}
- * as if by:
- *  &lt;pre&gt; {@code
- * public int nextInt() {
- *   return next(32);
- * }}&lt;/pre&gt;
- *
- * @return the next pseudorandom, uniformly distributed {@code int}
- *         value from this random number generator's sequence
- */</span>
-<span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="nf">next</span><span class="o">(</span><span class="mi">32</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we need fix the obvious error and turn it into:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
- * Returns guaranteed random number, rolled by nerdy DnD d20 dice.
- *
- * http://en.wikipedia.org/wiki/D20_System
- *
- * @return guaranteed random number
- */</span>
-<span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="mi">14</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And after the build I pointed Eclipse to my newly generated JDK: <strong>[openjdk]/build/windows-x86_64-normal-server-release/images/j2sdk-image</strong>.<br />
-Next I run the following code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
-
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="kd">final</span> <span class="nc">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Random</span><span class="o">();</span>
-		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">rnd</span><span class="o">.</span><span class="na">nextInt</span><span class="o">());</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Result:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">14
-14
-14
-14
-14
-14
-14
-14
-14
-14</code></pre></figure>
-
-<p><strong>Serious note</strong>:<br />
-This is absolutely not a valid patch but it really shows how easy it is to modify the JDK itself! There is a lot of low hanging fruit in the JDK, from missing unit tests, to unused imports to classes that don’t use generics yet. For more things to hack on, please read: <a href="https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK">https://java.net/projects/adoptopenjdk/pages/WhatToWorkOnForOpenJDK</a>!</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2013/10/openjdk-and-xkcd-random-number/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
