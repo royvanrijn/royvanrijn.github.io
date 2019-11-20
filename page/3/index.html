@@ -119,6 +119,145 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2016/04/deprecating-optional-get/" title="Deprecating Optional.get()">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Deprecating Optional.get()" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2016-04-28T14:10:09+02:00" class="date" />
+          <span itemprop="datePublished" content="2016-04-28T14:10:09+02:00" class="date">
+            Apr 28, 2016 14:10:09
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/04/deprecating-optional-get/">Deprecating Optional.get()</a></h1>
+
+        <span itemprop="articleBody">
+          <p>On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a>.
+Before diving into that discussion, lets take a look at what Optional does and how you can use it.</p>
+
+<h2 id="checking-for-null">Checking for null</h2>
+
+<p>What do you do when your code calls an external service or <em>god forbid</em> a microservice, and the result isn’t always available?</p>
+
+<p>Most of the time the protocol you are using facilitates in the optional part, for example in REST you’ll get a <em>404</em> instead of JSON. Getting this <em>404</em> forces you to think about this scenario and do something when this happens.</p>
+
+<p>But what do you do when you’re calling a framework (on the boundary of your code) and the value isn’t always known?</p>
+
+<p>You either get the value or the result is a dreaded <strong>null</strong>. This causes a lot of null checks, or bugs where the code just crashes with a NullPointerException.</p>
+
+<p>Example (old skool, Java 7):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.</p>
+
+<h2 id="javautiloptional">java.util.Optional</h2>
+
+<p>What happens when you are processing a <em>stream</em> and some values are <em>null</em>? You don’t want null checks inside a stream! This is where Java 8’s Optional comes in. If you’re not (yet!?) using Java 8, there are other implementations as well. For example <a href="https://github.com/google/guava">Google Guava</a> has an Optional as well.</p>
+
+<p>Optional is a class that ‘might’ have a given value in it, or not, it is optional. So how exactly is this helpful? Instead of checking for null this wrapper class can handle some situations for you.</p>
+
+<p>For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
+
+    <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
+
+<p>Or the shorter ‘fluid’ version:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
+
+<p>Even if the <em>Optional</em> is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.</p>
+
+<p>As you can see Optional can really clean up your code. You don’t need to worry about null checks anymore.</p>
+
+<p>So what is the problem with Optional.get()?</p>
+
+<h2 id="optionalget-deprecation-discussion">Optional.get() deprecation discussion</h2>
+
+<p>Pretty much out of the blue on the OpenJDK mailinglist <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040484.html">an email arrived</a> with a <a href="http://openjdk.java.net/guide/webrevHelp.html">webrev</a> (similar to a patch file) that contained the deprecation of <em>Optional.get()</em>.</p>
+
+<p>The get() method is too easy to find, and the name isn’t quite what you’d expect, and the webrev author claims there are a lot of cases online where people made the same mistakes.</p>
+
+<p>Many programmers, when they first encounter <em>Optional</em>, don’t know what to do. They look in their IDE and the first thing that pops up is <em>get()</em>.</p>
+
+<p>It is just an easy method to call:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
+
+<p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
+        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span></code></pre></figure>
+
+<p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>
+
+<ul>
+  <li>If you want to do something with the result, use <em>filter</em>, <em>map</em>, <em>ifPresent</em> (and many others).</li>
+  <li>If you need to return something, either return an Optional yourself, or get a default value by calling <em>orElse</em>, <em>orElseGet</em> or <em>orElseThrow</em>.</li>
+</ul>
+
+<p>This is all you need, why have a <em>get</em>-method?</p>
+
+<p>The proposal on the mailinglist is to deprecate the <em>get()</em> method and rename it to <em>getWhenPresent()</em>. This name change should warn people that it might not be present and they should check <em>isPresent</em> before calling <em>get()</em>.</p>
+
+<p>Instead of embracing this change some people on the mailinglist argue against deprecation, some of their reasons:</p>
+
+<ul>
+  <li>Renaming will break a <em>LOT</em> of code, well, not really break the code, it will cause deprecation warnings</li>
+  <li><em>getWhenPresent()</em> instead of <em>get()</em> just adds noise to the code, it doesn’t solve anything</li>
+  <li>People should just read the JavaDoc, it clearly states what <em>get()</em> does and throws</li>
+  <li>Guava’s Optional also has the same <em>get()</em> method, they’ve never heard about the problem</li>
+</ul>
+
+<p>The most honest and one of the more powerful replies in the discussion was <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040531.html">from Brian Goetz</a> himself:</p>
+
+<blockquote>
+  <p>As the person who chose the original (terrible) name, let me weigh in…</p>
+
+  <p>……</p>
+
+  <p>I’d like to see it fixed, and the sooner the better.</p>
+</blockquote>
+
+<p>He is clearly in favor of deprecation… what is your opinion? Let me know in the comments!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2016/04/the-collapse-of-java-ee/" title="The collapse of Java EE?">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="The collapse of Java EE?" width="100" height="100" />
@@ -1331,74 +1470,6 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2015/11/javaone-2015-and-devoxx-2015/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2015/05/microservices-creationism-versus-evolutionism/" title="Microservices: Creationism versus Evolutionism">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/micro-islands.jpg" alt="Microservices: Creationism versus Evolutionism" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2015-05-14T12:43:00+02:00" class="date" />
-          <span itemprop="datePublished" content="2015-05-14T12:43:00+02:00" class="date">
-            May 14, 2015 12:43:00
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/05/microservices-creationism-versus-evolutionism/">Microservices: Creationism versus Evolutionism</a></h1>
-
-        <span itemprop="articleBody">
-          <p>This morning a friend (<a href="https://twitter.com/vgrgic/status/598791639784660994">@vgrgic</a>) tweeted the following quote from Martin Fowler:</p>
-
-<blockquote>
-  <p>“So if you can keep your system simple enough to avoid the need for microservices: do.”</p>
-</blockquote>
-
-<p>This is absolutely true I think, microservices are far from the silver bullet some people want you to believe. They do have a place in software architecture obviously, but there is always a ‘it depends’.</p>
-
-<h1 id="creationists">Creationists</h1>
-
-<p>A lot of microservices ‘experts’ I’ve met are creationists. When they start designing an application (the last two years), they break the requirements down into pieces. Once they start coding they instantly create small services and connect them. But in my experience, this has a major drawback. When doing this, you’ll need to make quite a lot of assumptions upfront on what the future of the service will hold and how it will grow. Once you’ve created small services they have very strong boundaries, those boundaries really dictate and limit how your application can and will grow. This can work well, only if all your assumptions turn out to be true, but really, how often does that happen?</p>
-
-<h1 id="evolutionists">Evolutionists</h1>
-
-<p>I’ve labelled myself as a design evolutionist. Always <strong>start</strong> with a monolith. Properly separate the concerns in your code, keep it really clean and tidy. Always be aware of what each piece of code does and if it belongs where you just wrote it. In the best scenario, you’ll end up with a simple, well build, working monolith! This is also what Martin Fowler describes in his piece on <a href="http://martinfowler.com/bliki/MicroservicePremium.html">MicroservicePremium</a>. There is a point where the monolith becomes a burden to manage. Once you reach that point, and you’ve payed proper attention to the separation of concerns, it should be trivial to cut loose a well defined microservice from your code.</p>
-
-<h1 id="rant-about-the-hype">Rant about the hype</h1>
-
-<p><strong>Warning:</strong> The following paragraph is full of nonsense.</p>
-
-<p>Until recently I couldn’t understand the microservices hype. Why is it suddenly this popular? But recently I’ve seen the light. I now know <em>why</em> so many people like it. Microservices has a wide appeal for many wrong reasons.</p>
-
-<ol>
-  <li>Architects (like me) like it because it solves one kind of problem really well, managing and maintaining a huge application.</li>
-  <li>The DevOps community likes it because they have a lot <strong>to do</strong> when you have heaps of services.</li>
-  <li>Large <strong>SOA/ESB</strong> companies like it, they almost went bankrupt and out of fashion, but now they can <strong>sell</strong> their crappy tooling again as it ‘enables microservices’.</li>
-  <li>The OSGi community likes it, they too can use the term microservices to sell <strong>OSGi</strong> tooling and knowledge.</li>
-  <li>Application servers like it because they can create tooling to enable microservices.</li>
-  <li>Monitoring companies found a new gap in the market, they can now sell microservices monitoring tools…</li>
-  <li>Etc etc et <em>fucking</em> cetera!</li>
-</ol>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2015/05/microservices-creationism-versus-evolutionism/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>OpenAI GPT-2 is amazing</title>
+  <meta name="description" content="This week I’ve finally gotten around to research (play with) OpenAI’s groundbreaking language model GPT-2 using talktotransformer.com.What is OpenAI?OpenAI i...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,gpt2,openai,machine learning,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2019/11/openai-gpt-2/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="OpenAI GPT-2 is amazing" />
+  <meta name="twitter:description" content="This week I’ve finally gotten around to research (play with) OpenAI’s groundbreaking language model GPT-2 using talktotransformer.com.Wha..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2019/11/joggling-4-trees/" title="Previous: Joggling4Trees">&laquo; Joggling4Trees</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2019/11/openai-gpt-2/" title="OpenAI GPT-2 is amazing">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="OpenAI GPT-2 is amazing" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2019-11-20T15:42:11+01:00" class="date" />
+        <span itemprop="datePublished" content="2019-11-20T15:42:11+01:00" class="date">
+          Nov 20, 2019 15:42:11
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/openai-gpt-2/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">OpenAI GPT-2 is amazing</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>This week I’ve finally gotten around to research (play with) OpenAI’s groundbreaking language model <a href="https://openai.com/blog/better-language-models/">GPT-2</a> using <a href="https://talktotransformer.com/">talktotransformer.com</a>.</p>
+
+<h1 id="what-is-openai">What is OpenAI?</h1>
+
+<p>OpenAI is an AI research organization founded by Elon Musk in January 2016 to explore, develop, and deploy technology for the benefit of humanity. It’s headquartered in San Francisco, with headquarters in Mountain View, California.</p>
+
+<h1 id="and-gpt-2">And GPT-2?</h1>
+
+<p>OpenAI recently unveiled a language model called GPT-2 that, given some input text, predicts the coming sentences. GPT-2 also supports the idea of the  “Grammar of Reasoning” (GRR), in which the model attempts to extract sentences that would make the most intuitive sense, in terms of human understanding. For example, if you input “the dog ate the cat” and the model predicts “dogs eat cats”, the GRR system would make that sentence as the most probable result. The problem is that even though GRR is very good at answering the question, its predictions are still highly contingent. For example, it is still possible to be a cat-eating dog, and then someone else who doesn’t eat cats can still eat your dog, but the GRR system would not make such a mistake for the second sentence.</p>
+
+<p>GPT-2 uses an adaptive model to learn the most relevant concepts to solve complex problems. This is accomplished by using the most relevant words as words, rather than the least relevant words. The model is adaptive to the structure of the content being analyzed.</p>
+
+<h1 id="how-does-it-work">How does it work?</h1>
+
+<p>There are several components involved in GPT. GPT uses a deep learning based model to understand a large vocabulary.</p>
+
+<p>The model consists of a neural network, which is composed of multiple layers. Each layer is a separate layer that processes a different input word. GPT uses two neural network layers for each of the following steps:</p>
+
+<p>First, each layer learns to recognize a particular word. The layers for both input and target are trained together to improve the model’s performance over time.</p>
+
+<p>Second, the neural networks are used to predict the target word for the current context. To do this, the first neural network is used to learn about the target word. The target is then used to select a second neural network layer, which is used to predict the word that is closest to the current context.</p>
+
+<h1 id="is-the-model-too-powerful">Is the model too powerful?</h1>
+
+<p>This is a good question to ask, but it should be taken with a grain of salt. In fact, the GPT-2 is actually quite limited in the way it learns the most relevant concepts. This is in part due to its learning model being a probabilistic algorithm that assumes a model of the world as a probabilistic system. This model is an attempt to describe all the possible states of the world, but the way it learns these states is by taking into account the best model for each state and comparing to that.</p>
+
+<h1 id="a-gpt-2-surprise">A GPT-2 surprise</h1>
+
+<p><strong>Surprise!</strong></p>
+
+<p>This entire blogpost above has been generated by OpenAI’s GPT-2. I’ve only given the first sentence and the four headers as input. After that I’ve let GPT-2 fill in the blanks (of course I’ve cherry-picked here). The quality is amazing and I’m pretty sure there are people that made it this far… and had no clue that what they’ve been reading was 100% generated by a machine.</p>
+
+<p>Be sure to play around with it at <a href="https://talktotransformer.com/">talktotransformer.com</a></p>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2019/11/openai-gpt-2/";
+      this.page.identifier = "/blog/2019/11/openai-gpt-2/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

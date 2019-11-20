@@ -119,6 +119,59 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2018/01/java-9-adoptation/" title="Fear of upgrading to Java 9, is it justified?">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fear of upgrading to Java 9, is it justified?" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2018-01-17T10:28:12+01:00" class="date" />
+          <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
+            Jan 17, 2018 10:28:12
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/java-9-adoptation/">Fear of upgrading to Java 9, is it justified?</a></h1>
+
+        <span itemprop="articleBody">
+          <p>It seems that the adoptation of Java 9 is slow, very slow. In a <a href="https://twitter.com/royvanrijn/status/950718660641017856">Twitter poll</a> this week I asked:
+“Which version of Java are you using in production?”</p>
+
+<p>The poll got almost 300 replies and to my surprise just 3% of the respondents are using Java 9 at the moment. Most are using Java 8 and there are even more people using Java 6… So what is holding people back? Why is almost no-one using Java 9?</p>
+
+<p>It turns out a lot of people are scared to upgrade to Java 9. They think it’ll be hard to do, libraries and tools will fail them. They are scared for another Jar-hell.</p>
+
+<p>That is why I took one of my larger projects, that has been running in production for a long time, and try to upgrade it to Java 9.</p>
+
+<h2 id="upgrading-walk-in-the-park-or-walk-in-jar-hell">Upgrading: Walk in the park or walk in jar-hell?</h2>
+
+<p>Here are my results and findings, in a new format: <strong>a vlog</strong></p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/tKUNMyZ9LEU"></iframe>
+
+<p>If you like the vlog and follow my website, please subscribe to my channel on YouTube!</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2017/06/inverse-conways-law/" title="Inverse Conway's law">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Inverse Conway's law" width="100" height="100" />
@@ -1593,145 +1646,6 @@ The logo/mascot! Just look at this extremely happy cute octopus:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/04/deprecating-optional-get/" title="Deprecating Optional.get()">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Deprecating Optional.get()" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-04-28T14:10:09+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-04-28T14:10:09+02:00" class="date">
-            Apr 28, 2016 14:10:09
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/04/deprecating-optional-get/">Deprecating Optional.get()</a></h1>
-
-        <span itemprop="articleBody">
-          <p>On the OpenJDK core mailinglist (and Twitter) there is a discussion about Java’s <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a>.
-Before diving into that discussion, lets take a look at what Optional does and how you can use it.</p>
-
-<h2 id="checking-for-null">Checking for null</h2>
-
-<p>What do you do when your code calls an external service or <em>god forbid</em> a microservice, and the result isn’t always available?</p>
-
-<p>Most of the time the protocol you are using facilitates in the optional part, for example in REST you’ll get a <em>404</em> instead of JSON. Getting this <em>404</em> forces you to think about this scenario and do something when this happens.</p>
-
-<p>But what do you do when you’re calling a framework (on the boundary of your code) and the value isn’t always known?</p>
-
-<p>You either get the value or the result is a dreaded <strong>null</strong>. This causes a lot of null checks, or bugs where the code just crashes with a NullPointerException.</p>
-
-<p>Example (old skool, Java 7):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span> <span class="c1">//can be null</span>
-    <span class="k">if</span><span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">ProcessResult</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">OrderEngine</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">result</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
-            <span class="nc">Database</span><span class="o">.</span><span class="na">storeResult</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>This code is not very pleasant to read. But we Java programmers didn’t have or need anything better… until we started to adopt a more functional style of programming.</p>
-
-<h2 id="javautiloptional">java.util.Optional</h2>
-
-<p>What happens when you are processing a <em>stream</em> and some values are <em>null</em>? You don’t want null checks inside a stream! This is where Java 8’s Optional comes in. If you’re not (yet!?) using Java 8, there are other implementations as well. For example <a href="https://github.com/google/guava">Google Guava</a> has an Optional as well.</p>
-
-<p>Optional is a class that ‘might’ have a given value in it, or not, it is optional. So how exactly is this helpful? Instead of checking for null this wrapper class can handle some situations for you.</p>
-
-<p>For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">);</span>
-    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">ProcessResult</span><span class="o">&gt;</span> <span class="n">filteredResult</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">);</span>
-
-    <span class="n">filteredResult</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
-
-<p>Or the shorter ‘fluid’ version:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">()</span>
-        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderEngine:</span><span class="o">:</span><span class="n">process</span><span class="o">)</span>
-        <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="nl">ProcessResult:</span><span class="o">:</span><span class="n">succeeded</span><span class="o">)</span>
-        <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="nl">Database:</span><span class="o">:</span><span class="n">storeResult</span><span class="o">);</span></code></pre></figure>
-
-<p>Even if the <em>Optional</em> is empty in either reading the order or processing the order… nothing breaks. No NullPointerException, nothing, just no executed lambda storing the result in the end. We’ve eliminated the need for a null check.</p>
-
-<p>As you can see Optional can really clean up your code. You don’t need to worry about null checks anymore.</p>
-
-<p>So what is the problem with Optional.get()?</p>
-
-<h2 id="optionalget-deprecation-discussion">Optional.get() deprecation discussion</h2>
-
-<p>Pretty much out of the blue on the OpenJDK mailinglist <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040484.html">an email arrived</a> with a <a href="http://openjdk.java.net/guide/webrevHelp.html">webrev</a> (similar to a patch file) that contained the deprecation of <em>Optional.get()</em>.</p>
-
-<p>The get() method is too easy to find, and the name isn’t quite what you’d expect, and the webrev author claims there are a lot of cases online where people made the same mistakes.</p>
-
-<p>Many programmers, when they first encounter <em>Optional</em>, don’t know what to do. They look in their IDE and the first thing that pops up is <em>get()</em>.</p>
-
-<p>It is just an easy method to call:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">().</span><span class="na">get</span><span class="o">();</span></code></pre></figure>
-
-<p>This works fine! Until there is a situation where the value is not available to the <em>Optional</em>. In that case it will throw an NoSuchElementException. How can we solve this? Well, we could do the following:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">maybeOrder</span> <span class="o">=</span> <span class="nc">Database</span><span class="o">.</span><span class="na">readOrder</span><span class="o">();</span>
-    <span class="k">if</span><span class="o">(</span><span class="n">maybeOrder</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
-        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">maybeOrder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>This is the ‘safe’ way, but it could just as well have been a null check now. There is likely a much cleaner way to process your <em>Optional</em>.</p>
-
-<ul>
-  <li>If you want to do something with the result, use <em>filter</em>, <em>map</em>, <em>ifPresent</em> (and many others).</li>
-  <li>If you need to return something, either return an Optional yourself, or get a default value by calling <em>orElse</em>, <em>orElseGet</em> or <em>orElseThrow</em>.</li>
-</ul>
-
-<p>This is all you need, why have a <em>get</em>-method?</p>
-
-<p>The proposal on the mailinglist is to deprecate the <em>get()</em> method and rename it to <em>getWhenPresent()</em>. This name change should warn people that it might not be present and they should check <em>isPresent</em> before calling <em>get()</em>.</p>
-
-<p>Instead of embracing this change some people on the mailinglist argue against deprecation, some of their reasons:</p>
-
-<ul>
-  <li>Renaming will break a <em>LOT</em> of code, well, not really break the code, it will cause deprecation warnings</li>
-  <li><em>getWhenPresent()</em> instead of <em>get()</em> just adds noise to the code, it doesn’t solve anything</li>
-  <li>People should just read the JavaDoc, it clearly states what <em>get()</em> does and throws</li>
-  <li>Guava’s Optional also has the same <em>get()</em> method, they’ve never heard about the problem</li>
-</ul>
-
-<p>The most honest and one of the more powerful replies in the discussion was <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2016-April/040531.html">from Brian Goetz</a> himself:</p>
-
-<blockquote>
-  <p>As the person who chose the original (terrible) name, let me weigh in…</p>
-
-  <p>……</p>
-
-  <p>I’d like to see it fixed, and the sooner the better.</p>
-</blockquote>
-
-<p>He is clearly in favor of deprecation… what is your opinion? Let me know in the comments!</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/04/deprecating-optional-get/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
