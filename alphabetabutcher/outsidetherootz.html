@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Murder Mystery: Alpha Beta Butcher - Outside the Rootz</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<!-- 
+This is a very simple website, and I've done nothing to hide answers in the HTML... 
+If you want to do it this way, go ahead... but I don't understand why you would even bother spoiling the search
+-->
+<style>
+body,html {
+  height: 100%;
+}
+</style>
+  <body>
+
+
+    <div class="container h-100">
+        <div class="row align-items-center h-75">
+            <div class="mx-auto">
+              <img src="images/outside_wall.jpg"/>
+            </div>
+        </div>
+        <div class="row align-items-center h-25">
+            <div class="mx-auto">
+              <p class="font-weight-light">
+                The police arrived at The Rootz after getting an anonymous phone call. <br/><br/>
+
+                After parking the police car they noticed someone creating these markings on the wall.<br/>
+                When they approached the individual, he fled the scene.<br/><br/>
+
+                While he disappeared he exclaimed:<br/><br/>
+
+                "Three 10 letters keys are hidden inside, find them all if you want to stop the killing!"<br/><br/>
+                
+                Where should we go next?
+
+                <script>
+                function validateAnswer() {
+                  var x = document.forms["answer"]["nextlocation"].value;
+                  if(window.btoa(x.toUpperCase().replace(/\s/g, '')) == "U1RBVElPTkxPQ0tFUkhVTkRSRURFSUdIVFlGSVZF") {
+                    //STATIONLOCKERHUNDREDEIGHTYFIVE
+                    alert("Well done!");
+                    window.location="tobecontinued.html";
+                  } else {
+                    alert("Sorry, this is incorrect.");
+                  }
+                    return false;
+                }
+                </script>
+                <form id="answer" onsubmit="return validateAnswer();" autocomplete="off">
+                  <input type="text" name="nextlocation" value=""><br>
+                  <input type="submit" class="btn btn-primary" value="Submit"><br>
+                </form> 
+              </p>
+              <button type="button" class="btn btn-secondary" onclick="location.href='therootz.html';">Back</button>
+            </div>
+        </div>
+    </div>
+
+
+  </body>
+</html>
