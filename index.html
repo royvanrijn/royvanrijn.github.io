@@ -117,6 +117,171 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2020/05/fuck-you-world/" title="Fuck You, World">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fuck You, World" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2020-05-14T12:42:11+02:00" class="date" />
+          <span itemprop="datePublished" content="2020-05-14T12:42:11+02:00" class="date">
+            May 14, 2020 12:42:11
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/fuck-you-world/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2020/05/fuck-you-world/">Fuck You, World</a></h1>
+
+        <span itemprop="articleBody">
+          <p>This morning I woke up and saw the following Tweet:</p>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I&#39;m a bit pissed right now! 😡 Why is the world so mean to me, to all of us developers, really? We&#39;ve been so friendly! How often have we written &quot;Hello, world&quot;? And has anybody ever gotten as much as friendly nod in return?</p>&mdash; Nicolai Parlog (@nipafx) <a href="https://twitter.com/nipafx/status/1260865259738476547?ref_src=twsrc%5Etfw">May 14, 2020</a></blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>And yes, I agree.</p>
+
+<p>The world has been a pretty shitty friend to us in 2020. Why should all the new programmers/developers have to welcome this messed up world with open arms?</p>
+
+<p>I say: <strong>Fuck You, World.</strong></p>
+
+<h1 id="your-first-program">Your first program</h1>
+
+<p>My programming language of choice at the moment is <a href="https://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>. So that’s what I’ll be using for this “Fuck You, World”.</p>
+
+<p>To get started with Java there are a couple of things you’ll need to <strong>learn</strong> and <strong>install</strong> to get it running.</p>
+
+<p>Let’s go!</p>
+
+<h1 id="java-jdk">Java JDK</h1>
+
+<p>There are a lot of places where you can download a so called “JDK”, which stands for Java Development Kit. This is needed for you to create and build your first Java program.</p>
+
+<p>For now I won’t be bothering you with all the different releases and versions, we can just go to [AdoptOpenJDK][].</p>
+
+<p>And download and install the latest version: OpenJDK 14 (latest)</p>
+
+<h1 id="repl-or-class">REPL or Class</h1>
+
+<p>Now we have two different options, we can start the Java REPL (read eval print loop) to write Java code interactively, or we can store our code in a so called “class”-files and run it.</p>
+
+<p>First we’ll look at the REPL, this is probably the easiest way to write your first “Fuck You, World”.</p>
+
+<h1 id="java-repl-jshell">Java REPL: jshell</h1>
+
+<p>The interactive code-writing tool in Java is called “jshell” and is launched from the Terminal/command line.</p>
+
+<p>To do this, navigate to the JDK (usually there is a <code class="highlighter-rouge">$JAVA_HOME</code> variable for this) and start:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">	
+<span class="o">&gt;</span> <span class="n">$JAVA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">jshell</span></code></pre></figure>
+
+<p>Next you’ll be presented with an interactive shell to write your code in:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">$JAVA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">jshell</span>   
+<span class="o">|</span>  <span class="nc">Welcome</span> <span class="n">to</span> <span class="nc">JShell</span> <span class="o">--</span> <span class="nc">Version</span> <span class="mf">14.0</span><span class="o">.</span><span class="mi">1</span>
+<span class="o">|</span>  <span class="nc">For</span> <span class="n">an</span> <span class="n">introduction</span> <span class="nl">type:</span> <span class="o">/</span><span class="n">help</span> <span class="n">intro</span>
+
+<span class="n">jshell</span><span class="o">&gt;</span> </code></pre></figure>
+
+<p>In this little editor you can write any valid Java code you want. Let’s grab the <code class="highlighter-rouge">System</code> class, get the <code class="highlighter-rouge">out</code> output stream (which defaults to the terminal), and write some text there for the world to see:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">jshell</span><span class="o">&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Fuck You, World!"</span><span class="o">)</span>
+<span class="nc">Fuck</span> <span class="nc">You</span><span class="o">,</span> <span class="nc">World</span><span class="o">!</span>
+
+<span class="n">jshell</span><span class="o">&gt;</span> </code></pre></figure>
+
+<p>And that’s it. We’re done.</p>
+
+<p>Using the REPL we’ve created a line of code which contains a message to 2020.</p>
+
+<h1 id="java-class-files">Java class files</h1>
+
+<p>The second way to write Java code is to use a text editor (or an IDE, an integrated development environment, like <a href="https://www.jetbrains.com/idea/">IntelliJ</a>) and save the files, compile the files and run the files.</p>
+
+<p>The code above has little to no real structure. In larger programs we’ll need to create some order in all the code you want to write and run. To do this Java has ‘classes’.</p>
+
+<p>So open any text editor and write your first class file:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Save this file as <code class="highlighter-rouge">FuckYouWorld.java</code>. This is the human-readable version of your code.</p>
+
+<p>The next step is to take this code and process it, <strong>compile</strong> it. This turns the readable <code class="highlighter-rouge">java</code> file into a <code class="highlighter-rouge">class</code> file, which is made out of <code class="highlighter-rouge">bytecode</code>. It is still the same code, but optimized for machine readability.</p>
+
+<p>To do this we call:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">%</span> <span class="n">javac</span> <span class="nc">FuckYouWorld</span><span class="o">.</span><span class="na">java</span></code></pre></figure>
+
+<p>Now we’ll get a file named <code class="highlighter-rouge">FuckYouWorld.class</code>.</p>
+
+<p>This <code class="highlighter-rouge">class</code> file is just en empty shell, it has no real code in it yet and there is not even a valid ‘starting point’. When programming in Java there are usually a lot of different classes that make up the application. The code however has to start somewhere, we’ll have to define a starting point.</p>
+
+<p>In Java there is a very specific <code class="highlighter-rouge">method</code> we need to implement, this makes it a starting point. A <code class="highlighter-rouge">method</code> is a block of code we can call and it does something. The one used to start your code is always called <code class="highlighter-rouge">main</code>.</p>
+
+<p>It looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Let’s break it down. First we have <code class="highlighter-rouge">public</code>, this means any class can access it, which is what we need to start our program.</p>
+
+<p>Next we have <code class="highlighter-rouge">static</code>. There are TWO kinds of methods in Java, <code class="highlighter-rouge">static</code> and <code class="highlighter-rouge">non-static/member</code> methods. For now let’s just say that <code class="highlighter-rouge">static</code> methods are working on a <code class="highlighter-rouge">class</code> level, and <code class="highlighter-rouge">non-static</code> methods are working on the <code class="highlighter-rouge">object</code> level. This is a whole topic for another day. To start we have to make this static, from there we can create new instances.</p>
+
+<p>Next we have <code class="highlighter-rouge">void</code>, this means that the method we are calling doesn’t return any results. Some methods calculate something and return a value, like a number or more complex answers.</p>
+
+<p><code class="highlighter-rouge">main</code> is a specific name, the name of our method.</p>
+
+<p>The information between the parentheses are the method ‘arguments’. These are passed <em>into</em> the method. Just like arguments you supply to a program. In this case it is an array (list) of Strings.</p>
+
+<p>This all becomes rather complicated quickly, but we don’t need to know the specifics right now.</p>
+
+<p>Next we can add the line we wrote before to inside the method brackets. Classes add a little bit of structure/scaffolding to our applications.</p>
+
+<p>If we put everything together we’ll end up with:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Fuck You, World!"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Save this file and compile to bytecode again:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">javac</span> <span class="nc">FuckYouWorld</span><span class="o">.</span><span class="na">java</span></code></pre></figure>
+
+<p>Now we can run this code and see the result. We take the compiled <code class="highlighter-rouge">class</code> and the <code class="highlighter-rouge">java</code> command understand that the <code class="highlighter-rouge">main</code> method should be called:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">java</span> <span class="nc">FuckYouWorld</span>      
+<span class="nc">Fuck</span> <span class="nc">You</span><span class="o">,</span> <span class="nc">World</span><span class="o">!</span></code></pre></figure>
+
+<p>Congratulations, we’ve just used two different ways to write and run your first Java program!</p>
+
+<p><strong>TODO:</strong> Add more “Fuck You, World.” examples in different languages.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/fuck-you-world/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2019/11/openai-gpt-2/" title="OpenAI GPT-2 is amazing">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="OpenAI GPT-2 is amazing" width="100" height="100" />
@@ -2901,73 +3066,6 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></p
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2018/01/updating-dependencies-in-microservices/" title="In a microservices landscape; When do you update?">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="In a microservices landscape; When do you update?" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2018-01-17T10:28:12+01:00" class="date" />
-          <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
-            Jan 17, 2018 10:28:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/updating-dependencies-in-microservices/">In a microservices landscape; When do you update?</a></h1>
-
-        <span itemprop="articleBody">
-          <p>This week I’ve been stuggling with the following question:</p>
-
-<blockquote>
-  <p>When is the right time to upgrade?</p>
-</blockquote>
-
-<p>By upgrading, I mean everything: libraries, tools, Java versions, application servers, MQ servers…</p>
-
-<p>My current project uses a reactive upgrade policy, we upgrade for four reasons:</p>
-
-<ol>
-  <li>Something is broken and fixed in a later version</li>
-  <li>We need or want to use a new feature</li>
-  <li>Support for a version we’re using is being dropped</li>
-  <li>The old version we’re using has a known security issue/CVE</li>
-</ol>
-
-<p>The first two reasons are entirely up to the programmers to decide. The third reason is up to the company that gives us support. For the fourth upgrade reason, security, we have some automation in place. We are using the <a href="https://www.owasp.org/index.php/OWASP_Dependency_Check">OWASP dependency checker</a> Maven plugin for our libraries.</p>
-
-<p>But:</p>
-<ul>
-  <li>Is a reactive update policy good enough?</li>
-  <li>Are there any pro-active strategies?</li>
-  <li>Do you want to invest in keeping your microservices up-to-date?</li>
-  <li>Do you let your services deteriorate and dispose, replace them in the future with new technologies?</li>
-</ul>
-
-<p>More on this in my (kind-of-weekly) vlog:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/LRE-feZWmlM"></iframe>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

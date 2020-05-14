@@ -119,6 +119,70 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2016/05/biometric-passwords/" title="Biometric passwords: No!">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/fingerprint.png" alt="Biometric passwords: No!" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2016-05-02T10:03:01+02:00" class="date" />
+          <span itemprop="datePublished" content="2016-05-02T10:03:01+02:00" class="date">
+            May 2, 2016 10:03:01
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/05/biometric-passwords/">Biometric passwords: No!</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Please sit down, we need to have a talk, programmer to programmer.</p>
+
+<p>Over the last decade we’ve had a lot of problems with authentication. For example, we’ve stored plain text passwords in the database. We’ve learned from this and nobody is doing this anymore right? If you are, please deposit your programming-license in the nearest trash can.</p>
+
+<h2 id="latest-challenge-biometrics">Latest challenge: Biometrics</h2>
+
+<p>It is time to talk about the latest problem in IT: biometric data.</p>
+
+<p>Some websites are using biometrics, such as your <em>fingerprint</em>, as your <em>password</em>. This sounds great, very hard to fake, unique to you. But there is a problem… what happens when there is a data leak?</p>
+
+<p>If you store passwords in the database (hashed or not), and they get leaked, it is bad. You need to tell all the users to change their passwords immediately. But what happens when you store biometric data and it gets leaked?</p>
+
+<p>The only way to change your fingerprint is this:</p>
+
+<p><img src="/images/fingerprint_remover.jpg" alt="Fingerprint removal tool" class="aligncenter" /></p>
+
+<p>Rather painful… and even worse, all devices and websites that use your fingerprint have the <em>same</em> password.</p>
+
+<p>We don’t want to share passwords on multiple websites/devices!</p>
+
+<h2 id="not-a-password">Not a password</h2>
+
+<p>There is no real solution, as long as you ensist of using biometric data as a password. Even if you use a nice salted hash, it will eventually be leaked, with big consequences.</p>
+
+<p>A better way to use biometrics in authentication is to treat it as a username. It is a great match, it identifies <strong>you</strong>. It is not your secret password, it is your username. That means you still need to provide a password, but having the added biometric username does increase security a lot. Of course if there is a database leak, your fingerprint can still be stolen, but that is the entire point. If you touch a glass door you’re also leaving your fingerprint. Using fingerprints as password is like dropping pieces of paper with your secret password all over the place.</p>
+
+<p>Fingerprints (and other biometrics) are not secure, you can never change them once compromised, not suited as passwords. If you really want to use it, use them as usernames.</p>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2016/05/biometric-passwords/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2016/04/deprecating-optional-get/" title="Deprecating Optional.get()">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="Deprecating Optional.get()" width="100" height="100" />
@@ -1392,84 +1456,6 @@ Don’t hire programmers and give them tasks, tell them about what you want to a
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2015/11/the-most-discriminating-jug-in-the-world/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2015/11/javaone-2015-and-devoxx-2015/" title="JavaOne 2015 and Devoxx 2015">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/devoxx.png" alt="JavaOne 2015 and Devoxx 2015" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2015-11-16T14:41:38+01:00" class="date" />
-          <span itemprop="datePublished" content="2015-11-16T14:41:38+01:00" class="date">
-            Nov 16, 2015 14:41:38
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2015/11/javaone-2015-and-devoxx-2015/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2015/11/javaone-2015-and-devoxx-2015/">JavaOne 2015 and Devoxx 2015</a></h1>
-
-        <span itemprop="articleBody">
-          <p>The last couple of weeks have been really busy for me. I’ve been to San Francisco for JavaOne 2015 (the official Java conference). After that I had just a week to recover and travelled to Antwerp in Belgium for Devoxx 2015 (the largest community driven conference).</p>
-
-<h1 id="talking">Talking</h1>
-
-<p>At both conferences I had the pleasure to talk about different subjects. From fun/informal Ignite sessions about <a href="https://en.wikipedia.org/wiki/Skynet_%28Terminator%29">Skynet</a> and <a href="https://en.wikipedia.org/wiki/Joggling">Joggling</a> to hosting a Java Pub Quiz and a live-coding introduction to JShell the new REPL (read-eval-print loop) that will be available in Java 9.</p>
-
-<p>Here is a video of the live-coding session:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/CN3tGi4eZZ4"></iframe>
-
-<h1 id="youtube">YouTube</h1>
-
-<p>One major announcement at Devoxx 2015 is that Stephan Janssen (Devoxx organizer/godfather) will stop with Parleys. Instead all the talks will be freely available on the <a href="https://www.youtube.com/channel/UCCBVCTuk6uJrN3iFV_3vurg">Devoxx 2015 YouTube channel</a>. This brings all the excellent content from the conference to the entire community, for free!</p>
-
-<p>If you are curious on how this video is recorded and what Devoxx looks like behind the scenes, check out the Devoxx Live video I made with Stephan Janssen:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/SWnYWqXpNl4"></iframe>
-
-<p>Devoxx Live is a new concept, instead of just providing all the talks we want to show you the other side of Devoxx: the hallway. This is where you meet people, talk to the sponsors, experience things like <a href="https://www.youtube.com/watch?v=WI0v4AMdrPo">drone racing</a> and <a href="https://www.youtube.com/watch?v=UCyAXxhAiCI">hoverboard/monowheeling</a>.</p>
-
-<p>JavaOne has also posted a lot of sessions to YouTube, but instead of cutting everything into nice little videos they’ve decided to upload just the raw streams of the entire day. Luckely there is always ‘the community’, in this case, the people over at reddit created a nice list with video-deeplinks to the appropriate talks: <a href="https://www.reddit.com/r/java/comments/3requx/javaone_2015_sessions/">JavaOne 2015 talks on reddit</a></p>
-
-<h1 id="keynotes">Keynotes</h1>
-
-<p>The first keynote at JavaOne wasn’t very interesting, most conferences just want to sell it to sponsors and don’t have any good content. The second keynote at JavaOne was the ‘community keynote’. During a theatrical play Stephen Chin took us back in time (and into the future) to keep Duke from destroying San Francisco. It was entertaining, but could really use a better screenwriter (that ending, *sigh*), but it did have a powerfull message: teaching and children are the future. This was also pretty visible at JavaOne4Kids (where I did a session with my colleagues), during this event hundreds of kids got introduced to programming and robotics.</p>
-
-<p>The keynotes at Devoxx were (IMHO) much better, during the first keynote we heard Mark Reinhold talk about project Jigsaw and after that one of my heroes took the stage: professor Lawrance Krauss. Instead of focussing on the last 20 years of Java (which all conferences do) we took a step back and looked at the origins of our universe and life. He talked about the <a href="https://en.wikipedia.org/wiki/Large_Hadron_Collider">Large Hadron Collider (LHC)</a> and <a href="https://en.wikipedia.org/wiki/Gravitational-wave_observatory">gravitational wave observatories</a>. The closing keynote at Devoxx was done by Stephen Chin and included a lot of video footage from an interview he’s done with James Gosling (the father of Java), this was fun too!</p>
-
-<h1 id="best-sessions">Best sessions</h1>
-
-<p>If you’ve seen the top 10-list of highest votes at Devoxx 2015 there is one name you can’t mention: Venkat Subramaniam. He brings live-coding to a new level, all of his talks are entertaining and interesting. The top 4 talks bore his name three times.</p>
-
-<p>Another thing I really enjoyed was the series of talks by Mark Reinhold/Alan Bateman (and at JavaOne also Alex Buckley) on the Jigsaw project. If you want to spend just an hour learning about this topic, I highy suggest watching: <a href="https://www.youtube.com/watch?v=SU1WFX8yeKM">Advanced Modular Development</a>. This talk covers everything you’ll need to know once Java 9 is released and you’re going to use it.</p>
-
-<h1 id="random-remarks">Random remarks</h1>
-
-<p>JavaOne: This was the first time I’ve been there since Oracle aquired Sun. I really enjoyed the conference although the Hilton &amp; Parc 55 location isn’t as convenient as Moscone.</p>
-
-<p>JavaOne: I really liked having Duke’s Café to talk to all of my conference-buddies. Also: If you ever see someone alone at a conference, walk there and say hello. Being at such a huge conference can (surprisingly) be a very lonely experience. Most programmers aren’t very outgoing, me included, but I’ve started forcing myself to talk to people that look like other introverts that might be lonely. I’ve never had a bad experience talking to people, only fun times!</p>
-
-<p>Devoxx: It is (for me) the best Java conference in the world, the quality of the talks was very high again. The atmosphere was awesome. And I’m not just saying this because I volunteer during the conference :-)</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2015/11/javaone-2015-and-devoxx-2015/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
