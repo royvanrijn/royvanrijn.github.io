@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 14 Dec 2021 15:56:37 +0100</pubDate>
-    <lastBuildDate>Tue, 14 Dec 2021 15:56:37 +0100</lastBuildDate>
+    <pubDate>Tue, 14 Dec 2021 16:01:26 +0100</pubDate>
+    <lastBuildDate>Tue, 14 Dec 2021 16:01:26 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -31,9 +31,7 @@
 
 &lt;p&gt;As you can see it downloads and executes a classfile I’m serving from the malicious LDAP server (running seperately) printing a message.&lt;/p&gt;
 
-&lt;p&gt;I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are easier ways to check if your software is vulnerable, you don’t need the RCE for this.&lt;/p&gt;
-
-&lt;p&gt;For example, you can use this tool by &lt;a href=&quot;https://log4j-tester.trendmicro.com/&quot;&gt;Trend Micro&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are better and easier ways to check if your software is vulnerable. For example using this tool by &lt;a href=&quot;https://log4j-tester.trendmicro.com/&quot;&gt;Trend Micro&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;possible-risks-&quot;&gt;Possible risks: 🚨&lt;/h2&gt;
 
@@ -60,9 +58,15 @@
 
 &lt;p&gt;Do this for all transitive dependencies as well (!).&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Option 2&lt;/strong&gt;: Another option is to launch the JRE with:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Option 2&lt;/strong&gt;: Another option is to launch the JRE with.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Dlog4j2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;formatMsgNoLookups&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;But be &lt;strong&gt;AWARE&lt;/strong&gt; this flag was put into log4j2 from 2.10.0 onwards. If you have an older version, this does not work.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Option 3&lt;/strong&gt;: Remove JndiLookup.class&lt;/p&gt;
+
+&lt;p&gt;It is also possible to remove &lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.logging.log4j.core.lookup.JndiLookup&lt;/code&gt; from your log4j JAR files. I don’t recommend doing this, if you want to go this route it’s probably easier to just upgrade to &amp;gt;= &lt;em&gt;2.15.0&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Not an option&lt;/strong&gt;:&lt;/p&gt;
 
