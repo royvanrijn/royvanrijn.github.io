@@ -5,9 +5,131 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 14 May 2020 16:12:16 +0200</pubDate>
-    <lastBuildDate>Thu, 14 May 2020 16:12:16 +0200</lastBuildDate>
+    <pubDate>Tue, 14 Dec 2021 15:50:36 +0100</pubDate>
+    <lastBuildDate>Tue, 14 Dec 2021 15:50:36 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Log4Shell / Leak4J</title>
+        <description>&lt;p&gt;Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called &lt;a href=&quot;https://en.wikipedia.org/wiki/Log4Shell)&quot;&gt;Log4Shell&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;All versions of log4j-code from 2.0-beta9 to 2.14.1 are affected by this, and it’s a &lt;strong&gt;big&lt;/strong&gt; one.&lt;/p&gt;
+
+&lt;p&gt;This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.&lt;/p&gt;
+
+&lt;p&gt;Log4J has, for a long time, been the most used logging framework in the Java landscape. It’s extremely widely used and this attack has the most broad trigger you can imagine: It needs to log something.&lt;/p&gt;
+
+&lt;p&gt;The payload can be delivered in a LOT of ways, as long as it gets in a log statement. Either through user-controlled fields, HTTP requests, URLs, &lt;strong&gt;ANYTHING&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-attack&quot;&gt;The attack&lt;/h2&gt;
+
+&lt;p&gt;After writing some code (a malicious embedded LDAP server) I was able to reproduce the RCE (“Remote Code Execution”) attack on even the most basic project.&lt;/p&gt;
+
+&lt;p&gt;Here is an example: a simple REST endpoint in a Spring Boot starter project with a single line of logging&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/leak4j1.png&quot; alt=&quot;Leak4J&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As you can see it executes remotely downloads, loads and executes the classfile I’m serving from the malicious LDAP server (running seperately). There is also the risk of leaking environment variables for example, or Kubernetes settings.&lt;/p&gt;
+
+&lt;p&gt;I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are easier ways to check if your software is vulnerable, you don’t need the RCE for this.&lt;/p&gt;
+
+&lt;p&gt;For example, you can use this tool by &lt;a href=&quot;https://log4j-tester.trendmicro.com/&quot;&gt;Trend Micro&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;possible-risks-&quot;&gt;Possible risks: 🚨&lt;/h2&gt;
+
+&lt;p&gt;Risks of this vulnerability are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Loss of &lt;em&gt;ALL&lt;/em&gt; data&lt;/li&gt;
+  &lt;li&gt;Ransomware&lt;/li&gt;
+  &lt;li&gt;Backdoors&lt;/li&gt;
+  &lt;li&gt;Botnet&lt;/li&gt;
+  &lt;li&gt;Loss of AWS/Kubernetes keys/secrets&lt;/li&gt;
+  &lt;li&gt;And the list goes on, and on, and on…&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;the-fix&quot;&gt;The fix&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Option 1&lt;/strong&gt;: If you haven’t already: upgrade log4j-core to version 2.15+&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dependency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logging&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;log4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;artifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;core&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;artifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dependency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Do this for all transitive dependencies as well (!).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Option 2&lt;/strong&gt;: Another option is to launch the JRE with:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Dlog4j2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;formatMsgNoLookups&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Not an option&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A newer Java version&lt;/li&gt;
+  &lt;li&gt;Property: &lt;em&gt;com.sun.jndi.ldap.object.trustURLCodebase&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I’ve seen suggestions online that ‘newer’ Java versions are not affected, but this is just &lt;strong&gt;not true&lt;/strong&gt;. Even with the latest Java versions and with &lt;code class=&quot;highlighter-rouge&quot;&gt;trustURLCodebase&lt;/code&gt; set to &lt;code class=&quot;highlighter-rouge&quot;&gt;false&lt;/code&gt;, they would still be able to steal data (for example environment variables) and deserialize objects already known to the classloader. This makes other deserialization RCEs trivial to launch.&lt;/p&gt;
+
+&lt;p&gt;It might be &lt;em&gt;slightly&lt;/em&gt; harder/safer on a newer Java version, but it’s definitely &lt;strong&gt;NOT&lt;/strong&gt; a fix.&lt;/p&gt;
+
+&lt;p&gt;To show this I’ve taken the latest version of Java 8 (1.8.311) and I’m using the log4j2 deserialization to craft something that opens the Calculator on my MacBook using other classes known to the vulnerable target:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/leak4j2.png&quot; alt=&quot;Leak4J with latest Java&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Again: The payload is still being deserialized, on the latest Java version.&lt;/p&gt;
+
+&lt;h2 id=&quot;youve-been-compromised&quot;&gt;You’ve been compromised&lt;/h2&gt;
+
+&lt;p&gt;Great, you’ve upgraded and fixed the issue. However: Don’t stop there, that’s just step one.&lt;/p&gt;
+
+&lt;p&gt;This leak was known and exploited for a long time, probably weeks before made publicly. And if even I can exploit it in a couple of minutes with my own malicious code: everybody can.&lt;/p&gt;
+
+&lt;p&gt;So here is what you need to do:&lt;/p&gt;
+
+&lt;p&gt;Step 1: &lt;strong&gt;Upgrade&lt;/strong&gt; and fix the leak&lt;/p&gt;
+
+&lt;p&gt;Step 2: &lt;strong&gt;Assume&lt;/strong&gt; everything was &lt;strong&gt;stolen&lt;/strong&gt;: Rotate all your keys&lt;/p&gt;
+
+&lt;p&gt;Step 3: Go in and &lt;strong&gt;analyse&lt;/strong&gt; the &lt;strong&gt;log&lt;/strong&gt; files&lt;/p&gt;
+
+&lt;p&gt;Step 4: If you have set up infra-structure as code: &lt;strong&gt;rebuild&lt;/strong&gt; your &lt;strong&gt;environment&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Step 4: &lt;strong&gt;Redeploy&lt;/strong&gt; all your &lt;strong&gt;applications&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We &lt;em&gt;HAVE&lt;/em&gt; to take this one seriously. I don’t want to hear or read a couple of months from now that some company forgot to patch their software. Not another&lt;/p&gt;
+
+&lt;h2 id=&quot;further-reading&quot;&gt;Further reading:&lt;/h2&gt;
+
+&lt;p&gt;Here are some links for more information:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.lunasec.io/docs/blog/log4j-zero-day/&quot;&gt;https://www.lunasec.io/docs/blog/log4j-zero-day/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://snyk.io/blog/find-fix-log4shell-quickly-snyk/&quot;&gt;https://snyk.io/blog/find-fix-log4shell-quickly-snyk/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Log4Shell&quot;&gt;https://en.wikipedia.org/wiki/Log4Shell&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 14 Dec 2021 09:12:31 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/</guid>
+        
+        <category>java</category>
+        
+        <category>log4j2</category>
+        
+        <category>logging</category>
+        
+        <category>rce</category>
+        
+        <category>vulnerability</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Fuck You, World</title>
@@ -1386,48 +1508,6 @@ Next I embedded the entire puzzle and turned it into an array of Strings.&lt;/p&
         <category>puzzle</category>
         
         <category>algorithm</category>
-        
-        
-        <category>GraalVM</category>
-        
-      </item>
-    
-      <item>
-        <title>Happy New Year: 2019</title>
-        <description>&lt;p&gt;First of all, best wishes for 2019 from me.&lt;/p&gt;
-
-&lt;p&gt;Time for me to reflect on the last couple of months.&lt;/p&gt;
-
-&lt;h1 id=&quot;public-speaking&quot;&gt;Public speaking&lt;/h1&gt;
-
-&lt;p&gt;Last year has been a crazy busy year for me. I’ve been to and spoken at to &lt;a href=&quot;https://jspring.nl/&quot;&gt;J-Spring&lt;/a&gt;, &lt;a href=&quot;https://jfall.nl/&quot;&gt;J-Fall&lt;/a&gt;, &lt;a href=&quot;http://devoxx.be/&quot;&gt;Devoxx Belgium&lt;/a&gt;, &lt;a href=&quot;http://devoxx.pl/&quot;&gt;Devoxx Poland&lt;/a&gt; and JavaOne… errr… Oracle &lt;a href=&quot;https://www.oracle.com/code-one/&quot;&gt;CodeOne&lt;/a&gt; on various topics. From &lt;a href=&quot;https://www.youtube.com/watch?v=fFW36-CGkPY&quot;&gt;quantum computing&lt;/a&gt; to &lt;a href=&quot;https://www.youtube.com/watch?v=FyVnL1bfYf&quot;&gt;software architecture&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLVGkcLa8_uiLEv5Fqj-TIErI3ipVifdQp&quot;&gt;Here&lt;/a&gt;&lt;/strong&gt; is a list of all my conference talks.&lt;/p&gt;
-
-&lt;h1 id=&quot;rotterdamjug&quot;&gt;RotterdamJUG&lt;/h1&gt;
-
-&lt;p&gt;I’m a big fan of sharing knowledge and getting people together to have fun. This is why I’ve decided to create a new &lt;strong&gt;JUG&lt;/strong&gt; (Java User Group) this year in the city of &lt;strong&gt;Rotterdam&lt;/strong&gt;, the &lt;a href=&quot;https://rotterdamjug.nl/&quot;&gt;RotterdamJUG&lt;/a&gt;. In November we had our first meeting and I’ve already got more meetups planned.&lt;/p&gt;
-
-&lt;h1 id=&quot;java-champion&quot;&gt;Java Champion&lt;/h1&gt;
-
-&lt;p&gt;The biggest achievement this year is probably being named an Oracle &lt;strong&gt;&lt;a href=&quot;https://twitter.com/Java_Champions/status/1076477461603516420&quot;&gt;Java Champion&lt;/a&gt;&lt;/strong&gt;. There are no more than 300 Java Champions in the world and it is a great honor to be added to this group.&lt;/p&gt;
-
-&lt;h1 id=&quot;-2019&quot;&gt;…. 2019&lt;/h1&gt;
-
-&lt;p&gt;So what’s next for 2019? I’m going to continue with the &lt;strong&gt;RotterdamJUG&lt;/strong&gt;, we’ve already got a Kotlin-workshop planned for this month and I’m looking for a venue for a February meetup (anyone?).&lt;/p&gt;
-
-&lt;p&gt;I’m also going to go back to &lt;strong&gt;math&lt;/strong&gt; and &lt;strong&gt;puzzles&lt;/strong&gt;, I’ve got some idea’s planned and some tricks/&lt;strong&gt;algorithms&lt;/strong&gt; to explain, more on that in the coming days/weeks hopefully!&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 06 Jan 2019 18:22:32 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/01/java-champion/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/01/java-champion/</guid>
-        
-        <category>Docker</category>
-        
-        <category>Java</category>
-        
-        <category>Native Image</category>
         
         
         <category>GraalVM</category>

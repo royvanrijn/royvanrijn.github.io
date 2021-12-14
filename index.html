@@ -117,6 +117,142 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2021/12/log4j2-rce-problem/" title="Log4Shell / Leak4J">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Log4Shell / Leak4J" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2021-12-14T09:12:31+01:00" class="date" />
+          <span itemprop="datePublished" content="2021-12-14T09:12:31+01:00" class="date">
+            Dec 14, 2021 09:12:31
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2021/12/log4j2-rce-problem/">Log4Shell / Leak4J</a></h1>
+
+        <span itemprop="articleBody">
+          <p>Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called <a href="https://en.wikipedia.org/wiki/Log4Shell)">Log4Shell</a>.</p>
+
+<p>All versions of log4j-code from 2.0-beta9 to 2.14.1 are affected by this, and it’s a <strong>big</strong> one.</p>
+
+<p>This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.</p>
+
+<p>Log4J has, for a long time, been the most used logging framework in the Java landscape. It’s extremely widely used and this attack has the most broad trigger you can imagine: It needs to log something.</p>
+
+<p>The payload can be delivered in a LOT of ways, as long as it gets in a log statement. Either through user-controlled fields, HTTP requests, URLs, <strong>ANYTHING</strong>.</p>
+
+<h2 id="the-attack">The attack</h2>
+
+<p>After writing some code (a malicious embedded LDAP server) I was able to reproduce the RCE (“Remote Code Execution”) attack on even the most basic project.</p>
+
+<p>Here is an example: a simple REST endpoint in a Spring Boot starter project with a single line of logging</p>
+
+<p><img src="/images/leak4j1.png" alt="Leak4J" /></p>
+
+<p>As you can see it executes remotely downloads, loads and executes the classfile I’m serving from the malicious LDAP server (running seperately). There is also the risk of leaking environment variables for example, or Kubernetes settings.</p>
+
+<p>I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are easier ways to check if your software is vulnerable, you don’t need the RCE for this.</p>
+
+<p>For example, you can use this tool by <a href="https://log4j-tester.trendmicro.com/">Trend Micro</a>.</p>
+
+<h2 id="possible-risks-">Possible risks: 🚨</h2>
+
+<p>Risks of this vulnerability are:</p>
+
+<ul>
+  <li>Loss of <em>ALL</em> data</li>
+  <li>Ransomware</li>
+  <li>Backdoors</li>
+  <li>Botnet</li>
+  <li>Loss of AWS/Kubernetes keys/secrets</li>
+  <li>And the list goes on, and on, and on…</li>
+</ul>
+
+<h2 id="the-fix">The fix</h2>
+
+<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version 2.15+</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">log4j</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">log4j</span><span class="o">-</span><span class="n">core</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.15</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span></code></pre></figure>
+
+<p>Do this for all transitive dependencies as well (!).</p>
+
+<p><strong>Option 2</strong>: Another option is to launch the JRE with:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">-</span><span class="nc">Dlog4j2</span><span class="o">.</span><span class="na">formatMsgNoLookups</span><span class="o">=</span><span class="kc">true</span></code></pre></figure>
+
+<p><strong>Not an option</strong>:</p>
+
+<ul>
+  <li>A newer Java version</li>
+  <li>Property: <em>com.sun.jndi.ldap.object.trustURLCodebase</em></li>
+</ul>
+
+<p>I’ve seen suggestions online that ‘newer’ Java versions are not affected, but this is just <strong>not true</strong>. Even with the latest Java versions and with <code class="highlighter-rouge">trustURLCodebase</code> set to <code class="highlighter-rouge">false</code>, they would still be able to steal data (for example environment variables) and deserialize objects already known to the classloader. This makes other deserialization RCEs trivial to launch.</p>
+
+<p>It might be <em>slightly</em> harder/safer on a newer Java version, but it’s definitely <strong>NOT</strong> a fix.</p>
+
+<p>To show this I’ve taken the latest version of Java 8 (1.8.311) and I’m using the log4j2 deserialization to craft something that opens the Calculator on my MacBook using other classes known to the vulnerable target:</p>
+
+<p><img src="/images/leak4j2.png" alt="Leak4J with latest Java" /></p>
+
+<p>Again: The payload is still being deserialized, on the latest Java version.</p>
+
+<h2 id="youve-been-compromised">You’ve been compromised</h2>
+
+<p>Great, you’ve upgraded and fixed the issue. However: Don’t stop there, that’s just step one.</p>
+
+<p>This leak was known and exploited for a long time, probably weeks before made publicly. And if even I can exploit it in a couple of minutes with my own malicious code: everybody can.</p>
+
+<p>So here is what you need to do:</p>
+
+<p>Step 1: <strong>Upgrade</strong> and fix the leak</p>
+
+<p>Step 2: <strong>Assume</strong> everything was <strong>stolen</strong>: Rotate all your keys</p>
+
+<p>Step 3: Go in and <strong>analyse</strong> the <strong>log</strong> files</p>
+
+<p>Step 4: If you have set up infra-structure as code: <strong>rebuild</strong> your <strong>environment</strong></p>
+
+<p>Step 4: <strong>Redeploy</strong> all your <strong>applications</strong></p>
+
+<p>We <em>HAVE</em> to take this one seriously. I don’t want to hear or read a couple of months from now that some company forgot to patch their software. Not another</p>
+
+<h2 id="further-reading">Further reading:</h2>
+
+<p>Here are some links for more information:</p>
+
+<ul>
+  <li><a href="https://www.lunasec.io/docs/blog/log4j-zero-day/">https://www.lunasec.io/docs/blog/log4j-zero-day/</a></li>
+  <li><a href="https://snyk.io/blog/find-fix-log4shell-quickly-snyk/">https://snyk.io/blog/find-fix-log4shell-quickly-snyk/</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Log4Shell">https://en.wikipedia.org/wiki/Log4Shell</a></li>
+</ul>
+
+
+        </span>
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2020/05/fuck-you-world/" title="Fuck You, World">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fuck You, World" width="100" height="100" />
@@ -2748,324 +2884,6 @@ If the rumoured memory improvements are true, might there be a performance hit? 
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2018/05/java-and-docker-memory-limits/" title="Java and Docker, the limitations">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/docker.png" alt="Java and Docker, the limitations" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2018-05-16T08:14:11+02:00" class="date" />
-          <span itemprop="datePublished" content="2018-05-16T08:14:11+02:00" class="date">
-            May 16, 2018 08:14:11
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/java-and-docker-memory-limits/">Java and Docker, the limitations</a></h1>
-
-        <span itemprop="articleBody">
-          <h1 id="tldr">TLDR;</h1>
-
-<p>Java and Docker aren’t friends out of the box. Docker can set memory and CPU limitations that Java can’t automatically detect. Using either Java Xmx flags (cumbersome/duplicated) <em>or</em> the new experimental JVM flags we can solve this issue.</p>
-
-<p><a href="https://blog.docker.com/2018/04/improved-docker-container-integration-with-java-10/">Docker love</a> for Java is in its way in newer versions of both OpenJ9 and OpenJDK 10!</p>
-
-<h1 id="mismatch-in-virtualization">Mismatch in virtualization</h1>
-
-<p>The combination of Java and Docker isn’t a match made in heaven, initially it was far from it. For starters, the whole premise of the JVM, Java Virtual Machine, was that having a Virtual Machine makes the underlying hardware irrelevant from the program’s point of view.</p>
-
-<p>So what do we gain by packaging our Java application inside a JVM (Virtual Machine) inside a Docker container? Not a lot, for the most part you are duplicating JVMs and Linux containers, which kills memory usage. This just sounds silly.</p>
-
-<p>It does make it easy to bundle together your program, the settings, a specific JDK, Linux settings and (if needed) an application server and other tools as one ‘thing’. This complete container has a better level of encapsulation from a devops/cloud point of view.</p>
-
-<h2 id="problem-1-memory">Problem 1: Memory</h2>
-
-<p>Most applications in production today are still using Java 8 (or older) and this might give you problems. Java 8 (before update 131) doesn’t play nice with Docker. The problem is that the amount of memory and CPUs available to the JVM isn’t the total amount of memory and CPU of <em>your machine</em>, it is what <em>Docker</em> is allowing you to use (duh).</p>
-
-<p>For example if you limit your Docker container to get only 100MB of memory, this isn’t something ‘old’ Java was aware of. Java doesn’t see this limit. The JVM will claim more and more memory and go over this limit. Docker will then take action into its own hands and kill the process inside the container if too much memory is used! The Java process is ‘Killed’. This is not what we want…</p>
-
-<p>To fix this you will <strong>also</strong> need to specify to Java there is a maximum memory limit. In <strong>older Java</strong> versions (before 8u131) you needed to specify this <em>inside</em> your container by setting <strong>-Xmx</strong> flags to limit the heap size. This feels wrong, you’d rather not want to define these limits twice, nor do you want to define this ‘inside’ your container.</p>
-
-<p>Luckily there are better ways to fix this now. From <strong>Java 9</strong> onwards (and from <strong>8u131+</strong> onwards, backported) there are flags added to the JVM:</p>
-
-<p><em>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</em></p>
-
-<p>These flags will force the JVM to look at the Linux <em>cgroup</em> configuration. This is where Docker containers specify their maximum memory settings. Now, if your application reaches the limit set by Docker (500MB), the JVM will see this limit. It’ll try to GC. If it still runs out of memory the JVM will do what it is supposed to do, throw an OutOfMemoryException. Basically this allows the JVM to ‘see’ the limit that has been set by Docker.</p>
-
-<p>From <strong>Java 10</strong> onwards (see test below) these experimental flags are the new default and are enabled using the -XX:+UseContainerSupport flag (you can disable this behaviour by providing -XX:-UseContainerSupport).</p>
-
-<h2 id="problem-2-cpu">Problem 2: CPU</h2>
-
-<p>The second problem is similar, but it has to do with the CPU. In short, the JVM will look at the hardware and detect the amount of CPU’s there are. It’ll optimize your runtime to use those CPU’s. But again, Docker might not allow you to <strong>use</strong> all these CPU’s, there is another mismatch here. Sadly this isn’t fixed in Java 8 or Java 9, but was tackled in Java 10.</p>
-
-<p>From Java 10 onwards the available CPUs will be calculated in a different way (by default) fixing this problem (also with UseContainerSupport).</p>
-
-<h1 id="testing-java-and-docker-memory-handling">Testing Java and Docker memory handling</h1>
-
-<p>As a fun exercise, lets verify and test how Docker handles out of memory using a couple of different JVM versions/flags and even a different JVM.</p>
-
-<p>First we create a test application, one that simply ‘eats’ memory and doesn’t free it.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemEat</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">List</span> <span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-            <span class="kt">byte</span> <span class="n">b</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1048576</span><span class="o">];</span>
-            <span class="n">l</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-            <span class="nc">Runtime</span> <span class="n">rt</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">();</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"free memory: "</span> <span class="o">+</span> <span class="n">rt</span><span class="o">.</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We can start Docker containers and run this application to see what will happen.</p>
-
-<h2 id="test-1-java-8u111">Test 1: Java 8u111</h2>
-
-<p>First we’ll start with a container that has an older version of Java 8 (update 111).</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it java:openjdk-8u111 /bin/bash</code></pre></figure>
-
-<p>We compile and run the MemEat.java file:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
-
-java MemEat
-...
-free memory: 67194416
-free memory: 66145824
-free memory: 65097232
-Killed</code></pre></figure>
-
-<p>As expected, Docker has killed the our Java process. Not what we want (!). Also you can see the output, Java thinks it still has a lot of memory left to allocate.</p>
-
-<p>We can fix this by providing Java with a maximum memory using the <em>-Xmx</em> flag:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
-
-java -Xmx100m MemEat
-...
-free memory: 1155664
-free memory: 1679936
-free memory: 2204208
-free memory: 1315752
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-	at MemEat.main(MemEat.java:8)</code></pre></figure>
-
-<p>After providing our own memory limits, the process is halted correctly, the JVM understands the limits it is operating under. The <strong>problem</strong> is however that you are now setting these memory limits <strong>twice</strong>, for Docker <em>AND</em> for the JVM.</p>
-
-<h2 id="test-2-java-8u144">Test 2: Java 8u144</h2>
-
-<p>As mentioned, with the new flags this has been fixed, the JVM will now follow the settings provided by Docker. We can test this using a newer JVM.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk8 /bin/bash</code></pre></figure>
-
-<p>(this OpenJDK Java image currently contains, at the time of writing, Java 8u144)</p>
-
-<p>Next we compile and run the MemEat.java file again without any flags:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
-
-java MemEat
-...
-free memory: 67194416
-free memory: 66145824
-free memory: 65097232
-Killed</code></pre></figure>
-
-<p>The same problem exists. But we can now supply the experimental flags mentioned above:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
-java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
-...
-free memory: 1679936
-free memory: 2204208
-free memory: 1155616
-free memory: 1155600
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-	at MemEat.main(MemEat.java:8)</code></pre></figure>
-
-<p>This time we didn’t set any limits on the JVM by telling it what the limits <em>are</em>, we just told the JVM to look at the correct settings! Much better.</p>
-
-<h2 id="test-3-java-10u23">Test 3: Java 10u23</h2>
-
-<p>Some people in the comments and on Reddit mentioned that Java 10 solves everything by making the experimental flags the new default.
-This behaviour can be turned off by disabling this flag: -XX:-UseContainerSupport.</p>
-
-<p>When I tested this it initially didn’t work. At the time of writing the AdoptAJDK OpenJDK10 image is packaged with jdk-10+23. This JVM apparently doesn’t understand the ‘UseContainerSupport’ flag (yet) and the process was still killed by Docker.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk10 /bin/bash</code></pre></figure>
-
-<p>Testing the code (and even providing the flag manually):</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">javac MemEat.java
-
-java MemEat
-...
-free memory: 96262112
-free memory: 94164960
-free memory: 92067808
-free memory: 89970656
-Killed
-
-java -XX:+UseContainerSupport MemEat
-
-Unrecognized VM option 'UseContainerSupport'
-Error: Could not create the Java Virtual Machine.
-Error: A fatal exception has occurred. Program will exit.</code></pre></figure>
-
-<h2 id="test-4-java-10u46-nightly">Test 4: Java 10u46 (Nightly)</h2>
-
-<p>I decided to try the latest ‘nightly’ build of AdoptAJDK OpenJDK 10. Instead of Java 10+23 it includes 10+46.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk10:nightly /bin/bash</code></pre></figure>
-
-<p>There is a problem in this nightly build though, the exported PATH points to the old Java 10+23 directory, not to 10+46, we need to fix this.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">export PATH=$PATH:/opt/java/openjdk/jdk-10+46/bin/
-
-javac MemEat.java
-
-java MemEat
-...
-free memory: 3566824
-free memory: 2796008
-free memory: 1480320
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-  at MemEat.main(MemEat.java:8)</code></pre></figure>
-
-<p>Succes! Without providing any flags Java 10 correctly detected Dockers memory limits.</p>
-
-<h2 id="test-5-openj9">Test 5: OpenJ9</h2>
-
-<p>I’ve also been experimenting with OpenJ9 recently, this free alternative JVM has been open sourced from IBMs J9 and is now maintained by Eclipse.</p>
-
-<p>Read more about OpenJ9 in my <a href="/blog/2018/05/openj9-jvm-shootout/">next blogpost</a>.</p>
-
-<p>It is fast and is very good with memory management, mindblowlingly good, often using up to 30-50% less memory for our microservices. This almost makes it possible to classify Spring Boot apps as ‘micro’ with a 100-200mb runtime nstead of 300mb+. I’m planning on doing a write-up about this very soon.</p>
-
-<p>To my surprise however, OpenJ9 doesn’t yet have an option similar to the flags currently (backported) in Java 8/9/10+ for cgroup memory limits. For example if we apply the previous testcase to the latest AdoptAJDK OpenJDK 9 + OpenJ9 build:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk9-openj9 /bin/bash</code></pre></figure>
-
-<p>And we add the OpenJDK flags (which are ignored by OpenJ9) we get:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap MemEat
-...
-free memory: 83988984
-free memory: 82940400
-free memory: 81891816
-Killed</code></pre></figure>
-
-<p>Oops, the JVM is killed by Docker again.</p>
-
-<p>I really hope a similar option will be added soon to OpenJ9, because I’d love to run this in production without having to specify the maximum memory twice. Eclipse/IBM is working on a fix for this, there are already issues and even pull requests for this issue.</p>
-
-<p><strong>UPDATE: (not recommended hack)</strong></p>
-
-<p>A slightly ugly/hacky way to fix this is using the following composed flag:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">java -Xmx`cat /sys/fs/cgroup/memory/memory.limit_in_bytes` MemEat
-...
-free memory: 3171536
-free memory: 2127048
-free memory: 2397632
-free memory: 1344952
-JVMDUMP039I Processing dump event "systhrow", detail "java/lang/OutOfMemoryError" at 2018/05/15 14:04:26 - please wait.
-JVMDUMP032I JVM requested System dump using '//core.20180515.140426.125.0001.dmp' in response to an event
-JVMDUMP010I System dump written to //core.20180515.140426.125.0001.dmp
-JVMDUMP032I JVM requested Heap dump using '//heapdump.20180515.140426.125.0002.phd' in response to an event
-JVMDUMP010I Heap dump written to //heapdump.20180515.140426.125.0002.phd
-JVMDUMP032I JVM requested Java dump using '//javacore.20180515.140426.125.0003.txt' in response to an event
-JVMDUMP010I Java dump written to //javacore.20180515.140426.125.0003.txt
-JVMDUMP032I JVM requested Snap dump using '//Snap.20180515.140426.125.0004.trc' in response to an event
-JVMDUMP010I Snap dump written to //Snap.20180515.140426.125.0004.trc
-JVMDUMP013I Processed dump event "systhrow", detail "java/lang/OutOfMemoryError".
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-  at MemEat.main(MemEat.java:8)</code></pre></figure>
-
-<p>In this case the heap size is limited to the memory allocated to the Docker instance, this works for older JVMs and OpenJ9. This is of course <em>wrong</em> because the container itself and other parts of the JVM off the heap also use memory. But it seems to work, appearantly Docker is lenient in this case. Maybe some bash-guru will make a better version subtracting a portion from the bytes for other processes.</p>
-
-<p>Anyway, <strong>don’t</strong> do this, it might not work.</p>
-
-<h2 id="test-6-openj9-nightly">Test 6: OpenJ9 (Nightly)</h2>
-
-<p>Someone suggested using the latest ‘nightly’ build for OpenJ9.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -m 100m -it adoptopenjdk/openjdk9-openj9:nightly /bin/bash</code></pre></figure>
-
-<p>This will get the latest nightly build of OpenJ9, and it has two things:</p>
-
-<ol>
-  <li>Another broken PATH parameter, fix that.</li>
-  <li>The JVM has support for the new flag UseContainerSupport (like Java 10 will)</li>
-</ol>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">export PATH=$PATH:/opt/java/openjdk/jdk-9.0.4+12/bin/
-
-javac MemEat.java
-
-java -XX:+UseContainerSupport MemEat
-...
-free memory: 5864464
-free memory: 4815880
-free memory: 3443712
-free memory: 2391032
-JVMDUMP039I Processing dump event "systhrow", detail "java/lang/OutOfMemoryError" at 2018/05/15 21:32:07 - please wait.
-JVMDUMP032I JVM requested System dump using '//core.20180515.213207.62.0001.dmp' in response to an event
-JVMDUMP010I System dump written to //core.20180515.213207.62.0001.dmp
-JVMDUMP032I JVM requested Heap dump using '//heapdump.20180515.213207.62.0002.phd' in response to an event
-JVMDUMP010I Heap dump written to //heapdump.20180515.213207.62.0002.phd
-JVMDUMP032I JVM requested Java dump using '//javacore.20180515.213207.62.0003.txt' in response to an event
-JVMDUMP010I Java dump written to //javacore.20180515.213207.62.0003.txt
-JVMDUMP032I JVM requested Snap dump using '//Snap.20180515.213207.62.0004.trc' in response to an event
-JVMDUMP010I Snap dump written to //Snap.20180515.213207.62.0004.trc
-JVMDUMP013I Processed dump event "systhrow", detail "java/lang/OutOfMemoryError".
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space</code></pre></figure>
-
-<p><strong>TADAAA</strong>, a fix is on the way!</p>
-
-<p>Oddly it seems this flag isn’t enabled by default in OpenJ9 like it is in Java 10 though. Again: Make sure you test this is you want to run Java inside a Docker container.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p><strong>IN SHORT:</strong> Be aware of the mismatch, the limitations. Test your memory settings and JVM flags, don’t assume anything.</p>
-
-<p>If you are running Java inside a Docker container, make sure that you have Docker memory limits <strong>AND</strong> limits in the JVM or a JVM that understands these limits.</p>
-
-<p>If you’re <strong>not</strong> able to <strong>upgrade</strong> your Java version set your own limits using <strong>-Xmx</strong>.</p>
-
-<p>For <strong>Java 8</strong> and <strong>Java 9</strong>, update to the latest version and use:</p>
-
-<p>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</p>
-
-<p>For <strong>Java 10</strong>, make sure it understands the ‘UseContainerSupport’ (update to latest) and just run it.</p>
-
-<p>For <strong>OpenJ9</strong> (which I highly recommend for bringing down your memory footprint in production) for now set the limits using -Xmx, but soon there will be a version that understands the ‘UseContainerSupport’ flag.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

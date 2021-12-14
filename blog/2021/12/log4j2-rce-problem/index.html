@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Log4Shell / Leak4J</title>
+  <meta name="description" content="Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called Log4Shell.All versions of log4j-code from 2....">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,log4j2,logging,rce,vulnerability,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Log4Shell / Leak4J" />
+  <meta name="twitter:description" content="Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called Log4Shell.All versions o..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2020/05/fuck-you-world/" title="Previous: Fuck You, World">&laquo; Fuck You, World</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2021/12/log4j2-rce-problem/" title="Log4Shell / Leak4J">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Log4Shell / Leak4J" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2021-12-14T09:12:31+01:00" class="date" />
+        <span itemprop="datePublished" content="2021-12-14T09:12:31+01:00" class="date">
+          Dec 14, 2021 09:12:31
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Log4Shell / Leak4J</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called <a href="https://en.wikipedia.org/wiki/Log4Shell)">Log4Shell</a>.</p>
+
+<p>All versions of log4j-code from 2.0-beta9 to 2.14.1 are affected by this, and it’s a <strong>big</strong> one.</p>
+
+<p>This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.</p>
+
+<p>Log4J has, for a long time, been the most used logging framework in the Java landscape. It’s extremely widely used and this attack has the most broad trigger you can imagine: It needs to log something.</p>
+
+<p>The payload can be delivered in a LOT of ways, as long as it gets in a log statement. Either through user-controlled fields, HTTP requests, URLs, <strong>ANYTHING</strong>.</p>
+
+<h2 id="the-attack">The attack</h2>
+
+<p>After writing some code (a malicious embedded LDAP server) I was able to reproduce the RCE (“Remote Code Execution”) attack on even the most basic project.</p>
+
+<p>Here is an example: a simple REST endpoint in a Spring Boot starter project with a single line of logging</p>
+
+<p><img src="/images/leak4j1.png" alt="Leak4J" /></p>
+
+<p>As you can see it executes remotely downloads, loads and executes the classfile I’m serving from the malicious LDAP server (running seperately). There is also the risk of leaking environment variables for example, or Kubernetes settings.</p>
+
+<p>I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are easier ways to check if your software is vulnerable, you don’t need the RCE for this.</p>
+
+<p>For example, you can use this tool by <a href="https://log4j-tester.trendmicro.com/">Trend Micro</a>.</p>
+
+<h2 id="possible-risks-">Possible risks: 🚨</h2>
+
+<p>Risks of this vulnerability are:</p>
+
+<ul>
+  <li>Loss of <em>ALL</em> data</li>
+  <li>Ransomware</li>
+  <li>Backdoors</li>
+  <li>Botnet</li>
+  <li>Loss of AWS/Kubernetes keys/secrets</li>
+  <li>And the list goes on, and on, and on…</li>
+</ul>
+
+<h2 id="the-fix">The fix</h2>
+
+<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version 2.15+</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">log4j</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">log4j</span><span class="o">-</span><span class="n">core</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.15</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span></code></pre></figure>
+
+<p>Do this for all transitive dependencies as well (!).</p>
+
+<p><strong>Option 2</strong>: Another option is to launch the JRE with:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">-</span><span class="nc">Dlog4j2</span><span class="o">.</span><span class="na">formatMsgNoLookups</span><span class="o">=</span><span class="kc">true</span></code></pre></figure>
+
+<p><strong>Not an option</strong>:</p>
+
+<ul>
+  <li>A newer Java version</li>
+  <li>Property: <em>com.sun.jndi.ldap.object.trustURLCodebase</em></li>
+</ul>
+
+<p>I’ve seen suggestions online that ‘newer’ Java versions are not affected, but this is just <strong>not true</strong>. Even with the latest Java versions and with <code class="highlighter-rouge">trustURLCodebase</code> set to <code class="highlighter-rouge">false</code>, they would still be able to steal data (for example environment variables) and deserialize objects already known to the classloader. This makes other deserialization RCEs trivial to launch.</p>
+
+<p>It might be <em>slightly</em> harder/safer on a newer Java version, but it’s definitely <strong>NOT</strong> a fix.</p>
+
+<p>To show this I’ve taken the latest version of Java 8 (1.8.311) and I’m using the log4j2 deserialization to craft something that opens the Calculator on my MacBook using other classes known to the vulnerable target:</p>
+
+<p><img src="/images/leak4j2.png" alt="Leak4J with latest Java" /></p>
+
+<p>Again: The payload is still being deserialized, on the latest Java version.</p>
+
+<h2 id="youve-been-compromised">You’ve been compromised</h2>
+
+<p>Great, you’ve upgraded and fixed the issue. However: Don’t stop there, that’s just step one.</p>
+
+<p>This leak was known and exploited for a long time, probably weeks before made publicly. And if even I can exploit it in a couple of minutes with my own malicious code: everybody can.</p>
+
+<p>So here is what you need to do:</p>
+
+<p>Step 1: <strong>Upgrade</strong> and fix the leak</p>
+
+<p>Step 2: <strong>Assume</strong> everything was <strong>stolen</strong>: Rotate all your keys</p>
+
+<p>Step 3: Go in and <strong>analyse</strong> the <strong>log</strong> files</p>
+
+<p>Step 4: If you have set up infra-structure as code: <strong>rebuild</strong> your <strong>environment</strong></p>
+
+<p>Step 4: <strong>Redeploy</strong> all your <strong>applications</strong></p>
+
+<p>We <em>HAVE</em> to take this one seriously. I don’t want to hear or read a couple of months from now that some company forgot to patch their software. Not another</p>
+
+<h2 id="further-reading">Further reading:</h2>
+
+<p>Here are some links for more information:</p>
+
+<ul>
+  <li><a href="https://www.lunasec.io/docs/blog/log4j-zero-day/">https://www.lunasec.io/docs/blog/log4j-zero-day/</a></li>
+  <li><a href="https://snyk.io/blog/find-fix-log4shell-quickly-snyk/">https://snyk.io/blog/find-fix-log4shell-quickly-snyk/</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Log4Shell">https://en.wikipedia.org/wiki/Log4Shell</a></li>
+</ul>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2021/12/log4j2-rce-problem/";
+      this.page.identifier = "/blog/2021/12/log4j2-rce-problem/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
