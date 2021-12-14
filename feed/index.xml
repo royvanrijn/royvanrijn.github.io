@@ -5,15 +5,15 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 14 Dec 2021 16:01:26 +0100</pubDate>
-    <lastBuildDate>Tue, 14 Dec 2021 16:01:26 +0100</lastBuildDate>
+    <pubDate>Tue, 14 Dec 2021 16:18:41 +0100</pubDate>
+    <lastBuildDate>Tue, 14 Dec 2021 16:18:41 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>Log4Shell / Leak4J</title>
         <description>&lt;p&gt;Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called &lt;a href=&quot;https://en.wikipedia.org/wiki/Log4Shell)&quot;&gt;Log4Shell&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;All versions of log4j-code from 2.0-beta9 to 2.14.1 are affected by this, and it’s a &lt;strong&gt;big&lt;/strong&gt; one.&lt;/p&gt;
+&lt;p&gt;All versions of log4j-core from 2.0-beta9 to 2.14.1 are affected by this, and it’s a &lt;strong&gt;big&lt;/strong&gt; one.&lt;/p&gt;
 
 &lt;p&gt;This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.&lt;/p&gt;
 
@@ -48,12 +48,12 @@
 
 &lt;h2 id=&quot;the-fix&quot;&gt;The fix&lt;/h2&gt;
 
-&lt;p&gt;&lt;strong&gt;Option 1&lt;/strong&gt;: If you haven’t already: upgrade log4j-core to version 2.15+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Option 1&lt;/strong&gt;: If you haven’t already: upgrade log4j-core to version &amp;gt;= 2.15.0&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;    &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dependency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logging&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;log4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;artifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;core&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;artifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dependency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Do this for all transitive dependencies as well (!).&lt;/p&gt;

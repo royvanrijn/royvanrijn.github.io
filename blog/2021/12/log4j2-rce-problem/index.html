@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Log4Shell / Leak4J</title>
-  <meta name="description" content="Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called Log4Shell.All versions of log4j-code from 2....">
+  <meta name="description" content="Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called Log4Shell.All versions of log4j-core from 2....">
   
   <meta name="keywords" content="royvanrijn,programming,java,java,log4j2,logging,rce,vulnerability,">
   
@@ -148,7 +148,7 @@
     <span itemprop="articleBody">
     <p>Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called <a href="https://en.wikipedia.org/wiki/Log4Shell)">Log4Shell</a>.</p>
 
-<p>All versions of log4j-code from 2.0-beta9 to 2.14.1 are affected by this, and it’s a <strong>big</strong> one.</p>
+<p>All versions of log4j-core from 2.0-beta9 to 2.14.1 are affected by this, and it’s a <strong>big</strong> one.</p>
 
 <p>This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.</p>
 
@@ -183,12 +183,12 @@
 
 <h2 id="the-fix">The fix</h2>
 
-<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version 2.15+</p>
+<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version &gt;= 2.15.0</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">log4j</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">log4j</span><span class="o">-</span><span class="n">core</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.15</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.15</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
     <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span></code></pre></figure>
 
 <p>Do this for all transitive dependencies as well (!).</p>
