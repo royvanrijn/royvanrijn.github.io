@@ -183,12 +183,14 @@
 
 <h2 id="the-fix">The fix</h2>
 
-<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version &gt;= 2.15.0</p>
+<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version &gt;= 2.16.0</p>
+
+<p>Use version <strong>2.16.0</strong> instead of 2.15.0, this fixes the problem a bit more rigorously.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">log4j</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">log4j</span><span class="o">-</span><span class="n">core</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.15</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.16</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
     <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span></code></pre></figure>
 
 <p>Do this for all transitive dependencies as well (!).</p>
@@ -201,7 +203,7 @@
 
 <p><strong>Option 3</strong>: Remove JndiLookup.class</p>
 
-<p>It is also possible to remove <code class="highlighter-rouge">org.apache.logging.log4j.core.lookup.JndiLookup</code> from your log4j JAR files. I don’t recommend doing this, if you want to go this route it’s probably easier to just upgrade to &gt;= <em>2.15.0</em>.</p>
+<p>It is also possible to remove <code class="highlighter-rouge">org.apache.logging.log4j.core.lookup.JndiLookup</code> from your log4j JAR files. I don’t recommend doing this, if you want to go this route it’s probably easier to just upgrade to &gt;= <em>2.16.0</em>.</p>
 
 <p><strong>Not an option</strong>:</p>
 
