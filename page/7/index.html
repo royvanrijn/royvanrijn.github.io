@@ -139,7 +139,8 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/">Test Swing applications in Fitnesse (Nonkey)</a></h1>
 
         <span itemprop="articleBody">
-          <h1 id="fitnesse">Fitnesse</h1>
+          
+            <h1 id="fitnesse">Fitnesse</h1>
 
 <p><a href="http://fitnesse.org/">Fitnesse</a> is a very popular test framework, used in a lot of projects. Using a wiki you describe the tests as plain text, which get translated into ‘fixtures’, code that is called that, in turn, can call your application. An example of a fixture we use:</p>
 
@@ -151,270 +152,16 @@
 
 <p>The corresponding Java code could be something like:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">Credentials</span> <span class="n">credentials</span><span class="o">;</span>
-<span class="kd">private</span> <span class="nc">AccountDetails</span> <span class="n">accountDetails</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenTheUserLogsInWithUsernameAndPassword</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">credentials</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Credentials</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
-<span class="o">}</span>
+          
 
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">andAsksFotTheAccountDetails</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">accountDetails</span> <span class="o">=</span> <span class="n">mySystem</span><span class="o">.</span><span class="na">getAccountDetails</span><span class="o">(</span><span class="n">credentials</span><span class="o">);</span>
-<span class="o">}</span>
+          
+          </span>
 
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">displayedFullname</span><span class="o">(</span><span class="nc">String</span> <span class="n">fullname</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="n">fullname</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getFullename</span><span class="o">());</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">websitesContains</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="nl">website:</span><span class="n">accountDetails</span><span class="o">.</span><span class="na">getWebsites</span><span class="o">())</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">website</span><span class="o">))</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This is a very simplified example on how you could use Fitnesse to test your application. But the idea is very powerful, there are implementations for Java (initially) and now .NET, Groovy etc. Also, most of the time the system you’re testing doesn’t have a Java API but instead you’d like to test the user interface. With most Java applications being web applications there are numerous plugins to connect Fitnesse with for example Selenium to ease web application testing. The fixtures fill webpages and analyze the resulting HTML response.</p>
-
-<p>At my current client (Port of Rotterdam) we’re building a very rich, partially offline, Swing application. This application has a backend and numerous clients running the Swing application. We’ve used Fitnesse to test the backend code from the start, and the last year we’ve put in some effort to also use Fitnesse for the Swing application. We’ve called this “Nonkey”, being an automated version of our Monkey integration testing we’d been doing up to that moment.</p>
-
-<h1 id="uispec4j">UISpec4J</h1>
-
-<p>The first ingredient we need to test Swing GUI’s in Fitnesse is UISpec4J. This is an excellent Swing test framework that allows you to manipulate GUI elements from code. The framework is made with unit-tests in mind, but can also be used in integration testing. In our SetUp page in Fitnesse we call the following code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nc">Window</span> <span class="n">mainWindow</span><span class="o">;</span>
-<span class="kd">private</span> <span class="nc">JFrame</span> <span class="n">mainFrame</span><span class="o">;</span>
-    
-<span class="c1">//Called from the Suite Set Up page:
-</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">launchNonkey</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">mainWindow</span> <span class="o">=</span> <span class="nc">WindowInterceptor</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="nc">Trigger</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-            <span class="k">new</span> <span class="nf">OurApplication</span><span class="o">().</span><span class="na">launch</span><span class="o">();</span>
-            <span class="c1">// Get the main JFrame from Spring, used directly in some cases instead of UISpec4J
-</span>
-            <span class="n">mainFrame</span> <span class="o">=</span> <span class="nc">BeanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"mainFrame"</span><span class="o">,</span> <span class="nc">MainFrame</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The WindowInterceptor captures the Swing application and allows for manipulation in a later stage. For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//In some fixture:
-</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">loginWithUsernameAndPassword</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">//UISpec4J uses JComponent.setName() for lookup:
-</span>
-    <span class="nc">Panel</span> <span class="n">loginPanel</span> <span class="o">=</span> <span class="n">nonKey</span><span class="o">.</span><span class="na">mainWindow</span><span class="o">.</span><span class="na">getPanel</span><span class="o">(</span><span class="s">"loginPanel"</span><span class="o">);</span> 
-    <span class="kd">final</span> <span class="nc">TextBox</span> <span class="n">usernameTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"usernameTextbox"</span><span class="o">);</span>
-    <span class="n">usernameTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="nc">TextBox</span> <span class="n">passwordTextbox</span> <span class="o">=</span> <span class="n">loginPanel</span><span class="o">.</span><span class="na">getTextBox</span><span class="o">(</span><span class="s">"passwordTextbox"</span><span class="o">);</span>
-    <span class="n">passwordTextbox</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
-    
-    <span class="n">loginPanel</span><span class="o">.</span><span class="na">getButton</span><span class="o">(</span><span class="s">"loginButton"</span><span class="o">).</span><span class="na">click</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This fixture causes the Swing application to fill in the username, password and press the login button. It is easy to read and can be launched from Fitnesse with a single line:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">|login with username|roy   |and password   |test123   |</code></pre></figure>
-
-<p>Nice! We are done, we can test Swing GUI’s in Fitnesse now! Well no… not really, unfortunately there are a couple more problem we ran into, regaring the Event Dispatch Thread (EDT).</p>
-
-<h1 id="event-dispatch-thread-edt">Event Dispatch Thread (EDT)</h1>
-
-<p>The EDT, sometimes called Swing Thread, is a special thread. Everything you do in Swing should always happen on this thread. Setting components to visible, pressing buttons etc, all need to be done in the EDT. If you don’t do this correctly the application gets into a lot of race conditions and it can even cause the application to hang.</p>
-
-<p>When we combined Fitnesse with UISpec4J and started making a lot of tests we noticed that sometimes mysteriously a test would fail without changes. It turned out to be a problem with the EDT. UISpec4J doesn’t worry too much about the EDT, and when we click a button or setText (like the examples above) it does this in the current thread. In Fitnesse this thread is the thread that called the fixture, obviously not the EDT.</p>
-
-<p>We brainstormed a lot about how we could fix this, maybe change UISpec4Js code? This turned out to be a hellish task. How about setting SwingUtilities.invokeAndWait() in every fixture? That could work but is also a massive undertaking. We decided to take a look at how Fitnesse calls the fixtures. This is always done from a ‘StatementExecutor’. So we decided to build a custom StatementExecutor which causes the fixtures to all run in the EDT.</p>
-
-<p>To do this we need a custom SlimService. First I tried to extend the normal SlimService, but this wouldn’t work for some odd reason (still unexplained, should try this again). We decided to copy the SlimService code and make our own:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingSlimService</span> <span class="kd">extends</span> <span class="nc">SocketService</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">SwingSlimService</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">verbose</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">parseCommandLine</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">startWithFactory</span><span class="o">(</span><span class="n">args</span><span class="o">,</span> <span class="k">new</span> <span class="nc">SwingJavaSlimFactory</span><span class="o">());</span> <span class="c1">//&lt;-- custom SwingJavaSlimFactory!
-</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="n">parseCommandLineFailed</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parseCommandLineFailed</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Invalid command line arguments:"</span> <span class="o">+</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">args</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">startWithFactory</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="nc">SlimFactory</span> <span class="n">slimFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">new</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimFactory</span><span class="o">.</span><span class="na">getSlimServer</span><span class="o">(</span><span class="n">verbose</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">parseCommandLine</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="nc">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CommandLine</span><span class="o">(</span><span class="s">"[-v] port"</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">commandLine</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">args</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">verbose</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">hasOption</span><span class="o">(</span><span class="s">"v"</span><span class="o">);</span>
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">portString</span> <span class="o">=</span> <span class="n">commandLine</span><span class="o">.</span><span class="na">getArgument</span><span class="o">(</span><span class="s">"port"</span><span class="o">);</span>
-            <span class="n">port</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">portString</span><span class="o">);</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="nf">SwingSlimService</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">port</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">SlimServer</span> <span class="n">slimServer</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">,</span> <span class="n">slimServer</span><span class="o">);</span>
-        <span class="n">instance</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Next we needed a custom JavaSlimFactory:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingJavaSlimFactory</span> <span class="kd">extends</span> <span class="nc">JavaSlimFactory</span> <span class="o">{</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">StatementExecutorInterface</span> <span class="nf">getStatementExecutor</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="nf">SwingStatementExecutor</span><span class="o">();</span> <span class="c1">//&lt;-- custom SwingStatementExecutor!
-</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And last but not least our custom StatementExecutor which forces all calls into the EDT thread:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">fitnesse.slim.StatementExecutor</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">fitnesse.slim.StatementExecutorInterface</span><span class="o">;</span>
-
-<span class="cm">/**
- * HaMIS custom StatementExecutor, to call and create in the EDT thread
- */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SwingStatementExecutor</span> <span class="kd">implements</span> <span class="nc">StatementExecutorInterface</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">StatementExecutor</span> <span class="n">wrapped</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StatementExecutor</span><span class="o">();</span>
-
-    <span class="kd">private</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">EDTRunnable</span> <span class="kd">implements</span> <span class="nc">Runnable</span> <span class="o">{</span>
-
-        <span class="kd">private</span> <span class="nc">Object</span> <span class="n">returnValue</span><span class="o">;</span>
-
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
-
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setReturnValue</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Object</span> <span class="n">returnValue</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">returnValue</span> <span class="o">=</span> <span class="n">returnValue</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getReturnValue</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">returnValue</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">call</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">caller</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
-
-            <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">};</span>
-        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">caller</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">callAndAssign</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">variable</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">,</span>
-            <span class="kd">final</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">callAndAssigner</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
-
-            <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">callAndAssign</span><span class="o">(</span><span class="n">variable</span><span class="o">,</span> <span class="n">instanceName</span><span class="o">,</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">};</span>
-        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">callAndAssigner</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">callAndAssigner</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">create</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="kd">final</span> <span class="nc">EDTRunnable</span> <span class="n">creater</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EDTRunnable</span><span class="o">()</span> <span class="o">{</span>
-
-            <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">setReturnValue</span><span class="o">(</span><span class="n">wrapped</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">instanceName</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">};</span>
-        <span class="nc">EDTRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">creater</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">creater</span><span class="o">.</span><span class="na">getReturnValue</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">addPath</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">addPath</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getInstance</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">instanceName</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">instanceName</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">wrapped</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVariable</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">wrapped</span><span class="o">.</span><span class="na">setVariable</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">stopHasBeenRequested</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="na">stopHasBeenRequested</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This uses a small static class we’ve used in our code before to safely run a Runnable on the EDT and invokeAndWait (without waiting IN the EDT):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EDTRunner</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="nc">SwingUtilities</span><span class="o">.</span><span class="na">isEventDispatchThread</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">r</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="nc">EventQueue</span><span class="o">.</span><span class="na">invokeAndWait</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">InterruptedException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">InvocationTargetException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The only thing left to do is to instruct Fitnesse to use our SlimService instead of the default implementation. This is done using the following parameter in our main page:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">!</span><span class="n">define</span> <span class="no">TEST_SYSTEM</span> <span class="o">{</span><span class="n">slim</span><span class="o">}</span>
-<span class="o">!</span><span class="n">define</span> <span class="no">TEST_RUNNER</span> <span class="o">{</span><span class="n">com</span><span class="o">.</span><span class="na">portofrotterdam</span><span class="o">.</span><span class="na">hamis</span><span class="o">.</span><span class="na">SwingSlimService</span><span class="o">}</span></code></pre></figure>
-
-<p>Make sure that the class can be found (for example, package it in a JAR and place it on Fitnesses classpath). And you’re done! Using a <a href="http://www.jidesoft.com/javadoc/com/jidesoft/utils/ThreadCheckingRepaintManager.html">ThreadCheckingRepaintManager</a> (workings described <a href="http://weblogs.java.net/blog/alexfromsun/archive/2006/02/debugging_swing.html">here</a>) we checked to see if the tests are now repainting/manipulating Swing from the correct thread, and it works like a charm.</p>
-
-<p>Good luck testing with Fitnesse in the near future, if you have any problems/improvements/ideas please let me know (in the comments below).</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2013/02/test-swing-applications-in-fitnesse-nonkey/#disqus_thread">0 comments</a>
@@ -449,11 +196,17 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/12/facebook-status-deceased/">Facebook status: Deceased</a></h1>
 
         <span itemprop="articleBody">
-          <p>In the next couple of years dead will become an important aspect of the social networks. A time will come that most profiles on Facebook will belong to people who’ll never be able to post another update. Currently due to inactivity most dead profiles will be deleted or become inactive, but I think dead will take a much more important role on the internet.</p>
+          
 
-<p>My parents and even grandparents have a Facebook account now, but in twenty or thirty years, some people I’m connected to won’t be alive anymore. It would be great to be able to browse the lives of people who are no longer around us. I’d love to read about my deceased grandmother for example, just to see how she lived her life. So instead of deleting inactive accounts, death should become more accepted and a part of our social web as well.</p>
+          
+            <p>In the next couple of years dead will become an important aspect of the social networks. A time will come that most profiles on Facebook will belong to people who’ll never be able to post another update. Currently due to inactivity most dead profiles will be deleted or become inactive, but I think dead will take a much more important role on the internet.</p> <p>My parents and even grandparents have a Facebook account now, but in twenty or thirty years, some people I’m connected to won’t be alive anymore. It would be great to be able to browse the lives...
+          
+          </span>
 
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/12/facebook-status-deceased/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/12/facebook-status-deceased/#disqus_thread">0 comments</a>
@@ -488,12 +241,19 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/11/devoxx-2012-the-video/">Devoxx 2012, the video</a></h1>
 
         <span itemprop="articleBody">
-          <p>Yesterday when I returned home from another amazing Devoxx conference I quickly created another impression video:</p>
+          
+
+          
+            <p>Yesterday when I returned home from another amazing Devoxx conference I quickly created another impression video:</p>
 
 <iframe type="text/html" src="https://player.vimeo.com/video/53695846?badge=0" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 
 
-        </span>
+          
+          </span>
+
+        
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/11/devoxx-2012-the-video/#disqus_thread">0 comments</a>
@@ -528,15 +288,17 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/11/devoxx4kids/">Devoxx4Kids</a></h1>
 
         <span itemprop="articleBody">
-          <p>A couple of weeks ago I went to Devoxx4Kids. Devoxx is a very well known Java conference (the best in the world actually!). This time they organized an event especially for kids ranging from 10 to 14 years old. The goal is twofold, the main goal is to just give them a good time, the second goal is to introduce them to programming and technology in a fun way.</p>
+          
 
-<p>To show the world this is a great idea, Stephan invited me to film the event and capture the happy faces of the kids enjoying themselfs. And now after Devoxx 2012, I’m allowed to show it to everybody:</p>
-<iframe type="text/html" src="https://player.vimeo.com/video/51393678?badge=0" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+          
+            <p>A couple of weeks ago I went to Devoxx4Kids. Devoxx is a very well known Java conference (the best in the world actually!). This time they organized an event especially for kids ranging from 10 to 14 years old. The goal is twofold, the main goal is to just give them a good time, the second goal is to introduce them to programming and technology in a fun way.</p> <p>To show the world this is a great idea, Stephan invited me to film the event and capture the happy faces of the kids enjoying themselfs. And now after Devoxx 2012,...
+          
+          </span>
 
-<p>(more information in Dutch and French: <a href="http://www.devoxx.com/display/4KIDS/Home">http://www.devoxx.com/display/4KIDS/Home</a>)</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/11/devoxx4kids/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/11/devoxx4kids/#disqus_thread">0 comments</a>
@@ -571,146 +333,17 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/09/stacktraces-should-be-inverted/">Stacktraces should be inverted</a></h1>
 
         <span itemprop="articleBody">
-          <p>Stacktraces in Java are wrong. This is a conclusion that I’ve drawn after years of working with novice programmers.</p>
+          
 
-<p>What is the first thing novice programmers do when they encounter a stacktrace? They start reading it, and this is wrong! The first thing you <em>should</em> do is scroll down. That is because the most important piece of the stacktrace is most likely at the bottom.</p>
+          
+            <p>Stacktraces in Java are wrong. This is a conclusion that I’ve drawn after years of working with novice programmers.</p> <p>What is the first thing novice programmers do when they encounter a stacktrace? They start reading it, and this is wrong! The first thing you <em>should</em> do is scroll down. That is because the most important piece of the stacktrace is most likely at the bottom.</p> <h1 id="caused-by">Caused by…</h1> <p>Stacktraces in Java are usually wrapped numerous times, because all the frameworks and the application server wants to add their own little bit of information around the original exception. The problem is...
+          
+          </span>
 
-<h1 id="caused-by">Caused by…</h1>
-
-<p>Stacktraces in Java are usually wrapped numerous times, because all the frameworks and the application server wants to add their own little bit of information around the original exception. The problem is that Java uses the “Caused by” way of printing the stacktrace. With the “Caused by” you’ll get a lot of information about what happened (<em>afterwards</em>) first, until you get to the actual reason.</p>
-
-<p>For example:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused by: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused by: java.lang.NullPointerException
-	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
-	at java.net.URLClassLoader$1.run(Unknown Source)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(Unknown Source)
-	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)</code></pre></figure>
-
-<p>The first two traces aren’t at all important, it tells us something went wrong with a webservice call. But the bottom trace gives us the real reason, a NullPointerException!</p>
-
-<h1 id="caused">Caused!</h1>
-
-<p>I’d rather see stacktraces being inverted, so instead of saying:</p>
-
-<table>
-  <tbody>
-    <tr>
-      <td>**Webservice failed</td>
-      <td>which is caused by -&gt; Webservice failed during translation</td>
-      <td>which is caused by -&gt; A NullPointerException!**</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>It should say:</p>
-
-<table>
-  <tbody>
-    <tr>
-      <td>**A NullPointerException</td>
-      <td>which caused -&gt; Webservice failed during translation</td>
-      <td>which caused -&gt; Webservice failed…**</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>So using the example above it would become:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">java.lang.NullPointerException
-	at com.sun.deploy.security.CPCallbackHandler.isAuthenticated(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler.access$1300(Unknown Source)
-	at com.sun.deploy.security.CPCallbackHandler$ChildElement.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.checkResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath$JarLoader.getResource(Unknown Source)
-	at com.sun.deploy.security.DeployURLClassPath.getResource(Unknown Source)
-	at java.net.URLClassLoader$1.run(Unknown Source)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(Unknown Source)
-	at com.sun.jnlp.JNLPClassLoader.findClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at java.lang.ClassLoader.loadClass(Unknown Source)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:351)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:345)
-	at org.springframework.ws.client.core.WebServiceTemplate.marshalSendAndReceive(WebServiceTemplate.java:337)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:48)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Problem while getting data from webservice and translation:
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:60)
-	at com.portofrotterdam.hamis.service.webservice.WebServiceProxy.callWebService(WebServiceProxy.java:42)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:26)
-	at com.portofrotterdam.hamis.service.webservice.GetAllTemplateInspectionCheckListsSynchronizingWebservice.callWebservice(GetAllTemplateInspectionCheckListsSynchronizingWebservice.java:8)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:107)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)
-Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error during webservice call.
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doWebserviceCall(BaseSynchronizingWebservice.java:111)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doCallWithCallback(BaseSynchronizingWebservice.java:97)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.doActualCall(BaseSynchronizingWebservice.java:77)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice.access$000(BaseSynchronizingWebservice.java:44)
-	at com.portofrotterdam.hamis.service.webservice.BaseSynchronizingWebservice$1.run(BaseSynchronizingWebservice.java:63)
-	at java.lang.Thread.run(Unknown Source)</code></pre></figure>
-
-<p>This is much easier to understand (IMHO). The first exception you see is now also the first thing that happened. Much clearer for the novice programmer.</p>
-
-<p>Some more tips when you encounter a stacktrace:</p>
-
-<ul>
-  <li>Look for the first line that starts with YOUR package, this is where your control over the code starts, where you might be able to fix it</li>
-  <li>If there are a lot of other packages mentioned before YOUR package, Google it! You are probably not alone</li>
-</ul>
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/09/stacktraces-should-be-inverted/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/09/stacktraces-should-be-inverted/#disqus_thread">0 comments</a>
@@ -745,156 +378,17 @@ Caused: com.portofrotterdam.hamis.service.offline.WebServiceException: Error dur
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">Hacking with the Mara-Naboisho Lion Project</a></h1>
 
         <span itemprop="articleBody">
-          <p>Yesterday a friend of mine pointed me to the following thread:<br />
-<a href="https://github.com/giving/giving.github.com/issues/11">https://github.com/giving/giving.github.com/issues/11</a></p>
+          
 
-<p><img src="/images/lion-with-collar.jpg" alt="lion-with-collar" class="alignright" /></p>
+          
+            <p>Yesterday a friend of mine pointed me to the following thread:<br /> <a href="https://github.com/giving/giving.github.com/issues/11">https://github.com/giving/giving.github.com/issues/11</a></p> <p><img src="/images/lion-with-collar.jpg" alt="lion-with-collar" class="alignright" /></p> <h1 id="givinggithubcom">giving.github.com</h1> <p>Giving.github is a project that tries to bring people together. There are a lot of programmers looking for fun projects in the world, and so are scientists/charities and other people with problems!</p> <p>Be sure to check it out, maybe you can help somebody as well.</p> <h1 id="mara-naboisho-lion-project">Mara-Naboisho Lion Project</h1> <p>One of the problems posted to giving.github has something to do with Lion collars. The Mara-Naboisho Lion Project has a couple of collars and some files, but no idea what...
+          
+          </span>
 
-<h1 id="givinggithubcom">giving.github.com</h1>
-
-<p>Giving.github is a project that tries to bring people together. There are a lot of programmers looking for fun projects in the world, and so are scientists/charities and other people with problems!</p>
-
-<p>Be sure to check it out, maybe you can help somebody as well.</p>
-
-<h1 id="mara-naboisho-lion-project">Mara-Naboisho Lion Project</h1>
-
-<p>One of the problems posted to giving.github has something to do with Lion collars. The Mara-Naboisho Lion Project has a couple of collars and some files, but no idea what the data inside the files mean. Their initial description was:</p>
-
-<p>The Mara-Naboisho Lion Project has asked for our help decoding and plotting the positions of lions fitted with GPS collars.</p>
-
-<p>They receive SMSes from the collars:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">File: Collar07854_100806210058.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0806100028008c13ef348a0039d0fe000de8
-71004cc92b5ca92d6213ef26640039d108000de86b004cc92d5ca92d
-5d13ef18620039d101000de865004cc92c5ca92d5813ef0a930039d0
-fc000de864004cc9311c682d5413eefc170039d045000de7d4004cc9
-5b7c692c5013eeee280039d0ff000de85f004cc92a7c692d6fffffff
-ffffffffffffffffffffffffffffffffffff
-    
-File: Collar07854_100807060011.SMS
-
-074952494449554d0000000000000000000000000000000000000000
-000000040f3330303033343031323239373839300000000000000000
-0000000000000000f10a0807020038008c13efb2eb0039d0ed000de8
-53004cc92e3cea2d8813efa5060039d0fb000de860004cc9291c6a2d
-8413ef96fd0039d0fc000de85e004cc92d5c6a2d7f13ef88e00039d0
-f6000de85a004cc92b5c6a2d7b13ef7ad80039d0fa000de85a004cc9
-327c6a2d77ffffffffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffff</code></pre></figure>
-
-<p>These are presumably SMS PDUs, although simple online decoders don’t seem to make much sense of them. There’s the ASCII text “IRIDIUM” in them, presumably being the SMSC or sender or something string, as IRIDIUM is a satellite telephone system and presumably the bearer when the collars send up their positions.</p>
-
-<p>What format is it, and how do we decode it?</p>
-
-<h1 id="not-sms-pdu">Not SMS PDU</h1>
-
-<p>This is where I started analyzing, and I quickly ruled out that the hex-code is pure PDU (which can easily be translated). It seems to be some dialect/own protocol.</p>
-
-<p>The first major breakthrough was realizing that there is one big header that both files have in common, and the real message starts with <strong>0A</strong>. And the two messages after that have a repeating pattern:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Common header?
-
-074952494449554d000000000000000
-0000000000000000000000000000000
-040f333030303334303132323937383
-9300000000000000000000000000000
-0000f10a
-
-Sub header?
-SMS 1: 0806100028008c13
-SMS 2: 0807020038008c13
-
-
-Message #1:
-ef348a0039d0fe000de871004cc92b5ca92d6213
-ef26640039d108000de86b004cc92d5ca92d5d13
-ef18620039d101000de865004cc92c5ca92d5813
-ef0a930039d0fc000de864004cc9311c682d5413
-eefc170039d045000de7d4004cc95b7c692c5013
-eeee280039d0ff000de85f004cc92a7c692d6fff
-ffffffffffffffffffffffffffffffffffffffff
-
-Message #2:
-efb2eb0039d0ed000de853004cc92e3cea2d8813
-efa5060039d0fb000de860004cc9291c6a2d8413
-ef96fd0039d0fc000de85e004cc92d5c6a2d7f13
-ef88e00039d0f6000de85a004cc92b5c6a2d7b13
-ef7ad80039d0fa000de85a004cc9327c6a2d77ff
-ffffffffffffffffffffffffffffffffffffffff
-ffffffffffffffffffffffffffffffffffffffff</code></pre></figure>
-
-<p>This sure adds some structure to the files. I also guessed the first file has actually 6 entries and the second file has only 5 entries.</p>
-
-<h1 id="first-field-deciphered">First field deciphered</h1>
-
-<p>The second breakthrough came through Twitter. I posted this problem in a tweet and after a couple of hours I got a reply that there was progress on the <a href="http://stackoverflow.com/questions/12347625/decode-sms-reporting-gps-positions-of-lions-in-kenya">stackoverflow</a> question.</p>
-
-<p>This was DStibbe’s reply:</p>
-
-<p>-——————————————————————————–<br />
-Perhaps the ‘13’ is not part of the headers but the message instead?<br />
-The messages would then be:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Message #1
-13ef 348a 0039 d0fe 000d e871 004c c92b 5ca9 2d62
-13ef 2664 0039 d108 000d e86b 004c c92d 5ca9 2d5d
-13ef 1862 0039 d101 000d e865 004c c92c 5ca9 2d58
-13ef 0a93 0039 d0fc 000d e864 004c c931 1c68 2d54
-13ee fc17 0039 d045 000d e7d4 004c c95b 7c69 2c50
-13ee ee28 0039 d0ff 000d e85f 004c c92a 7c69 2d6f
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff
-
-Message #2
-13ef b2eb 0039 d0ed 000d e853 004c c92e 3cea 2d88
-13ef a506 0039 d0fb 000d e860 004c c929 1c6a 2d84
-13ef 96fd 0039 d0fc 000d e85e 004c c92d 5c6a 2d7f
-13ef 88e0 0039 d0f6 000d e85a 004c c92b 5c6a 2d7b
-13ef 7ad8 0039 d0fa 000d e85a 004c c932 7c6a 2d77
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ffff ffff ffff ffff ffff ffff ffff ffff ffff ffff
-ff</code></pre></figure>
-
-<p>It does seem like a log , with the message for Aug 06 (guessing) has 6 entries and the second from Aug 07 having 7.<br />
-What would a collar record? I’m guessing longitude,latitude and timestamp?</p>
-
-<p>Chances are high that the first eight digits represent the timestamp. They are incremental from bottom to top.</p>
-
-<p>Eg. 13ef348a = 334443658.<br />
-334443658 seconds = 10 years, 8 months, 6 days, 23:00:58</p>
-
-<p>This matches the date in the title of the first sms: Collar07854_<strong>100806 210058</strong>.SMS<br />
-It even matches the timestamp minus 2 hrs in the title!<br />
--——————————————————————————–</p>
-
-<h1 id="more-information">More information</h1>
-
-<p>At this point the progress stopped a bit, we couldn’t get the other bytes translated. There seemed to be certain integer values: 0039 d0ed for example. This probably isn’t floating point (which we thought it would be, latitude/longitude/altitude) because floating point numbers have the exponent in the first 11 bits. When a number starts with 00’s it doesn’t have the exponent part filled.</p>
-
-<p>So we asked the project for some more information, for example about the recorded data (where/when) and the manufacturer of the collars.<br />
-They gave us <a href="https://gist.github.com/3698320">this KML file</a>, and this company name: Vectronic-Aerospace.</p>
-
-<h1 id="latlon-ive-got-you">Lat/lon, I’ve got you!</h1>
-
-<p>The biggest part we wanted to decipher was the lan/lon location (that is what the researchers want to have). I came to this breakthrough after reading a <a href="http://www.vectronic-aerospace.com/files/Flyer-GPS_Plus-Data_Manager.pdf">PDF</a> file from Vectronic-Aerospace’s website. It has some screenshots from their original software (why aren’t they using that free software?!). In these screenshots I noticed integer coordinates very close to the integers I’ve managed to get from the hex-data! It was called ECEF data, this is X,Y,<strong>Z</strong> data! Until now my guess was that the SMS files had lat/lon coded in binary, but it has XYZ information.</p>
-
-<p>After a quick google I managed to find some code to translate from ECEF coordinates to lat/lon and it gave me the following location:<br />
-Lat: 52.43067054630929<br />
-Lon: 13.525755535406619<br />
-Height: 88.99500464554876</p>
-
-<p>When plotted in Google Maps it gave me a location in Germany, at first I thought it was another dead end, but then I looked <a href="http://www.vectronic-aerospace.com/index.php?p=contact">here</a>. It turns out it was the EXACT location of Vectronic Aerospace, the creators of the collar! Problem solved.</p>
-
-<h1 id="whats-next">What’s next?</h1>
-
-<p>There are still some mysteries, for example… what are the last bytes? Looking at the screenshots in the PDF I suspect it would be main battery voltage, backup voltage and temperature. The project also probably wants to integrate the collar files with the website. And there are of course a lot more <a href="http://giving.github.com/">giving.github.com</a> problems to solve!</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/09/hacking-with-the-mara-naboisho-lion-project/#disqus_thread">0 comments</a>
@@ -929,23 +423,22 @@ Height: 88.99500464554876</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/visitors-you-make-me-proud/">Visitors, you make me proud</a></h1>
 
         <span itemprop="articleBody">
-          <p><img src="/images/ripIE.png" alt="ripIE" class="alignright" /><br />
+          
+            <p><img src="/images/ripIE.png" alt="ripIE" class="alignright" /><br />
 With the sudden surge of visitors from Reddit (Hello!) I decided to take look at Google Analytics. And two things caught my eye:</p>
 
 <p>First of all, Google Analytics ‘Realtime’ is awesome, you can see minute by minute how many people are on your website and what they are looking at, where they come from (internetwise and geographically).</p>
 
-<p>Second, my website gets the right type of visitors, I’m so proud at you guys and girls…</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">1.	Chrome			53.83%
-2.	Firefox			20.70%
-3.	Safari			8.83%
-4.	Mozilla			7.48%
-5.	Android	Browser		4.85%
-6.	Internet Explorer	1.98%
-...</code></pre></figure>
+          
 
+          
+          </span>
 
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/07/visitors-you-make-me-proud/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/07/visitors-you-make-me-proud/#disqus_thread">0 comments</a>
@@ -980,58 +473,17 @@ With the sudden surge of visitors from Reddit (Hello!) I decided to take look at
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/java-speed-of-math/">Java vs Javascript: Speed of Math</a></h1>
 
         <span itemprop="articleBody">
-          <p>Last week I’ve created a <a href="/blog/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/blog/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p>
+          
 
-<p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than Java 7). But the Java code didn’t have some of the speed optimizations. So I re-translated the Javascript code back to Java. It produced the following numbers (lower is better performance):</p>
+          
+            <p>Last week I’ve created a <a href="/blog/2012/07/mandelbulb-rendering/">ray marcher</a> 3d engine which renders the <a href="http://en.wikipedia.org/wiki/Mandelbulb">Mandelbulb</a>. And I’ve <a href="/blog/2012/07/introducing-mandelbulb-js/">translated</a> it into pure Javascript a couple of days later. After the translation I decided I should optimize the code a little for speed, so I made some speed improvements in the Javascript code. The main optimization was using an array for the vector3d instead of a class/function.</p> <p>Rendering the Mandelbulb on a 400x400 canvas now took just 1850ms in Javascript (Chrome, V8). Which is very fast! Even faster than my Java implementation (running on Java 1.6.0.33 -server, which was faster than...
+          
+          </span>
 
-<p><a href="/images/compare1.png"><img src="/images/compare1.png" alt="Comparing Javascript and Java" /></a></p>
-
-<p>What has happened here? The output is the same, why is Java so much slower than Javascript? I would have suspected the opposite…</p>
-
-<p>I fired up the profiler to see what was causing the Java code to be so slow, and it turned out the method it spend most time in was Math.pow(). Other slow methods were Math.acos(), cos(), sin() etc. It turns out that the Math library isn’t very fast, but there is an alternative, <a href="http://commons.apache.org/math/apidocs/org/apache/commons/math/util/FastMath.html">FastMath</a>. Apache Commons has implemented a faster Math library for commons-math. Lets see what changing Math.* to FastMath.* does to the performance:</p>
-
-<p><a href="/images/compare2.png"><img src="/images/compare2.png" alt="compare2" /></a></p>
-
-<p>This is already much better. But still the method causing most delay is FastMath.pow(). Why is Javascript so much faster? The method is made so you can calculate the power of two doubles, not only integer values. But I’m only doing Integer powers (7 and 8 to be precise). So I decided to implement my own method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">double</span> <span class="nf">fasterPow</span><span class="o">(</span><span class="kt">double</span> <span class="n">d</span><span class="o">,</span> <span class="kt">int</span> <span class="n">exp</span><span class="o">)</span> <span class="o">{</span>
-	<span class="kt">double</span> <span class="n">r</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
-	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">exp</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-		<span class="n">r</span> <span class="o">*=</span> <span class="n">d</span><span class="o">;</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p><strong>Warning: This isn’t the same as Math.pow/FastMath.pow!</strong></p>
-
-<p><a href="/images/compare3.png"><img src="/images/compare3.png" alt="compare3" /></a></p>
-
-<p>The speed with this new method is much better and seems comparable with Javascript. Maybe this is an optimization the V8 engine does by default? Who knows.</p>
-
-<p>The slowest method in the program now is FastMath.acos. From highschool I know that acos(x) can also be calculated as atan(sqrt(1-x*x)/x). So I created a own version of acos. When benchmarked, the different methods: Math.acos(), FastMath.acos() and FastMath.atan(FastMath.sqrt(1-x*x)/x), the result is again surprising:</p>
-
-<p><a href="/images/compare4.png"><img src="/images/compare4.png" alt="compare4" /></a></p>
-
-<p>The custom acos() function is a bit faster than FastMath.acos() and a lot faster than Math.acos(). Using this function in the Mandelbulb renderer gives us the following metric:</p>
-
-<p><a href="/images/compare5.png"><img src="/images/compare5.png" alt="compare5" /></a></p>
-
-<p>So it turns out that with a bit of tweaking we can get the Java version faster than Javascript, but I would have never imagined Java would be slower in the first place. The Chrome V8 guys really did an amazing job improving the speed of their Javascript VM. Mozilla isn’t far behind, they are getting +/- 2200 ms in the benchmark. Which is also faster than Java.Math and FastMath! It seems that V8’s math implementation has some optimizations that Java could really use. The tricks used above don’t make any difference with the Javascript version.</p>
-
-<p><strong>Edit 1:</strong> Is Javascript faster than Java?</p>
-
-<p>Well surprisingly in this case it is. With the code a 100% the same, using arrays as vector and Math.* the code actually runs faster in my browser!</p>
-
-<p><strong>Edit 2:</strong> People have been asking me: What could have been done to make it faster in Java? And, why is it slow?</p>
-
-<p>Well the answer is twofold:</p>
-
-<p>1) The Math libraries are made for ‘double’ in Java. Having a power() method work with doubles is much harder than working with just integer numbers. The only way to optimize this would be to overload the methods with int-variants. This would allow much greater speeds and optimizations. I think Java should add Math.pow(float, int), Math.pow(int, int) etc.</p>
-
-<p>2) All the Math libraries have to work in <em>all</em> situations, with negative numbers, small numbers, large numbers, zero, null etc. They tend to have a lot of checks to cope with all those scenario’s. But most of the time you’ll know more about the numbers you put in… For example, my fastPower method will only work with positive integers larger than zero. Maybe you know that the power will always have even numbers…? This all means that the implementation can be improved. The problem is, this <em>can’t</em> be easily achieved in a generic (math) library.</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/07/java-speed-of-math/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/07/java-speed-of-math/#disqus_thread">0 comments</a>
@@ -1066,30 +518,17 @@ With the sudden surge of visitors from Reddit (Hello!) I decided to take look at
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/introducing-mandelbulb-js/">Introducing: mandelbulb.js</a></h1>
 
         <span itemprop="articleBody">
-          <p>This afternoon Will (the friend I mentioned in <a href="/blog/2012/07/mandelbulb-rendering/">this</a> previous post) showed up again on Google Talk.<br />
-He set me a new challenge: “How about translating your 3d engine/mandelbulb code into pure Javascript?”</p>
+          
 
-<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" /></a></p>
+          
+            <p>This afternoon Will (the friend I mentioned in <a href="/blog/2012/07/mandelbulb-rendering/">this</a> previous post) showed up again on Google Talk.<br /> He set me a new challenge: “How about translating your 3d engine/mandelbulb code into pure Javascript?”</p> <p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" /></a></p> <p>This seemed impossible, but I quickly realized the code I had was very easy to convert. It is my first piece of Javascript larger than 10 lines I think, but it is working!</p> <p>If you have a bit of time:</p> <p><strong><a href="http://www.royvanrijn.com/img/mandelbulb.html">mandelbulb.js</a></strong></p> <p>Any Javascript developers who would like to take the code and improve...
+          
+          </span>
 
-<p>This seemed impossible, but I quickly realized the code I had was very easy to convert. It is my first piece of Javascript larger than 10 lines I think, but it is working!</p>
-
-<p>If you have a bit of time:</p>
-<blockquote>
-  <blockquote>
-    <blockquote>
-      <p><strong><a href="http://www.royvanrijn.com/img/mandelbulb.html">mandelbulb.js</a></strong></p>
-    </blockquote>
-  </blockquote>
-</blockquote>
-
-<p>Any Javascript developers who would like to take the code and improve on it (trust me, there is more then enough room for improvement) go ahead! I’m releasing it under creative commons, do with it what you like, just be sure to mention me!</p>
-
-<p>The code can be found here: <a href="https://github.com/royvanrijn/mandelbulb.js">https://github.com/royvanrijn/mandelbulb.js</a></p>
-
-<p>I’ve already included <a href="https://gist.github.com/3098912">one improvement</a> by Will himself, scanlines to smooth up the rendering (good for inpatient people!).</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/07/introducing-mandelbulb-js/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/07/introducing-mandelbulb-js/#disqus_thread">0 comments</a>
@@ -1124,30 +563,17 @@ He set me a new challenge: “How about translating your 3d engine/mandelbulb co
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/07/mandelbulb-rendering/">Mandelbulb rendering</a></h1>
 
         <span itemprop="articleBody">
-          <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same… So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I’m pretty pleased with the first results!</p>
+          
 
-<h1 id="my-first-3d-engine-tm">My first 3d engine (tm)</h1>
+          
+            <p>Last friday a friend of mine was talking about <a href="http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/">ray marching</a>, the Mandelbulb and programming his own 3D fractal engine. He also kind of challenged me to do the same… So I picked up the challenge and set to work on my own 3D (CPU only) ray marching fractal engine (in Java). It was a very steep learning curve for a programmer with limited math knowledge, but I’m pretty pleased with the first results!</p> <h1 id="my-first-3d-engine-tm">My first 3d engine (tm)</h1> <p>On sunday I had the first things ready, lighting (Blinn-Phong), soft shadows, but still I had no perspective build...
+          
+          </span>
 
-<p>On sunday I had the first things ready, lighting (Blinn-Phong), soft shadows, but still I had no perspective build on (all rays travelled in the same direction) and I had no way to change the view point/camera position:</p>
-
-<p><img src="/images/raymarching.png" alt="Simple ray marching example, wrong perspective, two balls and a cube" /></p>
-
-<p>Next step was to render something other than spheres and cubes, and get the camera position under control, that breakthrough came monday evening:</p>
-
-<p><a href="http://www.royvanrijn.com/img/mandelbulb1.png"><img src="/images/mandelbulb1.png" alt="First Mandelbulb render, full of programming bugs" /></a></p>
-
-<p>My first mandelbulb! The perspective is still flat and it misses detail, we’ve also rendered through the camera/near field.<br />
-So I made some more improvements and managed to render a nice wallpaper for myself:</p>
-
-<p><a href="http://www.royvanrijn.com/img/mandelbulb2.png"><img src="/images/mandelbulb2.png" alt="First Mandelbulb render, full of programming bugs" /></a></p>
-
-<p>Yesterday I’ve been playing around with optimizing the code a little bit (less memory usage, already twice as fast as it was, but still slow). And I’ve added some glow and the ability to add ‘distance fog’. Also I’ve recorded my first movie, just to show some moving fractals:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/r-sGABWMH2o"></iframe>
-<p>(yes, it has a glitch with the pink mandelbulb, can’t be bothered to fix…)</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/07/mandelbulb-rendering/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/07/mandelbulb-rendering/#disqus_thread">0 comments</a>
@@ -1182,28 +608,17 @@ So I made some more improvements and managed to render a nice wallpaper for myse
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/06/rotoscoping-in-prince-of-persia/">Rotoscoping in Prince of Persia</a></h1>
 
         <span itemprop="articleBody">
-          <p>This afternoon I was reading about <a href="http://en.wikipedia.org/wiki/Rotoscoping">rotoscoping</a>. Rotoscoping is a technique where an artist takes a filmed movie and animates a drawn (cartoon) character frame by frame. The end result is highly realistic. The technique was first used in 1915’s with an ink cartoon called <a href="http://en.wikipedia.org/wiki/Out_of_the_Inkwell">Out of the Inkwell</a> and has been used in many cartoons since.</p>
+          
 
-<p>But what about video games?</p>
+          
+            <p>This afternoon I was reading about <a href="http://en.wikipedia.org/wiki/Rotoscoping">rotoscoping</a>. Rotoscoping is a technique where an artist takes a filmed movie and animates a drawn (cartoon) character frame by frame. The end result is highly realistic. The technique was first used in 1915’s with an ink cartoon called <a href="http://en.wikipedia.org/wiki/Out_of_the_Inkwell">Out of the Inkwell</a> and has been used in many cartoons since.</p> <p>But what about video games?</p> <p>It turns out that Prince of Persia was the first computer game to use rotoscoping. That game brings back a lot of good memories to me, and probably everybody my age.</p> <p>After a quick search I...
+          
+          </span>
 
-<p>It turns out that Prince of Persia was the first computer game to use rotoscoping. That game brings back a lot of good memories to me, and probably everybody my age.</p>
-
-<p>After a quick search I found this little gem of a video:</p>
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/WAjRNU3DbSY"></iframe>
-
-<p>The person in the video is David Mechner. He is the younger brother of Jordan Mechner, the creator of Prince of Persia.<br />
-Jordan used the clips shown above to rotoscope the movements of the main character in the game.</p>
-
-<p>I had never realised <em>why</em> I loved Prince of Persia so much in my youth. But now I think it is probably because of rotoscopy! The animations are so realistic and life like, it has brought a whole new level of realism into video games.</p>
-
-<p>Here is another video of Jordan, showing even more rotoscoping in Prince of Persia:</p>
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/gC3WEwSJoHs"></iframe>
-
-<p>And the icing on the cake, a video about rotoscoping in Mortal Kombat 1:</p>
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/CUBAKk64FS8"></iframe>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/06/rotoscoping-in-prince-of-persia/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/06/rotoscoping-in-prince-of-persia/#disqus_thread">0 comments</a>
@@ -1238,111 +653,17 @@ Jordan used the clips shown above to rotoscope the movements of the main charact
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/06/getting-started-arduino-mega/">Getting started: Arduino Mega</a></h1>
 
         <span itemprop="articleBody">
-          <p>A couple of days ago I’ve received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, capacitors, and a couple of sensors).</p>
+          
 
-<p><img src="/images/arduino_mega-300x225.jpg" alt="arduino_mega" class="alignright" /></p>
+          
+            <p>A couple of days ago I’ve received my Arduino Mega in the mail. Together with a breadboard, some plug-wires and Arduino-starters kit (with some resistors, capacitors, and a couple of sensors).</p> <p><img src="/images/arduino_mega-300x225.jpg" alt="arduino_mega" class="alignright" /></p> <h1 id="arduino">Arduino?</h1> <p>The Arduino is a handy little board with micro controller. It allows you to connect your computer using USB to the micro controller and easily program and upload the program to the board. I’m a very experienced programmer with almost no experience in electronics.</p> <p>I know what a resistor is and what it does, but I have no idea how/when to use...
+          
+          </span>
 
-<h1 id="arduino">Arduino?</h1>
-
-<p>The Arduino is a handy little board with micro controller. It allows you to connect your computer using USB to the micro controller and easily program and upload the program to the board. I’m a very experienced programmer with almost no experience in electronics.</p>
-
-<p>I know what a resistor is and what it does, but I have no idea how/when to use which resistor. But I’d love to learn more, maybe even build some toy robots in the end. A final goal would be to have a working humanoid with 20+ servo’s, but that goal might be a bit out of reach…</p>
-
-<h1 id="the-examples">The examples</h1>
-
-<p>The first thing I’ve done after unboxing the Arduino was plugging it in my laptop and browsing to the <a href="http://www.arduino.cc">arduino.cc</a> website. There you can download the Arduino IDE.</p>
-
-<p>In the ‘Learning’ section (<a href="http://arduino.cc/en/Tutorial/HomePage">http://arduino.cc/en/Tutorial/HomePage</a>) you’ll find everything you need to get started. There are diagrams on how to wire everything into the breadboard, and there are also code examples.</p>
-
-<p>Some stuff I made using the ‘Learning’ page:</p>
-
-<ul>
-  <li>Blinking LED (the hardware Hello World, yay!)</li>
-  <li>Slowly fading blinking LED</li>
-  <li>Knight rider, KITT LED bar</li>
-  <li>Tiny keyboard with 5 buttons</li>
-  <li>Light reactive theremin</li>
-</ul>
-
-<p>And some projects that aren’t on the example page, but could be made using the things I’ve learned:</p>
-
-<ul>
-  <li>Extended keyboard with 5 buttons and LEDs!</li>
-  <li>Light reactive LED bar (showing the amount of light in LEDs)</li>
-  <li>Knock-sensor, LED shows when it ‘feels/hears’ a knock</li>
-</ul>
-
-<p>All the above was made in a single evening! And there is much much more that you could make with the Arduino. I haven’t even started using servos and/or DC motors. The only problem left is lack of imagination!</p>
-
-<p>For a programmer the code is very easy to understand, and the <a href="http://arduino.cc/en/Reference/HomePage">Arduino Programming Language</a> used is closely related to the C/Java family.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*
-  keyboard
- 
- Plays a pitch that changes based on a changing analog input
- 
- circuit:
- * 3 force-sensing resistors from +5V to analog in 0 through 5
- * 3 10K resistors from analog in 0 through 5 to ground
- * 8-ohm speaker on digital pin 8
- 
- created 21 Jan 2010
- modified 9 Apr 2012
- by Tom Igoe 
-
-This example code is in the public domain.
- 
- http://arduino.cc/en/Tutorial/Tone3
- 
- */</span>
-
-<span class="err">#</span><span class="n">include</span> <span class="s">"pitches.h"</span>
-
-<span class="kd">const</span> <span class="kt">int</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>    <span class="c1">// minimum reading of the sensors that generates a note
-</span>
-
-<span class="c1">// notes to play, corresponding to the 3 sensors:
-</span>
-<span class="kt">int</span> <span class="n">notes</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span>
-  <span class="no">NOTE_A4</span><span class="o">,</span> <span class="no">NOTE_B4</span><span class="o">,</span><span class="no">NOTE_C3</span> <span class="o">};</span>
-
-<span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
-
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">loop</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">thisSensor</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">thisSensor</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">thisSensor</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="c1">// get a sensor reading:
-</span>
-    <span class="kt">int</span> <span class="n">sensorReading</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="n">thisSensor</span><span class="o">);</span>
-
-    <span class="c1">// if the sensor is pressed hard enough:
-</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">sensorReading</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">)</span> <span class="o">{</span>
-      <span class="c1">// play the note corresponding to this sensor:
-</span>
-      <span class="n">tone</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">notes</span><span class="o">[</span><span class="n">thisSensor</span><span class="o">],</span> <span class="mi">20</span><span class="o">);</span>
-    <span class="o">}</span> 
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The language has borrowed a lot of syntax from C, but there are some tricky issues (in the eyes of a programmer). For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="no">A0</span><span class="o">);</span> 
-<span class="nc">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="s">"Sensor value: "</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
-<span class="nc">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
-
-<p>This little piece of code above gives unpredictable results because ‘stringThree’ never got an initial value before you started concatenating different data types. Instead you’ll have to do:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">sensorValue</span> <span class="o">=</span> <span class="n">analogRead</span><span class="o">(</span><span class="no">A0</span><span class="o">);</span> 
-<span class="nc">String</span> <span class="n">stringOne</span> <span class="o">=</span> <span class="s">"Sensor value: "</span><span class="o">;</span>
-<span class="nc">String</span> <span class="n">stringThree</span> <span class="o">=</span> <span class="n">stringOne</span> <span class="o">+</span> <span class="n">sensorValue</span><span class="o">;</span>
-<span class="nc">Serial</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stringThree</span><span class="o">);</span></code></pre></figure>
-
-<p>Weird…! But I really suggest trying out the Arduino, give it a chance and you’ll probably like it and learn a lot about electronics and microcontrollers.</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/06/getting-started-arduino-mega/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/06/getting-started-arduino-mega/#disqus_thread">0 comments</a>
@@ -1377,90 +698,17 @@ This example code is in the public domain.
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/05/we-are-now-cached/">We are now cached</a></h1>
 
         <span itemprop="articleBody">
-          <p>Yesterday we (at <a href="http://www.jpoint.nl/">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p>
+          
 
-<p>One of the things he mentioned was: If you don’t use caching, you are an idiot.</p>
+          
+            <p>Yesterday we (at <a href="http://www.jpoint.nl/">JPoint</a>) invited <a href="http://www.innoq.com/blog/st/">Stefan Tilkov</a> over for a discussion about REST and RESTful services. He knows a lot about the subject and could educate us and help with any questions.</p> <p>One of the things he mentioned was: If you don’t use caching, you are an idiot.</p> <h1 id="where-do-websites-cache">Where do websites cache?</h1> <p>There are multiple tiers where caching of websites is done, and is useful.</p> <h2 id="browser-cache">Browser cache</h2> <p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There...
+          
+          </span>
 
-<h1 id="where-do-websites-cache">Where do websites cache?</h1>
-
-<p>There are multiple tiers where caching of websites is done, and is useful.</p>
-
-<h2 id="browser-cache">Browser cache</h2>
-
-<p>The best cache you can have is the cache inside the browser. If a website knows it has the latest version, it can just read it from disk. There is absolutely no reason to go online.</p>
-
-<h2 id="proxy-cache">Proxy cache</h2>
-
-<p>The second type of cache would be the proxy cache. As you would have guessed this is a proxy and it does caching. It sits between the user/browser and the internet gateway. This cache sees all the requests and stores pages that can be cached. If another user requests a webpage that hasn’t changed it can provide the page instantly.</p>
-
-<h2 id="reversed-proxy-cache">Reversed proxy cache</h2>
-
-<p>You could also have a cache between the internet and the content providing server. If the server processes the request it might need to access databases and maybe other slow resources to build up the webpage. The resulting page can than be cached on the providing side in a “reverse” proxy cache. All subsequent requests can just be provided from the cache, as long as the page is still fresh.</p>
-
-<h1 id="making-pages-cacheable">Making pages cacheable</h1>
-
-<p>If you maintain a website, or you create web applications, you should be aware of caching. After Stefan’s rant, I’m completely convinced about that. If you don’t do anything all the requests will always go into the server and over the internet. There are HTML ways to control caching (META-Tags etc) but this just doesn’t work, and shouldn’t be used (!). So what could we do?</p>
-
-<h2 id="expires-header">Expires header</h2>
-
-<p>When sending a page back to the user you are able to set some HTTP headers. And “expires” is one of them.<br />
-An example:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Expires: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
-
-<p>This indicates that the current page is valid until the timestamp. Then it ‘Expires’. Easy!</p>
-
-<p>The only problem is generating the timestamp, it can be a bit tricky. Also you’ll have to be sure you’ve set the time correct on your system. Also, the next time you update the page, you have to also update the timestamp!</p>
-
-<h2 id="cache-control-headers">Cache-Control headers</h2>
-
-<p>With HTTP 1.1 there is a new class of headers called “Cache-Control”. These headers are more powerful than the Expires header.<br />
-To enable caching using Cache Control headers you can set:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: max-age=3600, must-revalidate</code></pre></figure>
-
-<p>The “max-age” is time in ms that the current page is valid. And by adding “must-revalidate” we tell the cache it should obey our max-age. If you don’t want an object to be cached you can use:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Cache-Control: no-cache</code></pre></figure>
-
-<h1 id="refreshing-cached-data">Refreshing cached data</h1>
-
-<p>The two methods described above will tell the cache <strong>if</strong> the content is cacheable. But what happens when the max-age or Expires timestamp expires? There are smarter ways to update the cache instead of getting the latest content from the server.</p>
-
-<h2 id="last-modified">Last-Modified</h2>
-
-<p>Websites should always set the response header called “Last-Modified”. This is a timestamp of the moment a webpage last changed.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Last-Modified: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
-
-<p>When a cache has expired (max-age or Expires) and has to get a new version from the server it can set the request header “If-Modified-Since” and include the timestamp.</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">If-Modified-Since: Fri, 11 May 2012 18:19:42 GMT</code></pre></figure>
-
-<p>If the content on the server hasn’t been changed it’ll reply “304 Not Modified”. The cache can now keep the cached version.</p>
-
-<h2 id="etag">ETag</h2>
-
-<p>With HTTP 1.1 there is also an improved method of doing the “Last-Modified”. Instead of using a timestamp (which is error prone), they’ve introduced the “ETag”. This is a tag that is completely customisable. Most of the time it will just be a hash of the content. The server sets the ETag as response header:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">ETag: "686897696a7c876b7e"</code></pre></figure>
-
-<p>When a cache can no longer use the cached version (due to max-age or Expires) is will ask the server:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">If-None-Match: "686897696a7c876b7e"</code></pre></figure>
-
-<p>The term “If-None-Match” isn’t very clear, but is means “if-etag-changed-since” and works the same way as “If-Modified-Since”. When the ETag is the same the server will reply “304 Not Modified”, it won’t send the content back.</p>
-
-<p>When you are working on a web application you could just add an ETag which is the MD5 of the returning content. If the content is the same, you don’t have to send the content over the line. The only drawback to this method is that you still need to generate the entire reply to calculate the MD5 hash to see if the content has changed…! But sometimes you’ll know in advance if the content has been changed.</p>
-
-<h1 id="improving-royvanrijncom">Improving royvanrijn.com</h1>
-
-<p>I’m using WordPress and I’ve found the excellent plugin “WP Total Cache”.</p>
-
-<p>It will involve a bit of tweaking, because only you can decide which stuff should be cached. But I think it worked out great, press F5 right now and you’ll probably be reading this from the browser cache.</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/05/we-are-now-cached/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/05/we-are-now-cached/#disqus_thread">0 comments</a>
@@ -1495,36 +743,17 @@ To enable caching using Cache Control headers you can set:</p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/">Ludum Dare #23: Itty-bitty botty</a></h1>
 
         <span itemprop="articleBody">
-          <p><img src="/images/bodyIdle1.png" alt="bodyIdle1" class="alignleft" />The last two days I’ve been competing in a competition called Ludum Dare.</p>
+          
 
-<p>This is a short, 48 hour, contest. In this time you have to build an entire game based on a theme given at the start of the 48 hours. It is a good exercise is planning, scaling, hacking, imagining and just having fun! I really enjoyed it, and recommend you join LD24 four months from now.</p>
+          
+            <p><img src="/images/bodyIdle1.png" alt="bodyIdle1" class="alignleft" />The last two days I’ve been competing in a competition called Ludum Dare.</p> <p>This is a short, 48 hour, contest. In this time you have to build an entire game based on a theme given at the start of the 48 hours. It is a good exercise is planning, scaling, hacking, imagining and just having fun! I really enjoyed it, and recommend you join LD24 four months from now.</p> <h1 id="the-concept">The concept:</h1> <p>For this game I decided to stick with Java. To make it playable for as many people I decided to make an Applet. It...
+          
+          </span>
 
-<h1 id="the-concept">The concept:</h1>
-
-<p>For this game I decided to stick with Java. To make it playable for as many people I decided to make an Applet. It can easily become a standalone app, or maybe an Android app…!<br />
-I loved the old point-and-click games, from Dirty Larry to The Day of the Tentacle, from Monkey Island to Gobli(iiii)ns. So that was settled.</p>
-
-<h1 id="the-big-pro">The big pro:</h1>
-
-<p>Not a lot of physics or game code.</p>
-
-<h1 id="the-big-con">The big con:</h1>
-
-<p>I’d have to brush off my paint skills because point-and-click adventures are filled with graphics and animation!<br />
-One big factor in games is music, and for this contest I took some midi control code I made some years ago. This was turned into a procedurally generated music generator. Every time you play you’ll hear something new.</p>
-
-<h1 id="the-result">The result:</h1>
-
-<p>With visitors coming to see our little baby girl on Sunday I decided to end early.</p>
-
-<p>Screenshots:<br />
-<img src="/images/screenshot1.png" alt="screenshot1" class="alignright" /><br />
-<img src="/images/screenshot2.png" alt="screenshot2" class="alignright" /></p>
-
-<p>Here is my result, have fun playing the game: <a href="http://www.royvanrijn.com/ld23/index.html">Itty-bitty botty</a>!</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/04/ludum-dare-23-itty-bitty-botty/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/04/ludum-dare-23-itty-bitty-botty/#disqus_thread">0 comments</a>
@@ -1559,38 +788,17 @@ One big factor in games is music, and for this contest I took some midi control 
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2012/03/female-coders-lighten-up/">Female coders, lighten up</a></h1>
 
         <span itemprop="articleBody">
-          <p><img src="/images/female-sign.jpg" alt="female-sign" class="alignright" /></p>
+          
 
-<h1 id="the-real-katie">The Real Katie</h1>
+          
+            <p><img src="/images/female-sign.jpg" alt="female-sign" class="alignright" /></p> <h1 id="the-real-katie">The Real Katie</h1> <p>Today I stumbled upon the following blogpost:<br /> <a href="http://therealkatie.net/blog/2012/mar/21/lighten-up/">The Real Katie - Lighten Up</a></p> <p>Katie talks about the sexist jokes and remarks she regularly gets in the IT/programming world, and she is sick and tired of hearing “Come on, lighten up”.</p> <p>The post is moving and shows how easy it is to offend people, not by a single remark, but by hundreds of similar remarks heard before.</p> <h1 id="not-an-it-problem">Not an IT problem</h1> <p>There is one point I don’t agree with though. I don’t think it is fair to call this...
+          
+          </span>
 
-<p>Today I stumbled upon the following blogpost:<br />
-<a href="http://therealkatie.net/blog/2012/mar/21/lighten-up/">The Real Katie - Lighten Up</a></p>
-
-<p>Katie talks about the sexist jokes and remarks she regularly gets in the IT/programming world, and she is sick and tired of hearing “Come on, lighten up”.</p>
-
-<p>The post is moving and shows how easy it is to offend people, not by a single remark, but by hundreds of similar remarks heard before.</p>
-
-<h1 id="not-an-it-problem">Not an IT problem</h1>
-
-<p>There is one point I don’t agree with though. I don’t think it is fair to call this an IT/programmers problem.</p>
-
-<p>Let me explain:</p>
-
-<p>Obviously there are a lot of jerks, assholes and plain rude people around. Most of them are men, some are women. They pick on easy targets, the minorities. Sometimes the minority is a heavy male co-worker, sometimes it is the rare female programmer.</p>
-
-<p>I fully agree, we should call the bullies out more. We all should do something about this problem. Her blogpost has re-opened my eyes again to that problem. But this isn’t a IT problem… it is a minority and rude people problem, a global social problem. It happens in all professions. Katie is just unlucky to be the minority in the field of work she loves.</p>
-
-<h1 id="more-women-in-the-it">More women in the IT</h1>
-
-<p>Also, I do agree that we could use more women in the IT world. At a young age we should teach boys and girls that there is no such thing as boy-jobs and girl-jobs, and both should learn the joy of programming! If we do that the problem of women being a minority in the IT world will disappear.</p>
-
-<p><strong>BUT</strong> that won’t solve the global social problem of assholes picking on minorities.<br />
-That is something we are all responsible for.</p>
-
-<p>There will always be minorities and there will always be rude people (male or female). This is something we can’t change. You <strong>can</strong> however call them out and disapprove the behavior.</p>
-
-
-        </span>
+        
+        
+          <p><a class="title-link" href="/blog/2012/03/female-coders-lighten-up/">Read more...</a></p>
+        
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2012/03/female-coders-lighten-up/#disqus_thread">0 comments</a>

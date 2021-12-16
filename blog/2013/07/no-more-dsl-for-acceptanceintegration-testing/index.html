@@ -154,6 +154,8 @@
 
 <p>For example a (hypothetical) piece of code in Fitnesse as it could have been used in the Port of Rotterdam:</p>
 
+<!--more-->
+
 <figure class="highlight"><pre><code class="language-text" data-lang="text">!3 Anchorage tests
 
 !|given a ship                                |
@@ -174,8 +176,7 @@
 <span class="kt">void</span> <span class="nf">setCategory</span><span class="o">(</span><span class="nc">String</span> <span class="n">category</span><span class="o">);</span>
 <span class="kt">void</span> <span class="nf">setCallSign</span><span class="o">(</span><span class="nc">String</span> <span class="n">callSign</span><span class="o">);</span>
 <span class="kt">void</span> <span class="nf">setShipnumber</span><span class="o">(</span><span class="nc">String</span> <span class="n">shipnumber</span><span class="o">);</span>
-<span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span> <span class="c1">//Stores the ship in the database
-</span>
+<span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span> <span class="c1">//Stores the ship in the database</span>
 
 <span class="nl">AnchorageScenarios:</span>
 <span class="kt">void</span> <span class="nf">whenAShipCalledReachedThePort</span><span class="o">(</span><span class="nc">String</span> <span class="n">shipName</span><span class="o">);</span>
@@ -207,20 +208,16 @@
 
 <p>This is what the initial design now looks like. The example used above would become the following:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Jitness</span>        <span class="c1">// Annotation that indicates this is a test class
-</span>
-<span class="nd">@SuiteSetUp</span><span class="o">({</span>   <span class="c1">// This is called once for all the methods in the class below
-</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Jitness</span>        <span class="c1">// Annotation that indicates this is a test class</span>
+<span class="nd">@SuiteSetUp</span><span class="o">({</span>   <span class="c1">// This is called once for all the methods in the class below</span>
 	<span class="nd">@Execute</span><span class="o">(</span>
 			<span class="n">type</span> <span class="o">=</span> <span class="nc">ShipExecutor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
 			<span class="n">data</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"1001"</span><span class="o">,</span> <span class="s">"Maersk Bali"</span><span class="o">,</span> <span class="s">"TANKER"</span><span class="o">,</span> <span class="s">"D6DZ8"</span><span class="o">,</span> <span class="s">"7420211"</span> <span class="o">})</span>
 	<span class="o">})</span>
 <span class="o">})</span>
 <span class="nd">@SetUp</span><span class="o">({</span>
-	       <span class="c1">// @Execute annotations here will be called before each of the methods below
-</span>
-	       <span class="c1">// The @SetUp annotation can also be placed on a single method in the test class
-</span>
+	       <span class="c1">// @Execute annotations here will be called before each of the methods below</span>
+	       <span class="c1">// The @SetUp annotation can also be placed on a single method in the test class</span>
 <span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">AnchorageTests</span> <span class="o">{</span>
 
