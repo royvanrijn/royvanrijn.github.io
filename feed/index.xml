@@ -5,15 +5,23 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 15 Dec 2021 08:59:53 +0100</pubDate>
-    <lastBuildDate>Wed, 15 Dec 2021 08:59:53 +0100</lastBuildDate>
+    <pubDate>Thu, 16 Dec 2021 11:33:59 +0100</pubDate>
+    <lastBuildDate>Thu, 16 Dec 2021 11:33:59 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>Log4Shell / Leak4J</title>
-        <description>&lt;p&gt;Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called &lt;a href=&quot;https://en.wikipedia.org/wiki/Log4Shell)&quot;&gt;Log4Shell&lt;/a&gt;.&lt;/p&gt;
+        <description>&lt;p&gt;Bert Jan Schrijver and I did a livestream showcasing Log4Shell and talking about the vulnerability, check it out here:&lt;/p&gt;
+
+&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;https://www.youtube.com/embed/TX1SF2dhMc4?title=0&amp;amp;byline=0&amp;amp;portrait=0&quot;&gt;&lt;/iframe&gt;
+
+&lt;h2 id=&quot;what-is-log4shell&quot;&gt;What is Log4Shell?&lt;/h2&gt;
+
+&lt;p&gt;Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called &lt;a href=&quot;https://en.wikipedia.org/wiki/Log4Shell)&quot;&gt;Log4Shell&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;All versions of log4j-core from 2.0-beta9 to 2.14.1 are affected by this, and it’s a &lt;strong&gt;big&lt;/strong&gt; one.&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;p&gt;This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.&lt;/p&gt;
 
@@ -138,7 +146,7 @@
       </item>
     
       <item>
-        <title>Fuck You, World</title>
+        <title>Sigh...</title>
         <description>&lt;p&gt;This morning I woke up and saw the following Tweet:&lt;/p&gt;
 
 &lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;I&amp;#39;m a bit pissed right now! 😡 Why is the world so mean to me, to all of us developers, really? We&amp;#39;ve been so friendly! How often have we written &amp;quot;Hello, world&amp;quot;? And has anybody ever gotten as much as friendly nod in return?&lt;/p&gt;&amp;mdash; Nicolai Parlog (@nipafx) &lt;a href=&quot;https://twitter.com/nipafx/status/1260865259738476547?ref_src=twsrc%5Etfw&quot;&gt;May 14, 2020&lt;/a&gt;&lt;/blockquote&gt;
@@ -148,11 +156,13 @@
 
 &lt;p&gt;The world has been a pretty shitty friend to us in 2020. Why should all the new programmers/developers have to welcome this messed up world with open arms?&lt;/p&gt;
 
-&lt;p&gt;I say: &lt;strong&gt;Fuck You, World.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I say: &lt;strong&gt;Screw You, World.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;h1 id=&quot;your-first-program&quot;&gt;Your first program&lt;/h1&gt;
 
-&lt;p&gt;My programming language of choice at the moment is &lt;a href=&quot;https://en.wikipedia.org/wiki/Java_(programming_language)&quot;&gt;Java&lt;/a&gt;. So that’s what I’ll be using for this “Fuck You, World”.&lt;/p&gt;
+&lt;p&gt;My programming language of choice at the moment is &lt;a href=&quot;https://en.wikipedia.org/wiki/Java_(programming_language)&quot;&gt;Java&lt;/a&gt;. So that’s what I’ll be using for this “Screw You, World”.&lt;/p&gt;
 
 &lt;p&gt;To get started with Java there are a couple of things you’ll need to &lt;strong&gt;learn&lt;/strong&gt; and &lt;strong&gt;install&lt;/strong&gt; to get it running.&lt;/p&gt;
 
@@ -170,7 +180,7 @@
 
 &lt;p&gt;Now we have two different options, we can start the Java REPL (read eval print loop) to write Java code interactively, or we can store our code in a so called “class”-files and run it.&lt;/p&gt;
 
-&lt;p&gt;First we’ll look at the REPL, this is probably the easiest way to write your first “Fuck You, World”.&lt;/p&gt;
+&lt;p&gt;First we’ll look at the REPL, this is probably the easiest way to write your first “Screw You, World”.&lt;/p&gt;
 
 &lt;h1 id=&quot;java-repl-jshell&quot;&gt;Java REPL: jshell&lt;/h1&gt;
 
@@ -191,8 +201,8 @@
 
 &lt;p&gt;In this little editor you can write any valid Java code you want. Let’s grab the &lt;code class=&quot;highlighter-rouge&quot;&gt;System&lt;/code&gt; class, get the &lt;code class=&quot;highlighter-rouge&quot;&gt;out&lt;/code&gt; output stream (which defaults to the terminal), and write some text there for the world to see:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;jshell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Fuck You, World!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nc&quot;&gt;Fuck&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;You&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;World&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;jshell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Screw You, World!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;Screw&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;You&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;World&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
 
 &lt;span class=&quot;n&quot;&gt;jshell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
@@ -208,18 +218,18 @@
 
 &lt;p&gt;So open any text editor and write your first class file:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Save this file as &lt;code class=&quot;highlighter-rouge&quot;&gt;FuckYouWorld.java&lt;/code&gt;. This is the human-readable version of your code.&lt;/p&gt;
+&lt;p&gt;Save this file as &lt;code class=&quot;highlighter-rouge&quot;&gt;ScrewYouWorld.java&lt;/code&gt;. This is the human-readable version of your code.&lt;/p&gt;
 
 &lt;p&gt;The next step is to take this code and process it, &lt;strong&gt;compile&lt;/strong&gt; it. This turns the readable &lt;code class=&quot;highlighter-rouge&quot;&gt;java&lt;/code&gt; file into a &lt;code class=&quot;highlighter-rouge&quot;&gt;class&lt;/code&gt; file, which is made out of &lt;code class=&quot;highlighter-rouge&quot;&gt;bytecode&lt;/code&gt;. It is still the same code, but optimized for machine readability.&lt;/p&gt;
 
 &lt;p&gt;To do this we call:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;javac&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;javac&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Now we’ll get a file named &lt;code class=&quot;highlighter-rouge&quot;&gt;FuckYouWorld.class&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Now we’ll get a file named &lt;code class=&quot;highlighter-rouge&quot;&gt;ScrewYouWorld.class&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;This &lt;code class=&quot;highlighter-rouge&quot;&gt;class&lt;/code&gt; file is just en empty shell, it has no real code in it yet and there is not even a valid ‘starting point’. When programming in Java there are usually a lot of different classes that make up the application. The code however has to start somewhere, we’ll have to define a starting point.&lt;/p&gt;
 
@@ -227,7 +237,7 @@
 
 &lt;p&gt;It looks like this:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
@@ -249,29 +259,29 @@
 
 &lt;p&gt;If we put everything together we’ll end up with:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Fuck You, World!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Screw You, World!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Save this file and compile to bytecode again:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;javac&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;javac&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;java&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Now we can run this code and see the result. We take the compiled &lt;code class=&quot;highlighter-rouge&quot;&gt;class&lt;/code&gt; and the &lt;code class=&quot;highlighter-rouge&quot;&gt;java&lt;/code&gt; command understand that the &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; method should be called:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FuckYouWorld&lt;/span&gt;      
-&lt;span class=&quot;nc&quot;&gt;Fuck&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;You&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;World&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ScrewYouWorld&lt;/span&gt;      
+&lt;span class=&quot;nc&quot;&gt;Screw&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;You&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;World&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Congratulations, we’ve just used two different ways to write and run your first Java program!&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;TODO:&lt;/strong&gt; Add more “Fuck You, World.” examples in different languages.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TODO:&lt;/strong&gt; Add more “Screw You, World.” examples in different languages.&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 14 May 2020 12:42:11 +0200</pubDate>
-        <link>https://royvanrijn.com/blog/2020/05/fuck-you-world/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2020/05/fuck-you-world/</guid>
+        <link>https://royvanrijn.com/blog/2020/05/screw-you-world/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2020/05/screw-you-world/</guid>
         
         <category>java</category>
         
@@ -293,6 +303,8 @@
 &lt;h1 id=&quot;and-gpt-2&quot;&gt;And GPT-2?&lt;/h1&gt;
 
 &lt;p&gt;OpenAI recently unveiled a language model called GPT-2 that, given some input text, predicts the coming sentences. GPT-2 also supports the idea of the  “Grammar of Reasoning” (GRR), in which the model attempts to extract sentences that would make the most intuitive sense, in terms of human understanding. For example, if you input “the dog ate the cat” and the model predicts “dogs eat cats”, the GRR system would make that sentence as the most probable result. The problem is that even though GRR is very good at answering the question, its predictions are still highly contingent. For example, it is still possible to be a cat-eating dog, and then someone else who doesn’t eat cats can still eat your dog, but the GRR system would not make such a mistake for the second sentence.&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;p&gt;GPT-2 uses an adaptive model to learn the most relevant concepts to solve complex problems. This is accomplished by using the most relevant words as words, rather than the least relevant words. The model is adaptive to the structure of the content being analyzed.&lt;/p&gt;
 
@@ -345,6 +357,8 @@
 &lt;p&gt;This might sound very strange, but it is an actual sport. There are people joggling marathons (in under three hours!), they are faster while juggling 3 balls than most people (including me) are just running. I’m probably never running a marathon under three hours.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/joggling.jpg&quot; alt=&quot;A man joggling (not me)&quot; /&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;p&gt;I’ve learned how to juggle when I was in my early teens, and it is a skill I’ll never forget, muscle memory. And a couple of years ago I had an annoying knee injury which prevented me from running too far or too fast.&lt;/p&gt;
 
@@ -446,6 +460,93 @@
 
 &lt;p&gt;In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.&lt;/p&gt;
 
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;bias-in-algorithms&quot;&gt;Bias in algorithms&lt;/h1&gt;
+
+&lt;p&gt;The problem here is &lt;em&gt;bias&lt;/em&gt;. What is the problem with bias in algorithms?&lt;/p&gt;
+
+&lt;p&gt;Suppose we have an algorithm that determines if you do or don’t get a loan, and also determines the interest rate. This is great, before this system the bank had a human that was responsible for applying/declining loans, now a the computer can do this.&lt;/p&gt;
+
+&lt;p&gt;Now of course, it would be very bad if the programmer and product owners came up with the following rule:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;applicant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isFemale&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;loan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addInterest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;If is easy to state this rule is discriminating against a particular gender, we &lt;strong&gt;don’t&lt;/strong&gt; want this discrimination.&lt;/p&gt;
+
+&lt;p&gt;But what if a certain car insurance charges 5% extra for male drivers under 25 with DUI charge? That kind of makes sense, it is &lt;em&gt;still&lt;/em&gt; discrimination though, but we do allow this. It is a slippery slope.&lt;/p&gt;
+
+&lt;p&gt;The good thing though is: The rules are clear. Before there might have been a racist human doing the declines, now it is clear.&lt;/p&gt;
+
+&lt;h1 id=&quot;bias-in-aiml&quot;&gt;Bias in A.I./ML&lt;/h1&gt;
+
+&lt;p&gt;The real problem though starts when you enter the world of AI, big data and machine learning. Now a programmer is no longer writing the readable rules. A machine is using a lot of data to make the best possible decision and find (invisible) correlations.&lt;/p&gt;
+
+&lt;p&gt;What is the ‘best decision’? Well, most of the time it is looking at the past, minimizing risk or cost, mimicking human behaviour. This is where a lot of bias comes from and it makes sense.&lt;/p&gt;
+
+&lt;p&gt;If you want everyone to be treated equally, there is no need for a complex algorithm in the first place. The sole purpose of these algorithms is to treat every individual differently based on certain traits. Sometimes we think these traits are obvious and &lt;em&gt;valid&lt;/em&gt;, sometimes we think these traits racist and idiotic, but a computer/A.I. system doesn’t know the difference.&lt;/p&gt;
+
+&lt;p&gt;A reason A.I. declines a loan:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;People with irregular income and a poor credit history &amp;gt; we’re okay with this.&lt;/li&gt;
+  &lt;li&gt;Female from Easy Kentucky above 40 with a daughter &amp;gt; wait, what?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The algorithm is probably right though, it is minimizing risk. And while analyzing the given data it found some correlation. This might be because the humans that historically did the job before the algorithm had a certain bias and it was trained on that data, or there actually is a bigger risk for females from East Kentucky based on historic data.&lt;/p&gt;
+
+&lt;h1 id=&quot;minimizing-bad-bias&quot;&gt;Minimizing ‘bad’ bias&lt;/h1&gt;
+
+&lt;p&gt;So there is &lt;strong&gt;good&lt;/strong&gt; and &lt;strong&gt;bad&lt;/strong&gt; bias, how can we use this? Well, if you are training the loan application, give it the ‘right’ data. Train the model with historic data that has income and credit history data, but not the fields for ‘race’ and ‘gender’.&lt;/p&gt;
+
+&lt;p&gt;There, problem solved.&lt;/p&gt;
+
+&lt;p&gt;Or not? It turns out those A.I. systems are very stubborn in finding correlations. If we don’t give the system any race information, but we do give the system an address and there is a current (or historic) correlation between race and loan declines… the A.I. might secretly group together people based on where they live. There are examples of this, where certain poorer black neighbourhoods are being discriminated against/biased without the system knowing anything about these neighbourhoods or the race of the people living there.&lt;/p&gt;
+
+&lt;h1 id=&quot;algorithms-are-bias&quot;&gt;Algorithms &lt;strong&gt;are&lt;/strong&gt; bias&lt;/h1&gt;
+
+&lt;p&gt;The algorithmic bias problem isn’t going away, it will probably become much worse. Systems are getting more (and more) data and it will find many more correlations using this data.&lt;/p&gt;
+
+&lt;p&gt;It is impossible to have algorithms without bias because these decision-making algorithms &lt;strong&gt;are&lt;/strong&gt; bias. The whole reason they exist is to add some bias into a neutral decision.&lt;/p&gt;
+
+&lt;p&gt;What’s your thought on this? Send me a tweet: @&lt;a href=&quot;https://twitter.com/royvanrijn&quot;&gt;royvanrijn&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 12 Nov 2019 13:11:24 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/</guid>
+        
+        <category>algorithm</category>
+        
+        <category>bias</category>
+        
+        
+        <category>Algorithms</category>
+        
+      </item>
+    
+      <item>
+        <title>The world of biased algorithms</title>
+        <description>&lt;p&gt;The world is changing, more and more people are openly against racism, against gender discrimination, very much pro equality. People and companies are being called out when they do discriminate and there is a big movement against bias (in general).&lt;/p&gt;
+
+&lt;p&gt;One problematic thing though, for me as a programmer, is the backlash against ‘biased algorithms’.&lt;/p&gt;
+
+&lt;h1 id=&quot;algorithms&quot;&gt;Algorithms&lt;/h1&gt;
+
+&lt;p&gt;What are algorithms?&lt;/p&gt;
+
+&lt;p&gt;If you look up the definition &lt;a href=&quot;https://en.wikipedia.org/wiki/Algorithm&quot;&gt;wikipedia&lt;/a&gt; you’ll find:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A sequence of instructions, typically to solve a class of problems or perform a computation. Algorithms are unambiguous specifications for performing calculation, data processing, automated reasoning, and other tasks.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
 &lt;h1 id=&quot;bias-in-algorithms&quot;&gt;Bias in algorithms&lt;/h1&gt;
 
 &lt;p&gt;The problem here is &lt;em&gt;bias&lt;/em&gt;. What is the problem with bias in algorithms?&lt;/p&gt;
@@ -530,6 +631,8 @@ Here is an example input:&lt;/p&gt;
 &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;In Java we can parse this entire file with almost a one liner (don’t do this in production code):&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;        &lt;span class=&quot;c1&quot;&gt;// Read a DIMACS file and turn into a list of clauses:&lt;/span&gt;
         &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clauses&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Files&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Paths&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
@@ -1401,122 +1504,6 @@ Next I embedded the entire puzzle and turned it into an array of Strings.&lt;/p&
         
         
         <category>Algorithms</category>
-        
-      </item>
-    
-      <item>
-        <title>The longest maze/snake</title>
-        <description>&lt;p&gt;An amazing website I keep running into (especially through &lt;a href=&quot;https://news.ycombinator.com/news&quot;&gt;Hacker News&lt;/a&gt;) is: &lt;strong&gt;&lt;a href=&quot;https://www.redblobgames.com/&quot;&gt;Red Blob Games&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;It has a lot of amazing algorithms explained using interactive Javascript examples. For example take a look at how Amit explains &lt;a href=&quot;https://www.redblobgames.com/grids/hexagons/&quot;&gt;Hexagonal grids&lt;/a&gt; and &lt;a href=&quot;https://www.redblobgames.com/pathfinding/a-star/introduction.html&quot;&gt;A* pathfinding&lt;/a&gt;. The interactive demo’s make it easy to grasp all these fun algorithms and implement them yourself.&lt;/p&gt;
-
-&lt;h1 id=&quot;pathfinding-for-tower-defense&quot;&gt;Pathfinding for Tower Defense&lt;/h1&gt;
-
-&lt;p&gt;Last week though I was reading this tutorial, &lt;a href=&quot;https://www.redblobgames.com/pathfinding/tower-defense/&quot;&gt;Pathfinding for Tower Defense&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;He explains a method for creating a single &lt;strong&gt;vector/flow field&lt;/strong&gt; for game AI’s to follow. This allows a single calculation to be used by a lot of AI bots, which is great for a Tower Defense game.&lt;/p&gt;
-
-&lt;h1 id=&quot;a-new-game&quot;&gt;A new game…&lt;/h1&gt;
-
-&lt;p&gt;However, when I was playing with the bottom Javascript example (after pressing ‘Start animation’) I found myself playing a new little game of my own. There is a box, &lt;strong&gt;20&lt;/strong&gt;x&lt;strong&gt;10&lt;/strong&gt; where you can place &lt;strong&gt;walls&lt;/strong&gt;, also you are able to drag/move the &lt;strong&gt;start position&lt;/strong&gt; around.&lt;/p&gt;
-
-&lt;p&gt;The goal:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;“What is the longest path possible? / What is the highest number I can reach?”&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;After I found out I can move the start position around, I came up with the following configuration:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/longestpath_1.png&quot; alt=&quot;A solution with score of 113&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The maze is 113 long… but it turns out this is far from optimal. After coding up a little solver and playing around I found the following configuration:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/longestpath_2.png&quot; alt=&quot;A solution with score of 124&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This is a solution that goes up to &lt;strong&gt;124&lt;/strong&gt; (near the top left corner). I’ve also found one later with a score of &lt;strong&gt;125&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;It seems that diagonals are the best way to pack the longest maze into there, but the problem is, one diagonal cuts the field in two smaller parts. Zig-zagging works great, but there is no ‘easiest’ way to zig-zag.&lt;/p&gt;
-
-&lt;p&gt;It doesn’t seem to me that there is a trivial solution? I haven’t found one at least, is there? Are there simple optimal patterns for given boxes, NxN?&lt;/p&gt;
-
-&lt;p&gt;Searching for a solution seems to be NP-hard and even 20x10 is out of the question, the amount of possible configurations of walls and starting positions is huge and grows exponentially. Coding up a solver is pretty easy though, using some simple heuristics and some random searches I got my 125 solution.&lt;/p&gt;
-
-&lt;p&gt;Maybe this would be a fun puzzle for a future &lt;a href=&quot;http://azspcs.com/&quot;&gt;AZsPCs&lt;/a&gt; contest…?&lt;/p&gt;
-
-&lt;p&gt;Can you get a better configuration than &lt;strong&gt;125&lt;/strong&gt;? I’d love to know.&lt;/p&gt;
-
-&lt;h1 id=&quot;neighbors-algorithm&quot;&gt;Neighbors algorithm&lt;/h1&gt;
-
-&lt;p&gt;When I wrote a score checker for the puzzle above I needed a way to get the neighbors in an &lt;strong&gt;2D array&lt;/strong&gt;. I’ve gotten used to code 2D mazes/puzzles and I always use the following way to calculate all the neighbors.&lt;/p&gt;
-
-&lt;p&gt;I find this to be easier and more readable that the alternatives, going over all the -1/+1 combinations or having two nested loops.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// We have a 2D maze:&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[][]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maze&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// And a certain location, row and column:&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// List all neighbors:&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Skip 4, this is ourself.&lt;/span&gt;
-    
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Neighbor row&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Neighbor column&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// Check the bounds:&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maze&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maze&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        
-        &lt;span class=&quot;c1&quot;&gt;// A valid neighbor:&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Neighbor: &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;,&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;: &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maze&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;how-does-this-work&quot;&gt;How does this work?&lt;/h2&gt;
-
-&lt;p&gt;First we list all directions with a single integer, 0 to 9, and we’ll need to skip the middle number four, this points to ourself.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/neighbors_directions.png&quot; alt=&quot;List directions&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From this single direction we’re able to easily calculate both the new row value (&lt;strong&gt;n_row&lt;/strong&gt;) and the new col value (&lt;strong&gt;n_col&lt;/strong&gt;). To do this we’ll need to divide by three and use modulo three.&lt;/p&gt;
-
-&lt;h2 id=&quot;neighbor-row-value&quot;&gt;Neighbor row value:&lt;/h2&gt;
-
-&lt;p&gt;To find the new &lt;strong&gt;row value&lt;/strong&gt; we start our by using &lt;strong&gt;modulo 3&lt;/strong&gt;. The only thing left to do is to &lt;strong&gt;subtract 1&lt;/strong&gt; and we’ll get the new row value for each direction:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/neighbors_row.png&quot; alt=&quot;row + (directions%3) - 1&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;neighbor-col-value&quot;&gt;Neighbor col value:&lt;/h2&gt;
-
-&lt;p&gt;The same thing can be done for the &lt;strong&gt;col value&lt;/strong&gt;. Instead of using modulo 3, we’ll be using &lt;strong&gt;divide by 3&lt;/strong&gt;. And the same as with the row value, we’ll also need to &lt;strong&gt;subtract 1&lt;/strong&gt; to get the following new column values:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;direction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/neighbors_col.png&quot; alt=&quot;col + (directions/3) - 1&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;And there you go, list all neighbors in a 2D array without using two nested loops and dirty checks.&lt;/p&gt;
-
-&lt;p&gt;Happy coding!&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 07 Jan 2019 08:12:57 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/01/longest-path/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/01/longest-path/</guid>
-        
-        <category>maze</category>
-        
-        <category>Java</category>
-        
-        <category>path</category>
-        
-        <category>puzzle</category>
-        
-        <category>algorithm</category>
-        
-        
-        <category>GraalVM</category>
         
       </item>
     

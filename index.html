@@ -137,111 +137,15 @@
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2021/12/log4j2-rce-problem/">Log4Shell / Leak4J</a></h1>
 
         <span itemprop="articleBody">
-          <p>Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called <a href="https://en.wikipedia.org/wiki/Log4Shell)">Log4Shell</a>.</p>
+          <p>Bert Jan Schrijver and I did a livestream showcasing Log4Shell and talking about the vulnerability, check it out here:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/TX1SF2dhMc4?title=0&amp;byline=0&amp;portrait=0"></iframe>
+
+<h2 id="what-is-log4shell">What is Log4Shell?</h2>
+
+<p>Last couple of days (and nights) I’ve been studying the new (extremely dangerous) vulnerability in log4j2 called <a href="https://en.wikipedia.org/wiki/Log4Shell)">Log4Shell</a>.</p>
 
 <p>All versions of log4j-core from 2.0-beta9 to 2.14.1 are affected by this, and it’s a <strong>big</strong> one.</p>
-
-<p>This vulnerability allows the attacker to remotely execute code on your system, with the ability to get complete control of the underlying servers.</p>
-
-<p>Log4J has, for a long time, been the most used logging framework in the Java landscape. It’s extremely widely used and this attack has the most broad trigger you can imagine: It needs to log something.</p>
-
-<p>The payload can be delivered in a LOT of ways, as long as it gets in a log statement. Either through user-controlled fields, HTTP requests, URLs, <strong>ANYTHING</strong>.</p>
-
-<h2 id="the-attack">The attack</h2>
-
-<p>After writing some code (a malicious embedded LDAP server) I was able to reproduce the RCE (“Remote Code Execution”) attack on even the most basic project.</p>
-
-<p>Here is an example: a simple REST endpoint in a Spring Boot starter project with a single line of logging</p>
-
-<p><img src="/images/leak4j1.png" alt="Leak4J" /></p>
-
-<p>As you can see it downloads and executes a classfile I’m serving from the malicious LDAP server (running seperately) printing a message.</p>
-
-<p>I’ll not be sharing the malicious code, it’s just too simple to set up and abuse. There are better and easier ways to check if your software is vulnerable. For example using this tool by <a href="https://log4j-tester.trendmicro.com/">Trend Micro</a>.</p>
-
-<h2 id="possible-risks-">Possible risks: 🚨</h2>
-
-<p>Risks of this vulnerability are:</p>
-
-<ul>
-  <li>Loss of <em>ALL</em> data</li>
-  <li>Ransomware</li>
-  <li>Backdoors</li>
-  <li>Botnet</li>
-  <li>Loss of AWS/Kubernetes keys/secrets</li>
-  <li>And the list goes on, and on, and on…</li>
-</ul>
-
-<h2 id="the-fix">The fix</h2>
-
-<p><strong>Option 1</strong>: If you haven’t already: upgrade log4j-core to version &gt;= 2.16.0</p>
-
-<p>Use version <strong>2.16.0</strong> instead of 2.15.0, this fixes the problem a bit more rigorously.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">logging</span><span class="o">.</span><span class="na">log4j</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">log4j</span><span class="o">-</span><span class="n">core</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.16</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
-    <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span></code></pre></figure>
-
-<p>Do this for all transitive dependencies as well (!).</p>
-
-<p><strong>Option 2</strong>: Another option is to launch the JRE with.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">    <span class="o">-</span><span class="nc">Dlog4j2</span><span class="o">.</span><span class="na">formatMsgNoLookups</span><span class="o">=</span><span class="kc">true</span></code></pre></figure>
-
-<p>But be <strong>AWARE</strong> this flag was put into log4j2 from 2.10.0 onwards. If you have an older version, this does not work.</p>
-
-<p><strong>Option 3</strong>: Remove JndiLookup.class</p>
-
-<p>It is also possible to remove <code class="highlighter-rouge">org.apache.logging.log4j.core.lookup.JndiLookup</code> from your log4j JAR files. I don’t recommend doing this, if you want to go this route it’s probably easier to just upgrade to &gt;= <em>2.16.0</em>.</p>
-
-<p><strong>Not an option</strong>:</p>
-
-<ul>
-  <li>A newer Java version</li>
-  <li>Property: <em>com.sun.jndi.ldap.object.trustURLCodebase</em></li>
-</ul>
-
-<p>I’ve seen suggestions online that ‘newer’ Java versions are not affected, but this is just <strong>not true</strong>. Even with the latest Java versions and with <code class="highlighter-rouge">trustURLCodebase</code> set to <code class="highlighter-rouge">false</code>, they would still be able to steal data (for example environment variables) and deserialize objects already known to the classloader. This makes other deserialization RCEs trivial to launch.</p>
-
-<p>It might be <em>slightly</em> harder/safer on a newer Java version, but it’s definitely <strong>NOT</strong> a fix.</p>
-
-<p>To show this I’ve taken the latest version of Java 8 (1.8.311) and I’m using the log4j2 deserialization to craft something that opens the Calculator on my MacBook using other classes known to the vulnerable target:</p>
-
-<p><img src="/images/leak4j2.png" alt="Leak4J with latest Java" /></p>
-
-<p>Again: The payload is still being deserialized, on the latest Java version.</p>
-
-<h2 id="youve-been-compromised">You’ve been compromised</h2>
-
-<p>Great, you’ve upgraded and fixed the issue. However: Don’t stop there, that’s just step one.</p>
-
-<p>This leak was known and exploited for a long time, probably weeks before made publicly. And if even I can exploit it in a couple of minutes with my own malicious code: everybody can.</p>
-
-<p>So here is what you need to do:</p>
-
-<p>Step 1: <strong>Upgrade</strong> and fix the leak</p>
-
-<p>Step 2: <strong>Assume</strong> everything was <strong>stolen</strong>: Rotate all your keys</p>
-
-<p>Step 3: Go in and <strong>analyse</strong> the <strong>log</strong> files</p>
-
-<p>Step 4: If you have set up infra-structure as code: <strong>rebuild</strong> your <strong>environment</strong></p>
-
-<p>Step 4: <strong>Redeploy</strong> all your <strong>applications</strong></p>
-
-<p>We <em>HAVE</em> to take this one seriously. I don’t want to hear or read a couple of months from now that some company forgot to patch their software. Not another</p>
-
-<h2 id="further-reading">Further reading:</h2>
-
-<p>Here are some links for more information:</p>
-
-<ul>
-  <li><a href="https://www.lunasec.io/docs/blog/log4j-zero-day/">https://www.lunasec.io/docs/blog/log4j-zero-day/</a></li>
-  <li><a href="https://snyk.io/blog/find-fix-log4shell-quickly-snyk/">https://snyk.io/blog/find-fix-log4shell-quickly-snyk/</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/Log4Shell">https://en.wikipedia.org/wiki/Log4Shell</a></li>
-</ul>
 
 
         </span>
@@ -259,9 +163,9 @@
     <div class="post">
 
       <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2020/05/fuck-you-world/" title="Fuck You, World">
+      	<a itemprop="mainEntityOfPage" href="/blog/2020/05/screw-you-world/" title="Sigh...">
       	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Fuck You, World" width="100" height="100" />
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Sigh..." width="100" height="100" />
       	
     	</a>
       </div>
@@ -274,9 +178,9 @@
           <span itemprop="datePublished" content="2020-05-14T12:42:11+02:00" class="date">
             May 14, 2020 12:42:11
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/fuck-you-world/#disqus_thread">0 comments</a>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/screw-you-world/#disqus_thread">0 comments</a>
         </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2020/05/fuck-you-world/">Fuck You, World</a></h1>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2020/05/screw-you-world/">Sigh...</a></h1>
 
         <span itemprop="articleBody">
           <p>This morning I woke up and saw the following Tweet:</p>
@@ -288,131 +192,13 @@
 
 <p>The world has been a pretty shitty friend to us in 2020. Why should all the new programmers/developers have to welcome this messed up world with open arms?</p>
 
-<p>I say: <strong>Fuck You, World.</strong></p>
-
-<h1 id="your-first-program">Your first program</h1>
-
-<p>My programming language of choice at the moment is <a href="https://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>. So that’s what I’ll be using for this “Fuck You, World”.</p>
-
-<p>To get started with Java there are a couple of things you’ll need to <strong>learn</strong> and <strong>install</strong> to get it running.</p>
-
-<p>Let’s go!</p>
-
-<h1 id="java-jdk">Java JDK</h1>
-
-<p>There are a lot of places where you can download a so called “JDK”, which stands for Java Development Kit. This is needed for you to create and build your first Java program.</p>
-
-<p>For now I won’t be bothering you with all the different releases and versions, we can just go to <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a>.</p>
-
-<p>And download and install the latest version: OpenJDK 14 (latest)</p>
-
-<h1 id="repl-or-class">REPL or Class</h1>
-
-<p>Now we have two different options, we can start the Java REPL (read eval print loop) to write Java code interactively, or we can store our code in a so called “class”-files and run it.</p>
-
-<p>First we’ll look at the REPL, this is probably the easiest way to write your first “Fuck You, World”.</p>
-
-<h1 id="java-repl-jshell">Java REPL: jshell</h1>
-
-<p>The interactive code-writing tool in Java is called “jshell” and is launched from the Terminal/command line.</p>
-
-<p>To do this, navigate to the JDK (usually there is a <code class="highlighter-rouge">$JAVA_HOME</code> variable for this) and start:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java">	
-<span class="o">&gt;</span> <span class="n">$JAVA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">jshell</span></code></pre></figure>
-
-<p>Next you’ll be presented with an interactive shell to write your code in:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">$JAVA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">jshell</span>   
-<span class="o">|</span>  <span class="nc">Welcome</span> <span class="n">to</span> <span class="nc">JShell</span> <span class="o">--</span> <span class="nc">Version</span> <span class="mf">14.0</span><span class="o">.</span><span class="mi">1</span>
-<span class="o">|</span>  <span class="nc">For</span> <span class="n">an</span> <span class="n">introduction</span> <span class="nl">type:</span> <span class="o">/</span><span class="n">help</span> <span class="n">intro</span>
-
-<span class="n">jshell</span><span class="o">&gt;</span> </code></pre></figure>
-
-<p>In this little editor you can write any valid Java code you want. Let’s grab the <code class="highlighter-rouge">System</code> class, get the <code class="highlighter-rouge">out</code> output stream (which defaults to the terminal), and write some text there for the world to see:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">jshell</span><span class="o">&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Fuck You, World!"</span><span class="o">)</span>
-<span class="nc">Fuck</span> <span class="nc">You</span><span class="o">,</span> <span class="nc">World</span><span class="o">!</span>
-
-<span class="n">jshell</span><span class="o">&gt;</span> </code></pre></figure>
-
-<p>And that’s it. We’re done.</p>
-
-<p>Using the REPL we’ve created a line of code which contains a message to 2020.</p>
-
-<h1 id="java-class-files">Java class files</h1>
-
-<p>The second way to write Java code is to use a text editor (or an IDE, an integrated development environment, like <a href="https://www.jetbrains.com/idea/">IntelliJ</a>) and save the files, compile the files and run the files.</p>
-
-<p>The code above has little to no real structure. In larger programs we’ll need to create some order in all the code you want to write and run. To do this Java has ‘classes’.</p>
-
-<p>So open any text editor and write your first class file:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Save this file as <code class="highlighter-rouge">FuckYouWorld.java</code>. This is the human-readable version of your code.</p>
-
-<p>The next step is to take this code and process it, <strong>compile</strong> it. This turns the readable <code class="highlighter-rouge">java</code> file into a <code class="highlighter-rouge">class</code> file, which is made out of <code class="highlighter-rouge">bytecode</code>. It is still the same code, but optimized for machine readability.</p>
-
-<p>To do this we call:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">%</span> <span class="n">javac</span> <span class="nc">FuckYouWorld</span><span class="o">.</span><span class="na">java</span></code></pre></figure>
-
-<p>Now we’ll get a file named <code class="highlighter-rouge">FuckYouWorld.class</code>.</p>
-
-<p>This <code class="highlighter-rouge">class</code> file is just en empty shell, it has no real code in it yet and there is not even a valid ‘starting point’. When programming in Java there are usually a lot of different classes that make up the application. The code however has to start somewhere, we’ll have to define a starting point.</p>
-
-<p>In Java there is a very specific <code class="highlighter-rouge">method</code> we need to implement, this makes it a starting point. A <code class="highlighter-rouge">method</code> is a block of code we can call and it does something. The one used to start your code is always called <code class="highlighter-rouge">main</code>.</p>
-
-<p>It looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Let’s break it down. First we have <code class="highlighter-rouge">public</code>, this means any class can access it, which is what we need to start our program.</p>
-
-<p>Next we have <code class="highlighter-rouge">static</code>. There are TWO kinds of methods in Java, <code class="highlighter-rouge">static</code> and <code class="highlighter-rouge">non-static/member</code> methods. For now let’s just say that <code class="highlighter-rouge">static</code> methods are working on a <code class="highlighter-rouge">class</code> level, and <code class="highlighter-rouge">non-static</code> methods are working on the <code class="highlighter-rouge">object</code> level. This is a whole topic for another day. To start we have to make this static, from there we can create new instances.</p>
-
-<p>Next we have <code class="highlighter-rouge">void</code>, this means that the method we are calling doesn’t return any results. Some methods calculate something and return a value, like a number or more complex answers.</p>
-
-<p><code class="highlighter-rouge">main</code> is a specific name, the name of our method.</p>
-
-<p>The information between the parentheses are the method ‘arguments’. These are passed <em>into</em> the method. Just like arguments you supply to a program. In this case it is an array (list) of Strings.</p>
-
-<p>This all becomes rather complicated quickly, but we don’t need to know the specifics right now.</p>
-
-<p>Next we can add the line we wrote before to inside the method brackets. Classes add a little bit of structure/scaffolding to our applications.</p>
-
-<p>If we put everything together we’ll end up with:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">FuckYouWorld</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Fuck You, World!"</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Save this file and compile to bytecode again:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">javac</span> <span class="nc">FuckYouWorld</span><span class="o">.</span><span class="na">java</span></code></pre></figure>
-
-<p>Now we can run this code and see the result. We take the compiled <code class="highlighter-rouge">class</code> and the <code class="highlighter-rouge">java</code> command understand that the <code class="highlighter-rouge">main</code> method should be called:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="n">java</span> <span class="nc">FuckYouWorld</span>      
-<span class="nc">Fuck</span> <span class="nc">You</span><span class="o">,</span> <span class="nc">World</span><span class="o">!</span></code></pre></figure>
-
-<p>Congratulations, we’ve just used two different ways to write and run your first Java program!</p>
-
-<p><strong>TODO:</strong> Add more “Fuck You, World.” examples in different languages.</p>
+<p>I say: <strong>Screw You, World.</strong></p>
 
 
         </span>
 
         <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/fuck-you-world/#disqus_thread">0 comments</a>
+          <a class="post-comments" href="https://royvanrijn.com/blog/2020/05/screw-you-world/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
@@ -453,30 +239,6 @@
 <h1 id="and-gpt-2">And GPT-2?</h1>
 
 <p>OpenAI recently unveiled a language model called GPT-2 that, given some input text, predicts the coming sentences. GPT-2 also supports the idea of the  “Grammar of Reasoning” (GRR), in which the model attempts to extract sentences that would make the most intuitive sense, in terms of human understanding. For example, if you input “the dog ate the cat” and the model predicts “dogs eat cats”, the GRR system would make that sentence as the most probable result. The problem is that even though GRR is very good at answering the question, its predictions are still highly contingent. For example, it is still possible to be a cat-eating dog, and then someone else who doesn’t eat cats can still eat your dog, but the GRR system would not make such a mistake for the second sentence.</p>
-
-<p>GPT-2 uses an adaptive model to learn the most relevant concepts to solve complex problems. This is accomplished by using the most relevant words as words, rather than the least relevant words. The model is adaptive to the structure of the content being analyzed.</p>
-
-<h1 id="how-does-it-work">How does it work?</h1>
-
-<p>There are several components involved in GPT. GPT uses a deep learning based model to understand a large vocabulary.</p>
-
-<p>The model consists of a neural network, which is composed of multiple layers. Each layer is a separate layer that processes a different input word. GPT uses two neural network layers for each of the following steps:</p>
-
-<p>First, each layer learns to recognize a particular word. The layers for both input and target are trained together to improve the model’s performance over time.</p>
-
-<p>Second, the neural networks are used to predict the target word for the current context. To do this, the first neural network is used to learn about the target word. The target is then used to select a second neural network layer, which is used to predict the word that is closest to the current context.</p>
-
-<h1 id="is-the-model-too-powerful">Is the model too powerful?</h1>
-
-<p>This is a good question to ask, but it should be taken with a grain of salt. In fact, the GPT-2 is actually quite limited in the way it learns the most relevant concepts. This is in part due to its learning model being a probabilistic algorithm that assumes a model of the world as a probabilistic system. This model is an attempt to describe all the possible states of the world, but the way it learns these states is by taking into account the best model for each state and comparing to that.</p>
-
-<h1 id="a-gpt-2-surprise">A GPT-2 surprise</h1>
-
-<p><strong>Surprise!</strong></p>
-
-<p>This entire blogpost above has been generated by OpenAI’s GPT-2. I’ve only given the first sentence and the four headers as input. After that I’ve let GPT-2 fill in the blanks (of course I’ve cherry-picked here). The quality is amazing and I’m pretty sure there are people that made it this far… and had no clue that what they’ve been reading was 100% generated by a machine.</p>
-
-<p>Be sure to play around with it at <a href="https://talktotransformer.com/">talktotransformer.com</a></p>
 
 
         </span>
@@ -523,72 +285,6 @@
 <p>This might sound very strange, but it is an actual sport. There are people joggling marathons (in under three hours!), they are faster while juggling 3 balls than most people (including me) are just running. I’m probably never running a marathon under three hours.</p>
 
 <p><img src="/images/joggling.jpg" alt="A man joggling (not me)" /></p>
-
-<p>I’ve learned how to juggle when I was in my early teens, and it is a skill I’ll never forget, muscle memory. And a couple of years ago I had an annoying knee injury which prevented me from running too far or too fast.</p>
-
-<p>This is when I learned about joggling. For me it was the perfect way to still enjoy running while not pushing my knees too much. Adding the juggling (3 balls) to my running prevented further injuries, it slowed me down and decreased the distance I was able to run.</p>
-
-<p>And it is great: Almost everyone gets a smile on their face when I run past them when joggling.</p>
-
-<h1 id="the-challenge-bruggenloop-2019">The challenge: Bruggenloop 2019</h1>
-
-<p>When I mentioned joggling to my colleagues last week they encouraged me to try it once more.</p>
-
-<p>We came up with the following challenge:</p>
-
-<p><del>On sunday the 8th of december I’m going to joggle the <a href="https://www.bruggenloop.nl/english/">Bruggenloop</a>, a <strong>15k</strong> race while juggling <strong>3 balls</strong>. This will be the first time I’m joggling a race and it’ll be the first time I’ll joggle for over an hour. I’ve never done more than 10k, heck, I haven’t been running at all for the last 6 months. So there is quite some work to do now!</del></p>
-
-<p><img src="/images/sad-panda.gif" alt="Me right now..." /></p>
-
-<p><strong>Update:</strong> I’ve received a <strong>decline</strong> email from the Bruggenloop organisers. So I’m going to have to come up with a <em>plan B</em>. This will likely be a <strong>15k</strong> run… by myself, without anyone cheering me on, without providing all the onlookers with a smile.</p>
-
-<h1 id="joggling-for-teamtrees">Joggling for #TeamTrees</h1>
-
-<p>Because I’m doing this, my colleagues are donating money to #<a href="http://teamtrees.org/">TeamTrees</a>. This is a charity that, for each dollar, gets a new tree planted. Yes, all 100% of the donations will go towards planting new trees.</p>
-
-<p>To encourage me not to give up I’ve created the following page <a href="https://tiltify.com/@royvanrijn/joggling4trees">Joggling4Trees</a> where we can track the donations to my cause.</p>
-
-<p>At the moment we’ve already collected almost 900 dollars, that means <strong>900</strong> new trees! Which is a freaking <strong>forest</strong>! I’m so happy with this, and encourages me to train even harder and make everyone proud!</p>
-
-<p>But we can do even better… if you read this, please consider adding a few trees to this planet, every dollar helps!</p>
-
-<h1 id="faq">FAQ</h1>
-
-<p>Some questions I’ve received about joggling:</p>
-
-<ul>
-  <li>Can you drop a ball?</li>
-</ul>
-
-<p>Yes, this will probably happen a lot, you are not ‘disqualified’ for dropping a ball, just pick it up and continue from the point you’ve dropped. If a soccer player falls during a match they don’t automatically lose the game, it is part of the game.</p>
-
-<ul>
-  <li>What is the worst that can happen?</li>
-</ul>
-
-<p>Losing one or more balls. I’ve had this happen during a training session, one of my balls is now at the bottom of a river. RIP.</p>
-
-<ul>
-  <li>What gear do you need to joggle?</li>
-</ul>
-
-<p>Running shoes and 3 balls, that’s it.</p>
-
-<p>And optionally:</p>
-
-<p><strong>Gloves</strong> (especially in december, it gets really cold/near freezing), it is hard to joggle when your hands are numb. Transparant <strong>glasses</strong>, during joggling you tend to not blink as much, and when you run in cold weather this causes a lot of tears to form. Glasses will fix this.</p>
-
-<ul>
-  <li>Why would anyone joggle….?</li>
-</ul>
-
-<p>Here is an excellent explaination about why <em>everyone</em> should take up joggling as a sport:</p>
-
-<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/FKiunT8jmHc"></iframe>
-
-<h1 id="one-more-time">One more time:</h1>
-
-<p>To support this, plant some trees: <a href="https://tiltify.com/@royvanrijn/joggling4trees">Joggling4Trees</a></p>
 
 
         </span>
@@ -642,56 +338,57 @@
 
 <p>In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.</p>
 
-<h1 id="bias-in-algorithms">Bias in algorithms</h1>
 
-<p>The problem here is <em>bias</em>. What is the problem with bias in algorithms?</p>
+        </span>
 
-<p>Suppose we have an algorithm that determines if you do or don’t get a loan, and also determines the interest rate. This is great, before this system the bank had a human that was responsible for applying/declining loans, now a the computer can do this.</p>
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
 
-<p>Now of course, it would be very bad if the programmer and product owners came up with the following rule:</p>
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/11/the-world-of-biased-algorithms-copy/" title="The world of biased algorithms">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="The world of biased algorithms" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-11-12T13:11:24+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-11-12T13:11:24+01:00" class="date">
+            Nov 12, 2019 13:11:24
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/11/the-world-of-biased-algorithms-copy/">The world of biased algorithms</a></h1>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">applicant</span><span class="o">.</span><span class="na">isFemale</span><span class="o">())</span> <span class="o">{</span>
-   <span class="n">loan</span><span class="o">.</span><span class="na">addInterest</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span> 
-<span class="o">}</span></code></pre></figure>
+        <span itemprop="articleBody">
+          <p>The world is changing, more and more people are openly against racism, against gender discrimination, very much pro equality. People and companies are being called out when they do discriminate and there is a big movement against bias (in general).</p>
 
-<p>If is easy to state this rule is discriminating against a particular gender, we <strong>don’t</strong> want this discrimination.</p>
+<p>One problematic thing though, for me as a programmer, is the backlash against ‘biased algorithms’.</p>
 
-<p>But what if a certain car insurance charges 5% extra for male drivers under 25 with DUI charge? That kind of makes sense, it is <em>still</em> discrimination though, but we do allow this. It is a slippery slope.</p>
+<h1 id="algorithms">Algorithms</h1>
 
-<p>The good thing though is: The rules are clear. Before there might have been a racist human doing the declines, now it is clear.</p>
+<p>What are algorithms?</p>
 
-<h1 id="bias-in-aiml">Bias in A.I./ML</h1>
+<p>If you look up the definition <a href="https://en.wikipedia.org/wiki/Algorithm">wikipedia</a> you’ll find:</p>
 
-<p>The real problem though starts when you enter the world of AI, big data and machine learning. Now a programmer is no longer writing the readable rules. A machine is using a lot of data to make the best possible decision and find (invisible) correlations.</p>
+<blockquote>
+  <p>A sequence of instructions, typically to solve a class of problems or perform a computation. Algorithms are unambiguous specifications for performing calculation, data processing, automated reasoning, and other tasks.</p>
+</blockquote>
 
-<p>What is the ‘best decision’? Well, most of the time it is looking at the past, minimizing risk or cost, mimicking human behaviour. This is where a lot of bias comes from and it makes sense.</p>
-
-<p>If you want everyone to be treated equally, there is no need for a complex algorithm in the first place. The sole purpose of these algorithms is to treat every individual differently based on certain traits. Sometimes we think these traits are obvious and <em>valid</em>, sometimes we think these traits racist and idiotic, but a computer/A.I. system doesn’t know the difference.</p>
-
-<p>A reason A.I. declines a loan:</p>
-
-<ul>
-  <li>People with irregular income and a poor credit history &gt; we’re okay with this.</li>
-  <li>Female from Easy Kentucky above 40 with a daughter &gt; wait, what?</li>
-</ul>
-
-<p>The algorithm is probably right though, it is minimizing risk. And while analyzing the given data it found some correlation. This might be because the humans that historically did the job before the algorithm had a certain bias and it was trained on that data, or there actually is a bigger risk for females from East Kentucky based on historic data.</p>
-
-<h1 id="minimizing-bad-bias">Minimizing ‘bad’ bias</h1>
-
-<p>So there is <strong>good</strong> and <strong>bad</strong> bias, how can we use this? Well, if you are training the loan application, give it the ‘right’ data. Train the model with historic data that has income and credit history data, but not the fields for ‘race’ and ‘gender’.</p>
-
-<p>There, problem solved.</p>
-
-<p>Or not? It turns out those A.I. systems are very stubborn in finding correlations. If we don’t give the system any race information, but we do give the system an address and there is a current (or historic) correlation between race and loan declines… the A.I. might secretly group together people based on where they live. There are examples of this, where certain poorer black neighbourhoods are being discriminated against/biased without the system knowing anything about these neighbourhoods or the race of the people living there.</p>
-
-<h1 id="algorithms-are-bias">Algorithms <strong>are</strong> bias</h1>
-
-<p>The algorithmic bias problem isn’t going away, it will probably become much worse. Systems are getting more (and more) data and it will find many more correlations using this data.</p>
-
-<p>It is impossible to have algorithms without bias because these decision-making algorithms <strong>are</strong> bias. The whole reason they exist is to add some bias into a neutral decision.</p>
-
-<p>What’s your thought on this? Send me a tweet: @<a href="https://twitter.com/royvanrijn">royvanrijn</a></p>
+<p>In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.</p>
 
 
         </span>
@@ -747,305 +444,6 @@ Here is an example input:</p>
 
 <p>In Java we can parse this entire file with almost a one liner (don’t do this in production code):</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// Read a DIMACS file and turn into a list of clauses:</span>
-        <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">clauses</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">lines</span><span class="o">(</span><span class="nc">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">inputFile</span><span class="o">))</span>
-                <span class="c1">// Trim the lines:</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">,</span> <span class="s">" "</span><span class="o">).</span><span class="na">trim</span><span class="o">())</span>
-                <span class="c1">// Only parse lines ending with a 0:</span>
-                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">" 0"</span><span class="o">))</span>
-                <span class="c1">// Turn each line into a list of integers:</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">line</span>
-                        <span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">line</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">)</span>
-                        <span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">))</span>
-                        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">)</span>
-                        <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">())</span>
-                <span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span></code></pre></figure>
-
-<h1 id="unit-propagation">Unit propagation</h1>
-
-<p>The next step in creating a (slow) SAT solver is to implement the following pseudo code:</p>
-
-<h2 id="step-1a-find-all-the-unit-variables">Step 1a: Find all the unit variables</h2>
-
-<p>Find all the unit variables <code class="highlighter-rouge">(-4 0)</code>. These are clauses that have just a single (active) variable. If a clause has just a single variable, it has to be true. So in this case we mark <code class="highlighter-rouge">4</code> as false.</p>
-
-<h2 id="step-1b-process-all-unit-variables">Step 1b: Process all unit variables</h2>
-
-<p>Now we go over all the other clauses that contain this variable <code class="highlighter-rouge">-4</code> or the inverse (<code class="highlighter-rouge">4</code>).</p>
-
-<p>If the clause has <code class="highlighter-rouge">-4</code> (which we now know is <code class="highlighter-rouge">true</code>), we mark this entire clause as ‘satisfied’.</p>
-
-<p>If the clause contains the inverse of the variable, in this case <code class="highlighter-rouge">4</code>, we know that particular variable will never become <code class="highlighter-rouge">true</code>, so we remove it from the list.</p>
-
-<p>Lets try step 1 with the following example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="mi">1</span>  <span class="mi">4</span>  <span class="mi">2</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span>
- <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">0</span>
-<span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
-<span class="o">-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span>
-<span class="o">-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span>
-<span class="o">-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span></code></pre></figure>
-
-<p>We have a single unit variable, <code class="highlighter-rouge">-2</code>, so we mark this variable as <code class="highlighter-rouge">true</code>. Next we apply step 1b:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span>
-
-<span class="o">[</span><span class="mi">1</span>  <span class="mi">4</span> <span class="mi">2</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span>
-<span class="o">[</span><span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">3</span> <span class="mi">0</span><span class="o">]</span>
-<span class="o">[-</span><span class="mi">2</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span>
-<span class="o">[-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span></code></pre></figure>
-
-<p>Now we have a new unit variable, <code class="highlighter-rouge">3 0</code>. This again can be processed:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span>
-
-<span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span> <span class="nl">becomes:</span> <span class="o">[</span><span class="mi">1</span> <span class="mi">4</span> <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span><span class="o">]</span>
-<span class="o">[</span><span class="mi">3</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">3</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">2</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">3</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">2</span> <span class="o">-</span><span class="mi">4</span> <span class="o">-</span><span class="mi">5</span> <span class="mi">0</span><span class="o">]</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="o">-</span><span class="mi">2</span><span class="o">)</span>
-<span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span> <span class="n">stays</span> <span class="n">the</span> <span class="nl">same:</span> <span class="o">[-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span><span class="o">]</span></code></pre></figure>
-
-<p>And now we are done with the <code class="highlighter-rouge">unit propagation</code>. We are now left with two clauses that both are not a unit clause.</p>
-
-<h2 id="step-2-gamble-on-a-variable">Step 2: Gamble on a variable</h2>
-
-<p>First we repeat step 1 until there are no unit clauses left. Now we need to take a gamble. In this case we have unresolved: -1, 1, 4 and -6, 6. We need to pick one of these and try it.</p>
-
-<p>Let’s pick <code class="highlighter-rouge">6</code>.</p>
-
-<p>Again, we process this, if a clause contains <code class="highlighter-rouge">6</code> we mark it as <code class="highlighter-rouge">true</code>. If a clause contains <code class="highlighter-rouge">-6</code> we remove that variable as alive variable.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">Known:</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span>
-
- <span class="mi">1</span>  <span class="mi">4</span>  <span class="o">-</span><span class="mi">6</span> <span class="mi">0</span> <span class="nl">becomes:</span> <span class="mi">1</span> <span class="mi">4</span> <span class="mi">0</span>
-<span class="o">-</span><span class="mi">1</span>  <span class="mi">6</span>  <span class="mi">0</span> <span class="n">is</span> <span class="n">marked</span> <span class="nf">true</span> <span class="o">(</span><span class="n">contains</span> <span class="mi">6</span><span class="o">)</span></code></pre></figure>
-
-<p>Now we go back to step 1 and repeat.</p>
-
-<h2 id="conflict">Conflict</h2>
-
-<p>There are two possible ways this loop will end.</p>
-
-<p>1) There are no clauses left, everything it <code class="highlighter-rouge">true</code>. In this case we have reached <code class="highlighter-rouge">SAT</code>.
-2) We run into a situation that we have a conflict (!)</p>
-
-<p>A conflict happens when we have a situation that can’t happen. For example when we have the following situation:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span>
- <span class="mi">1</span> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
- <span class="mi">1</span>  <span class="mi">2</span>  <span class="mi">0</span></code></pre></figure>
-
-<p>In this case we have <code class="highlighter-rouge">-1</code> as a unit clause, we assign this variable. Now we process the following lines and what happens? We are left with:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"> <span class="o">-</span><span class="mi">2</span>  <span class="mi">0</span>
-  <span class="mi">2</span>  <span class="mi">0</span></code></pre></figure>
-
-<p>This is a <strong>conflict</strong>, we can’t have <code class="highlighter-rouge">-2</code> AND <code class="highlighter-rouge">2</code>. It can’t be true and false at the same time.</p>
-
-<p>In the case of a conflict we backtrack back to the last decision point where we gambled. Reset everything and try a different variable.</p>
-
-<h2 id="nothing-left-to-gamble-unsat">Nothing left to gamble? UNSAT</h2>
-
-<p>If, at a certain point, you’ve run out of options to gamble on, we are also done. We’ve proven there is <strong>no</strong> way to assign the variables to satisfy all the clauses. In this case we can return <code class="highlighter-rouge">UNSAT</code>.</p>
-
-<h1 id="put-this-into-code">Put this into code:</h1>
-
-<p>If you put the above algorithm into Java code you might end up with something like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">royvanrijn</span><span class="o">.</span><span class="na">boolish</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Comparator</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DPLLSolver</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">new</span> <span class="nf">DPLLSolver</span><span class="o">().</span><span class="na">solve</span><span class="o">(</span><span class="s">"dimacs/example.cnf"</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">solve</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">inputFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-
-        <span class="c1">// Read a DIMACS file and turn into a list of clauses:</span>
-        <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">lines</span><span class="o">(</span><span class="nc">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">inputFile</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">,</span> <span class="s">" "</span><span class="o">).</span><span class="na">trim</span><span class="o">())</span>
-                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="n">line</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">" 0"</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Clause:</span><span class="o">:</span><span class="k">new</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
-
-        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-
-        <span class="n">processDPLL</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literals</span><span class="o">);</span>
-
-        <span class="c1">// If we get here, we are unable to assign SAT, so we are UNSAT:</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Got to the end, UNSAT"</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">processDPLL</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="c1">// Check if we have no more clauses that are unsatisfied:</span>
-        <span class="k">if</span><span class="o">(!</span><span class="n">clauses</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">filter</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">).</span><span class="na">findAny</span><span class="o">().</span><span class="na">isPresent</span><span class="o">())</span> <span class="o">{</span>
-            <span class="c1">// We are done, SAT!</span>
-            <span class="n">exitWithSAT</span><span class="o">(</span><span class="n">literals</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">newLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-
-        <span class="c1">// Step 1a: Find unit clauses:</span>
-        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unitPropagation</span> <span class="o">=</span> <span class="n">findUnitClauses</span><span class="o">(</span><span class="n">clauses</span><span class="o">);</span>
-
-        <span class="c1">// Step 1b: Process the unit variables (new units can be created while processing):</span>
-        <span class="k">while</span><span class="o">(</span><span class="n">unitPropagation</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-
-            <span class="c1">// Remove this unit from all clauses:</span>
-            <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">unit</span> <span class="o">:</span> <span class="n">unitPropagation</span><span class="o">)</span> <span class="o">{</span>
-                <span class="c1">// Detect conflicts: We can not have both unit and -unit in the set, if there is we've hit a conflict.</span>
-                <span class="k">if</span><span class="o">(</span><span class="n">unitPropagation</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">unit</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="c1">// Undo everything we've done and return.</span>
-                    <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">literal</span> <span class="o">:</span> <span class="n">newLiterals</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo unit: "</span> <span class="o">+</span> <span class="n">literal</span><span class="o">);</span>
-                        <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literal</span><span class="o">);</span>
-                    <span class="o">}</span>
-                    <span class="k">return</span><span class="o">;</span>
-                <span class="o">}</span>
-                <span class="n">newLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">unit</span><span class="o">);</span>
-                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Applying unit: "</span> <span class="o">+</span> <span class="n">unit</span><span class="o">);</span>
-                <span class="n">applyStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">unit</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="n">unitPropagation</span><span class="o">.</span><span class="na">removeAll</span><span class="o">(</span><span class="n">newLiterals</span><span class="o">);</span>
-
-            <span class="c1">// Look if we've created new unit clauses:</span>
-            <span class="n">unitPropagation</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">findUnitClauses</span><span class="o">(</span><span class="n">clauses</span><span class="o">));</span>
-        <span class="o">}</span>
-
-        <span class="c1">// Get all the unassignedLiterals from the alive clauses:</span>
-        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unassignedLiterals</span> <span class="o">=</span> <span class="n">clauses</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">clause</span> <span class="o">-&gt;</span> <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">stream</span><span class="o">()).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toSet</span><span class="o">());</span>
-
-        <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">decisionLiteral</span> <span class="o">:</span> <span class="n">unassignedLiterals</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Gambling/deciding on: "</span> <span class="o">+</span> <span class="n">decisionLiteral</span><span class="o">);</span>
-            <span class="n">applyStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">decisionLiteral</span><span class="o">);</span>
-
-            <span class="c1">// Go deeper with a fresh list:</span>
-            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">deeperAssignedLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">();</span>
-            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">literals</span><span class="o">);</span>
-            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">newLiterals</span><span class="o">);</span>
-            <span class="n">deeperAssignedLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">decisionLiteral</span><span class="o">);</span>
-
-            <span class="n">processDPLL</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">deeperAssignedLiterals</span><span class="o">);</span>
-
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo gambling: "</span> <span class="o">+</span> <span class="n">decisionLiteral</span><span class="o">);</span>
-            <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">decisionLiteral</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="c1">// Undo all we've done this step:</span>
-        <span class="k">for</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">literal</span> <span class="o">:</span> <span class="n">newLiterals</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Undo units: "</span> <span class="o">+</span> <span class="n">literal</span><span class="o">);</span>
-            <span class="n">undoStep</span><span class="o">(</span><span class="n">clauses</span><span class="o">,</span> <span class="n">literal</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-     * When applying a step, keep all the dead literals (variables) so we can undo.
-     *
-     * @param clauses
-     * @param literal
-     */</span>
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">applyStep</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="n">literal</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">if</span><span class="o">(!</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">remove</span><span class="o">((</span><span class="nc">Integer</span><span class="o">)</span> <span class="o">(-</span><span class="n">literal</span><span class="o">));</span>
-                    <span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(-</span><span class="n">literal</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-     * Because we are backtracking we need to be able to undo all the steps in a clause, so we keep all the information
-     *
-     * @param clauses
-     * @param literal
-     */</span>
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">undoStep</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">Integer</span> <span class="n">literal</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">&amp;&amp;</span> <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">clause</span><span class="o">.</span><span class="na">clauseSatisfied</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-            <span class="o">}</span>
-            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">contains</span><span class="o">(-</span><span class="n">literal</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">clause</span><span class="o">.</span><span class="na">deadLiterals</span><span class="o">.</span><span class="na">remove</span><span class="o">((</span><span class="nc">Integer</span><span class="o">)</span> <span class="o">(-</span><span class="n">literal</span><span class="o">));</span>
-                <span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">add</span><span class="o">(-</span><span class="n">literal</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">findUnitClauses</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Clause</span><span class="o">&gt;</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unitPropagation</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="c1">// Check if there are unit clauses:</span>
-        <span class="k">for</span><span class="o">(</span><span class="nc">Clause</span> <span class="n">clause</span> <span class="o">:</span> <span class="n">clauses</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">if</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">isUnitClause</span><span class="o">())</span> <span class="o">{</span>
-                <span class="n">unitPropagation</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">clause</span><span class="o">.</span><span class="na">unassignedLiterals</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">unitPropagation</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">exitWithSAT</span><span class="o">(</span><span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">literals</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// We are done:</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"SAT"</span><span class="o">);</span>
-
-        <span class="c1">// Sort the output as absolute values.</span>
-        <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">literals</span><span class="o">,</span> <span class="nc">Comparator</span><span class="o">.</span><span class="na">comparingInt</span><span class="o">(</span><span class="nl">Math:</span><span class="o">:</span><span class="n">abs</span><span class="o">));</span>
-
-        <span class="c1">// TODO: We might not list all the input variables here, some are not needed and can be + or -.</span>
-
-        <span class="c1">// And print:</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">literals</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">n</span><span class="o">)).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">(</span><span class="s">" "</span><span class="o">))</span> <span class="o">+</span> <span class="s">" 0"</span><span class="o">);</span>
-
-        <span class="c1">// Bye bye.</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Clause</span> <span class="o">{</span>
-
-        <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unassignedLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">deadLiterals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">clauseSatisfied</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-
-        <span class="kd">private</span> <span class="nf">Clause</span><span class="o">(</span><span class="nc">String</span> <span class="n">inputLine</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">unassignedLiterals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span>
-                    <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">inputLine</span>
-                            <span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">inputLine</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">)</span>
-                            <span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"\\s+"</span><span class="o">))</span>
-                            <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">)</span>
-                            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
-        <span class="o">}</span>
-
-        <span class="kt">boolean</span> <span class="nf">isUnitClause</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="o">!</span><span class="n">clauseSatisfied</span> <span class="o">&amp;&amp;</span> <span class="n">unassignedLiterals</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This is all. This algorithm can solve <strong>any</strong> problem that can be turned into a SAT problem, which are a lot of mathematical problems.</p>
-
-<p><code class="highlighter-rouge">DPPL</code> isn’t the fastest algorithm, a lot of improvements can be made (part 3?). For example we can learn new clauses during analysis, and instead of backtracking to the last decision moment, sometimes you can backtrack to a much earlier decision moment, making the resolution much faster.</p>
-
-<p>But the basic algorithm to solve SAT, is very simple indeed.</p>
-
-<p><a href="/blog/2019/05/sat-solving-part-one/">part one</a></p>
 
         </span>
 
@@ -2693,203 +2091,6 @@ Never decided anything based on some online benchmark.</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2018/05/openj9-jvm-shootout/" title="Part 1: OpenJ9 versus HotSpot">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="Part 1: OpenJ9 versus HotSpot" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2018-05-16T13:54:31+02:00" class="date" />
-          <span itemprop="datePublished" content="2018-05-16T13:54:31+02:00" class="date">
-            May 16, 2018 13:54:31
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-jvm-shootout/">Part 1: OpenJ9 versus HotSpot</a></h1>
-
-        <span itemprop="articleBody">
-          <h1 id="tldr">TLDR;</h1>
-
-<p><a href="https://www.eclipse.org/openj9/">OpenJ9</a> and <a href="https://www.ibm.com/support/knowledgecenter/en/SS6QYM_9.1.0/com.ibm.help.perf.manage.doc/c_FND_PM_IBMJ9JVM.html">IBM J9</a> are a different JVM implementation from the default Oracle HotSpot JVM. With the modern <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> pre-made Docker images it is easy to swap and test different combinations and pick the right JVM for you.</p>
-
-<p>The rumours seem to be true, OpenJ9 seems to blow HotSpot away on memory usage. HotSpot seems to have the edge CPU-wise.</p>
-
-<h1 id="openj9">OpenJ9</h1>
-
-<p>In the Java world most people are familiar with OpenJDK. This is a complete JDK implementation including the HotSpot JVM engine. Not a lot of developers know or try alternatives to HotSpot. Asking around some colleagues remembered the name JRockit, nobody mentioned IBM J9 and/or Eclipse OpenJ9.</p>
-
-<p>I’ve read that <a href="https://medium.com/criciumadev/new-open-source-jvm-optimized-for-cloud-and-microservices-c75a41aa987d">OpenJ9 is very good with memory management</a> and is tailered for usage in the cloud/in containers. OpenJ9 is an independent implementation of the JVM. It’s origins are IBM’s Java SDK/IBM J9 which can trace its history back to OTI Technologies Envy Smalltalk (thanks Dan Heidinga!).</p>
-
-<p>With the current rise in microservice usage (and most services are <strong>not</strong> so micro in Java). I recon this could become a hot topic again!</p>
-
-<h1 id="testing">Testing</h1>
-
-<p>Before the <a href="https://www.docker.com/">Docker</a>-era it was relatively hard to compare different JVMs, versions. You needed to download, install, script and run everything. But now a lot of pre-made images are available online.</p>
-
-<p>Here is my idea on how to test the JVMs:</p>
-
-<ol>
-  <li>Create a simple <a href="https://projects.spring.io/spring-boot/">Spring Boot</a> application</li>
-  <li>Start the application in various Docker Images</li>
-  <li>Measure memory usage after startup and GC</li>
-  <li>Measure the time it takes to run a small CPU-intensive test</li>
-</ol>
-
-<p>This is by no means a thorough test or benchmark, but it should give us a basic idea of what we can expect from the virtual machines.</p>
-
-<h2 id="spring-boot-application">Spring Boot application</h2>
-
-<p>The Spring Boot application I created contains the following endpoints:</p>
-
-<ol>
-  <li>A REST endpoint that calls the GC (trying to make it fair)</li>
-  <li>A REST endpoint that creates 1000 large random arrays and sorts them, returns the runtime (in ms)</li>
-</ol>
-
-<p>Here is the listing of the CPU-test:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoadTestController</span> <span class="o">{</span>
-
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/loadtest"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="nc">LoadTestResult</span> <span class="nf">loadtest</span><span class="o">()</span> <span class="o">{</span>
-
-        <span class="kt">long</span> <span class="n">before</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-
-        <span class="nc">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Random</span><span class="o">();</span>
-
-        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="kt">long</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">long</span><span class="o">[</span><span class="mi">1000000</span><span class="o">];</span>
-            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">l</span><span class="o">++)</span> <span class="o">{</span>
-                <span class="n">data</span><span class="o">[</span><span class="n">l</span><span class="o">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">();</span>
-            <span class="o">}</span>
-            <span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="k">return</span> <span class="k">new</span> <span class="nf">LoadTestResult</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">before</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Again, we can argue endlessly about if this test makes sense and is even remotely relevant… but still it should give us some basic idea of what kind of performance we can expect.
-If the rumoured memory improvements are true, might there be a performance hit? Is there a performance trade-off?</p>
-
-<h2 id="jvm-images">JVM images</h2>
-
-<p>I’ve decided to test the following images.</p>
-
-<p>First we have the (slim) <a href="https://hub.docker.com/_/openjdk/">openjdk</a> images for 8/9/10/11:</p>
-
-<ul>
-  <li>openjdk:8-slim</li>
-  <li>openjdk:9-slim</li>
-  <li>openjdk:10-slim</li>
-  <li>openjdk:11-slim</li>
-</ul>
-
-<p>Next there are the <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> images for 8/9/10:</p>
-
-<ul>
-  <li>adoptopenjdk/openjdk8</li>
-  <li>adoptopenjdk/openjdk9</li>
-  <li>adoptopenjdk/openjdk10</li>
-</ul>
-
-<p>Then we have OpenJ9, again provided by <a href="https://hub.docker.com/u/adoptopenjdk/">adoptopenjdk</a> for 8, 9 and a nightly build of 9 (see my previous blogpost):</p>
-
-<ul>
-  <li>adoptopenjdk/openjdk8-openj9</li>
-  <li>adoptopenjdk/openjdk9-openj9</li>
-  <li>adoptopenjdk/openjdk9-openj9:nightly</li>
-</ul>
-
-<p>And I decided to include IBM’s own J9 image as well:</p>
-
-<ul>
-  <li>ibmcom/ibmjava:8-jre</li>
-</ul>
-
-<h2 id="testing-with-docker">Testing with Docker</h2>
-
-<p>After building my Spring Boot application I launched each Docker image using the following command:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -it -v /Projects/temp/spring-boot-example:/app/spring-boot-example -p 8080:8080 IMAGE_NAME /bin/bash</code></pre></figure>
-
-<p>I’m mapping my “<em>spring-boot-example</em>” project folder to “<em>/apps/spring-boot-example</em>” so I can start the JAR file inside the container. Also I’m forwarding port 8080 back to my host so I can call the endpoints.</p>
-
-<p>Next, inside the container, I launch the Spring Boot application:</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">java -jar /app/spring-boot-example/target/spring-boot-example-0.0.1-SNAPSHOT.jar</code></pre></figure>
-
-<p>After waiting a bit, calling the endpoints a couple of times and performing a GC I measured the memory usage.</p>
-
-<p>After that I called the “<em>/loadtest</em>” endpoint containing the array-sorting test and waited for the results.</p>
-
-<h1 id="memory-benchmark">Memory benchmark</h1>
-
-<p>Here are the results of the memory used by the simple Spring Boot application:</p>
-
-<p><img src="/images/jvm-memory-usage.png" alt="Chart with memory usage per Docker Image" /></p>
-
-<p>At first you can see that the memory usage for Java 8 is much higher than for Java 9 and 10, good!</p>
-
-<p>But the biggest shock is how much less memory OpenJ9 and J9 are using, almost <strong>4x</strong> less memory if you compare Java 8 with OpenJ9. I’m amazed, how does this even work? Now we can <em>almost</em> call our Spring Boot service <strong>micro</strong>!</p>
-
-<p>I’ve also experimented with running some production Spring Boot code (not just simple examples) and here I’ve seen improvements up to 40-50% decrease in memory usage.</p>
-
-<h1 id="cpu-benchmark">CPU benchmark</h1>
-
-<p>Online I’ve read that OpenJ9 isn’t as good as HotSpot if you look at CPU intensive tasks. That is why I created a small test for this as well.</p>
-
-<p>1000 arrays with 1000000 random long values being sorted. This takes around 100 seconds, this should give the JVM enough time to adjust and optimize. I’ve called the benchmark twice for each tested image. I’ve recorded the second time trying to eliminate warmup times.</p>
-
-<p><img src="/images/jvm-cpu-speed.png" alt="Chart with CPU usage per Docker Image" /></p>
-
-<p>In the chart we can see that indeed the J9 and OpenJ9 images are slower, not by much max 18%. It seems for this particular testcase Java 8 beats most Java 9 implementations (except coupled with OpenJ9).</p>
-
-<h1 id="whats-next">What’s next?</h1>
-
-<p>My current project has a lot more memory issues than CPU issues on production (frequently running out of memory while having 1-2% CPU usage). We are definitely thinking about switching to OpenJ9 in the near future!</p>
-
-<p>We did already encounter some issues during testing:</p>
-
-<ol>
-  <li><strong>Hessian</strong>: (binary protocol) has a build-in assumption that System.identityHashCode always returns a positive number. For HotSpot this is true but OpenJ9/J9 can also return negative numbers. This is an open issue and the Hessian project hasn’t fixed this in a couple of years, seems to be dead? Our solution is to move away from Hessian altogether</li>
-  <li><strong>Instana</strong>: We love our monitoring tool Instana, but it had some problems connecting their agent to OpenJ9/J9. Luckily the people at Instana helped us identify a bug and a fix should be published today (and is automatically updated, w00t!)</li>
-</ol>
-
-<p>Open questions I haven’t looked in to:</p>
-
-<ol>
-  <li>Can you still get/use jmap/<strong>hprof</strong> information etc in OpenJ9?</li>
-  <li>How will it hold up during longer production runs?</li>
-  <li>Will we find other weird bugs? It feels tricky…</li>
-</ol>
-
-<p>Have you tried OpenJ9/J9? Let me know in the comments.</p>
-
-<p>Is there anything else you’d love to see tested? The best way to contact me is to send me a tweet <a href="https://twitter.com/royvanrijn">royvanrijn</a>.</p>
-
-
-        </span>
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>
