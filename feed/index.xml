@@ -5,9 +5,101 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 16 Dec 2021 13:05:26 +0100</pubDate>
-    <lastBuildDate>Thu, 16 Dec 2021 13:05:26 +0100</lastBuildDate>
+    <pubDate>Tue, 28 Dec 2021 11:44:31 +0100</pubDate>
+    <lastBuildDate>Tue, 28 Dec 2021 11:44:31 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Hex grid in single integer</title>
+        <description>&lt;h2 id=&quot;azspcs-ap-math&quot;&gt;AZsPCs: AP Math&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://azspcs.com/&quot;&gt;Al Zimmermann&lt;/a&gt; hosts awesome Programming Contests every once in a while. They usually run for a long time (multiple months) and it allows mathematicians and programmers to compete in optimization problems. Usually the search space is very large and optimal solutions aren’t found for large N-values.&lt;/p&gt;
+
+&lt;p&gt;This time the contest was called “AP Math” and the goal was:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Given a hexagonal grid of size N, select the maximum amount of cells so no three cells form an arithmetic progression.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/azspcs-ap-math.png&quot; alt=&quot;Description of contest&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;During this contest I didn’t find the right way to attack the problem, but I did discover a clever way to store all the hex coordinates in a singe integer value and do the math on that; which I wanted to share here.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;arithmetic-progression&quot;&gt;Arithmetic progression?&lt;/h2&gt;
+
+&lt;p&gt;The main goal in the contest is to select cells in a hex grid with this one rule “no three cells form an arithmetic progression”.&lt;/p&gt;
+
+&lt;p&gt;What does this mean? If you look at the example above for a N=3 hex grid you can see that we have to select cells, with the rule that no two points can have another cell in between, on the mid point.&lt;/p&gt;
+
+&lt;p&gt;Look at this website for more examples and a complete description: &lt;a href=&quot;http://azspcs.com/Contest/APMath&quot;&gt;AP Math&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;So to find solutions, we need a way to store the coordinates of this hex grid and a way to determine given two cells, which other cells are illegal.&lt;/p&gt;
+
+&lt;h2 id=&quot;storing-coordinates-as-single-32-bit-integer&quot;&gt;Storing coordinates as single 32-bit integer&lt;/h2&gt;
+
+&lt;p&gt;There are multiple ways to store the coordinates of an hexagonal grid. The best write-up I’ve found is located at &lt;a href=&quot;https://www.redblobgames.com/grids/hexagons/&quot;&gt;redblobgames.com&lt;/a&gt;. I’m using an axial grid, so each coordinate has an &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;y&lt;/code&gt; value.&lt;/p&gt;
+
+&lt;p&gt;But &lt;strong&gt;instead&lt;/strong&gt; of working with an &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;y&lt;/code&gt; value, I’m storing each coordinate as a &lt;em&gt;single&lt;/em&gt; 32-bit integer.&lt;/p&gt;
+
+&lt;p&gt;To generate all of them I used the following (Java) code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;S&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Generate all hex points: (as single int)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Cut off the two triangular edges to make a hex grid:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;indexes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//&amp;lt;-- store all the positions x, y both into a single integer value.&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As you can see, I’m storing &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; &lt;em&gt;and&lt;/em&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;y&lt;/code&gt; in a single integer value, shifted 16 bits.&lt;/p&gt;
+
+&lt;p&gt;Now you might ask: how is storing each coordinate as a single 32-bit value useful? What does it add?&lt;/p&gt;
+
+&lt;p&gt;Well, suppose we have two coordinates from the complete list of all hex grid coordinates mentioned above. With these two indexes in our hex grid we can do the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// A bitmask to check for even numbers&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOTH_EVEN_MASK&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;^&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOTH_EVEN_MASK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Points index1 and index2 has the following midpoint:&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invalidMid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invalid1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invalid2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Using very limited control code and little math we can calculate all three points that are needed for this contest. Given just the two coordinates we get the two or three points that are invalidated. This is much faster than any other coordinate system I tried. A single subtract of two indexes gives the &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; &lt;em&gt;and&lt;/em&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;y&lt;/code&gt; of the new point: less work for the CPU.&lt;/p&gt;
+
+&lt;p&gt;Turns out, I didn’t even need to use the actual &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;y&lt;/code&gt; values anywhere, I could stay in this coordinate-system while searching. If you want to though, just mask and shift:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0xFFFF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0xFFFF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This was my little ‘hack’ for this contest. I might be able to use this &lt;code class=&quot;highlighter-rouge&quot;&gt;xy&lt;/code&gt; as a single integer on more occasions, in other contests. It’s a nice tool to have in the toolbox.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 28 Dec 2021 11:19:31 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2021/12/hex-grid-coordinates-in-a-single-integer/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2021/12/hex-grid-coordinates-in-a-single-integer/</guid>
+        
+        <category>java</category>
+        
+        <category>hex grid</category>
+        
+        <category>azspcs</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Log4Shell / Leak4J</title>
@@ -439,91 +531,6 @@
         
         
         <category>Joggling</category>
-        
-      </item>
-    
-      <item>
-        <title>The world of biased algorithms</title>
-        <description>&lt;p&gt;The world is changing, more and more people are openly against racism, against gender discrimination, very much pro equality. People and companies are being called out when they do discriminate and there is a big movement against bias (in general).&lt;/p&gt;
-
-&lt;p&gt;One problematic thing though, for me as a programmer, is the backlash against ‘biased algorithms’.&lt;/p&gt;
-
-&lt;h1 id=&quot;algorithms&quot;&gt;Algorithms&lt;/h1&gt;
-
-&lt;p&gt;What are algorithms?&lt;/p&gt;
-
-&lt;p&gt;If you look up the definition &lt;a href=&quot;https://en.wikipedia.org/wiki/Algorithm&quot;&gt;wikipedia&lt;/a&gt; you’ll find:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;A sequence of instructions, typically to solve a class of problems or perform a computation. Algorithms are unambiguous specifications for performing calculation, data processing, automated reasoning, and other tasks.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In our case today, let’s define it is a set of instructions that a computer follows so it does a calculation and produces a result. People also do the same thing, they use sets of rules to come to certain conclusions.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h1 id=&quot;bias-in-algorithms&quot;&gt;Bias in algorithms&lt;/h1&gt;
-
-&lt;p&gt;The problem here is &lt;em&gt;bias&lt;/em&gt;. What is the problem with bias in algorithms?&lt;/p&gt;
-
-&lt;p&gt;Suppose we have an algorithm that determines if you do or don’t get a loan, and also determines the interest rate. This is great, before this system the bank had a human that was responsible for applying/declining loans, now a the computer can do this.&lt;/p&gt;
-
-&lt;p&gt;Now of course, it would be very bad if the programmer and product owners came up with the following rule:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;applicant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isFemale&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;loan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addInterest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;If is easy to state this rule is discriminating against a particular gender, we &lt;strong&gt;don’t&lt;/strong&gt; want this discrimination.&lt;/p&gt;
-
-&lt;p&gt;But what if a certain car insurance charges 5% extra for male drivers under 25 with DUI charge? That kind of makes sense, it is &lt;em&gt;still&lt;/em&gt; discrimination though, but we do allow this. It is a slippery slope.&lt;/p&gt;
-
-&lt;p&gt;The good thing though is: The rules are clear. Before there might have been a racist human doing the declines, now it is clear.&lt;/p&gt;
-
-&lt;h1 id=&quot;bias-in-aiml&quot;&gt;Bias in A.I./ML&lt;/h1&gt;
-
-&lt;p&gt;The real problem though starts when you enter the world of AI, big data and machine learning. Now a programmer is no longer writing the readable rules. A machine is using a lot of data to make the best possible decision and find (invisible) correlations.&lt;/p&gt;
-
-&lt;p&gt;What is the ‘best decision’? Well, most of the time it is looking at the past, minimizing risk or cost, mimicking human behaviour. This is where a lot of bias comes from and it makes sense.&lt;/p&gt;
-
-&lt;p&gt;If you want everyone to be treated equally, there is no need for a complex algorithm in the first place. The sole purpose of these algorithms is to treat every individual differently based on certain traits. Sometimes we think these traits are obvious and &lt;em&gt;valid&lt;/em&gt;, sometimes we think these traits racist and idiotic, but a computer/A.I. system doesn’t know the difference.&lt;/p&gt;
-
-&lt;p&gt;A reason A.I. declines a loan:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;People with irregular income and a poor credit history &amp;gt; we’re okay with this.&lt;/li&gt;
-  &lt;li&gt;Female from Easy Kentucky above 40 with a daughter &amp;gt; wait, what?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The algorithm is probably right though, it is minimizing risk. And while analyzing the given data it found some correlation. This might be because the humans that historically did the job before the algorithm had a certain bias and it was trained on that data, or there actually is a bigger risk for females from East Kentucky based on historic data.&lt;/p&gt;
-
-&lt;h1 id=&quot;minimizing-bad-bias&quot;&gt;Minimizing ‘bad’ bias&lt;/h1&gt;
-
-&lt;p&gt;So there is &lt;strong&gt;good&lt;/strong&gt; and &lt;strong&gt;bad&lt;/strong&gt; bias, how can we use this? Well, if you are training the loan application, give it the ‘right’ data. Train the model with historic data that has income and credit history data, but not the fields for ‘race’ and ‘gender’.&lt;/p&gt;
-
-&lt;p&gt;There, problem solved.&lt;/p&gt;
-
-&lt;p&gt;Or not? It turns out those A.I. systems are very stubborn in finding correlations. If we don’t give the system any race information, but we do give the system an address and there is a current (or historic) correlation between race and loan declines… the A.I. might secretly group together people based on where they live. There are examples of this, where certain poorer black neighbourhoods are being discriminated against/biased without the system knowing anything about these neighbourhoods or the race of the people living there.&lt;/p&gt;
-
-&lt;h1 id=&quot;algorithms-are-bias&quot;&gt;Algorithms &lt;strong&gt;are&lt;/strong&gt; bias&lt;/h1&gt;
-
-&lt;p&gt;The algorithmic bias problem isn’t going away, it will probably become much worse. Systems are getting more (and more) data and it will find many more correlations using this data.&lt;/p&gt;
-
-&lt;p&gt;It is impossible to have algorithms without bias because these decision-making algorithms &lt;strong&gt;are&lt;/strong&gt; bias. The whole reason they exist is to add some bias into a neutral decision.&lt;/p&gt;
-
-&lt;p&gt;What’s your thought on this? Send me a tweet: @&lt;a href=&quot;https://twitter.com/royvanrijn&quot;&gt;royvanrijn&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 12 Nov 2019 13:11:24 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/11/the-world-of-biased-algorithms-copy/</guid>
-        
-        <category>algorithm</category>
-        
-        <category>bias</category>
-        
-        
-        <category>Algorithms</category>
         
       </item>
     

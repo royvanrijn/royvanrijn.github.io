@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hex grid in single integer</title>
+  <meta name="description" content="AZsPCs: AP MathAl Zimmermann hosts awesome Programming Contests every once in a while. They usually run for a long time (multiple months) and it allows mathe...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,hex grid,azspcs,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2021/12/hex-grid-coordinates-in-a-single-integer/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Hex grid in single integer" />
+  <meta name="twitter:description" content="AZsPCs: AP MathAl Zimmermann hosts awesome Programming Contests every once in a while. They usually run for a long time (multiple months)..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2021/12/log4j2-rce-problem/" title="Previous: Log4Shell / Leak4J">&laquo; Log4Shell / Leak4J</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2021/12/hex-grid-coordinates-in-a-single-integer/" title="Hex grid in single integer">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hex grid in single integer" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2021-12-28T11:19:31+01:00" class="date" />
+        <span itemprop="datePublished" content="2021-12-28T11:19:31+01:00" class="date">
+          Dec 28, 2021 11:19:31
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/hex-grid-coordinates-in-a-single-integer/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Hex grid in single integer</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <h2 id="azspcs-ap-math">AZsPCs: AP Math</h2>
+
+<p><a href="http://azspcs.com/">Al Zimmermann</a> hosts awesome Programming Contests every once in a while. They usually run for a long time (multiple months) and it allows mathematicians and programmers to compete in optimization problems. Usually the search space is very large and optimal solutions aren’t found for large N-values.</p>
+
+<p>This time the contest was called “AP Math” and the goal was:</p>
+
+<blockquote>
+  <p>Given a hexagonal grid of size N, select the maximum amount of cells so no three cells form an arithmetic progression.</p>
+</blockquote>
+
+<p><img src="/images/azspcs-ap-math.png" alt="Description of contest" /></p>
+
+<p>During this contest I didn’t find the right way to attack the problem, but I did discover a clever way to store all the hex coordinates in a singe integer value and do the math on that; which I wanted to share here.</p>
+
+<!--more-->
+
+<h2 id="arithmetic-progression">Arithmetic progression?</h2>
+
+<p>The main goal in the contest is to select cells in a hex grid with this one rule “no three cells form an arithmetic progression”.</p>
+
+<p>What does this mean? If you look at the example above for a N=3 hex grid you can see that we have to select cells, with the rule that no two points can have another cell in between, on the mid point.</p>
+
+<p>Look at this website for more examples and a complete description: <a href="http://azspcs.com/Contest/APMath">AP Math</a>.</p>
+
+<p>So to find solutions, we need a way to store the coordinates of this hex grid and a way to determine given two cells, which other cells are illegal.</p>
+
+<h2 id="storing-coordinates-as-single-32-bit-integer">Storing coordinates as single 32-bit integer</h2>
+
+<p>There are multiple ways to store the coordinates of an hexagonal grid. The best write-up I’ve found is located at <a href="https://www.redblobgames.com/grids/hexagons/">redblobgames.com</a>. I’m using an axial grid, so each coordinate has an <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> value.</p>
+
+<p>But <strong>instead</strong> of working with an <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> value, I’m storing each coordinate as a <em>single</em> 32-bit integer.</p>
+
+<p>To generate all of them I used the following (Java) code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="no">N</span> <span class="o">=</span> <span class="mi">11</span><span class="o">;</span>
+<span class="kt">int</span> <span class="no">S</span> <span class="o">=</span> <span class="no">N</span> <span class="o">+</span> <span class="no">N</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+
+<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">indexes</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+<span class="c1">// Generate all hex points: (as single int)</span>
+<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="no">S</span><span class="o">;</span> <span class="n">x</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="no">S</span><span class="o">;</span> <span class="n">y</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="c1">// Cut off the two triangular edges to make a hex grid:</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">x</span><span class="o">+</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="o">(</span><span class="no">N</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span> <span class="o">&lt;</span> <span class="o">(</span><span class="mi">3</span><span class="o">*</span><span class="no">N</span> <span class="o">-</span> <span class="mi">2</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">indexes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span> <span class="o">|</span> <span class="n">y</span><span class="o">);</span>  <span class="c1">//&lt;-- store all the positions x, y both into a single integer value.</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As you can see, I’m storing <code class="highlighter-rouge">x</code> <em>and</em> <code class="highlighter-rouge">y</code> in a single integer value, shifted 16 bits.</p>
+
+<p>Now you might ask: how is storing each coordinate as a single 32-bit value useful? What does it add?</p>
+
+<p>Well, suppose we have two coordinates from the complete list of all hex grid coordinates mentioned above. With these two indexes in our hex grid we can do the following:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// A bitmask to check for even numbers</span>
+<span class="kt">int</span> <span class="no">BOTH_EVEN_MASK</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span> <span class="o">|</span> <span class="mi">1</span><span class="o">;</span>
+
+<span class="k">if</span> <span class="o">(((</span><span class="n">index1</span> <span class="o">^</span> <span class="n">index2</span><span class="o">)</span> <span class="o">&amp;</span> <span class="no">BOTH_EVEN_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Points index1 and index2 has the following midpoint:</span>
+    <span class="kt">int</span> <span class="n">invalidMid</span> <span class="o">=</span> <span class="o">(</span><span class="n">index1</span> <span class="o">+</span> <span class="n">index2</span><span class="o">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kt">int</span> <span class="n">invalid1</span> <span class="o">=</span> <span class="o">(</span><span class="n">index2</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">-</span> <span class="n">index1</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">invalid2</span> <span class="o">=</span> <span class="o">(</span><span class="n">index1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">-</span> <span class="n">index2</span><span class="o">;</span></code></pre></figure>
+
+<p>Using very limited control code and little math we can calculate all three points that are needed for this contest. Given just the two coordinates we get the two or three points that are invalidated. This is much faster than any other coordinate system I tried. A single subtract of two indexes gives the <code class="highlighter-rouge">x</code> <em>and</em> <code class="highlighter-rouge">y</code> of the new point: less work for the CPU.</p>
+
+<p>Turns out, I didn’t even need to use the actual <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> values anywhere, I could stay in this coordinate-system while searching. If you want to though, just mask and shift:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">index</span> <span class="o">&gt;&gt;</span><span class="mi">16</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">index</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="o">;</span></code></pre></figure>
+
+<p>This was my little ‘hack’ for this contest. I might be able to use this <code class="highlighter-rouge">xy</code> as a single integer on more occasions, in other contests. It’s a nice tool to have in the toolbox.</p>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2021/12/hex-grid-coordinates-in-a-single-integer/";
+      this.page.identifier = "/blog/2021/12/hex-grid-coordinates-in-a-single-integer/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
