@@ -117,6 +117,51 @@
     <div class="post">
 
       <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2021/12/divide-by-three/" title="Divide by three using shift and add">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Divide by three using shift and add" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2021-12-31T09:01:25+01:00" class="date" />
+          <span itemprop="datePublished" content="2021-12-31T09:01:25+01:00" class="date">
+            Dec 31, 2021 09:01:25
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/divide-by-three/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2021/12/divide-by-three/">Divide by three using shift and add</a></h1>
+
+        <span itemprop="articleBody">
+          
+
+          
+            <p>Today I stumbled across this excellent short video bij Mathologer:</p> <iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/SOBz-aFOH2I?title=0&amp;byline=0&amp;portrait=0"></iframe> <p>This simple proof shows that 1/3 is the same as: 1/4 + 1/4^2 + 1/4^3 + 1/4^N…</p> <p>As a programmer I wanted to try and program this.</p> <p>Dividing by multiples of two (like 4^3) is extremely easy in binary, we just shift a number to the right. So if you have some integer X and we want to divide by 4, we do <code class="highlighter-rouge">X &gt;&gt; 2</code>, if we want to divide by 4^2 we shift <code class="highlighter-rouge">X &gt;&gt; 4</code> etc.</p>...
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2021/12/divide-by-three/">Read more...</a></p>
+        
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/divide-by-three/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
       	<a itemprop="mainEntityOfPage" href="/blog/2021/12/hex-grid-coordinates-in-a-single-integer/" title="Hex grid in single integer">
       	
       		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Hex grid in single integer" width="100" height="100" />
@@ -825,51 +870,6 @@ Here is an example input:</p>
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2018/09/part-1-java-to-native-using-graalvm/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2018/05/openj9-hotsport-specjvm2008/" title="Part 2: OpenJ9 versus HotSpot">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/openj9.jpg" alt="Part 2: OpenJ9 versus HotSpot" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2018-05-17T14:14:31+02:00" class="date" />
-          <span itemprop="datePublished" content="2018-05-17T14:14:31+02:00" class="date">
-            May 17, 2018 14:14:31
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-hotsport-specjvm2008/">Part 2: OpenJ9 versus HotSpot</a></h1>
-
-        <span itemprop="articleBody">
-          
-
-          
-            <h1 id="intro">Intro</h1> <p>Yesterday I compared different JDK versions and <a href="https://www.eclipse.org/openj9/">OpenJ9</a> versus <a href="http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html">HotSpot</a> on <strong>memory</strong> and <strong>speed</strong>. The memory part of the test was realistic if you ask me, an actual working Spring Boot application that served REST objects.</p> <p>The speed/CPU test however was… lacking. Sorting some random arrays, just one specific test.</p> <p>Today I decided to test OpenJ9 and HotSpot a bit more using an actual benchmark: <strong>SPECjvm2008</strong>.</p> <h1 id="specjvm2008">SPECjvm2008</h1> <p><a href="https://www.spec.org">SPEC</a> (Standard Performance Evaluation Corporation) has a couple of well defined benchmarks and tests, including an old JVM benchmark called <strong>SPECjvm2008</strong>. This is an elaborate benchmark testing...
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2018/05/openj9-hotsport-specjvm2008/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

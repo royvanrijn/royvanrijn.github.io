@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Divide by three using shift and add</title>
+  <meta name="description" content="Today I stumbled across this excellent short video bij Mathologer:This simple proof shows that 1/3 is the same as: 1/4 + 1/4^2 + 1/4^3 + 1/4^N…As a programme...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,trick,math,divide,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2021/12/divide-by-three/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Divide by three using shift and add" />
+  <meta name="twitter:description" content="Today I stumbled across this excellent short video bij Mathologer:This simple proof shows that 1/3 is the same as: 1/4 + 1/4^2 + 1/4^3 + ..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2021/12/hex-grid-coordinates-in-a-single-integer/" title="Previous: Hex grid in single integer">&laquo; Hex grid in single integer</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2021/12/divide-by-three/" title="Divide by three using shift and add">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Divide by three using shift and add" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2021-12-31T09:01:25+01:00" class="date" />
+        <span itemprop="datePublished" content="2021-12-31T09:01:25+01:00" class="date">
+          Dec 31, 2021 09:01:25
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2021/12/divide-by-three/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Divide by three using shift and add</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Today I stumbled across this excellent short video bij Mathologer:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/SOBz-aFOH2I?title=0&amp;byline=0&amp;portrait=0"></iframe>
+
+<p>This simple proof shows that 1/3 is the same as: 1/4 + 1/4^2 + 1/4^3 + 1/4^N…</p>
+
+<p>As a programmer I wanted to try and program this.</p>
+
+<p>Dividing by multiples of two (like 4^3) is extremely easy in binary, we just shift a number to the right. So if you have some integer X and we want to divide by 4, we do <code class="highlighter-rouge">X &gt;&gt; 2</code>, if we want to divide by 4^2 we shift <code class="highlighter-rouge">X &gt;&gt; 4</code> etc.</p>
+
+<p>This means we can just add these fractions together and approximate the result, just by dividing (shifting) up to <code class="highlighter-rouge">&gt;&gt; 30</code> for an integer (which is 32-bit).</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="kt">int</span> <span class="n">bignr</span> <span class="o">=</span> <span class="mi">612644632</span><span class="o">;</span>
+
+        <span class="c1">// Approximate Using: 1/3 = 1/4 + 1/4^2 + 1/4^3 + etc</span>
+        <span class="kt">int</span> <span class="n">divless</span> <span class="o">=</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">12</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">14</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">18</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">20</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">22</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">26</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">28</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">30</span><span class="o">);</span>
+
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bignr</span> <span class="o">+</span> <span class="s">" / 3     = "</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">/</span> <span class="mi">3</span><span class="o">));</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bignr</span> <span class="o">+</span> <span class="s">" + magic = "</span> <span class="o">+</span> <span class="n">divless</span><span class="o">);</span>
+
+        <span class="c1">// 612644632 / 3     = 204214877</span>
+        <span class="c1">// 612644632 + magic = 204214872 &lt;- close, a bit too low</span></code></pre></figure>
+
+<p>The accuracy isn’t great… but it’s pretty close. We’re always a bit below the actual sum because for each part we add, we lose a bit of information which we’re shifted away. To counter this we could first add things and shift the final result, making the accuracy a bit better:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="kt">int</span> <span class="n">bignr</span> <span class="o">=</span> <span class="mi">612644632</span><span class="o">;</span>
+
+        <span class="c1">// Approximate Using: 1/3 = 1/4 + 1/4^2 + 1/4^3 + etc</span>
+        <span class="kt">int</span> <span class="n">divless</span> <span class="o">=</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">12</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">14</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">18</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">20</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">22</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">)</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">26</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">28</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">&gt;&gt;</span> <span class="mi">30</span><span class="o">))</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="o">;</span>
+
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bignr</span> <span class="o">+</span> <span class="s">" / 3     = "</span> <span class="o">+</span> <span class="o">(</span><span class="n">bignr</span> <span class="o">/</span> <span class="mi">3</span><span class="o">));</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bignr</span> <span class="o">+</span> <span class="s">" + magic = "</span> <span class="o">+</span> <span class="n">divless</span><span class="o">);</span>
+
+        <span class="c1">// 612644632 / 3     = 204214877</span>
+        <span class="c1">// 612644632 + magic = 204214876 &lt;- off by one haha</span></code></pre></figure>
+
+<p>Probably a useless trick, but fun nonetheless.</p>
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2021/12/divide-by-three/";
+      this.page.identifier = "/blog/2021/12/divide-by-three/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
