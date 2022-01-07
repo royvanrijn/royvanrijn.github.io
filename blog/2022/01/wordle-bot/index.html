@@ -180,14 +180,12 @@ Wordle 202 3/6
                         <span class="nc">Collectors</span><span class="o">.</span><span class="na">counting</span><span class="o">()</span>
                 <span class="o">));</span>
 
-        <span class="c1">// Sort the characters by frequency:</span>
-        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;&gt;</span> <span class="n">entries</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">frequency</span><span class="o">.</span><span class="na">entrySet</span><span class="o">());</span>
-        <span class="n">entries</span><span class="o">.</span><span class="na">sort</span><span class="o">((</span><span class="n">e1</span><span class="o">,</span> <span class="n">e2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">Long</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">e2</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">e1</span><span class="o">.</span><span class="na">getValue</span><span class="o">()));</span>
-
-        <span class="c1">// Print:</span>
-        <span class="k">for</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;</span> <span class="n">e</span> <span class="o">:</span> <span class="n">entries</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(((</span><span class="kt">char</span><span class="o">)((</span><span class="kt">int</span><span class="o">)</span><span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">()))+</span><span class="s">" "</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
-        <span class="o">}</span></code></pre></figure>
+        <span class="c1">// Sort the characters by frequency and print:</span>
+        <span class="n">frequency</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">sorted</span><span class="o">((</span><span class="n">e1</span><span class="o">,</span> <span class="n">e2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">Long</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">e2</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">e1</span><span class="o">.</span><span class="na">getValue</span><span class="o">()))</span>
+                <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">entry</span> <span class="o">-&gt;</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">())</span>
+        <span class="o">);</span></code></pre></figure>
 
 <p>This results in the following distribution:</p>
 
