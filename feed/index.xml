@@ -5,9 +5,179 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 31 Dec 2021 09:23:27 +0100</pubDate>
-    <lastBuildDate>Fri, 31 Dec 2021 09:23:27 +0100</lastBuildDate>
+    <pubDate>Fri, 07 Jan 2022 11:26:54 +0100</pubDate>
+    <lastBuildDate>Fri, 07 Jan 2022 11:26:54 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Writing a Wordle bot</title>
+        <description>&lt;p&gt;If you’ve used Twitter during the begining of 2022 you’ll almost certainly have seen people posting tweets like this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nc&quot;&gt;Wordle&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;202&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;⬜⬜⬜⬜🟨&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;🟨⬜⬜⬜⬜&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;🟩🟩🟩🟩🟩&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This is the result of playing the latest viral game “Wordle”. The concept is very easy, you have to guess a 5-letter word each day. For each guess you get the basic “Mastermind” reply, green for the correct character, yellow if it’s in the wrong spot.&lt;/p&gt;
+
+&lt;p&gt;This game was fun, for a couple of days, but my curious mind started to wonder… what are the &lt;em&gt;BEST&lt;/em&gt; words to play?&lt;/p&gt;
+
+&lt;p&gt;So I downloaded a huge list of 5-character words and started playing around with the dataset.&lt;/p&gt;
+
+&lt;h1 id=&quot;eliminate-by-frequency&quot;&gt;Eliminate by frequency&lt;/h1&gt;
+
+&lt;p&gt;The first thing I tried was to try and eliminate the most frequently used characters first. With 5 guesses we can try and guess the most frequently present letters in the English language.&lt;/p&gt;
+
+&lt;p&gt;To get the frequency of the letters I used the following code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;        &lt;span class=&quot;c1&quot;&gt;// Read all the words:&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Files&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;readAllLines&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;wordle.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Count all the characters frequencies:&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Character&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;frequency&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;flatMapToInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;chars&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mapToObj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;collect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Collectors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;groupingBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+                        &lt;span class=&quot;nc&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;identity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt;
+                        &lt;span class=&quot;nc&quot;&gt;Collectors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;counting&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Sort the characters by frequency:&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Character&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;frequency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;entrySet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compare&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Print:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Entry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Character&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()))+&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot; &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This results in the following distribution:&lt;/p&gt;
+
+&lt;pre&gt;
+s 6665
+e 6662
+a 5990
+o 4438
+r 4158
+i 3759
+l 3371
+t 3295
+n 2952
+u 2511
+d 2453
+y 2074
+c 2028
+p 2019
+m 1976
+h 1760
+g 1644
+b 1627
+k 1505
+... (etc)
+&lt;/pre&gt;
+
+&lt;p&gt;Using some simple code it’s easy to find &lt;em&gt;pretty good&lt;/em&gt; words to start with, for example:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;laser -&amp;gt; tonic -&amp;gt; dumpy&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;These &lt;strong&gt;three&lt;/strong&gt; guesses will tell you information about the 15 most common characters in all of the 5-letter words. This is “a” strategy, but it’s far from perfect. We can do much better!&lt;/p&gt;
+
+&lt;h1 id=&quot;most-information-per-guess&quot;&gt;Most information per guess&lt;/h1&gt;
+
+&lt;p&gt;Each time we guess a word, we get a reply back, it can be something like “⬜⬜⬜⬜⬜” or “🟨⬜⬜🟩🟨”. What we want to do is &lt;em&gt;optimize&lt;/em&gt; for the information we’re getting in return. Each guess we do should eliminate most options.&lt;/p&gt;
+
+&lt;p&gt;If we go over the entire list of words, and compare all the replies we could get back against all other words, we get a distribution of the returned patterns.&lt;/p&gt;
+
+&lt;p&gt;I’ve decided to write some code to do this. For example if we pick the word &lt;code class=&quot;highlighter-rouge&quot;&gt;smile&lt;/code&gt;, these patterns can be returned:&lt;/p&gt;
+
+&lt;pre&gt;
+🟨⬜⬜⬜⬜: 1464 ⬜⬜⬜⬜⬜: 1352 ⬜⬜⬜⬜🟨: 1122 🟨⬜⬜⬜🟨:  967 ⬜⬜🟨⬜⬜:  690 ⬜⬜⬜🟨⬜:  610 
+⬜⬜⬜⬜🟩:  504 🟨⬜🟨⬜⬜:  468 🟩⬜⬜⬜⬜:  467 ⬜🟨⬜⬜⬜:  417 🟨⬜⬜🟨⬜:  263 🟩⬜⬜⬜🟨:  252 
+⬜⬜🟨⬜🟨:  251 ⬜⬜🟩⬜⬜:  196 🟨🟨⬜⬜⬜:  191 🟨⬜🟩⬜⬜:  187 ⬜⬜⬜🟨🟨:  183 ⬜⬜🟨🟨⬜:  154 
+⬜🟨⬜⬜🟨:  154 🟨⬜🟨⬜🟨:  147 🟨⬜⬜⬜🟩:  136 ⬜⬜🟨⬜🟩:  136 ⬜⬜⬜🟩⬜:  128 🟨⬜⬜🟩⬜:  117 
+⬜🟨🟨⬜⬜:  115 ⬜⬜⬜🟨🟩:  115 🟩⬜🟨⬜⬜:  112 🟩⬜⬜⬜🟩:  109 🟩⬜⬜🟨⬜:  107 ⬜🟨⬜🟨⬜:  106 
+⬜🟨⬜⬜🟩:   99 🟩⬜🟩⬜⬜:   87 ⬜⬜🟩⬜🟩:   82 ⬜⬜⬜🟩🟩:   79 🟩🟨⬜⬜⬜:   63 ⬜⬜🟩🟨⬜:   63 
+🟨⬜⬜🟨🟨:   62 ⬜⬜🟩⬜🟨:   58 🟨🟨⬜⬜🟨:   53 ⬜⬜⬜🟩🟨:   52 🟨⬜⬜🟩🟨:   49 ⬜⬜🟨🟩⬜:   46 
+🟩⬜⬜🟩⬜:   43 🟨⬜🟩⬜🟨:   41 🟩⬜🟨⬜🟨:   41 🟨⬜🟨🟩⬜:   36 ⬜⬜🟩🟩⬜:   35 ⬜🟨🟩⬜⬜:   31 
+🟩⬜🟩⬜🟩:   27 ⬜🟩⬜⬜🟨:   27 🟩⬜⬜🟨🟨:   27 🟨⬜🟩🟩⬜:   25 🟨⬜🟩🟨⬜:   25 ⬜🟨⬜🟩⬜:   23 
+🟩⬜⬜🟩🟨:   20 🟨🟩⬜⬜⬜:   20 🟨⬜🟩⬜🟩:   19 🟨🟨🟩⬜⬜:   19 ⬜⬜🟨🟨🟩:   18 🟩⬜🟩⬜🟨:   18 
+🟩⬜⬜🟩🟩:   18 🟩🟩⬜⬜⬜:   18 🟩⬜🟨🟨⬜:   17 ⬜⬜🟨🟨🟨:   17 ⬜⬜🟩🟨🟩:   15 ⬜🟩⬜⬜⬜:   15 
+⬜🟩🟨⬜⬜:   15 ⬜⬜🟩🟩🟩:   14 🟩⬜⬜🟨🟩:   14 🟩⬜🟩🟩⬜:   13 🟩⬜🟩🟨⬜:   13 ⬜🟨🟩⬜🟩:   13 
+🟩🟨⬜⬜🟨:   13 🟩🟨🟩⬜⬜:   12 ⬜⬜🟨🟩🟩:   12 🟨🟨⬜🟨⬜:   11 ⬜🟩🟩⬜⬜:   11 ⬜🟩⬜⬜🟩:   11 
+⬜🟨🟨⬜🟩:   10 🟩🟨🟨⬜⬜:   10 🟨🟩🟩⬜⬜:   10 ⬜🟨⬜🟩🟩:    9 🟨⬜🟨⬜🟩:    9 🟨⬜⬜🟨🟩:    9 
+🟩⬜🟨⬜🟩:    8 🟩🟨⬜⬜🟩:    7 🟨⬜🟨🟨⬜:    7 ⬜🟨🟨🟨⬜:    7 🟨🟨🟨⬜⬜:    7 🟨⬜🟩🟩🟨:    6 
+🟩⬜🟨🟩⬜:    6 ⬜🟩🟩⬜🟩:    5 🟩🟩⬜⬜🟨:    5 ⬜🟩⬜🟩🟩:    5 🟩🟩⬜⬜🟩:    5 🟨🟩⬜⬜🟨:    5 
+🟩🟩🟩⬜⬜:    5 ⬜🟨⬜🟨🟩:    4 🟨⬜⬜🟩🟩:    4 ⬜🟩🟨⬜🟨:    4 🟩🟩⬜🟩⬜:    4 🟨🟨⬜⬜🟩:    4 
+🟩⬜🟩🟨🟩:    4 ⬜🟩🟨⬜🟩:    3 ⬜🟩⬜🟨⬜:    3 🟩🟨⬜🟨⬜:    3 🟩⬜🟩🟩🟩:    3 ⬜🟨🟩🟩🟩:    2 
+🟩🟨🟩⬜🟩:    2 🟨⬜🟨🟩🟩:    2 ⬜⬜🟩🟩🟨:    2 🟩🟩🟨⬜⬜:    2 🟩🟩⬜🟩🟨:    2 🟨🟩🟨⬜⬜:    2 
+⬜🟩⬜🟩⬜:    2 ⬜⬜🟩🟨🟨:    2 🟩🟨⬜🟩⬜:    2 ⬜🟨⬜🟩🟨:    1 ⬜🟩🟨🟨🟨:    1 ⬜🟨🟨⬜🟨:    1 
+🟩⬜🟨🟩🟩:    1 ⬜🟨⬜🟨🟨:    1 🟩🟨🟨⬜🟩:    1 ⬜🟨🟨🟩⬜:    1 🟨🟩⬜🟨⬜:    1 🟩🟩🟩🟩🟩:    1 
+🟨🟩⬜⬜🟩:    1 🟩🟨⬜🟩🟨:    1 ⬜⬜🟨🟩🟨:    1 🟩🟩🟩⬜🟩:    1 🟨🟩⬜🟩⬜:    1 🟨⬜🟩🟩🟩:    1 
+🟨🟩🟩⬜🟨:    1 ⬜🟩🟨🟩⬜:    1 🟨🟨⬜🟩⬜:    1 ⬜🟨🟩🟩⬜:    1 🟩⬜🟩🟩🟨:    1 ⬜🟩🟨🟨⬜:    1 
+&lt;/pre&gt;
+
+&lt;p&gt;This means that, if we pick &lt;code class=&quot;highlighter-rouge&quot;&gt;smile&lt;/code&gt;, we can get &lt;strong&gt;138&lt;/strong&gt; different resulting patterns. The largest group we’re left with contains &lt;strong&gt;1464&lt;/strong&gt; words. So by guessing this single word, we can eliminate most words.&lt;/p&gt;
+
+&lt;p&gt;If we do this for &lt;em&gt;all&lt;/em&gt; the words, my algorithm gives back that &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt; is &lt;em&gt;the&lt;/em&gt; absolute best first word. This word returns 176 different patterns and the &lt;em&gt;worst&lt;/em&gt; case is that we have 858 words left after the initial guess.&lt;/p&gt;
+
+&lt;h2 id=&quot;after-tares-repeat&quot;&gt;After &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt;, repeat.&lt;/h2&gt;
+
+&lt;p&gt;After our first guess, we just continue with the following guesses. We calculate which words are still left and we go over &lt;strong&gt;all&lt;/strong&gt; the words to find the one that gives us most &lt;em&gt;information&lt;/em&gt; about the target word. Also: Don’t limit yourself to using/guessing just the possible words. For example look at the following case:&lt;/p&gt;
+
+&lt;p&gt;We have done the following guesses:&lt;/p&gt;
+
+&lt;pre&gt;
+tares: 🟨⬜⬜⬜⬜
+pilot: ⬜🟩⬜⬜🟨
+dunsh: ⬜⬜⬜⬜🟩
+&lt;/pre&gt;
+
+&lt;p&gt;There are now still eight possible words:&lt;/p&gt;
+
+&lt;pre&gt;
+hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
+&lt;/pre&gt;
+
+&lt;p&gt;Instead of guessing one of these words, often getting just a single piece of information… it’s much better to guess the word &lt;code class=&quot;highlighter-rouge&quot;&gt;awful&lt;/code&gt;. This guess splits the possible words into &lt;strong&gt;5&lt;/strong&gt; groups:&lt;/p&gt;
+
+&lt;pre&gt;
+🟩⬜⬜⬜⬜: aitch
+⬜🟨⬜⬜⬜: witch
+⬜⬜🟩⬜⬜: fifth
+⬜⬜🟨⬜⬜: fitch
+⬜⬜⬜⬜⬜: hitch, bitch, gitch, mitch
+&lt;/pre&gt;
+
+&lt;p&gt;If we get ⬜🟨⬜⬜⬜ in return we can conclude that the only option left to guess is &lt;code class=&quot;highlighter-rouge&quot;&gt;witch&lt;/code&gt; and we’re done 🟩🟩🟩🟩🟩.&lt;/p&gt;
+
+&lt;p&gt;This algorithm allows me to solve almost all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. Perhaps &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt; is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?&lt;/p&gt;
+
+&lt;p&gt;I haven’t tried to figure this out… but perhaps you will? What other algorithms can we come up with?&lt;/p&gt;
+
+&lt;h1 id=&quot;bot-tournament&quot;&gt;Bot tournament…?&lt;/h1&gt;
+
+&lt;p&gt;Perhaps we can host a tournament where we have bots playing &lt;em&gt;Wordle&lt;/em&gt;, taking turns solving and giving the opponent a next word to solve. We can even make the bots smart enough to recognise and counter certain words and/or tactics.&lt;/p&gt;
+
+&lt;p&gt;Sounds fun :)&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 07 Jan 2022 08:01:25 +0100</pubDate>
+        <link>https://royvanrijn.com/blog/2022/01/wordle-bot/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2022/01/wordle-bot/</guid>
+        
+        <category>java</category>
+        
+        <category>wordle</category>
+        
+        <category>puzzle</category>
+        
+        <category>algorithm</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Divide by three using shift and add</title>
@@ -1313,130 +1483,6 @@ So I switched &lt;code class=&quot;highlighter-rouge&quot;&gt;at least 14&lt;/co
         <category>SAT</category>
         
         <category>solving</category>
-        
-        
-        <category>Algorithms</category>
-        
-      </item>
-    
-      <item>
-        <title>My worst public speaking experience...</title>
-        <description>&lt;p&gt;Last week I was invited to the &lt;a href=&quot;https://www.rabobank.nl/&quot;&gt;Rabobank&lt;/a&gt; (a Dutch bank), where the bank and the &lt;a href=&quot;https://www.meetup.com/Utrecht-Java-User-Group/&quot;&gt;Utrecht JUG&lt;/a&gt; hosted a small two day conference.&lt;/p&gt;
-
-&lt;p&gt;The first day was about &lt;em&gt;clean code&lt;/em&gt; and the second day was about &lt;em&gt;architecture&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;The main attraction of this conference: &lt;a href=&quot;https://en.wikipedia.org/wiki/Robert_C._Martin&quot;&gt;Robert C. Martin&lt;/a&gt;, also known as &lt;strong&gt;Uncle Bob&lt;/strong&gt;. He is one of the founders of the Agile manifesto and wrote numerous very good books on topics like ‘Clean Code’ and ‘Clean Architecture’. He’s also the main advocate for the &lt;a href=&quot;https://en.wikipedia.org/wiki/SOLID&quot;&gt;SOLID&lt;/a&gt; design principles.&lt;/p&gt;
-
-&lt;p&gt;This presentation of mine… turned out to be my &lt;em&gt;worst&lt;/em&gt; public speaking experience yet.&lt;/p&gt;
-
-&lt;p&gt;One thing I want to make clear though: I absolutely &lt;strong&gt;don’t&lt;/strong&gt; want to discredit the Utrecht JUG or Rabobank in any way, they are doing awesome things for the community. I just want to share my personal experience. Also: Robert C. Martin (Uncle Bob) is a great speaker and writer, his talks are inspirational, entertaining and just very &lt;em&gt;very&lt;/em&gt; good.&lt;/p&gt;
-
-&lt;h1 id=&quot;breakout-sessions&quot;&gt;Breakout sessions&lt;/h1&gt;
-
-&lt;p&gt;I was asked to present one of the breakout session. Those sessions had a rather unique form:&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot; data-lang=&quot;en&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;Two breakouts on one stage. In the green corner &lt;a href=&quot;https://twitter.com/JoostenRosanne?ref_src=twsrc%5Etfw&quot;&gt;@JoostenRosanne&lt;/a&gt; In the red corner &lt;a href=&quot;https://twitter.com/BrianVerm?ref_src=twsrc%5Etfw&quot;&gt;@BrianVerm&lt;/a&gt; at &lt;a href=&quot;https://twitter.com/hashtag/cleancode?src=hash&amp;amp;ref_src=twsrc%5Etfw&quot;&gt;#cleancode&lt;/a&gt; event &lt;a href=&quot;https://twitter.com/Rabobank?ref_src=twsrc%5Etfw&quot;&gt;@rabobank&lt;/a&gt; and &lt;a href=&quot;https://twitter.com/utrechtjug?ref_src=twsrc%5Etfw&quot;&gt;@utrechtjug&lt;/a&gt; &lt;a href=&quot;https://twitter.com/hashtag/unclebobutrecht?src=hash&amp;amp;ref_src=twsrc%5Etfw&quot;&gt;#unclebobutrecht&lt;/a&gt; &lt;a href=&quot;https://t.co/JyIuRbgdJ0&quot;&gt;pic.twitter.com/JyIuRbgdJ0&lt;/a&gt;&lt;/p&gt;&amp;mdash; Utrecht Java User Group (@utrechtjug) &lt;a href=&quot;https://twitter.com/utrechtjug/status/1093488752826245120?ref_src=twsrc%5Etfw&quot;&gt;February 7, 2019&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;Two speakers are presenting &lt;strong&gt;at the same&lt;/strong&gt; time on &lt;strong&gt;the same&lt;/strong&gt; stage. The speakers and the &lt;em&gt;entire&lt;/em&gt; audience had to wear a &lt;a href=&quot;https://en.wikipedia.org/wiki/Silent_disco&quot;&gt;silent disco&lt;/a&gt;-headset. The audience could switch to whichever side they wanted to listen to. Technically this worked perfectly (kudos to the organisers), I have never seen this kind of setup work as well as it did.&lt;/p&gt;
-
-&lt;p&gt;The only other place I’ve seen headsets at a conference was in the overflow room of &lt;a href=&quot;https://javazone.no&quot;&gt;JavaZone&lt;/a&gt;. The overflow room there has a huge screen with all presentations and using a headset you can switch to whichever talk you want, great!&lt;/p&gt;
-
-&lt;p&gt;Initially this setup didn’t scare me, I’m not an anxious person, it sounded novel and quite frankly fun/entertaining! I did ask two fellow presenters whom presented the day before about the setup, they said it was a bit weird at first… but they got used to it.&lt;/p&gt;
-
-&lt;p&gt;Nobody prepared me for what followed though, my worst speaking experience to date (by far).&lt;/p&gt;
-
-&lt;h1 id=&quot;the-fever&quot;&gt;The fever&lt;/h1&gt;
-
-&lt;p&gt;The first complication of the day: &lt;strong&gt;fever&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;I woke up with a splitting headache. My kids had been ill for a couple of days and now it was my turn. Mucus filled sinuses and a bit of fever, I’ll spare the details.&lt;/p&gt;
-
-&lt;p&gt;Surely nothing a couple of painkillers couldn’t solve!&lt;/p&gt;
-
-&lt;h1 id=&quot;the-censorship&quot;&gt;The censorship&lt;/h1&gt;
-
-&lt;p&gt;When I was setting up my laptop before the presentation a colleague of mine made a joke. A joke about his height and the small wall which was being set up on stage. This wall divided the stage into the two parts for the breakout sessions.&lt;/p&gt;
-
-&lt;iframe src=&quot;https://giphy.com/embed/jgsGcrYmUl7q0&quot; width=&quot;480&quot; height=&quot;269&quot; frameborder=&quot;0&quot; class=&quot;giphy-embed&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-
-&lt;p&gt;One of the organisers (again: who did a great job, it isn’t easy to organize such an event, I &lt;em&gt;love&lt;/em&gt; the &lt;a href=&quot;https://www.meetup.com/Utrecht-Java-User-Group/&quot;&gt;Utrecht JUG&lt;/a&gt;s effort!) came to me and gave me a firm and surprising warning:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;“Roy, one thing, I have to warn you: Don’t mention the wall. Don’t mention any wall, not this wall, not the Trump-wall. Don’t even say the word ‘wall’ in your presentation.&lt;/p&gt;
-
-  &lt;p&gt;Don’t mention Trump or guns or anything political please. Just don’t joke about it. This was one of the requirements from Uncle Bob. He is very sensitive and clear about this, no mentions or jokes about his political views, we don’t want to upset him.&lt;/p&gt;
-
-  &lt;p&gt;If you &lt;strong&gt;ignore&lt;/strong&gt; this advice, we’ll switch all the headsets to the other presenter and you are &lt;strong&gt;done&lt;/strong&gt;.”&lt;/p&gt;
-
-&lt;/blockquote&gt;
-
-&lt;p&gt;This… was very suprising to me. Uncle Bob is one of the most outspoken people I have on my Twitter timeline. He often gets into public discussions making his views very clear, engaging in debate, for example:&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot; data-lang=&quot;en&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;I voted for Trump because I thought it was the better of two extremely bad options.  Trump says crazy things.  He’s casual about the truth.  But many of the policies he has enacted have been positive.  I support the good things.  I don’t support the bad.&lt;/p&gt;&amp;mdash; Uncle Bob Martin (@unclebobmartin) &lt;a href=&quot;https://twitter.com/unclebobmartin/status/1008689152878108674?ref_src=twsrc%5Etfw&quot;&gt;June 18, 2018&lt;/a&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;And (surprisingly) this:&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot; data-lang=&quot;en&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;The forces of political censorship that are gathering on the web are a toxin that must be resisted and eradicated with extreme prejudice.&lt;/p&gt;&amp;mdash; Uncle Bob Martin (@unclebobmartin) &lt;a href=&quot;https://twitter.com/unclebobmartin/status/1082993167337746435?ref_src=twsrc%5Etfw&quot;&gt;January 9, 2019&lt;/a&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;I actually wanted to start my talk with a small joke about the wall to break the ice, to point out the irony of having a wall on stage at a conference named after Uncle Bob. Because I’ve seen people attacking him, saying he’s a dumb Trump supporter.&lt;/p&gt;
-
-&lt;p&gt;It turns out other breakout-session presenters got a similar warning before their talk, it was not just me.&lt;/p&gt;
-
-&lt;iframe src=&quot;https://giphy.com/embed/oOTTyHRHj0HYY&quot; width=&quot;480&quot; height=&quot;466&quot; frameborder=&quot;0&quot; class=&quot;giphy-embed&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-
-&lt;h1 id=&quot;the-bubble&quot;&gt;The bubble&lt;/h1&gt;
-
-&lt;p&gt;Finally.&lt;/p&gt;
-
-&lt;p&gt;It was time…&lt;/p&gt;
-
-&lt;p&gt;I put on the headset and microphone and waited behind a closed door. The announcer called out my name and that of other presenter, we both made a grand entrance. Him entering the stage from the left, me from the right. We met in the middle for a friendly handshake and…&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Ready to rumble!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;… silence …&lt;/p&gt;
-
-&lt;iframe src=&quot;https://giphy.com/embed/11R5KYi6ZdP8Z2&quot; width=&quot;480&quot; height=&quot;360&quot; frameborder=&quot;0&quot; class=&quot;giphy-embed&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-
-&lt;p&gt;… just a deafening silence.&lt;/p&gt;
-
-&lt;p&gt;Normally you hear noise, people clap, cheer or laugh or… at least they breath. Now there was one big &lt;em&gt;nothing&lt;/em&gt;. With the headset on I felt so alone, inside my little bubble. It was like recording a webinar or podcast, only my own voice, heavy breathing and my headache. Nothing else.&lt;/p&gt;
-
-&lt;p&gt;This was something I just couldn’t cope with. Whenever I made a joke, nothing, just the echo in my sinuses. 400+ people wearing headphones looking at me apathetically. Some of them (with blue-LED headphones) to the stage next to me, some (with green-LED headphones) looking directly at me… still hearing nothing. There was a complete disconnect with the audience…&lt;/p&gt;
-
-&lt;p&gt;My style of presenting is entirely based around the audience, around instant feedback and interaction. I want the audience to have a good time, to be entertained and learn something new at the same time. I’m not someone that (re-)plays a recording, throwing informantion into a void.&lt;/p&gt;
-
-&lt;p&gt;I just wanted to crawl into a corner and cry.&lt;/p&gt;
-
-&lt;iframe src=&quot;https://giphy.com/embed/qQdL532ZANbjy&quot; width=&quot;480&quot; height=&quot;480&quot; frameborder=&quot;0&quot; class=&quot;giphy-embed&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-
-&lt;h1 id=&quot;the-hangover&quot;&gt;The hangover…&lt;/h1&gt;
-
-&lt;p&gt;I’m still not sure what caused this horrible feeling, maybe it was the censorship, maybe it was the headphones/audience disconnect, maybe it was the fever, my exploding sinuses and the numbing painkillers… probably a combination of all those things.&lt;/p&gt;
-
-&lt;p&gt;It was a &lt;strong&gt;first&lt;/strong&gt; for me in many ways:&lt;/p&gt;
-
-&lt;p&gt;I never did a headphone/silent disco-style presentation… and I’m not sure I want to do this again.&lt;/p&gt;
-
-&lt;p&gt;It was also the first time I experienced censorship at a meetup; being warned that some topics and/or jokes were off the table.&lt;/p&gt;
-
-&lt;p&gt;A couple of friends warned me: “Are you sure you want to connect your name to Uncle Bob, speaking at &lt;em&gt;his&lt;/em&gt; conference”.&lt;/p&gt;
-
-&lt;p&gt;I thought about it back then and accepted the invite: Just because I’m speaking at an event bearing his &lt;em&gt;(nick-)&lt;/em&gt; name doesn’t mean I agree with him or his political/world views. I’m free to have my own view and opinions.&lt;/p&gt;
-
-&lt;p&gt;Now that I know about the weird censorship, I’m not sure I was right.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 11 Feb 2019 08:24:11 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/02/worst-speaking-experience/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/02/worst-speaking-experience/</guid>
-        
-        <category>Java</category>
-        
-        <category>public speaking</category>
-        
-        <category>conference</category>
         
         
         <category>Algorithms</category>

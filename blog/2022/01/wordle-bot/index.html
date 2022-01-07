@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Writing a Wordle bot</title>
+  <meta name="description" content="If you’ve used Twitter during the begining of 2022 you’ll almost certainly have seen people posting tweets like this:Wordle 202 3/6⬜⬜⬜⬜🟨🟨⬜⬜⬜⬜🟩🟩🟩🟩🟩This is the...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,wordle,puzzle,algorithm,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2022/01/wordle-bot/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Writing a Wordle bot" />
+  <meta name="twitter:description" content="If you’ve used Twitter during the begining of 2022 you’ll almost certainly have seen people posting tweets like this:Wordle 202 3/6⬜⬜⬜⬜🟨🟨..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2021/12/divide-by-three/" title="Previous: Divide by three using shift and add">&laquo; Divide by three using shift and add</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2022/01/wordle-bot/" title="Writing a Wordle bot">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Writing a Wordle bot" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2022-01-07T08:01:25+01:00" class="date" />
+        <span itemprop="datePublished" content="2022-01-07T08:01:25+01:00" class="date">
+          Jan 7, 2022 08:01:25
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2022/01/wordle-bot/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">Writing a Wordle bot</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>If you’ve used Twitter during the begining of 2022 you’ll almost certainly have seen people posting tweets like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Wordle</span> <span class="mi">202</span> <span class="mi">3</span><span class="o">/</span><span class="mi">6</span>
+
+<span class="err">⬜⬜⬜⬜🟨</span>
+<span class="err">🟨⬜⬜⬜⬜</span>
+<span class="err">🟩🟩🟩🟩🟩</span></code></pre></figure>
+
+<p>This is the result of playing the latest viral game “Wordle”. The concept is very easy, you have to guess a 5-letter word each day. For each guess you get the basic “Mastermind” reply, green for the correct character, yellow if it’s in the wrong spot.</p>
+
+<p>This game was fun, for a couple of days, but my curious mind started to wonder… what are the <em>BEST</em> words to play?</p>
+
+<p>So I downloaded a huge list of 5-character words and started playing around with the dataset.</p>
+
+<h1 id="eliminate-by-frequency">Eliminate by frequency</h1>
+
+<p>The first thing I tried was to try and eliminate the most frequently used characters first. With 5 guesses we can try and guess the most frequently present letters in the English language.</p>
+
+<p>To get the frequency of the letters I used the following code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">        <span class="c1">// Read all the words:</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">words</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"wordle.txt"</span><span class="o">));</span>
+
+        <span class="c1">// Count all the characters frequencies:</span>
+        <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;</span> <span class="n">frequency</span> <span class="o">=</span> <span class="n">words</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">flatMapToInt</span><span class="o">(</span><span class="n">w</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">.</span><span class="na">chars</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">mapToObj</span><span class="o">(</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="kt">char</span><span class="o">)</span><span class="n">i</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">groupingBy</span><span class="o">(</span>
+                        <span class="nc">Function</span><span class="o">.</span><span class="na">identity</span><span class="o">(),</span>
+                        <span class="nc">Collectors</span><span class="o">.</span><span class="na">counting</span><span class="o">()</span>
+                <span class="o">));</span>
+
+        <span class="c1">// Sort the characters by frequency:</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;&gt;</span> <span class="n">entries</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">frequency</span><span class="o">.</span><span class="na">entrySet</span><span class="o">());</span>
+        <span class="n">entries</span><span class="o">.</span><span class="na">sort</span><span class="o">((</span><span class="n">e1</span><span class="o">,</span> <span class="n">e2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">Long</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">e2</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">e1</span><span class="o">.</span><span class="na">getValue</span><span class="o">()));</span>
+
+        <span class="c1">// Print:</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;</span> <span class="n">e</span> <span class="o">:</span> <span class="n">entries</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(((</span><span class="kt">char</span><span class="o">)((</span><span class="kt">int</span><span class="o">)</span><span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">()))+</span><span class="s">" "</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+        <span class="o">}</span></code></pre></figure>
+
+<p>This results in the following distribution:</p>
+
+<pre>
+s 6665
+e 6662
+a 5990
+o 4438
+r 4158
+i 3759
+l 3371
+t 3295
+n 2952
+u 2511
+d 2453
+y 2074
+c 2028
+p 2019
+m 1976
+h 1760
+g 1644
+b 1627
+k 1505
+... (etc)
+</pre>
+
+<p>Using some simple code it’s easy to find <em>pretty good</em> words to start with, for example:</p>
+
+<p><code class="highlighter-rouge">laser -&gt; tonic -&gt; dumpy</code></p>
+
+<p>These <strong>three</strong> guesses will tell you information about the 15 most common characters in all of the 5-letter words. This is “a” strategy, but it’s far from perfect. We can do much better!</p>
+
+<h1 id="most-information-per-guess">Most information per guess</h1>
+
+<p>Each time we guess a word, we get a reply back, it can be something like “⬜⬜⬜⬜⬜” or “🟨⬜⬜🟩🟨”. What we want to do is <em>optimize</em> for the information we’re getting in return. Each guess we do should eliminate most options.</p>
+
+<p>If we go over the entire list of words, and compare all the replies we could get back against all other words, we get a distribution of the returned patterns.</p>
+
+<p>I’ve decided to write some code to do this. For example if we pick the word <code class="highlighter-rouge">smile</code>, these patterns can be returned:</p>
+
+<pre>
+🟨⬜⬜⬜⬜: 1464 ⬜⬜⬜⬜⬜: 1352 ⬜⬜⬜⬜🟨: 1122 🟨⬜⬜⬜🟨:  967 ⬜⬜🟨⬜⬜:  690 ⬜⬜⬜🟨⬜:  610 
+⬜⬜⬜⬜🟩:  504 🟨⬜🟨⬜⬜:  468 🟩⬜⬜⬜⬜:  467 ⬜🟨⬜⬜⬜:  417 🟨⬜⬜🟨⬜:  263 🟩⬜⬜⬜🟨:  252 
+⬜⬜🟨⬜🟨:  251 ⬜⬜🟩⬜⬜:  196 🟨🟨⬜⬜⬜:  191 🟨⬜🟩⬜⬜:  187 ⬜⬜⬜🟨🟨:  183 ⬜⬜🟨🟨⬜:  154 
+⬜🟨⬜⬜🟨:  154 🟨⬜🟨⬜🟨:  147 🟨⬜⬜⬜🟩:  136 ⬜⬜🟨⬜🟩:  136 ⬜⬜⬜🟩⬜:  128 🟨⬜⬜🟩⬜:  117 
+⬜🟨🟨⬜⬜:  115 ⬜⬜⬜🟨🟩:  115 🟩⬜🟨⬜⬜:  112 🟩⬜⬜⬜🟩:  109 🟩⬜⬜🟨⬜:  107 ⬜🟨⬜🟨⬜:  106 
+⬜🟨⬜⬜🟩:   99 🟩⬜🟩⬜⬜:   87 ⬜⬜🟩⬜🟩:   82 ⬜⬜⬜🟩🟩:   79 🟩🟨⬜⬜⬜:   63 ⬜⬜🟩🟨⬜:   63 
+🟨⬜⬜🟨🟨:   62 ⬜⬜🟩⬜🟨:   58 🟨🟨⬜⬜🟨:   53 ⬜⬜⬜🟩🟨:   52 🟨⬜⬜🟩🟨:   49 ⬜⬜🟨🟩⬜:   46 
+🟩⬜⬜🟩⬜:   43 🟨⬜🟩⬜🟨:   41 🟩⬜🟨⬜🟨:   41 🟨⬜🟨🟩⬜:   36 ⬜⬜🟩🟩⬜:   35 ⬜🟨🟩⬜⬜:   31 
+🟩⬜🟩⬜🟩:   27 ⬜🟩⬜⬜🟨:   27 🟩⬜⬜🟨🟨:   27 🟨⬜🟩🟩⬜:   25 🟨⬜🟩🟨⬜:   25 ⬜🟨⬜🟩⬜:   23 
+🟩⬜⬜🟩🟨:   20 🟨🟩⬜⬜⬜:   20 🟨⬜🟩⬜🟩:   19 🟨🟨🟩⬜⬜:   19 ⬜⬜🟨🟨🟩:   18 🟩⬜🟩⬜🟨:   18 
+🟩⬜⬜🟩🟩:   18 🟩🟩⬜⬜⬜:   18 🟩⬜🟨🟨⬜:   17 ⬜⬜🟨🟨🟨:   17 ⬜⬜🟩🟨🟩:   15 ⬜🟩⬜⬜⬜:   15 
+⬜🟩🟨⬜⬜:   15 ⬜⬜🟩🟩🟩:   14 🟩⬜⬜🟨🟩:   14 🟩⬜🟩🟩⬜:   13 🟩⬜🟩🟨⬜:   13 ⬜🟨🟩⬜🟩:   13 
+🟩🟨⬜⬜🟨:   13 🟩🟨🟩⬜⬜:   12 ⬜⬜🟨🟩🟩:   12 🟨🟨⬜🟨⬜:   11 ⬜🟩🟩⬜⬜:   11 ⬜🟩⬜⬜🟩:   11 
+⬜🟨🟨⬜🟩:   10 🟩🟨🟨⬜⬜:   10 🟨🟩🟩⬜⬜:   10 ⬜🟨⬜🟩🟩:    9 🟨⬜🟨⬜🟩:    9 🟨⬜⬜🟨🟩:    9 
+🟩⬜🟨⬜🟩:    8 🟩🟨⬜⬜🟩:    7 🟨⬜🟨🟨⬜:    7 ⬜🟨🟨🟨⬜:    7 🟨🟨🟨⬜⬜:    7 🟨⬜🟩🟩🟨:    6 
+🟩⬜🟨🟩⬜:    6 ⬜🟩🟩⬜🟩:    5 🟩🟩⬜⬜🟨:    5 ⬜🟩⬜🟩🟩:    5 🟩🟩⬜⬜🟩:    5 🟨🟩⬜⬜🟨:    5 
+🟩🟩🟩⬜⬜:    5 ⬜🟨⬜🟨🟩:    4 🟨⬜⬜🟩🟩:    4 ⬜🟩🟨⬜🟨:    4 🟩🟩⬜🟩⬜:    4 🟨🟨⬜⬜🟩:    4 
+🟩⬜🟩🟨🟩:    4 ⬜🟩🟨⬜🟩:    3 ⬜🟩⬜🟨⬜:    3 🟩🟨⬜🟨⬜:    3 🟩⬜🟩🟩🟩:    3 ⬜🟨🟩🟩🟩:    2 
+🟩🟨🟩⬜🟩:    2 🟨⬜🟨🟩🟩:    2 ⬜⬜🟩🟩🟨:    2 🟩🟩🟨⬜⬜:    2 🟩🟩⬜🟩🟨:    2 🟨🟩🟨⬜⬜:    2 
+⬜🟩⬜🟩⬜:    2 ⬜⬜🟩🟨🟨:    2 🟩🟨⬜🟩⬜:    2 ⬜🟨⬜🟩🟨:    1 ⬜🟩🟨🟨🟨:    1 ⬜🟨🟨⬜🟨:    1 
+🟩⬜🟨🟩🟩:    1 ⬜🟨⬜🟨🟨:    1 🟩🟨🟨⬜🟩:    1 ⬜🟨🟨🟩⬜:    1 🟨🟩⬜🟨⬜:    1 🟩🟩🟩🟩🟩:    1 
+🟨🟩⬜⬜🟩:    1 🟩🟨⬜🟩🟨:    1 ⬜⬜🟨🟩🟨:    1 🟩🟩🟩⬜🟩:    1 🟨🟩⬜🟩⬜:    1 🟨⬜🟩🟩🟩:    1 
+🟨🟩🟩⬜🟨:    1 ⬜🟩🟨🟩⬜:    1 🟨🟨⬜🟩⬜:    1 ⬜🟨🟩🟩⬜:    1 🟩⬜🟩🟩🟨:    1 ⬜🟩🟨🟨⬜:    1 
+</pre>
+
+<p>This means that, if we pick <code class="highlighter-rouge">smile</code>, we can get <strong>138</strong> different resulting patterns. The largest group we’re left with contains <strong>1464</strong> words. So by guessing this single word, we can eliminate most words.</p>
+
+<p>If we do this for <em>all</em> the words, my algorithm gives back that <code class="highlighter-rouge">tares</code> is <em>the</em> absolute best first word. This word returns 176 different patterns and the <em>worst</em> case is that we have 858 words left after the initial guess.</p>
+
+<h2 id="after-tares-repeat">After <code class="highlighter-rouge">tares</code>, repeat.</h2>
+
+<p>After our first guess, we just continue with the following guesses. We calculate which words are still left and we go over <strong>all</strong> the words to find the one that gives us most <em>information</em> about the target word. Also: Don’t limit yourself to using/guessing just the possible words. For example look at the following case:</p>
+
+<p>We have done the following guesses:</p>
+
+<pre>
+tares: 🟨⬜⬜⬜⬜
+pilot: ⬜🟩⬜⬜🟨
+dunsh: ⬜⬜⬜⬜🟩
+</pre>
+
+<p>There are now still eight possible words:</p>
+
+<pre>
+hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
+</pre>
+
+<p>Instead of guessing one of these words, often getting just a single piece of information… it’s much better to guess the word <code class="highlighter-rouge">awful</code>. This guess splits the possible words into <strong>5</strong> groups:</p>
+
+<pre>
+🟩⬜⬜⬜⬜: aitch
+⬜🟨⬜⬜⬜: witch
+⬜⬜🟩⬜⬜: fifth
+⬜⬜🟨⬜⬜: fitch
+⬜⬜⬜⬜⬜: hitch, bitch, gitch, mitch
+</pre>
+
+<p>If we get ⬜🟨⬜⬜⬜ in return we can conclude that the only option left to guess is <code class="highlighter-rouge">witch</code> and we’re done 🟩🟩🟩🟩🟩.</p>
+
+<p>This algorithm allows me to solve almost all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. Perhaps <code class="highlighter-rouge">tares</code> is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?</p>
+
+<p>I haven’t tried to figure this out… but perhaps you will? What other algorithms can we come up with?</p>
+
+<h1 id="bot-tournament">Bot tournament…?</h1>
+
+<p>Perhaps we can host a tournament where we have bots playing <em>Wordle</em>, taking turns solving and giving the opponent a next word to solve. We can even make the bots smart enough to recognise and counter certain words and/or tactics.</p>
+
+<p>Sounds fun :)</p>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2022/01/wordle-bot/";
+      this.page.identifier = "/blog/2022/01/wordle-bot/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
