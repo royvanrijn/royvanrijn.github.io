@@ -162,6 +162,8 @@ Wordle 202 3/6
 
 <p>So I downloaded a huge list of 5-character words and started playing around with the dataset.</p>
 
+<p><strong>Update:</strong> I’ve updated the post using the ‘correct’ Wordle word-list, there are two lists, one with possible secret words, and one list with all words valid for guessing.</p>
+
 <h1 id="eliminate-by-frequency">Eliminate by frequency</h1>
 
 <p>The first thing I tried was to try and eliminate the most frequently used characters first. With 5 guesses we can try and guess the most frequently present letters in the English language.</p>
@@ -252,17 +254,15 @@ k 1505
 🟨🟩🟩⬜🟨:    1 ⬜🟩🟨🟩⬜:    1 🟨🟨⬜🟩⬜:    1 ⬜🟨🟩🟩⬜:    1 🟩⬜🟩🟩🟨:    1 ⬜🟩🟨🟨⬜:    1 
 </pre>
 
-<p>This means that, if we pick <code class="highlighter-rouge">smile</code>, we can get <strong>138</strong> different resulting patterns. The largest group we’re left with contains <strong>1464</strong> words. So by guessing this single word, we can eliminate most words.</p>
+<p>This means that, if we pick <code class="highlighter-rouge">smile</code>, we can get <strong>101</strong> different resulting patterns. The largest group we’re left with contains <strong>316</strong> words. So by guessing this single word, we can eliminate most of the words.</p>
 
-<p>If we do this for <em>all</em> the words, my algorithm gives back that <code class="highlighter-rouge">tares</code> is <em>the</em> absolute best first word. This word returns 176 different patterns and the <em>worst</em> case is that we have 858 words left after the initial guess.</p>
+<p>If we do this for <em>all</em> the words, my algorithm gives back that <code class="highlighter-rouge">raise</code> is <em>the</em> absolute best first word. This word returns 107 different patterns and the <em>worst</em> case is that we have 168 words left after the initial guess.</p>
 
-<p>Another good candidate would be <code class="highlighter-rouge">nares</code>, this splits the words into <em>just</em> 154 groups, but the worst-case is a little bit better, leaving just 823 words.</p>
+<p>Another good candidate would be <code class="highlighter-rouge">slate</code>, this splits the words into <em>more</em> groups: 129. But the worst-case is a little bit worse, leaving just 221 words.</p>
 
-<h2 id="after-tares-repeat">After <code class="highlighter-rouge">tares</code>, repeat.</h2>
+<h2 id="after-raise-repeat">After <code class="highlighter-rouge">raise</code>, repeat.</h2>
 
 <p>After our first guess, we just continue with the following guesses. We calculate which words are still left and we go over <strong>all</strong> the words to find the one that gives us most <em>information</em> about the target word. Also: Don’t limit yourself to using/guessing just the possible words. For example look at the following case:</p>
-
-<p>We have done the following guesses:</p>
 
 <pre>
 tares: 🟨⬜⬜⬜⬜
@@ -288,7 +288,9 @@ hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
 
 <p>If we get ⬜🟨⬜⬜⬜ in return we can conclude that the only option left to guess is <code class="highlighter-rouge">witch</code> and we’re done 🟩🟩🟩🟩🟩.</p>
 
-<p>This algorithm allows me to solve almost all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. Perhaps <code class="highlighter-rouge">tares</code> is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?</p>
+<p>This algorithm allows me to solve all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. It should be possible to extend this, build a tree and check the depth.</p>
+
+<p>Perhaps <code class="highlighter-rouge">raise</code> is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?</p>
 
 <p>I haven’t tried to figure this out… but perhaps you will? What other algorithms can we come up with?</p>
 

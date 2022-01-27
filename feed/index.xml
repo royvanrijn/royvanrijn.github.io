@@ -5,8 +5,8 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 07 Jan 2022 11:55:00 +0100</pubDate>
-    <lastBuildDate>Fri, 07 Jan 2022 11:55:00 +0100</lastBuildDate>
+    <pubDate>Thu, 27 Jan 2022 10:36:17 +0100</pubDate>
+    <lastBuildDate>Thu, 27 Jan 2022 10:36:17 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -26,6 +26,8 @@ Wordle 202 3/6
 &lt;p&gt;This game was fun, for a couple of days, but my curious mind started to wonder… what are the &lt;em&gt;BEST&lt;/em&gt; words to play?&lt;/p&gt;
 
 &lt;p&gt;So I downloaded a huge list of 5-character words and started playing around with the dataset.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; I’ve updated the post using the ‘correct’ Wordle word-list, there are two lists, one with possible secret words, and one list with all words valid for guessing.&lt;/p&gt;
 
 &lt;h1 id=&quot;eliminate-by-frequency&quot;&gt;Eliminate by frequency&lt;/h1&gt;
 
@@ -117,17 +119,15 @@ k 1505
 🟨🟩🟩⬜🟨:    1 ⬜🟩🟨🟩⬜:    1 🟨🟨⬜🟩⬜:    1 ⬜🟨🟩🟩⬜:    1 🟩⬜🟩🟩🟨:    1 ⬜🟩🟨🟨⬜:    1 
 &lt;/pre&gt;
 
-&lt;p&gt;This means that, if we pick &lt;code class=&quot;highlighter-rouge&quot;&gt;smile&lt;/code&gt;, we can get &lt;strong&gt;138&lt;/strong&gt; different resulting patterns. The largest group we’re left with contains &lt;strong&gt;1464&lt;/strong&gt; words. So by guessing this single word, we can eliminate most words.&lt;/p&gt;
+&lt;p&gt;This means that, if we pick &lt;code class=&quot;highlighter-rouge&quot;&gt;smile&lt;/code&gt;, we can get &lt;strong&gt;101&lt;/strong&gt; different resulting patterns. The largest group we’re left with contains &lt;strong&gt;316&lt;/strong&gt; words. So by guessing this single word, we can eliminate most of the words.&lt;/p&gt;
 
-&lt;p&gt;If we do this for &lt;em&gt;all&lt;/em&gt; the words, my algorithm gives back that &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt; is &lt;em&gt;the&lt;/em&gt; absolute best first word. This word returns 176 different patterns and the &lt;em&gt;worst&lt;/em&gt; case is that we have 858 words left after the initial guess.&lt;/p&gt;
+&lt;p&gt;If we do this for &lt;em&gt;all&lt;/em&gt; the words, my algorithm gives back that &lt;code class=&quot;highlighter-rouge&quot;&gt;raise&lt;/code&gt; is &lt;em&gt;the&lt;/em&gt; absolute best first word. This word returns 107 different patterns and the &lt;em&gt;worst&lt;/em&gt; case is that we have 168 words left after the initial guess.&lt;/p&gt;
 
-&lt;p&gt;Another good candidate would be &lt;code class=&quot;highlighter-rouge&quot;&gt;nares&lt;/code&gt;, this splits the words into &lt;em&gt;just&lt;/em&gt; 154 groups, but the worst-case is a little bit better, leaving just 823 words.&lt;/p&gt;
+&lt;p&gt;Another good candidate would be &lt;code class=&quot;highlighter-rouge&quot;&gt;slate&lt;/code&gt;, this splits the words into &lt;em&gt;more&lt;/em&gt; groups: 129. But the worst-case is a little bit worse, leaving just 221 words.&lt;/p&gt;
 
-&lt;h2 id=&quot;after-tares-repeat&quot;&gt;After &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt;, repeat.&lt;/h2&gt;
+&lt;h2 id=&quot;after-raise-repeat&quot;&gt;After &lt;code class=&quot;highlighter-rouge&quot;&gt;raise&lt;/code&gt;, repeat.&lt;/h2&gt;
 
 &lt;p&gt;After our first guess, we just continue with the following guesses. We calculate which words are still left and we go over &lt;strong&gt;all&lt;/strong&gt; the words to find the one that gives us most &lt;em&gt;information&lt;/em&gt; about the target word. Also: Don’t limit yourself to using/guessing just the possible words. For example look at the following case:&lt;/p&gt;
-
-&lt;p&gt;We have done the following guesses:&lt;/p&gt;
 
 &lt;pre&gt;
 tares: 🟨⬜⬜⬜⬜
@@ -153,7 +153,9 @@ hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
 
 &lt;p&gt;If we get ⬜🟨⬜⬜⬜ in return we can conclude that the only option left to guess is &lt;code class=&quot;highlighter-rouge&quot;&gt;witch&lt;/code&gt; and we’re done 🟩🟩🟩🟩🟩.&lt;/p&gt;
 
-&lt;p&gt;This algorithm allows me to solve almost all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. Perhaps &lt;code class=&quot;highlighter-rouge&quot;&gt;tares&lt;/code&gt; is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?&lt;/p&gt;
+&lt;p&gt;This algorithm allows me to solve all words within the given 6 tries you get with Wordle. For a single move I think this algorithm is optimal. However, we might be able to do better if we consider multiple moves into the future. It should be possible to extend this, build a tree and check the depth.&lt;/p&gt;
+
+&lt;p&gt;Perhaps &lt;code class=&quot;highlighter-rouge&quot;&gt;raise&lt;/code&gt; is great for a single move, eliminating a lot of options, but what if the largest (worst-case) group is very hard to break up after that?&lt;/p&gt;
 
 &lt;p&gt;I haven’t tried to figure this out… but perhaps you will? What other algorithms can we come up with?&lt;/p&gt;
 
