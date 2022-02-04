@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="yes"?>
+<jnlp spec="1.5+" xmlns="http://www.w3.org/1999/xhtml" codebase="" href="sasportal.jnlp">
+    <information>
+       <title>MyApplet-Title</title>
+       <vendor>vendorname</vendor> 
+       <description>text</description>
+       <homepage href="https://sasportal/sas_goes_web_statisch/"></homepage> 
+       <offline-allowed />
+    </information>
+    <resources>
+       <j2se version="1.2+"></j2se>
+       <jar href="https://sasportal/sas_goes_web_statisch/dibeisabase.jar" main="true"></jar>
+       <jar href="https://sasportal/sas_goes_web_statisch/dibeisaapplet.jar"/>
+       <jar href="https://sasportal/sas_goes_web_statisch/dibeisashared.jar"/>
+       <jar href="https://sasportal/sas_goes_web_statisch/jcchart450K.jar"/>
+       <jar href="https://sasportal/sas_goes_web_statisch/xmlrpc.jar"/>
+       <jar href="https://sasportal/sas_goes_web_statisch/jdom.jar"/>
+    </resources>
+    <security>
+       <sandbox/> 
+    </security> 
+    <applet-desc
+      name="DibEisaApplet" main-class="de.indal.dibeisa.DibEisaApplet"
+      width="300" height="200">
+     <param name="JAVA_CODE" value="de.indal.dibeisa.DibEisaApplet.class"/>
+     <param name="CACHE_OPTION" value="Plugin"/>
+     <param name="CACHE_ARCHIVE" value="dibeisabase.jar,dibeisaapplet.jar,dibeisashared.jar,jcchart450K.jar,xmlrpc.jar,jdom.jar"/>
+     <param name="CACHE_VERSION" value="1.0.0.28,1.0.0.28,1.0.0.28,1.0.0.28,1.0.0.28,1.0.0.28"/>
+     <param name="type" value="application/x-java-applet;version=1.3"/>
+     <param name="CODEBASE" value="/sas_goes_web_statisch"/>
+     <param name="ID" value="A1C76E42293BB19EF12C2D33210C9B11275973C9X27398397E978311"/>
+    </applet-desc>
+</jnlp>
