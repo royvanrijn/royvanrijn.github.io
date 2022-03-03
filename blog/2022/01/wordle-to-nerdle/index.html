@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>From Wordle to Nerdle</title>
+  <meta name="description" content="About two months ago I wrote a blogpost about what strategies you could use to solve Wordle in the most efficient way. In the end I wrote a program that look...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,java,nerdle,wordle,puzzle,algorithm,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2022/01/wordle-to-nerdle/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="From Wordle to Nerdle" />
+  <meta name="twitter:description" content="About two months ago I wrote a blogpost about what strategies you could use to solve Wordle in the most efficient way. In the end I wrote..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2022/01/wordle-bot/" title="Previous: An algorithm for Wordle">&laquo; An algorithm for Wordle</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2022/01/wordle-to-nerdle/" title="From Wordle to Nerdle">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="From Wordle to Nerdle" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2022-01-07T08:01:25+01:00" class="date" />
+        <span itemprop="datePublished" content="2022-01-07T08:01:25+01:00" class="date">
+          Jan 7, 2022 08:01:25
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2022/01/wordle-to-nerdle/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">From Wordle to Nerdle</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>About two months ago I wrote a <a href="/blog/2022/01/wordle-bot/">blogpost</a> about what strategies you could use to solve Wordle in the most efficient way. In the end I wrote a program that looks ahead a single guess and finds the word that gives you the most information.</p>
+
+<p>Some people have taken this a step further and made videos like this:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/fRed0Xmc2Wg&amp;t=445s?title=0&amp;byline=0&amp;portrait=0"></iframe>
+
+<p>The main hype around Wordle (and all of the clones), seems to have settled down now.</p>
+
+<h2 id="nerdle">Nerdle</h2>
+
+<p>One clone I really enjoyed playing the last couple of weeks has been <a href="https://nerdlegame.com/">Nerdle</a>. In the game Nerdle all your guesses need to be a valid mathematical calculation. For example: <code class="highlighter-rouge">31 + 56 = 87</code>.</p>
+
+<p><img src="/images/nerdle_gameplay.png" alt="Nerdle gameplay screenshot" /></p>
+
+<p>In this game, you can’t just write down anything, each and every try needs to be a valid calculation.</p>
+
+<h3 id="generating-the-guesses">Generating the guesses</h3>
+
+<p>Yesterday, when I had a bit of time with a colleague, we set about trying to adapt the Wordle-bot into a Nerdle-bot. In theory this would be extremely easy, the only hard part is getting a valid “wordlist”.</p>
+
+<p>When I created the Wordle bot, I just downloaded a list of all valid Wordle words. But in this case I set myself the challenge to create all the valid guesses from scratch.</p>
+
+<h3 id="patterns">Patterns</h3>
+
+<p>First, let’s look at some of the rules. There are 8 characters you can fill, and the final part will always be:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">=N</code> with N is a single digit number between 0-9</li>
+  <li><code class="highlighter-rouge">=NN</code> with NN being between 10 and 99; or</li>
+  <li><code class="highlighter-rouge">=NNN</code> with NNN being between 100 and 999</li>
+</ul>
+
+<p>It’s easy to generate all those options. However: the part before that is a little bit harder.</p>
+
+<p>Calculations can, because of the limited size, be just one of two patterns (of various sizes):
+<code class="highlighter-rouge">Value1 Operator Value2</code> or <code class="highlighter-rouge">Value1 Operator Value2 Operator Value3</code></p>
+
+<p>For example <code class="highlighter-rouge">12+34=46</code> or <code class="highlighter-rouge">10/2+1=6</code></p>
+
+<p>These patterns are build up from left to right, starting first with a single digit number, appending the first operator, etc, until we have all valid 4, 5 or 6-character calculations.</p>
+
+<p>Now obviously, the tricky part is that we need to evaluate all these calculations and check if the result fits in the amount of characters we have left, for example <code class="highlighter-rouge">=NN</code>! This code isn’t pretty… at all, even though I tried to make it generic. I won’t share it haha.</p>
+
+<h3 id="bugsproblems">Bugs/problems</h3>
+
+<p>I quickly ran into the first big obstacle: How do you calculate the result of something like <code class="highlighter-rouge">1+10/2</code>? You’ll first need to evaluate <code class="highlighter-rouge">10/2</code>, store the result, and finally do <code class="highlighter-rouge">1+5</code> and check if <code class="highlighter-rouge">=6</code> fits (which it does).</p>
+
+<p>After writing some code and making sure we always evaluate in the correct order in case of <code class="highlighter-rouge">Value1 Operator Value2 Operator Value3</code> I thought we were done. It showed me there are about 13k valid guesses. And this was wrong.</p>
+
+<p>The first bug I encountered was silly. I falsely put in a rule that no result can be zero. But in some cases zero’s are allowed, for example ending with <code class="highlighter-rouge">=0</code>. After fixing this bug I found out I was still missing some valid guesses.</p>
+
+<p>After diff-ing my list with a list I found online I noticed I was missing things like: <code class="highlighter-rouge">9/6*8=12</code></p>
+
+<p>Because Nerdle doesn’t handle fractions, I thought that the divides should never have remainders. Thus I marked <code class="highlighter-rouge">9/6</code> invalid because it doesn’t evenly divide. However… we are multiplying afterwards (!) so the <em>actual</em> result (12) <strong>IS</strong> a valid guess for Nerdle.</p>
+
+<h3 id="results">Results</h3>
+
+<p>After fixing all the bugs I had a complete list of all valid Nerdle guesses, and here are some stats:</p>
+
+<p>There are 17723 valid Nerdle answers</p>
+<ul>
+  <li>6839 of which contain a <code class="highlighter-rouge">+</code></li>
+  <li>7810 of which contain a <code class="highlighter-rouge">-</code></li>
+  <li>5574 of which contain a <code class="highlighter-rouge">*</code></li>
+  <li>4024 of which contain a <code class="highlighter-rouge">/</code></li>
+  <li>8607 of which contain two math operators</li>
+  <li>5890 end with <code class="highlighter-rouge">=N</code></li>
+  <li>10515 end with <code class="highlighter-rouge">=NN</code></li>
+  <li>1318 of which end with <code class="highlighter-rouge">=NNN</code></li>
+</ul>
+
+<p>And when I fired up the Wordle-checker, my code thinks the best start is:
+<code class="highlighter-rouge">49-37=12</code></p>
+
+<p>Other great starters are:
+<code class="highlighter-rouge">39-24=15</code>
+<code class="highlighter-rouge">34+27=61</code>
+<code class="highlighter-rouge">9+8/2=13</code>
+<code class="highlighter-rouge">7+8-13=2</code></p>
+
+<p>After writing the bot I’ve tried it against the last three Nerdle challenges, and each game was solved after just three guesses!</p>
+
+<p>For example yesterday the bot calculated the following guesses:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>49-37=12 : ⬛⬛🟩🟪🟪🟪🟪⬛
+31+56=87 : 🟪🟩⬛⬛⬛🟪⬛🟩
+</code></pre></div></div>
+
+<p>After just these two guesses there is only <strong>ONE</strong> valid guess left: <code class="highlighter-rouge">11-1-3=7</code>: 🟩🟩🟩🟩🟩🟩🟩🟩</p>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2022/01/wordle-to-nerdle/";
+      this.page.identifier = "/blog/2022/01/wordle-to-nerdle/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
