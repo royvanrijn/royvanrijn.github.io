@@ -48,6 +48,8 @@
   }());
 
   </script>
+
+  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
   
 </head>
 
@@ -114,6 +116,74 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2010/07/patent-infringement/" title="Patent infringement">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent infringement" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2010-07-07T22:15:34+02:00" class="date" />
+          <span itemprop="datePublished" content="2010-07-07T22:15:34+02:00" class="date">
+            Jul 7, 2010 22:15:34
+          </span>
+          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/07/patent-infringement/">Patent infringement</a></h1>
+
+        <span itemprop="articleBody">
+          
+            <p>Some time ago I received the following email about <a href="/blog/2010/06/creating-shazam-in-java/">this</a> project.</p>
+
+<blockquote>
+
+  <p>-–<br />
+Mr. van Rijn,</p>
+
+  <p>I am Darren Briggs, the Chief Technical Officer of Landmark Digital Services, LLC. Landmark Digital Services owns the patents that cover the algorithm used as the basis for your recently posted “<a href="/blog/2010/06/creating-shazam-in-java/">Creating Shazam In Java</a>”. While it is not Landmark’s intention to alienate those in the Open Source and Music Information Retrieval community, Landmark must request that you do not ship, deploy or post the code presented in your post. Landmark also requests that in the future you do not ship, deploy or post any portions or versions of this code in its current state or in any modified state.</p>
+
+  <p>We hope you understand our position and that we would be legally remiss not to make this request. We appreciate your immediate attention and response.</p>
+
+  <p>Best regards,</p>
+
+  <p>Darren P. Briggs<br />
+Vice President &amp;<br />
+Chief Technical Officer<br />
+Landmark Digital Services, LLC<br />
+-–</p>
+
+</blockquote>
+
+<p>This scared me a bit, why are they emailing me? I’ve written some code (100% my own) and implemented my own methods for matching music. There are some key differences with the algorithm Shazam uses.</p>
+
+
+          
+
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2010/07/patent-infringement/">Read more...</a></p>
+        
+
+        <p class="post-meta">
+          <a class="post-comments" href="https://royvanrijn.com/blog/2010/07/patent-infringement/#disqus_thread">0 comments</a>
+        </p>
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -829,51 +899,6 @@
 
         <p class="post-meta">
           <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/inversion_of_logic/" title="Cleaner code: Inversion of logic">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Cleaner code: Inversion of logic" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-11T10:14:10+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-11T10:14:10+01:00" class="date">
-            Dec 11, 2009 10:14:10
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/inversion_of_logic/">Cleaner code: Inversion of logic</a></h1>
-
-        <span itemprop="articleBody">
-          
-
-          
-            <h1 id="design-patterns">Design patterns</h1> <p>Almost all programmers have heard about and used <a href="http://en.wikipedia.org/wiki/Design_pattern_%28computer_science%29">design patterns</a>. And there are a <em>lot</em> of them. Famous design patterns include the Singleton, Observer, Template method. These are all patterns that focus on objects and the relationship between them.</p> <p>There are more groups of patterns, for example take <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> (or Inversion of Control). This is an architectural pattern. They tell you things about the design of the whole program. And there are specific pattern groups, like <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a>.</p> <p>These patterns help you solve common problems in a well defined way, other programmers will...
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2009/12/inversion_of_logic/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
         </p>
       </div>
     </div>

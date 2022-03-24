@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>All The Music: the Megamix</title>
+  <meta name="description" content="Or a clickbait title:  How I became the world’s most prolific DJ in the world.This week I stumbled across a cool project: All The Music.Damien Riehl (program...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,pi,piday,algorithm,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2022/03/all-the-music-megamix/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="All The Music: the Megamix" />
+  <meta name="twitter:description" content="Or a clickbait title:  How I became the world’s most prolific DJ in the world.This week I stumbled across a cool project: All The Music.D..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  <!-- Disqus Comment Count -->
+  var disqus_shortname = 'royvanrijn';
+  (function () {
+  var s = document.createElement('script'); s.async = true;
+  s.type = 'text/javascript';
+  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  }());
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2022/03/pi-day-2022/" title="Previous: Roadtrip to Ludolph van Ceulen">&laquo; Roadtrip to Ludolph van Ceulen</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2022/03/all-the-music-megamix/" title="All The Music: the Megamix">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="All The Music: the Megamix" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2022-03-14T03:14:15+01:00" class="date" />
+        <span itemprop="datePublished" content="2022-03-14T03:14:15+01:00" class="date">
+          Mar 14, 2022 03:14:15
+        </span>
+        : <a class="post-comments" href="https://royvanrijn.com/blog/2022/03/all-the-music-megamix/#disqus_thread">0 comments</a>
+      </p>
+      <h1 itemprop="headline" class="post-title">All The Music: the Megamix</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>Or a clickbait title:</p>
+
+<blockquote>
+  <p>How I became the world’s most prolific DJ in the world.</p>
+</blockquote>
+
+<p>This week I stumbled across a cool project: <a href="http://allthemusic.info/">All The Music</a>.</p>
+
+<p>Damien Riehl (programmer/copyright attorney) and Noah Rubin (programmer) decided to generate <strong>all possible songs</strong> with the basic 8 major notes (C4,D4,E4,F4,G4,A4,B4 and C5) with length 12. All these songs have been ‘freely’ released under the ‘Creative Commons’ license. Their goal is to stop copyright claims on melodies.</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/sJtm0MoOgiU?title=0&amp;byline=0&amp;portrait=0"></iframe>
+
+<p>While watching their excellent TED talk and hearing about the challenges they had to generate these songs, my head instantly made some connections. They generated <strong>all</strong> songs of length <code class="highlighter-rouge">n=12</code> with <code class="highlighter-rouge">k=8</code> notes, this amounts to a staggering <code class="highlighter-rouge">n^k = 8^12 = 68,719,476,736</code> unique songs.</p>
+
+<p>All these songs are 12 notes long and have their own MIDI file which adds even more overhead. The size of this dataset is <strong>huge</strong>, 1.2TB compressed using GZIP.</p>
+
+<h1 id="using-a-de-bruijn-sequence">Using a de Bruijn sequence</h1>
+
+<p>This is when I got an idea: perhaps we can use a <a href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">de Bruijn sequence</a> for this?</p>
+
+<p>I’ve blogged about those sequences before, basically it is an optimal way to arrange these N elements into a single sequence so that each and every combination of K-length is present in the sequence.</p>
+
+<p>For example if we have all combinations of <code class="highlighter-rouge">0,1,2</code> of length <code class="highlighter-rouge">4</code> the naïve way would be to do it:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0000
+0001
+0002
+0010
+0011
+0012 (etc)
+</code></pre></div></div>
+
+<p>Instead when creating a de Bruijn we have:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>000012200210002212021211212222011221022211012101001011112001102111002012010202202[000]
+</code></pre></div></div>
+
+<p>Every possible 4-length combination/permutation is present in this single line (check them!).</p>
+
+<p>What if we could <em>remix</em> <strong>every</strong> possible 12 note melody into one huge megamix!?</p>
+
+<p>That would mean I’m mathematically the world’s best DJ, remixing almost all existing songs including <em>EVERY</em> song from the <a href="http://allthemusic.info/">All The Music</a> dataset into <strong>one</strong> song.</p>
+
+<h1 id="setting-to-work">Setting to work</h1>
+
+<p>I already have some very efficient code to generate these sequences. What if I output the sequence as a single MIDI file?</p>
+
+<p>Because a de Bruijn sequence usually wraps around, if we want to create all <code class="highlighter-rouge">n=12</code> length melodies we’ll need to append the first <code class="highlighter-rouge">n-1</code> notes to the <strong>end</strong> of the sequence (which I’ve done above as well). This means we’ll need just a single MIDI file with <code class="highlighter-rouge">68,719,476,747</code> unique notes in it.</p>
+
+<p>This gave me a <em>tiny</em> problem: a MIDI file has a ‘LENGTH’ field stored in just 4-bytes. And <code class="highlighter-rouge">2^32</code> is <em>only</em> <code class="highlighter-rouge">4,294,967,295</code>. So we’ve hit a technical problem, we can’t fit our remix into a single MIDI file.</p>
+
+<p>To solve this I decided to cut the single song up into a collection of ‘smaller’ more managable songs. In the end I settled on <code class="highlighter-rouge">2052</code> unique songs that create one huge megamix album. On this album is every single song possible with notes C4,D4,E4,F4,G4,A4,B4 and C5 of length 12. The same as is contained in the ATM’s dataset.</p>
+
+<p>When breaking up a de Bruijn sequence, each new song has to repeat the final <code class="highlighter-rouge">n-1</code> notes of the previous song, that way each melody is contained in full. For example if we split the above sequence into two parts we’ll need to do:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Song 1: 000012200210002212021211212222011221022211012
+Song 2: [012]101001011112001102111002012010202202[000]
+</code></pre></div></div>
+
+<p>This results in the following:</p>
+
+<ul>
+  <li><strong>1</strong> remix album: debruijn8-12.tar</li>
+  <li>Size: 16.735.957.504 bytes (16,75 GB on disk)</li>
+</ul>
+
+<p>Contains:</p>
+
+<ul>
+  <li><strong>2052</strong> GZIP-ed MIDI songs</li>
+  <li>2051 songs with a 33,500,000 note melody</li>
+  <li>1 song with a 10,999,308 note melody</li>
+</ul>
+
+<h1 id="really-every-song">Really? Every song?</h1>
+
+<p>Let’s listen to some songs that are in the dataset (somewhere):</p>
+
+<p>Example 1, Twinkle Twinkle:</p>
+
+<midi-player src="/music/example1.mid" sound-font="" visualizer="#myVisualizer-/music/example1.mid">
+</midi-player>
+
+<p>Example 2, Jingle Bells:</p>
+
+<midi-player src="/music/example2.mid" sound-font="" visualizer="#myVisualizer-/music/example2.mid">
+</midi-player>
+
+<p>Example 3, Can You Feel The Love Tonight.</p>
+
+<midi-player src="/music/example3.mid" sound-font="" visualizer="#myVisualizer-/music/example3.mid">
+</midi-player>
+
+<p>All possible 12 note melodies are in the remix.</p>
+
+<h1 id="is-this-better">Is this better?</h1>
+
+<p>This got me thinking, why didn’t Damien and Noah go for this approach? It is much smaller and faster to generate (in a single morning).</p>
+
+<p>So I turned to Twitter and asked Damien Riehl!
+And sure enough: his answer makes total sense:</p>
+
+<blockquote>
+  <p>We had initially considered a “de Bruijn” sequence. But if we were to use a <em>single</em> file, that would have down sides:</p>
+
+  <ul>
+    <li>
+      <p>If someone infringes our work, it would only be a tiny percentage (0.0000000001%?) of the “work” — so someone would argue “fair use”</p>
+    </li>
+    <li>
+      <p>Same idea with others incorporating ATM works in theirs (“tiny percentage”)</p>
+    </li>
+  </ul>
+
+  <p>So our technical/legal design is “One MIDI file per melody” — which I think is a legal feature, not a bug.  🙂</p>
+</blockquote>
+
+<p>Of course I should have known there was a valid reason. He encouraged me to continue though and so I generated my own <code class="highlighter-rouge">de Bruijn album</code>. Now I can say I’ve officially remixed <code class="highlighter-rouge">68,719,476,736</code> songs. Is there like a Guiness Book of World Records entry for me now?</p>
+
+<p>If you’re curious what this remix sounds like, here is a snippet:</p>
+
+<midi-player src="/music/snippet.mid" sound-font="" visualizer="#myVisualizer-/music/snippet.mid">
+</midi-player>
+
+<p>It was a fun exersize, I still love de Bruijn sequences and learned a lot about streaming GZIP/File API’s to easily store everything.</p>
+
+<p>The album is, for now, only stored on my HDD, but I’m working with Damien to get the songs added to their ATM collection on the <a href="https://archive.org/details/allthemusicllc-datasets">Internet Archive</a>.</p>
+
+<p>Oh, and you can’t have a remix album without a proper album cover:</p>
+
+<p><img src="/images/debruijn_album.jpg" alt="de Bruijn album cover" /></p>
+
+
+    </span>
+    
+  </article>
+
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+      this.page.url = "https://royvanrijn.com/blog/2022/03/all-the-music-megamix/";
+      this.page.identifier = "/blog/2022/03/all-the-music-megamix/";
+    };
+
+    (function() {  // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://royvanrijn.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
