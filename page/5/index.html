@@ -38,15 +38,6 @@
   ga('create', 'UA-3219266-1', 'auto');
   ga('send', 'pageview');
 
-  <!-- Disqus Comment Count -->
-  var disqus_shortname = 'royvanrijn';
-  (function () {
-  var s = document.createElement('script'); s.async = true;
-  s.type = 'text/javascript';
-  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-  }());
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
@@ -102,6 +93,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -116,6 +109,60 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/" title="Stop the Rot, the Rules of Refactoring">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Stop the Rot, the Rules of Refactoring" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2014-12-09T13:31:22+01:00" class="date" />
+          <span itemprop="datePublished" content="2014-12-09T13:31:22+01:00" class="date">
+            Dec 9, 2014 13:31:22
+          </span>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">Stop the Rot, the Rules of Refactoring</a></h1>
+
+        <span itemprop="articleBody">
+          
+            <p>A lot of times you hear experienced programmers talking about ‘smelly’ code. These ‘code smells’ are things that just look or feel wrong. Often programmers don’t immediately have a clear idea on how to fix it, but it ‘smells’! These smells often happen when the code ‘rots’.</p>
+
+<p>Let’s do a quick check:</p>
+
+<ul>
+  <li>Are there pieces of code you’d rather not change?</li>
+  <li>Are (parts of) the application sometimes scrapped and rebuild from scratch (over and over)?</li>
+  <li>Do pieces of code exist that turned out much more complex than you had initially imagined?</li>
+  <li>Do you have pieces of code that feel out of place?</li>
+  <li>Is it hard to break up some large classes and/or methods?</li>
+  <li>Do you have a hard time coming up with names for certain classes?</li>
+</ul>
+
+
+          
+
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2014/12/stop-the-rot-the-rules-of-refactoring/">Read more...</a></p>
+        
+
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -136,7 +183,6 @@
           <span itemprop="datePublished" content="2014-12-02T16:10:04+01:00" class="date">
             Dec 2, 2014 16:10:04
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/programming-testing-documentation/">Programming, testing, documentation</a></h1>
 
@@ -153,9 +199,6 @@
           <p><a class="title-link" href="/blog/2014/12/programming-testing-documentation/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/programming-testing-documentation/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -181,7 +224,6 @@
           <span itemprop="datePublished" content="2014-12-01T12:09:18+01:00" class="date">
             Dec 1, 2014 12:09:18
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/12/devoxx-be-2014-aftermovie/">Devoxx BE 2014: Aftermovie</a></h1>
 
@@ -198,9 +240,6 @@
           <p><a class="title-link" href="/blog/2014/12/devoxx-be-2014-aftermovie/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/12/devoxx-be-2014-aftermovie/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -226,7 +265,6 @@
           <span itemprop="datePublished" content="2014-11-27T12:09:20+01:00" class="date">
             Nov 27, 2014 12:09:20
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/11/the-java-9-kulla-repl/">The Java 9 'Kulla' REPL</a></h1>
 
@@ -255,9 +293,6 @@
           <p><a class="title-link" href="/blog/2014/11/the-java-9-kulla-repl/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/11/the-java-9-kulla-repl/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -283,7 +318,6 @@
           <span itemprop="datePublished" content="2014-11-18T11:52:35+01:00" class="date">
             Nov 18, 2014 11:52:35
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/11/kill-all-mutants/">Kill all mutants</a></h1>
 
@@ -300,9 +334,6 @@
           <p><a class="title-link" href="/blog/2014/11/kill-all-mutants/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/11/kill-all-mutants/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -328,7 +359,6 @@
           <span itemprop="datePublished" content="2014-09-17T16:12:14+02:00" class="date">
             Sep 17, 2014 16:12:14
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/09/building-commander-keen-on-osx/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/09/building-commander-keen-on-osx/">Building Commander Keen on OS/X</a></h1>
 
@@ -351,9 +381,6 @@
           <p><a class="title-link" href="/blog/2014/09/building-commander-keen-on-osx/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/09/building-commander-keen-on-osx/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -379,7 +406,6 @@
           <span itemprop="datePublished" content="2014-08-27T15:33:42+02:00" class="date">
             Aug 27, 2014 15:33:42
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/08/finding-an-image-in-a-mosaic/">Finding an image in a mosaic</a></h1>
 
@@ -396,9 +422,6 @@
           <p><a class="title-link" href="/blog/2014/08/finding-an-image-in-a-mosaic/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/08/finding-an-image-in-a-mosaic/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -424,7 +447,6 @@
           <span itemprop="datePublished" content="2014-08-27T15:21:55+02:00" class="date">
             Aug 27, 2014 15:21:55
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/08/ludum-dare-30-a-dis-connected-world/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">Ludum Dare #30: A (dis-)connected world...</a></h1>
 
@@ -441,9 +463,6 @@
           <p><a class="title-link" href="/blog/2014/08/ludum-dare-30-a-dis-connected-world/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/08/ludum-dare-30-a-dis-connected-world/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -469,7 +488,6 @@
           <span itemprop="datePublished" content="2014-07-16T15:59:04+02:00" class="date">
             Jul 16, 2014 15:59:04
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/07/i-wont-enter-a-teleportation-device-ever/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">I won't enter a teleportation device, ever.</a></h1>
 
@@ -486,9 +504,6 @@
           <p><a class="title-link" href="/blog/2014/07/i-wont-enter-a-teleportation-device-ever/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/07/i-wont-enter-a-teleportation-device-ever/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -514,7 +529,6 @@
           <span itemprop="datePublished" content="2014-06-22T15:03:44+02:00" class="date">
             Jun 22, 2014 15:03:44
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx4kids-uk-2014-the-video/">Devoxx4Kids UK 2014: the video</a></h1>
 
@@ -536,9 +550,6 @@
         
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx4kids-uk-2014-the-video/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -564,7 +575,6 @@
           <span itemprop="datePublished" content="2014-06-18T10:13:30+02:00" class="date">
             Jun 18, 2014 10:13:30
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx-uk-2014-the-video/">Devoxx UK 2014: the video</a></h1>
 
@@ -586,9 +596,6 @@
         
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014-the-video/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -614,7 +621,6 @@
           <span itemprop="datePublished" content="2014-06-15T00:22:32+02:00" class="date">
             Jun 15, 2014 00:22:32
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/devoxx-uk-2014/">Review: Devoxx UK 2014</a></h1>
 
@@ -631,9 +637,6 @@
           <p><a class="title-link" href="/blog/2014/06/devoxx-uk-2014/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/devoxx-uk-2014/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -659,7 +662,6 @@
           <span itemprop="datePublished" content="2014-06-04T13:44:42+02:00" class="date">
             Jun 4, 2014 13:44:42
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">Raspberry Pi emulation on OS X</a></h1>
 
@@ -676,9 +678,6 @@
           <p><a class="title-link" href="/blog/2014/06/raspberry-pi-emulation-on-os-x/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/06/raspberry-pi-emulation-on-os-x/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -704,7 +703,6 @@
           <span itemprop="datePublished" content="2014-05-12T20:49:14+02:00" class="date">
             May 12, 2014 20:49:14
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/05/alternative-for-constructors/">Alternative for Constructors</a></h1>
 
@@ -734,9 +732,6 @@
           <p><a class="title-link" href="/blog/2014/05/alternative-for-constructors/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/05/alternative-for-constructors/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -762,7 +757,6 @@
           <span itemprop="datePublished" content="2014-05-03T22:57:56+02:00" class="date">
             May 3, 2014 22:57:56
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">Solving a 18-year-old Core War mystery</a></h1>
 
@@ -810,67 +804,6 @@ Any ideas, anyone :-?</code></pre></figure>
           <p><a class="title-link" href="/blog/2014/05/solving-a-18-year-old-core-war-mystery/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/05/solving-a-18-year-old-core-war-mystery/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2014/04/mosaic-algorithm/" title="Mosaic algorithm">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Mosaic algorithm" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2014-04-30T14:50:41+02:00" class="date" />
-          <span itemprop="datePublished" content="2014-04-30T14:50:41+02:00" class="date">
-            Apr 30, 2014 14:50:41
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2014/04/mosaic-algorithm/">Mosaic algorithm</a></h1>
-
-        <span itemprop="articleBody">
-          
-            <p>Today I noticed a new blogpost by <a href="http://williamedwardscoder.tumblr.com/">William</a>, he wrote a small Python script to <a href="http://williamedwardscoder.tumblr.com/post/84317701363/i-knew-my-mosaic-script-was-doing-a-poor-job-of">create mosaics from thumbnails</a>.</p>
-
-<p>As input he is using thumbnails from the <a href="http://www.ludumdare.com/">Ludum Dare</a> game programming contest.</p>
-
-<p>To make such a program you basically need four things:</p>
-
-<ol>
-  <li>A collection of thumbnails/photos/images to place</li>
-  <li>Divide the target mosaic image into a grid of tiles</li>
-  <li>Have a scoring/measuring method for each tile</li>
-  <li>Have a placement algorithm</li>
-</ol>
-
-
-          
-
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2014/04/mosaic-algorithm/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2014/04/mosaic-algorithm/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -933,6 +866,10 @@ Any ideas, anyone :-?</code></pre></figure>
     
       
         <div class="pagination-item"><a href="/page/12">12</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/13">13</a></div>
       
     
 

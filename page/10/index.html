@@ -38,15 +38,6 @@
   ga('create', 'UA-3219266-1', 'auto');
   ga('send', 'pageview');
 
-  <!-- Disqus Comment Count -->
-  var disqus_shortname = 'royvanrijn';
-  (function () {
-  var s = document.createElement('script'); s.async = true;
-  s.type = 'text/javascript';
-  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-  }());
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
@@ -102,6 +93,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -116,6 +109,47 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2011/04/static-state-evil-as-well/" title="Static state: Evil as well">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Static state: Evil as well" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2011-04-19T19:23:26+02:00" class="date" />
+          <span itemprop="datePublished" content="2011-04-19T19:23:26+02:00" class="date">
+            Apr 19, 2011 19:23:26
+          </span>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/static-state-evil-as-well/">Static state: Evil as well</a></h1>
+
+        <span itemprop="articleBody">
+          
+
+          
+            <p>Today in our project we suddenly had 10 failing unit-tests on our integration server (Hudson). Opening Hudson and looking at the first failed build I was in for a surprise. The only code changed that commit was mine!</p> <h1 id="the-scare">The scare</h1> <p>Quickly I looked around and went into overdrive mode:<br /> <em>I need to fix this bug before somebody sees it!<br /> I’m always yelling at people who break the build, and now it has happend to me…!</em></p> <p>Looking at the SVN comment it only said: “cleaned up some code” (or something)<br /> That isn’t very helpfull of myself…</p> <h1...
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2011/04/static-state-evil-as-well/">Read more...</a></p>
+        
+
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -136,7 +170,6 @@
           <span itemprop="datePublished" content="2011-04-19T18:13:55+02:00" class="date">
             Apr 19, 2011 18:13:55
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/04/checked-exceptions-evil/">Checked Exceptions: Evil</a></h1>
 
@@ -153,9 +186,6 @@
           <p><a class="title-link" href="/blog/2011/04/checked-exceptions-evil/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/04/checked-exceptions-evil/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -181,7 +211,6 @@
           <span itemprop="datePublished" content="2011-02-24T22:29:29+01:00" class="date">
             Feb 24, 2011 22:29:29
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">De Bruijn sequence in constant amortized time</a></h1>
 
@@ -198,9 +227,6 @@
           <p><a class="title-link" href="/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/de-bruijn-sequence-in-constant-amortized-time/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -226,7 +252,6 @@
           <span itemprop="datePublished" content="2011-02-24T10:32:52+01:00" class="date">
             Feb 24, 2011 10:32:52
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">Generating de Bruijn sequences and Lyndon words</a></h1>
 
@@ -243,9 +268,6 @@
           <p><a class="title-link" href="/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/generating-de-bruijn-sequences-and-lyndon-words/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -271,7 +293,6 @@
           <span itemprop="datePublished" content="2011-02-07T10:02:46+01:00" class="date">
             Feb 7, 2011 10:02:46
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/02/unit-testing-a-chess-engine/">Testing a chess engine</a></h1>
 
@@ -288,9 +309,6 @@
           <p><a class="title-link" href="/blog/2011/02/unit-testing-a-chess-engine/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/02/unit-testing-a-chess-engine/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -316,7 +334,6 @@
           <span itemprop="datePublished" content="2011-01-06T00:36:51+01:00" class="date">
             Jan 6, 2011 00:36:51
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/01/exception-mailing/">Exception mailing</a></h1>
 
@@ -333,9 +350,6 @@
           <p><a class="title-link" href="/blog/2011/01/exception-mailing/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/01/exception-mailing/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -361,7 +375,6 @@
           <span itemprop="datePublished" content="2011-01-01T17:17:25+01:00" class="date">
             Jan 1, 2011 17:17:25
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2011/01/rainbow-tables/">Rainbow tables, reverse hash lookup</a></h1>
 
@@ -378,9 +391,6 @@
           <p><a class="title-link" href="/blog/2011/01/rainbow-tables/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2011/01/rainbow-tables/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -406,7 +416,6 @@
           <span itemprop="datePublished" content="2010-12-14T13:19:08+01:00" class="date">
             Dec 14, 2010 13:19:08
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/12/finding-performance-problems/">Finding performance problems</a></h1>
 
@@ -423,9 +432,6 @@
           <p><a class="title-link" href="/blog/2010/12/finding-performance-problems/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/12/finding-performance-problems/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -451,7 +457,6 @@
           <span itemprop="datePublished" content="2010-11-24T10:50:02+01:00" class="date">
             Nov 24, 2010 10:50:02
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/11/xor-doubly-linked-list/">XOR doubly linked list</a></h1>
 
@@ -468,9 +473,6 @@
           <p><a class="title-link" href="/blog/2010/11/xor-doubly-linked-list/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/11/xor-doubly-linked-list/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -496,7 +498,6 @@
           <span itemprop="datePublished" content="2010-11-24T09:56:46+01:00" class="date">
             Nov 24, 2010 09:56:46
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/11/patent-infrigement-part-2/">Patent infringement (part 2)</a></h1>
 
@@ -519,9 +520,6 @@
           <p><a class="title-link" href="/blog/2010/11/patent-infrigement-part-2/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/11/patent-infrigement-part-2/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -547,7 +545,6 @@
           <span itemprop="datePublished" content="2010-09-23T12:37:02+02:00" class="date">
             Sep 23, 2010 12:37:02
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/handling-frame-switching/">Handling 'Frame switching'</a></h1>
 
@@ -564,9 +561,6 @@
           <p><a class="title-link" href="/blog/2010/09/handling-frame-switching/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/handling-frame-switching/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -592,7 +586,6 @@
           <span itemprop="datePublished" content="2010-09-22T16:25:36+02:00" class="date">
             Sep 22, 2010 16:25:36
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/bug-fix-day/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/bug-fix-day/">Bug Fix Day!</a></h1>
 
@@ -609,9 +602,6 @@
           <p><a class="title-link" href="/blog/2010/09/bug-fix-day/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/bug-fix-day/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -637,7 +627,6 @@
           <span itemprop="datePublished" content="2010-09-21T11:35:41+02:00" class="date">
             Sep 21, 2010 11:35:41
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">(Annotated) Field injection vs Constructor injection</a></h1>
 
@@ -654,9 +643,6 @@
           <p><a class="title-link" href="/blog/2010/09/annotated-field-injection-vs-constructor-injection/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/annotated-field-injection-vs-constructor-injection/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -682,7 +668,6 @@
           <span itemprop="datePublished" content="2010-09-20T22:59:44+02:00" class="date">
             Sep 20, 2010 22:59:44
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/setter-vs-constructor-injection/">Setter vs Constructor injection</a></h1>
 
@@ -718,9 +703,6 @@
           <p><a class="title-link" href="/blog/2010/09/setter-vs-constructor-injection/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/setter-vs-constructor-injection/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -746,7 +728,6 @@
           <span itemprop="datePublished" content="2010-09-14T15:40:16+02:00" class="date">
             Sep 14, 2010 15:40:16
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/09/dinosaur-in-your-street/">Dinosaurize your street</a></h1>
 
@@ -763,54 +744,6 @@
           <p><a class="title-link" href="/blog/2010/09/dinosaur-in-your-street/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/09/dinosaur-in-your-street/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2010/07/patent-publicity/" title="Patent, publicity">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Patent, publicity" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2010-07-09T21:29:27+02:00" class="date" />
-          <span itemprop="datePublished" content="2010-07-09T21:29:27+02:00" class="date">
-            Jul 9, 2010 21:29:27
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2010/07/patent-publicity/">Patent, publicity</a></h1>
-
-        <span itemprop="articleBody">
-          
-
-          
-            <p>Wow, just wow…</p> <p>Thanks a lot for all your support people, it’s great to see and read I’m not the only one to think this situation isn’t normal.</p> <h1 id="social-networking">Social networking:</h1> <p>First it became huge on social network sites:<br /> - #1 on yCombinator Hacker News: <a href="http://news.ycombinator.com/item?id=1496683">here</a><br /> - #1 on Reddit: <a href="http://www.reddit.com/r/programming/comments/cn79s/apparently_describing_a_patented_algorithm_is/">here</a><br /> - Frontpage on Slashdot: <a href="http://yro.slashdot.org/story/10/07/08/2311225/Open-Source-Music-Fingerprinter-Gets-Patent-Nastygram">here</a><br /> - DZone Top Link: <a href="http://www.dzone.com/links/after_creating_shazam_in_java_patent_infringement.html">here</a><br /> - Digg: <a href="http://digg.com/programming/When_amateur_programming_meets_patent_infringement">here</a></p> <h1 id="blogs-and-news-sites">Blogs and news sites:</h1> <p>And it was featured on some major blogs/news sites:</p> <p>- BoingBoing: <a href="http://www.boingboing.net/2010/07/08/patent-holders-legal.html">here</a><br /> - OpenDotDotDot: <a href="http://opendotdotdot.blogspot.com/2010/07/patent-bullying-over-algorithms.html">here</a><br /> - Webwereld...
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2010/07/patent-publicity/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2010/07/patent-publicity/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -873,6 +806,10 @@
     
       
         <div class="pagination-item"><a href="/page/12">12</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/13">13</a></div>
       
     
 

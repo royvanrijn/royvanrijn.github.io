@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Solving the daily calendar puzzle</title>
+  <meta name="description" content="About a month ago I was watching a YouTube video where YouTuber Drew Gooden was struggling with a “weird” puzzle:This is what the puzzle looks like:It has 10...">
+  
+  <meta name="keywords" content="royvanrijn,programming,java,daily,puzzle,calendar,algorithm,">
+  
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+  
+  <link rel="apple-touch-icon" href="/images/avatar.jpg" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://royvanrijn.com/blog/2022/07/daily-calendar-puzzle-solutions/">
+  <link rel="alternate" type="application/rss+xml" title="royvanrijn" href="https://royvanrijn.com/feed/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@royvanrijn" />
+  <meta name="twitter:title" content="Solving the daily calendar puzzle" />
+  <meta name="twitter:description" content="About a month ago I was watching a YouTube video where YouTuber Drew Gooden was struggling with a “weird” puzzle:This is what the puzzle ..." />
+  
+  <meta name="twitter:image" content="http://www.royvanrijn.com/thumbnails/default.jpg"/>
+  
+
+<script>
+  <!-- Google Analytics -->
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3219266-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+	<a class="site-title" href="/">
+	  <img src="/images/header_royvanrijn.jpg" alt="royvanrijn" width="990" height="307"/>
+    </a>
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    
+    <div class="page-navigation"> 
+      <div class="left"> 
+         
+          <a href="/blog/2022/03/all-the-music-megamix/" title="Previous: All The Music: the Megamix">&laquo; All The Music: the Megamix</a> 
+         
+      </div> 
+      <div class="right"> 
+         
+      </div> 
+      <div class="clear"></div> 
+    </div> 
+  </header>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content">
+    <div class="post">
+      <div class="post-thumbnail">
+        <a itemprop="mainEntityOfPage" href="/blog/2022/07/daily-calendar-puzzle-solutions/" title="Solving the daily calendar puzzle">
+        
+          <img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving the daily calendar puzzle" width="100" height="100"/>
+        
+      </a>
+      </div>
+      <p class="post-meta">
+        Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> (<span itemprop="publisher" itemscope itemtype="http://schema.org/Person"><span itemprop="name">royvanrijn.com</span></span>) on 
+        <span itemprop="dateModified" content="2022-07-07T20:42:12+02:00" class="date" />
+        <span itemprop="datePublished" content="2022-07-07T20:42:12+02:00" class="date">
+          Jul 7, 2022 20:42:12
+        </span>
+      </p>
+      <h1 itemprop="headline" class="post-title">Solving the daily calendar puzzle</h1>
+    </div>
+
+    <span itemprop="articleBody">
+    <p>About a month ago I was watching a YouTube video where YouTuber <a href="https://www.youtube.com/c/DrewGooden1/videos">Drew Gooden</a> was struggling with a “weird” puzzle:</p>
+
+<iframe type="text/html" width="640" height="390" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" src="https://www.youtube.com/embed/WbAuL4fg5LI?start=888&amp;title=0&amp;byline=0&amp;portrait=0"></iframe>
+
+<p>This is what the puzzle looks like:</p>
+
+<p><img src="/images/daily-calendar-puzzle.jpg" alt="example of the Daily Calendar Puzzle" /></p>
+
+<p>It has 10 pieces that can be flipped/rotated and placed on a calendar. They claim there is a solution for each day/month/weekday combination. In the YouTube video Drew is struggling and says:</p>
+
+<blockquote>
+  <p>The problem is, I’ll never be able to prove that</p>
+</blockquote>
+
+<p>But… what if we <strong>can</strong>?</p>
+
+<p>As a programmer this sounds like a perfect little puzzle to solve.</p>
+
+<h1 id="solving-the-puzzle">Solving the puzzle</h1>
+
+<p>To solve this, I first encoded all the puzzle pieces, this is relatively easy to do because it’s just a 2D grid.</p>
+
+<p>Next I wrote the code to generate all the possible rotations of a certain puzzle piece (and eliminated duplicates). Some pieces have more rotations than others because some are the same after a 180 degree rotation, others are not.</p>
+
+<p>Next I blocked the target puzzle solutions on the board, for example “2nd June Monday”, placing three markers.</p>
+
+<p>After that I just go through all possible piece/location combinations, placing the first puzzle piece in the top position and continuing down.</p>
+
+<p>This was fast enough to solve the first puzzle after a couple of minutes.</p>
+
+<p>But… not fast enough to generate <strong>all</strong>: 12 (months) x 31 (days) x 7 (weekdays) = 2.604 solutions</p>
+
+<p><strong>Example output</strong>: The image above has a solution for Thursday 8th of April. The code outputs this as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Solution for: 8/4 [5]:
+0 0 0 X 1 1 X 
+2 2 0 0 4 1 X 
+2 2 3 3 4 1 1 
+X 2 3 4 4 5 5 
+7 6 3 3 5 5 9 
+7 6 6 6 6 8 9 
+7 7 7 8 8 8 9 
+X X X X X 8 9 
+</code></pre></div></div>
+
+<p>Each number 0-9 stands for a certain puzzle piece. The X’s are blocked off (solution and edge).</p>
+
+<h1 id="improve-solving-speed">Improve solving speed</h1>
+
+<p>To improve the speed of the solver I decided to do a small flood fill after placing each puzzle piece. If we’ve created a spot where there are just 4 places left (a small island) I stopped looking further, because no puzzle piece will ever fill this spot.</p>
+
+<p>This small algorithmic improvement was enough to make it fast enough to generate a puzzle solution for every single combination.</p>
+
+<h1 id="links">Links</h1>
+
+<p><strong>Solutions:</strong> If you’re just looking for all the solutions: <a href="https://github.com/royvanrijn/Daily-Calendar-Puzzle/blob/main/solutions.txt">solutions.txt</a>.</p>
+
+<p><strong>Code:</strong> If you want to take a look at the (Java) code, check out <a href="https://github.com/royvanrijn/Daily-Calendar-Puzzle/blob/main/PuzzleADaySolver.java">PuzzleADaySolver.java</a>.</p>
+
+
+    </span>
+    
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-wrapper">
+      
+      <div class="footer-wrapper-content">
+      
+        <a href="https://www.linkedin.com/profile/view?id=10356027">
+          <span class="svg-icon linkedin">Connect on LinkedIn</span>
+        </a>
+      
+        <a href="http://stackoverflow.com/users/442274/roy-van-rijn">
+          <span class="svg-icon stackoverflow">Follow me on StackOverflow</span>
+        </a>
+
+        <a href="https://github.com/royvanrijn">
+          <span class="svg-icon github">Follow me on GitHub</span>
+        </a>
+
+        <a href="https://twitter.com/royvanrijn">
+          <ispan class="svg-icon twitter">Follow me on Twitter</span>
+        </a>
+          
+        <a href="/feed/index.xml">
+          <span class="svg-icon rss">Check out the RSS feed</span>
+        </a>
+	  </div>
+    
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

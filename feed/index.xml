@@ -5,9 +5,88 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 24 Mar 2022 14:26:59 +0100</pubDate>
-    <lastBuildDate>Thu, 24 Mar 2022 14:26:59 +0100</lastBuildDate>
+    <pubDate>Fri, 08 Jul 2022 10:56:31 +0200</pubDate>
+    <lastBuildDate>Fri, 08 Jul 2022 10:56:31 +0200</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Solving the daily calendar puzzle</title>
+        <description>&lt;p&gt;About a month ago I was watching a YouTube video where YouTuber &lt;a href=&quot;https://www.youtube.com/c/DrewGooden1/videos&quot;&gt;Drew Gooden&lt;/a&gt; was struggling with a “weird” puzzle:&lt;/p&gt;
+
+&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;https://www.youtube.com/embed/WbAuL4fg5LI?start=888&amp;amp;title=0&amp;amp;byline=0&amp;amp;portrait=0&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;This is what the puzzle looks like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/daily-calendar-puzzle.jpg&quot; alt=&quot;example of the Daily Calendar Puzzle&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It has 10 pieces that can be flipped/rotated and placed on a calendar. They claim there is a solution for each day/month/weekday combination. In the YouTube video Drew is struggling and says:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The problem is, I’ll never be able to prove that&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;But… what if we &lt;strong&gt;can&lt;/strong&gt;?&lt;/p&gt;
+
+&lt;p&gt;As a programmer this sounds like a perfect little puzzle to solve.&lt;/p&gt;
+
+&lt;h1 id=&quot;solving-the-puzzle&quot;&gt;Solving the puzzle&lt;/h1&gt;
+
+&lt;p&gt;To solve this, I first encoded all the puzzle pieces, this is relatively easy to do because it’s just a 2D grid.&lt;/p&gt;
+
+&lt;p&gt;Next I wrote the code to generate all the possible rotations of a certain puzzle piece (and eliminated duplicates). Some pieces have more rotations than others because some are the same after a 180 degree rotation, others are not.&lt;/p&gt;
+
+&lt;p&gt;Next I blocked the target puzzle solutions on the board, for example “2nd June Monday”, placing three markers.&lt;/p&gt;
+
+&lt;p&gt;After that I just go through all possible piece/location combinations, placing the first puzzle piece in the top position and continuing down.&lt;/p&gt;
+
+&lt;p&gt;This was fast enough to solve the first puzzle after a couple of minutes.&lt;/p&gt;
+
+&lt;p&gt;But… not fast enough to generate &lt;strong&gt;all&lt;/strong&gt;: 12 (months) x 31 (days) x 7 (weekdays) = 2.604 solutions&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example output&lt;/strong&gt;: The image above has a solution for Thursday 8th of April. The code outputs this as:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Solution for: 8/4 [5]:
+0 0 0 X 1 1 X 
+2 2 0 0 4 1 X 
+2 2 3 3 4 1 1 
+X 2 3 4 4 5 5 
+7 6 3 3 5 5 9 
+7 6 6 6 6 8 9 
+7 7 7 8 8 8 9 
+X X X X X 8 9 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Each number 0-9 stands for a certain puzzle piece. The X’s are blocked off (solution and edge).&lt;/p&gt;
+
+&lt;h1 id=&quot;improve-solving-speed&quot;&gt;Improve solving speed&lt;/h1&gt;
+
+&lt;p&gt;To improve the speed of the solver I decided to do a small flood fill after placing each puzzle piece. If we’ve created a spot where there are just 4 places left (a small island) I stopped looking further, because no puzzle piece will ever fill this spot.&lt;/p&gt;
+
+&lt;p&gt;This small algorithmic improvement was enough to make it fast enough to generate a puzzle solution for every single combination.&lt;/p&gt;
+
+&lt;h1 id=&quot;links&quot;&gt;Links&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;Solutions:&lt;/strong&gt; If you’re just looking for all the solutions: &lt;a href=&quot;https://github.com/royvanrijn/Daily-Calendar-Puzzle/blob/main/solutions.txt&quot;&gt;solutions.txt&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Code:&lt;/strong&gt; If you want to take a look at the (Java) code, check out &lt;a href=&quot;https://github.com/royvanrijn/Daily-Calendar-Puzzle/blob/main/PuzzleADaySolver.java&quot;&gt;PuzzleADaySolver.java&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 07 Jul 2022 20:42:12 +0200</pubDate>
+        <link>https://royvanrijn.com/blog/2022/07/daily-calendar-puzzle-solutions/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2022/07/daily-calendar-puzzle-solutions/</guid>
+        
+        <category>daily</category>
+        
+        <category>puzzle</category>
+        
+        <category>calendar</category>
+        
+        <category>algorithm</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>All The Music: the Megamix</title>
@@ -1047,102 +1126,6 @@ hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
         
         
         <category>OpenAI</category>
-        
-      </item>
-    
-      <item>
-        <title>Joggling4Trees</title>
-        <description>&lt;p&gt;Last week, during a &lt;a href=&quot;https://en.wikipedia.org/wiki/Code_Camp&quot;&gt;code camp&lt;/a&gt; session at work, for some reason the subject of “joggling” came up.&lt;/p&gt;
-
-&lt;h1 id=&quot;what-is-joggling&quot;&gt;What is Joggling?&lt;/h1&gt;
-
-&lt;p&gt;So what is this ‘&lt;a href=&quot;https://en.wikipedia.org/wiki/Joggling&quot;&gt;joggling&lt;/a&gt;’? The word joggling is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Portmanteau&quot;&gt;portmanteau&lt;/a&gt; of juggling and jogging (running).&lt;/p&gt;
-
-&lt;p&gt;This might sound very strange, but it is an actual sport. There are people joggling marathons (in under three hours!), they are faster while juggling 3 balls than most people (including me) are just running. I’m probably never running a marathon under three hours.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/joggling.jpg&quot; alt=&quot;A man joggling (not me)&quot; /&gt;&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;I’ve learned how to juggle when I was in my early teens, and it is a skill I’ll never forget, muscle memory. And a couple of years ago I had an annoying knee injury which prevented me from running too far or too fast.&lt;/p&gt;
-
-&lt;p&gt;This is when I learned about joggling. For me it was the perfect way to still enjoy running while not pushing my knees too much. Adding the juggling (3 balls) to my running prevented further injuries, it slowed me down and decreased the distance I was able to run.&lt;/p&gt;
-
-&lt;p&gt;And it is great: Almost everyone gets a smile on their face when I run past them when joggling.&lt;/p&gt;
-
-&lt;h1 id=&quot;the-challenge-bruggenloop-2019&quot;&gt;The challenge: Bruggenloop 2019&lt;/h1&gt;
-
-&lt;p&gt;When I mentioned joggling to my colleagues last week they encouraged me to try it once more.&lt;/p&gt;
-
-&lt;p&gt;We came up with the following challenge:&lt;/p&gt;
-
-&lt;p&gt;&lt;del&gt;On sunday the 8th of december I’m going to joggle the &lt;a href=&quot;https://www.bruggenloop.nl/english/&quot;&gt;Bruggenloop&lt;/a&gt;, a &lt;strong&gt;15k&lt;/strong&gt; race while juggling &lt;strong&gt;3 balls&lt;/strong&gt;. This will be the first time I’m joggling a race and it’ll be the first time I’ll joggle for over an hour. I’ve never done more than 10k, heck, I haven’t been running at all for the last 6 months. So there is quite some work to do now!&lt;/del&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/sad-panda.gif&quot; alt=&quot;Me right now...&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; I’ve received a &lt;strong&gt;decline&lt;/strong&gt; email from the Bruggenloop organisers. So I’m going to have to come up with a &lt;em&gt;plan B&lt;/em&gt;. This will likely be a &lt;strong&gt;15k&lt;/strong&gt; run… by myself, without anyone cheering me on, without providing all the onlookers with a smile.&lt;/p&gt;
-
-&lt;h1 id=&quot;joggling-for-teamtrees&quot;&gt;Joggling for #TeamTrees&lt;/h1&gt;
-
-&lt;p&gt;Because I’m doing this, my colleagues are donating money to #&lt;a href=&quot;http://teamtrees.org/&quot;&gt;TeamTrees&lt;/a&gt;. This is a charity that, for each dollar, gets a new tree planted. Yes, all 100% of the donations will go towards planting new trees.&lt;/p&gt;
-
-&lt;p&gt;To encourage me not to give up I’ve created the following page &lt;a href=&quot;https://tiltify.com/@royvanrijn/joggling4trees&quot;&gt;Joggling4Trees&lt;/a&gt; where we can track the donations to my cause.&lt;/p&gt;
-
-&lt;p&gt;At the moment we’ve already collected almost 900 dollars, that means &lt;strong&gt;900&lt;/strong&gt; new trees! Which is a freaking &lt;strong&gt;forest&lt;/strong&gt;! I’m so happy with this, and encourages me to train even harder and make everyone proud!&lt;/p&gt;
-
-&lt;p&gt;But we can do even better… if you read this, please consider adding a few trees to this planet, every dollar helps!&lt;/p&gt;
-
-&lt;h1 id=&quot;faq&quot;&gt;FAQ&lt;/h1&gt;
-
-&lt;p&gt;Some questions I’ve received about joggling:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Can you drop a ball?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Yes, this will probably happen a lot, you are not ‘disqualified’ for dropping a ball, just pick it up and continue from the point you’ve dropped. If a soccer player falls during a match they don’t automatically lose the game, it is part of the game.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;What is the worst that can happen?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Losing one or more balls. I’ve had this happen during a training session, one of my balls is now at the bottom of a river. RIP.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;What gear do you need to joggle?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Running shoes and 3 balls, that’s it.&lt;/p&gt;
-
-&lt;p&gt;And optionally:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Gloves&lt;/strong&gt; (especially in december, it gets really cold/near freezing), it is hard to joggle when your hands are numb. Transparant &lt;strong&gt;glasses&lt;/strong&gt;, during joggling you tend to not blink as much, and when you run in cold weather this causes a lot of tears to form. Glasses will fix this.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Why would anyone joggle….?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Here is an excellent explaination about why &lt;em&gt;everyone&lt;/em&gt; should take up joggling as a sport:&lt;/p&gt;
-
-&lt;iframe type=&quot;text/html&quot; width=&quot;640&quot; height=&quot;390&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot; src=&quot;https://www.youtube.com/embed/FKiunT8jmHc&quot;&gt;&lt;/iframe&gt;
-
-&lt;h1 id=&quot;one-more-time&quot;&gt;One more time:&lt;/h1&gt;
-
-&lt;p&gt;To support this, plant some trees: &lt;a href=&quot;https://tiltify.com/@royvanrijn/joggling4trees&quot;&gt;Joggling4Trees&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 18 Nov 2019 09:11:24 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/11/joggling-4-trees/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/11/joggling-4-trees/</guid>
-        
-        <category>jogging</category>
-        
-        <category>juggling</category>
-        
-        <category>teamtrees</category>
-        
-        
-        <category>Joggling</category>
         
       </item>
     

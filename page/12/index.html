@@ -38,15 +38,6 @@
   ga('create', 'UA-3219266-1', 'auto');
   ga('send', 'pageview');
 
-  <!-- Disqus Comment Count -->
-  var disqus_shortname = 'royvanrijn';
-  (function () {
-  var s = document.createElement('script'); s.async = true;
-  s.type = 'text/javascript';
-  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-  }());
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
@@ -102,6 +93,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -116,6 +109,62 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/" title="Splitting up Spring Web Flow & Facelets into JARs">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Splitting up Spring Web Flow & Facelets into JARs" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2009-12-15T15:25:15+01:00" class="date" />
+          <span itemprop="datePublished" content="2009-12-15T15:25:15+01:00" class="date">
+            Dec 15, 2009 15:25:15
+          </span>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">Splitting up Spring Web Flow & Facelets into JARs</a></h1>
+
+        <span itemprop="articleBody">
+          
+            <p>In our current project we want to have multiple Spring Web Flow-flows in one WAR-file. <em>But</em> we also want the flows and pages to be inside seperate JAR files, making the application a bit more managable and modulair.</p>
+
+<p>This sounds straightforward but it took quite a bit of code and time…</p>
+
+<p>First I created a single WAR-project with all the basic Spring, JSF and Facelet configuration. Like any Spring Web Flow (SWF) project we have a project-servlet.xml.</p>
+
+<p>The first thing I did was changing our flowRegistry:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- The registry of executable flow definitions --&gt;</span>
+<span class="nt">&lt;webflow:flow-registry</span> <span class="na">id=</span><span class="s">"flowRegistry"</span> 
+   <span class="na">flow-builder-services=</span><span class="s">"facesFlowBuilderServices"</span> 
+   <span class="na">base-path=</span><span class="s">"classpath*:flows"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;webflow:flow-location-pattern</span> <span class="na">value=</span><span class="s">"/**/*-flow.xml"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/webflow:flow-registry&gt;</span></code></pre></figure>
+
+
+          
+
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2009/12/splitting-up-spring-web-flow-facelets-into-jars/">Read more...</a></p>
+        
+
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -136,7 +185,6 @@
           <span itemprop="datePublished" content="2009-12-11T10:14:10+01:00" class="date">
             Dec 11, 2009 10:14:10
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/inversion_of_logic/">Cleaner code: Inversion of logic</a></h1>
 
@@ -153,9 +201,6 @@
           <p><a class="title-link" href="/blog/2009/12/inversion_of_logic/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/inversion_of_logic/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -181,7 +226,6 @@
           <span itemprop="datePublished" content="2009-12-10T22:43:13+01:00" class="date">
             Dec 10, 2009 22:43:13
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">Java EE 6 released, including Servlet 3.0</a></h1>
 
@@ -198,9 +242,6 @@
           <p><a class="title-link" href="/blog/2009/12/java-ee-6-released-including-servlet-3-0/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-ee-6-released-including-servlet-3-0/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -226,7 +267,6 @@
           <span itemprop="datePublished" content="2009-12-10T15:28:57+01:00" class="date">
             Dec 10, 2009 15:28:57
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/steve-oakley-the-head-hunter/">Steve Oakley, the head hunter</a></h1>
 
@@ -243,9 +283,6 @@
           <p><a class="title-link" href="/blog/2009/12/steve-oakley-the-head-hunter/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/steve-oakley-the-head-hunter/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -271,7 +308,6 @@
           <span itemprop="datePublished" content="2009-12-08T23:49:31+01:00" class="date">
             Dec 8, 2009 23:49:31
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/testing-with-spring/">Testing with Spring</a></h1>
 
@@ -288,9 +324,6 @@
           <p><a class="title-link" href="/blog/2009/12/testing-with-spring/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/testing-with-spring/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -316,7 +349,6 @@
           <span itemprop="datePublished" content="2009-12-08T18:21:54+01:00" class="date">
             Dec 8, 2009 18:21:54
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/feed-your-curiosity/">Feed your curiosity</a></h1>
 
@@ -333,9 +365,6 @@
           <p><a class="title-link" href="/blog/2009/12/feed-your-curiosity/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/feed-your-curiosity/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -361,7 +390,6 @@
           <span itemprop="datePublished" content="2009-12-07T20:10:59+01:00" class="date">
             Dec 7, 2009 20:10:59
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/atheist-look-on-christmas/">Atheist look on Christmas</a></h1>
 
@@ -378,9 +406,6 @@
           <p><a class="title-link" href="/blog/2009/12/atheist-look-on-christmas/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/atheist-look-on-christmas/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -406,7 +431,6 @@
           <span itemprop="datePublished" content="2009-12-07T11:47:56+01:00" class="date">
             Dec 7, 2009 11:47:56
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/vmware-on-your-phone/">VMWare on your phone?</a></h1>
 
@@ -423,9 +447,6 @@
           <p><a class="title-link" href="/blog/2009/12/vmware-on-your-phone/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/vmware-on-your-phone/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -451,7 +472,6 @@
           <span itemprop="datePublished" content="2009-12-04T21:14:48+01:00" class="date">
             Dec 4, 2009 21:14:48
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/eureqa/">Eureqa</a></h1>
 
@@ -468,9 +488,6 @@
           <p><a class="title-link" href="/blog/2009/12/eureqa/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/eureqa/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -496,7 +513,6 @@
           <span itemprop="datePublished" content="2009-12-04T19:09:29+01:00" class="date">
             Dec 4, 2009 19:09:29
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/songsincode/">#songsincode</a></h1>
 
@@ -513,9 +529,6 @@
           <p><a class="title-link" href="/blog/2009/12/songsincode/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/songsincode/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -541,7 +554,6 @@
           <span itemprop="datePublished" content="2009-12-04T16:35:15+01:00" class="date">
             Dec 4, 2009 16:35:15
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/java-generics-for-compare/">Java Generics for Compare</a></h1>
 
@@ -558,9 +570,6 @@
           <p><a class="title-link" href="/blog/2009/12/java-generics-for-compare/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/java-generics-for-compare/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -586,7 +595,6 @@
           <span itemprop="datePublished" content="2009-12-04T16:17:16+01:00" class="date">
             Dec 4, 2009 16:17:16
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/son-of-darts/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/son-of-darts/">Son Of Darts</a></h1>
 
@@ -603,9 +611,6 @@
           <p><a class="title-link" href="/blog/2009/12/son-of-darts/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/son-of-darts/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -631,7 +636,6 @@
           <span itemprop="datePublished" content="2009-12-04T15:55:20+01:00" class="date">
             Dec 4, 2009 15:55:20
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/quine-mccluskey/">Quine - McCluskey</a></h1>
 
@@ -667,9 +671,6 @@ Person doesn’t have insurence, doesn’t need insurence and is known at this a
           <p><a class="title-link" href="/blog/2009/12/quine-mccluskey/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/quine-mccluskey/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -695,7 +696,6 @@ Person doesn’t have insurence, doesn’t need insurence and is known at this a
           <span itemprop="datePublished" content="2009-12-02T22:13:10+01:00" class="date">
             Dec 2, 2009 22:13:10
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/brainfck-in-redcode/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/brainfck-in-redcode/">Corewars - Brainf*ck</a></h1>
 
@@ -721,9 +721,6 @@ BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language">esoter
           <p><a class="title-link" href="/blog/2009/12/brainfck-in-redcode/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/brainfck-in-redcode/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -749,7 +746,6 @@ BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language">esoter
           <span itemprop="datePublished" content="2009-12-02T10:00:26+01:00" class="date">
             Dec 2, 2009 10:00:26
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewar-subleq-interpreter/">Corewars - SUBLEQ interpreter</a></h1>
 
@@ -770,60 +766,6 @@ BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language">esoter
           <p><a class="title-link" href="/blog/2009/12/corewar-subleq-interpreter/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewar-subleq-interpreter/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/" title="Corewars - An Introduction to Hostile Programming">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Corewars - An Introduction to Hostile Programming" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2009-12-01T11:02:17+01:00" class="date" />
-          <span itemprop="datePublished" content="2009-12-01T11:02:17+01:00" class="date">
-            Dec 1, 2009 11:02:17
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Corewars - An Introduction to Hostile Programming</a></h1>
-
-        <span itemprop="articleBody">
-          
-            <p>Corewar is a game from the 1980’s, played between computer programs written in Redcode, a language similar to assembly. The programmers design their battle programs to remove opponents from the memory of the MARS virtual computer by any means possible.</p>
-
-<p>Some of the simpler techniques include blindly overwriting memory, searching for the opponent or spawning off new processes. These are commonly known as stone, scissors, paper after the popular playground game. Stone usually wins against scissors, scissors normally defeat paper, and paper mostly beats stone.</p>
-
-<p>Here’s an example of a typical Corewar program:</p>
-
-
-          
-
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2009/12/corewars-an-introduction-to-hostile-programming/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2009/12/corewars-an-introduction-to-hostile-programming/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -888,9 +830,13 @@ BF is an <a href="http://esolangs.org/wiki/Esoteric_programming_language">esoter
         <div class="pagination-item"><strong>12</strong></div>
       
     
+      
+        <div class="pagination-item"><a href="/page/13">13</a></div>
+      
+    
 
     
-      <div class="pagination-item">Next &raquo;</div>
+      <div class="pagination-item"><a href="/page/13">Next &raquo;</a></div>
     
     </div>
   </div>

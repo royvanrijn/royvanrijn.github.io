@@ -38,15 +38,6 @@
   ga('create', 'UA-3219266-1', 'auto');
   ga('send', 'pageview');
 
-  <!-- Disqus Comment Count -->
-  var disqus_shortname = 'royvanrijn';
-  (function () {
-  var s = document.createElement('script'); s.async = true;
-  s.type = 'text/javascript';
-  s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-  (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-  }());
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
@@ -102,6 +93,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -116,6 +109,47 @@
 
   <hr/>
   <!-- This loops through the paginated posts -->
+  
+    <article itemscope itemtype="http://schema.org/Article">
+    <div class="post">
+
+      <div class="post-thumbnail">
+      	<a itemprop="mainEntityOfPage" href="/blog/2019/01/word-finding/" title="Solving a word search puzzle">
+      	
+      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/default.jpg" alt="Solving a word search puzzle" width="100" height="100" />
+      	
+    	</a>
+      </div>
+  
+      <div class="post-data">
+        <p class="post-meta">
+          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
+          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
+          <span itemprop="dateModified" content="2019-01-07T08:12:57+01:00" class="date" />
+          <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
+            Jan 7, 2019 08:12:57
+          </span>
+        </p>
+        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/01/word-finding/">Solving a word search puzzle</a></h1>
+
+        <span itemprop="articleBody">
+          
+
+          
+            <p>In the <a href="/blog/2019/01/longest-path/">previous post</a> I showed a nice snippet/trick at the bottom of the post to find all the neighbors in a 2D array.</p> <p>Last week I used this snippet to solve a word search puzzle a colleague created for us as a “Back to work in 2019”-challenge:</p> <p><img src="/images/wordsearch.jpg" alt="The word search puzzle" /></p> <p>(Note: Some fellow <strong>developer</strong> colleagues think that solving the puzzle with code is unfair… heh. really?!)</p> <h1 id="reading-the-lexicon">Reading the lexicon</h1> <p>Here is the complete code:</p> <p>First we’ll need to read in all the possible words we’re looking for. And using the new Java streams...
+          
+          </span>
+
+        
+        
+          <p><a class="title-link" href="/blog/2019/01/word-finding/">Read more...</a></p>
+        
+
+      </div>
+    </div>
+    </article>
+  
+    <hr/>
   
     <article itemscope itemtype="http://schema.org/Article">
     <div class="post">
@@ -136,7 +170,6 @@
           <span itemprop="datePublished" content="2019-01-07T08:12:57+01:00" class="date">
             Jan 7, 2019 08:12:57
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/longest-path/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/01/longest-path/">The longest maze/snake</a></h1>
 
@@ -153,9 +186,6 @@
           <p><a class="title-link" href="/blog/2019/01/longest-path/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/longest-path/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -181,7 +211,6 @@
           <span itemprop="datePublished" content="2019-01-06T18:22:32+01:00" class="date">
             Jan 6, 2019 18:22:32
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/java-champion/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2019/01/java-champion/">Happy New Year: 2019</a></h1>
 
@@ -198,9 +227,6 @@
           <p><a class="title-link" href="/blog/2019/01/java-champion/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2019/01/java-champion/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -226,7 +252,6 @@
           <span itemprop="datePublished" content="2018-09-24T09:22:32+02:00" class="date">
             Sep 24, 2018 09:22:32
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/part-2-native-microservice-in-graalvm/">Part 2: Native microservice in GraalVM</a></h1>
 
@@ -243,9 +268,6 @@
           <p><a class="title-link" href="/blog/2018/09/part-2-native-microservice-in-graalvm/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/09/part-2-native-microservice-in-graalvm/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -271,7 +293,6 @@
           <span itemprop="datePublished" content="2018-09-20T09:14:13+02:00" class="date">
             Sep 20, 2018 09:14:13
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/09/part-1-java-to-native-using-graalvm/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Part 1: Java to native using GraalVM</a></h1>
 
@@ -288,9 +309,6 @@
           <p><a class="title-link" href="/blog/2018/09/part-1-java-to-native-using-graalvm/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/09/part-1-java-to-native-using-graalvm/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -316,7 +334,6 @@
           <span itemprop="datePublished" content="2018-05-17T14:14:31+02:00" class="date">
             May 17, 2018 14:14:31
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-hotsport-specjvm2008/">Part 2: OpenJ9 versus HotSpot</a></h1>
 
@@ -333,9 +350,6 @@
           <p><a class="title-link" href="/blog/2018/05/openj9-hotsport-specjvm2008/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -361,7 +375,6 @@
           <span itemprop="datePublished" content="2018-05-16T13:54:31+02:00" class="date">
             May 16, 2018 13:54:31
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/openj9-jvm-shootout/">Part 1: OpenJ9 versus HotSpot</a></h1>
 
@@ -378,9 +391,6 @@
           <p><a class="title-link" href="/blog/2018/05/openj9-jvm-shootout/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -406,7 +416,6 @@
           <span itemprop="datePublished" content="2018-05-16T08:14:11+02:00" class="date">
             May 16, 2018 08:14:11
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/05/java-and-docker-memory-limits/">Java and Docker, the limitations</a></h1>
 
@@ -423,9 +432,6 @@
           <p><a class="title-link" href="/blog/2018/05/java-and-docker-memory-limits/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/05/java-and-docker-memory-limits/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -451,7 +457,6 @@
           <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
             Jan 17, 2018 10:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/updating-dependencies-in-microservices/">In a microservices landscape; When do you update?</a></h1>
 
@@ -468,9 +473,6 @@
           <p><a class="title-link" href="/blog/2018/01/updating-dependencies-in-microservices/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/updating-dependencies-in-microservices/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -496,7 +498,6 @@
           <span itemprop="datePublished" content="2018-01-17T10:28:12+01:00" class="date">
             Jan 17, 2018 10:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2018/01/java-9-adoptation/">Fear of upgrading to Java 9, is it justified?</a></h1>
 
@@ -513,9 +514,6 @@
           <p><a class="title-link" href="/blog/2018/01/java-9-adoptation/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2018/01/java-9-adoptation/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -541,7 +539,6 @@
           <span itemprop="datePublished" content="2017-06-22T14:28:12+02:00" class="date">
             Jun 22, 2017 14:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/06/inverse-conways-law/">Inverse Conway's law</a></h1>
 
@@ -558,9 +555,6 @@
           <p><a class="title-link" href="/blog/2017/06/inverse-conways-law/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2017/06/inverse-conways-law/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -586,7 +580,6 @@
           <span itemprop="datePublished" content="2017-02-01T09:28:12+01:00" class="date">
             Feb 1, 2017 09:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/02/javaone-rock-star-2016/">JavaOne Rock Star 2016</a></h1>
 
@@ -603,9 +596,6 @@
           <p><a class="title-link" href="/blog/2017/02/javaone-rock-star-2016/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2017/02/javaone-rock-star-2016/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -631,7 +621,6 @@
           <span itemprop="datePublished" content="2017-01-30T13:28:12+01:00" class="date">
             Jan 30, 2017 13:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2017/01/vikipedia-a-java-youtube-bot/">Vikipedia: A Java YouTube bot</a></h1>
 
@@ -648,9 +637,6 @@
           <p><a class="title-link" href="/blog/2017/01/vikipedia-a-java-youtube-bot/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2017/01/vikipedia-a-java-youtube-bot/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -676,7 +662,6 @@
           <span itemprop="datePublished" content="2016-12-06T07:28:12+01:00" class="date">
             Dec 6, 2016 07:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/12/three-new-jeps/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/12/three-new-jeps/">Three new JEPs</a></h1>
 
@@ -693,9 +678,6 @@
           <p><a class="title-link" href="/blog/2016/12/three-new-jeps/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/12/three-new-jeps/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -721,7 +703,6 @@
           <span itemprop="datePublished" content="2016-10-20T10:28:12+02:00" class="date">
             Oct 20, 2016 10:28:12
           </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/#disqus_thread">0 comments</a>
         </p>
         <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/10/excuse-me-sorry-to-interrupt/">Excuse me, sorry to interrupt...</a></h1>
 
@@ -738,54 +719,6 @@
           <p><a class="title-link" href="/blog/2016/10/excuse-me-sorry-to-interrupt/">Read more...</a></p>
         
 
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/10/excuse-me-sorry-to-interrupt/#disqus_thread">0 comments</a>
-        </p>
-      </div>
-    </div>
-    </article>
-  
-    <hr/>
-  
-    <article itemscope itemtype="http://schema.org/Article">
-    <div class="post">
-
-      <div class="post-thumbnail">
-      	<a itemprop="mainEntityOfPage" href="/blog/2016/09/the-future-of-java-ee/" title="JavaOne 2016, the Future of Java EE">
-      	
-      		<img itemprop="image" class="post-thumbnail-img" src="/thumbnails/java.png" alt="JavaOne 2016, the Future of Java EE" width="100" height="100" />
-      	
-    	</a>
-      </div>
-  
-      <div class="post-data">
-        <p class="post-meta">
-          Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Roy van Rijn</span></span> 
-          (<span itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><span itemprop="name">royvanrijn.com</span></span>) on 
-          <span itemprop="dateModified" content="2016-09-18T19:45:12+02:00" class="date" />
-          <span itemprop="datePublished" content="2016-09-18T19:45:12+02:00" class="date">
-            Sep 18, 2016 19:45:12
-          </span>
-          : <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
-        <h1 itemprop="headline" class="post-title"><a class="title-link" href="/blog/2016/09/the-future-of-java-ee/">JavaOne 2016, the Future of Java EE</a></h1>
-
-        <span itemprop="articleBody">
-          
-
-          
-            <p>Lately there has been a lot of rumor going around about the future of Java EE. Oracle ex-employees <a href="https://twitter.com/reza_rahman">Reza Rahman</a> was one of the first to voice their concern about Java EE. It seemed that all development on the seperate JSRs (Java Specification Requests) that make up Java EE 8 ground to a halt and Oracle was thinking about stopping Java EE development all together.</p> <p>Oracle finally gave some insight on their proposal of the future of Java EE during <a href="https://www.oracle.com/javaone/index.html">JavaOne</a> 2016 (where I am right now).</p> <h1 id="what-is-java-ee">What is Java EE?</h1> <p>First, lets take a step back...
-          
-          </span>
-
-        
-        
-          <p><a class="title-link" href="/blog/2016/09/the-future-of-java-ee/">Read more...</a></p>
-        
-
-        <p class="post-meta">
-          <a class="post-comments" href="https://royvanrijn.com/blog/2016/09/the-future-of-java-ee/#disqus_thread">0 comments</a>
-        </p>
       </div>
     </div>
     </article>
@@ -848,6 +781,10 @@
     
       
         <div class="pagination-item"><a href="/page/12">12</a></div>
+      
+    
+      
+        <div class="pagination-item"><a href="/page/13">13</a></div>
       
     
 
