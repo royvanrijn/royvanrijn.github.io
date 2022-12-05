@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        margin: 0;
+    }
+    #c {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+    }
+</style>
+<canvas id="c"></canvas>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/three.min.js"></script>
+<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/js/controls/OrbitControls.js"></script>
+<script>
+    'use strict';
+
+    /* global THREE */
+
+    function main() {
+        const canvas = document.querySelector('#c');
+        const renderer = new THREE.WebGLRenderer({canvas});
+
+        const cellSize = 7;
+
+        const fov = 75;
+        const aspect = 2;  // the canvas default
+        const near = 0.1;
+        const far = 1000;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.set(-cellSize * .3, cellSize * .8, -cellSize * .3);
+
+        const controls = new THREE.OrbitControls(camera, canvas);
+        controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
+        controls.update();
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('lightblue');
+
+        {
+            const color = 0xFFFFFF;
+            const intensity = 1;
+            const light = new THREE.DirectionalLight(color, intensity);
+            light.position.set(-1, 2, 4);
+            scene.add(light);
+        }
+        {
+            const color = 0xFFFF0A;
+            const intensity = 0.5;
+            const light = new THREE.DirectionalLight(color, intensity);
+            light.position.set(1, -2, -3);
+            scene.add(light);
+        }
+
+        const cell = new Uint8Array(cellSize * cellSize * cellSize);
+        const snake = [182, 133, 140, 91, 42, 35, 36, 85, 78, 127, 176, 177, 170, 121, 72, 23, 16, 17, 10, 3, 2, 51, 58, 57, 8, 7, 0, 49, 98, 105, 154, 155, 148, 197, 196, 245, 252, 253, 302, 295, 296, 297, 248, 249, 200, 151, 102, 101, 108, 157, 206, 205, 212, 261, 310, 317, 324, 275, 282, 281, 232, 239, 190, 191, 142, 93, 44, 45, 38, 31, 80, 129, 136, 185, 234, 241, 242, 193, 144, 95, 88, 89, 138, 187, 236, 285, 284, 277, 326, 319, 312, 263, 214, 165, 116, 67, 60, 61, 110, 159, 208, 257, 306, 299, 300, 251, 202, 153, 104, 55, 6, 13, 20, 69, 118, 167, 216, 265, 314, 321, 328, 279, 230, 181, 132, 83, 34, 41, 48, 97, 146, 195, 244, 293, 342, 341, 340, 339, 338, 337, 336, 329, 322, 315, 266, 217, 168, 119, 70, 21];
+        snake.forEach(elem => cell[elem] = 1);
+
+        const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({color: 'green'});
+
+        for (let y = 0; y < cellSize; ++y) {
+            for (let z = 0; z < cellSize; ++z) {
+                for (let x = 0; x < cellSize; ++x) {
+                    const offset = y * cellSize * cellSize +
+                        z * cellSize +
+                        x;
+                    const block = cell[offset];
+                    if (block) {
+                        const mesh = new THREE.Mesh(geometry, material);
+                        mesh.position.set(x, y, z);
+                        scene.add(mesh);
+                    }
+                }
+            }
+        }
+
+        function resizeRendererToDisplaySize(renderer) {
+            const canvas = renderer.domElement;
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            const needResize = canvas.width !== width || canvas.height !== height;
+            if (needResize) {
+                renderer.setSize(width, height, false);
+            }
+            return needResize;
+        }
+
+        let renderRequested = false;
+
+        function render() {
+            renderRequested = undefined;
+
+            if (resizeRendererToDisplaySize(renderer)) {
+                const canvas = renderer.domElement;
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        render();
+
+        function requestRenderIfNotRequested() {
+            if (!renderRequested) {
+                renderRequested = true;
+                requestAnimationFrame(render);
+            }
+        }
+
+        controls.addEventListener('change', requestRenderIfNotRequested);
+        window.addEventListener('resize', requestRenderIfNotRequested);
+    }
+
+    main();
+
+</script>
+</html>
