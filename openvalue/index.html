@@ -7,13 +7,17 @@
 <a-scene embedded arjs>
 
     <a-assets>
-        <img id="boxTexture" src="logo.png">
+        <img id="logo" src="logo.png">
+        <video id="welcomeMovie" autoplay="true" loop="true" src="movie.mp4" timeout="100000"></video>
     </a-assets>
 
     <a-marker type="pattern" url="./pattern.patt">
-        <a-box src="#boxTexture" position="0 2 -2" rotation="0 45 45" scale="2 2 2"
-               animation="property: object3D.position.y; to: 2.2; dir: alternate; dur: 1000; loop: true"></a-box>
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
+            <a-image rotation="-90 0 0" position="2 0 0" src="#logo"></a-image>
+        </a-entity>
+        <a-video rotation="-90 0 0" src="#welcomeMovie" width="2" height="1"></a-video>
     </a-marker>
+
 
     <a-entity camera></a-entity>
 </a-scene>
