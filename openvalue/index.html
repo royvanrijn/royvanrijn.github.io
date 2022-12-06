@@ -16,7 +16,6 @@
         <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item>
     </a-assets>
 
-    <a-marker type="pattern" preset="custom" url="pattern-logo.patt"/>
 
     <a-marker id="animated-marker" type='pattern' value='6'>
         <a-entity
@@ -25,8 +24,10 @@
         </a-entity>
     </a-marker>
 
-    <!-- use this <a-entity camera> to support multiple-markers, otherwise use <a-marker-camera> instead of </a-marker> -->
-    <a-entity camera></a-entity>
+    <a-marker-camera type="pattern" patternUrl="pattern-logo.patt"></a-marker-camera>
+
+    <a-marker type="pattern" patternUrl="pattern-logo.patt"></a-marker>
+
 </a-scene>
 </body>
 </html>
