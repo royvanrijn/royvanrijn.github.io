@@ -17,12 +17,15 @@
     'use strict';
 
     /* global THREE */
+    function randomIntFromInterval(min, max) { // min and max included
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
 
     function main() {
         const canvas = document.querySelector('#c');
         const renderer = new THREE.WebGLRenderer({canvas});
 
-        const cellSize = 6;
+        const cellSize = 2;
 
         const fov = 75;
         const aspect = 2;  // the canvas default
@@ -40,11 +43,12 @@
 
         {
             const color = 0xFFFFFF;
-            const intensity = 1;
+            const intensity = 0.5;
             const light = new THREE.DirectionalLight(color, intensity);
             light.position.set(-1, 2, 4);
             scene.add(light);
         }
+
         {
             const color = 0xFFFF0A;
             const intensity = 0.5;
@@ -54,9 +58,17 @@
         }
 
         const cell = new Uint8Array(cellSize * cellSize * cellSize);
-        // 102
-        const snake = [61, 97, 103, 102, 66, 30, 31, 32, 26, 20, 21, 15, 16, 52, 88, 124, 123, 117, 81, 45, 44, 38, 74, 110, 146, 152, 158, 157, 193, 187, 181, 180, 144, 150, 114, 78, 72, 36, 0, 1, 7, 13, 49, 85, 86, 92, 128, 134, 140, 141, 105, 69, 63, 64, 100, 136, 172, 171, 165, 201, 195, 189, 183, 184, 148, 112, 76, 40, 4, 5, 11, 47, 83, 119, 155, 191, 197, 203, 167, 131, 95, 59, 23, 29, 35, 71, 107, 143, 179, 215, 214, 213, 212, 211, 210, 204, 198, 162, 126, 90, 54, 18];
-        snake.forEach(elem => cell[elem] = 1);
+
+        // 16
+        const snakes = [[3, 7, 6, 4, 0],
+            [3, 7, 5, 4, 0],
+            [5, 7, 6, 2, 0],
+            [5, 7, 3, 2, 0],
+            [6, 7, 5, 1, 0],
+            [6, 7, 3, 1, 0]
+        ];
+        snakes[randomIntFromInterval(0,snakes.length-1)].forEach(elem => cell[elem] = 1);
+
 
         const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
         const material = new THREE.MeshPhongMaterial({color: 'green'});
