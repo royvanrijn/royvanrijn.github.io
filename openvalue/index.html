@@ -1,30 +1,25 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-</head>
-<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
-<script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-<script src="https://r105.threejsfundamentals.org/threejs/resources/threejs/r105/three.min.js"></script>
-
-<body style='margin : 0px; overflow: hidden;'>
-<!-- we add detectionMode and matrixCodeType to tell AR.js to recognize barcode markers -->
-<a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
-
-    <a-assets>
-        <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item>
-    </a-assets>
-
-    <a-marker-camera preset='pattern' type='pattern' url="pattern-logo.patt"></a-marker-camera>
-
+<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+<!-- we import arjs version without NFT but with marker + location based support -->
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<body style="margin : 0px; overflow: hidden;">
+<a-scene embedded arjs>
     <a-marker type="pattern" patternUrl="pattern-logo.patt">
+        <!-- we use cors proxy to avoid cross-origin problems -->
+        <!--
+          ⚠️⚠️⚠️
+          https://arjs-cors-proxy.herokuapp.com/ is now offline, Heroku has dismissed all his free plans from November 2022.
+          You need to host your own proxy and use it instead. The proxy is based on CORS Anywhere (see https://github.com/Rob--W/cors-anywhere).
+          ⚠️⚠️⚠️
+        -->
         <a-entity
-                gltf-model="#animated-asset"
-                scale="2">
-        </a-entity>
+                position="0 0 0"
+                scale="0.05 0.05 0.05"
+                gltf-model="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+        ></a-entity>
     </a-marker>
-
+    <a-entity camera></a-entity>
 </a-scene>
 </body>
 </html>
