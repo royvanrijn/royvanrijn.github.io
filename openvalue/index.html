@@ -16,17 +16,14 @@
         <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item>
     </a-assets>
 
+    <a-marker-camera preset='pattern' type='pattern' url="pattern-logo.patt"></a-marker-camera>
 
-    <a-marker id="animated-marker" type='pattern' value='6'>
+    <a-marker type="pattern" patternUrl="pattern-logo.patt">
         <a-entity
                 gltf-model="#animated-asset"
                 scale="2">
         </a-entity>
     </a-marker>
-
-    <a-marker-camera type="pattern" patternUrl="pattern-logo.patt"></a-marker-camera>
-
-    <a-marker type="pattern" patternUrl="pattern-logo.patt"></a-marker>
 
 </a-scene>
 </body>
