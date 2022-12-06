@@ -17,6 +17,9 @@
     'use strict';
 
     /* global THREE */
+    function randomIntFromInterval(min, max) { // min and max included
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
 
     function main() {
         const canvas = document.querySelector('#c');
@@ -55,8 +58,27 @@
         }
 
         const cell = new Uint8Array(cellSize * cellSize * cellSize);
-        const snake = [20, 23, 26, 17, 8, 5, 2, 1, 10, 9, 18, 21, 24, 15, 6, 3];
-        snake.forEach(elem => cell[elem] = 1);
+
+        // 16
+        const snakes = [[17, 26, 23, 20, 11, 2, 5, 4, 7, 6, 15, 24, 21, 18, 9, 0],
+            [17, 26, 25, 24, 15, 6, 7, 4, 5, 2, 11, 20, 19, 18, 9, 0],
+            [17, 26, 25, 22, 19, 20, 11, 2, 5, 4, 7, 6, 15, 12, 9, 0],
+            [17, 26, 23, 22, 21, 24, 15, 6, 7, 4, 5, 2, 11, 10, 9, 0],
+            [23, 26, 25, 16, 7, 8, 5, 2, 11, 10, 19, 18, 21, 12, 3, 0],
+            [23, 26, 17, 8, 5, 2, 11, 10, 19, 18, 21, 24, 15, 6, 3, 0],
+            [23, 26, 25, 24, 21, 18, 19, 10, 11, 2, 5, 8, 7, 6, 3, 0],
+            [23, 26, 17, 16, 15, 24, 21, 18, 19, 10, 11, 2, 5, 4, 3, 0],
+            [25, 26, 23, 14, 5, 8, 7, 6, 15, 12, 21, 18, 19, 10, 1, 0],
+            [25, 26, 17, 14, 11, 20, 19, 18, 21, 12, 15, 6, 7, 4, 1, 0],
+            [25, 26, 17, 8, 7, 6, 15, 12, 21, 18, 19, 20, 11, 2, 1, 0],
+            [25, 26, 23, 20, 19, 18, 21, 12, 15, 6, 7, 8, 5, 2, 1, 0],
+            [24, 25, 26, 17, 8, 7, 6, 3, 12, 9, 18, 19, 20, 11, 2, 1],
+            [24, 25, 22, 19, 18, 9, 12, 3, 6, 7, 8, 17, 14, 11, 2, 1],
+            [24, 25, 16, 7, 6, 3, 12, 9, 18, 19, 20, 23, 14, 5, 2, 1],
+            [24, 25, 26, 23, 20, 19, 18, 9, 12, 3, 6, 7, 8, 5, 2, 1]
+        ];
+        snakes[randomIntFromInterval(0,snakes.length-1)].forEach(elem => cell[elem] = 1);
+
 
         const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
         const material = new THREE.MeshPhongMaterial({color: 'green'});
