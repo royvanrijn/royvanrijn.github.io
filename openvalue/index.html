@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
-<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
 <!-- we import arjs version without NFT but with marker + location based support -->
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 <body style="margin : 0px; overflow: hidden;">
 <a-scene embedded arjs>
 
     <a-assets>
+        <a-asset-item id="tree-obj" src="tree.obj"></a-asset-item>
+        <a-asset-item id="tree-mtl" src="tree.mtl"></a-asset-item>
+
         <img id="logo" src="logo.png">
         <video id="welcomeMovie" autoplay="true" loop="true" src="movie.mp4" timeout="100000"></video>
     </a-assets>
@@ -15,7 +18,11 @@
         <a-entity animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
             <a-image rotation="-90 0 0" position="2 0 0" src="#logo"></a-image>
         </a-entity>
-        <a-video rotation="-90 0 0" src="#welcomeMovie" width="2" height="1"></a-video>
+
+        <a-video rotation="-45 0 0" position="0 0 0" src="#welcomeMovie" width="2" height="1"></a-video>
+
+        <a-obj-model rotation="0 0 0" src="#tree-obj" mtl="#tree-mtl" position="0.5 0 0" scale="0.2 0.2 0.2"></a-obj-model>
+
     </a-marker>
 
 
