@@ -4,89 +4,43 @@
 
     <!-- Initialize the viewport -->
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <!-- Load the required dependencies: A-frame and AR.js -->
     <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
-    <!-- This is to load the A-frame extras, that contain the required components that are used to show the animations -->
-    <!-- of the 3D model of the robot -->
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-
-    <!-- This is a hack because at the time of writing there are some distortions in the provided visuals until the  -->
-    <!-- system receives a resize event. The resize event must be triggered when everything has been loaded and the  -->
-    <!-- camera has been initialized. All the events I tried didn't work, so in the end I resorted using a 3 seconds -->
-    <!-- time-out after the load event. When this problem will be fixed in the AR.js library, this hack won't be necessary -->
-    <!-- anymore -->
     <script>
         window.onload = function(){
             setTimeout(function(){
                 var resizeEvent = window.document.createEvent('UIEvents');
                 resizeEvent.initUIEvent('resize', true, false, window, 0);
                 window.dispatchEvent(resizeEvent);
-            }, 5000);
+            }, 1000);
         };
 
-        /* global AFRAME */
-        AFRAME.registerComponent('play-on-click', {
-            init: function () {
-                this.onClick = this.onClick.bind(this);
-            },
-            play: function () {
-                window.addEventListener('click', this.onClick);
-            },
-            pause: function () {
-                window.removeEventListener('click', this.onClick);
-            },
-            onClick: function (evt) {
-                var videoEl = this.el.getAttribute('material').src;
-                if (!videoEl) { return; }
-                this.el.object3D.visible = true;
-                videoEl.play();
-            }
-        });
-
-        /* global AFRAME */
-        AFRAME.registerComponent('hide-on-play', {
-            schema: {type: 'selector'},
-            init: function () {
-                this.onPlaying = this.onPlaying.bind(this);
-                this.onPause = this.onPause.bind(this);
-                this.el.object3D.visible = !this.data.playing;
-            },
-            play: function () {
-                if (this.data) {
-                    this.data.addEventListener('playing', this.onPlaying);
-                    this.data.addEventListener('pause', this.onPause);
-                }
-            },
-            pause: function () {
-                if (this.data) {
-                    this.data.removeEventListener('playing', this.onPlaying);
-                    this.data.removeEventListener('pause', this.onPause);
-                }
-            },
-            onPlaying: function (evt) {
-                this.el.object3D.visible = false;
-            },
-            onPause: function (evt) {
-                this.el.object3D.visible = true;
-            }
-        });
     </script>
 </head>
 
 <body style='margin : 2px; overflow: hidden;'>
+
+<input  id="play-button" type="image" style="position: fixed;
+  top: calc(50% - 1em);
+  left: calc(50% - 2em);
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+" src="play.png" />
+
 <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
 
     <a-assets>
         <a-asset-item id="tree-obj" src="tree.obj"></a-asset-item>
         <a-asset-item id="tree-mtl" src="tree.mtl"></a-asset-item>
         <img id="logo" src="logo.png">
-        <video id="welcomeMovie" preload="auto" autoplay="true" loop="true" src="movie.mp4"></video>
+        <video id="welcomeMovie" preload="auto" autoplay="true" loop="true" playsinline src="movie.mp4"></video>
     </a-assets>
 
-    <a-marker visible="false" play-on-click id="markerhandler" preset='custom' type="pattern" url="./pattern.patt">
+    <a-marker id="markerhandler" preset='custom' type="pattern" url="./pattern.patt">
         <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0 0 0" width="2" height="1.132"></a-video>
 
         <a-ring rotation="-90 0 0" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
@@ -98,20 +52,16 @@
         <a-obj-model rotation="-90 0 0" src="#tree-obj" mtl="#tree-mtl" position="0.3 0.2 0.65" scale="0.2 0.2 0.2"></a-obj-model>
     </a-marker>
 
-    <a-camera>
-        <a-entity
-                position="0 0 -1.5"
-                text="align: center;
-                width: 6;
-                wrapCount: 100;
-                color: black;
-                value: scan your card"
-                hide-on-play="#welcomeMovie">
-        </a-entity>
-    </a-camera>
+    <a-camera></a-camera>
 </a-scene>
 
 <script>
+
+    document.getElementById('play-button').addEventListener("click", function(e){
+        this.style.display = 'none';
+        document.querySelector("#welcomeMovie").pause();
+    }, false);
+
     AFRAME.registerComponent('vidhandler', {
         init: function () {
             this.toggle = false;
@@ -119,7 +69,8 @@
         },
         tick: function() {
             if(document.querySelector("a-marker").object3D.visible == true){
-                if(!this.toggle){
+                if(!this.toggle) {
+                    document.getElementById('play-button').style.display = 'none';
                     this.toggle = true;
                     document.querySelector("#welcomeMovie").currentTime = 0;
                     document.querySelector("#welcomeMovie").play();
