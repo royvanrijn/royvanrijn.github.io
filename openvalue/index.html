@@ -33,17 +33,7 @@
     </style>
 </head>
 
-<body style='margin : 2px; overflow: hidden;'>
-
-<div id='overlay'>
-    <input  id="play-button" type="image" style="position: fixed;
-  top: calc(50% - 100px);
-  left: calc(50% - 100px);
-  width: 100px;
-  height: 100px;
-  z-index: 10;
-       " src="play.png" />
-</div>
+<body style='margin : 0px; overflow: hidden;'>
 
 <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
 
@@ -55,15 +45,15 @@
     </a-assets>
 
     <a-marker id="markerhandler" preset='custom' type="pattern" url="./pattern.patt">
-        <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0 0 0" width="2" height="1.132"></a-video>
+        <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0.2 0 -1.6" width="2" height="1.132"></a-video>
 
-        <a-ring rotation="-90 0 0" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
+        <a-ring rotation="-90 0 0" position="0 0.5 -1.6" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
 
-        <a-entity animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
-            <a-image rotation="-90 0 0" position="2 0.2 0" src="#logo"></a-image>
+        <a-entity position="0 0.5 -1.6" animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
+            <a-image rotation="-90 0 0" position="2 0.2 0.65" src="#logo"></a-image>
         </a-entity>
 
-        <a-obj-model rotation="-90 0 0" src="#tree-obj" mtl="#tree-mtl" position="0.3 0.2 0.65" scale="0.2 0.2 0.2"></a-obj-model>
+        <a-obj-model rotation="-90 0 0" src="#tree-obj" mtl="#tree-mtl" position="0.3 0.4 -1.05" scale="0.2 0.2 0.2"></a-obj-model>
     </a-marker>
 
     <a-camera cursor-visible="true"
@@ -74,6 +64,15 @@
               cursor-opacity="0.7"></a-camera>
 </a-scene>
 
+<div id='overlay'>
+    <input  id="play-button" type="image" style="position: fixed;
+  top: calc(50% - 100px);
+  left: calc(50% - 100px);
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+       " src="play.png" />
+</div>
 <script>
 
 
