@@ -39,9 +39,7 @@
         <video id="welcomeMovie" preload="auto" autoplay="true" loop="true" src="movie.mp4" timeout="100000"></video>
     </a-assets>
 
-
-
-    <a-marker  preset='custom' type="pattern" url="./pattern.patt">
+    <a-marker id="markerhandler" preset='custom' type="pattern" url="./pattern.patt">
 
         <a-ring rotation="-90 0 0" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
 
@@ -49,11 +47,33 @@
             <a-image rotation="-90 0 0" position="2 0.2 0" src="#logo"></a-image>
         </a-entity>
 
-        <a-video rotation="-90 0 0" src="#welcomeMovie" position="0 0 0" width="2" height="1.2"></a-video>
+        <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0 0 0" width="2" height="1.2"></a-video>
         <a-obj-model rotation="-90 0 0" src="#tree-obj" mtl="#tree-mtl" position="0.3 0.2 0.65" scale="0.2 0.2 0.2"></a-obj-model>
     </a-marker>
 
     <a-entity camera></a-entity>
 </a-scene>
+
+<script>
+    AFRAME.registerComponent('vidhandler', {
+        init: function () {
+            this.toggle = false;
+            document.querySelector("#welcomeMovie").pause(); //reference to the video
+        },
+        tick:function(){
+            if(document.querySelector("a-marker").object3D.visible == true){
+                if(!this.toggle){
+                    this.toggle = true;
+                    document.querySelector("#welcomeMovie").currentTime = 0;
+                    document.querySelector("#welcomeMovie").play();
+                }
+            }else{
+                this.toggle = false;
+                document.querySelector("#welcomeMovie").pause();
+
+            }
+        }
+    });
+</script>
 </body>
 </html>
