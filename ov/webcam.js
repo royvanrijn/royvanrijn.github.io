@@ -11,6 +11,9 @@ function stopMediaTracks(stream) {
 
 function gotDevices(mediaDevices) {
     select.innerHTML = '';
+    const changeOption = document.createElement('option');
+    changeOption.disabled = true;
+    changeOption.appendChild(document.createTextNode("Change camera"));
     select.appendChild(document.createElement('option'));
     let count = 1;
     mediaDevices.forEach(mediaDevice => {
@@ -25,7 +28,7 @@ function gotDevices(mediaDevices) {
     });
 }
 
-button.addEventListener('click', event => {
+select.addEventListener('change', event => {
     if (typeof currentStream !== 'undefined') {
         stopMediaTracks(currentStream);
     }
