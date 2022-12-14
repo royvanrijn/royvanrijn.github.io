@@ -9,6 +9,7 @@
     <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="webcam.js"></script>
     <script>
         window.onload = function(){
             setTimeout(function(){
@@ -37,6 +38,13 @@
 </head>
 
 <body style='margin : 0px; overflow: hidden;'>
+
+<div class="controls">
+    <button id="button">Get camera</button>
+    <select id="select">
+        <option></option>
+    </select>
+</div>
 
 <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;' vr-mode-ui="enabled: false">
 
