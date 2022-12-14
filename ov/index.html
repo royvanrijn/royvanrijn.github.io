@@ -22,7 +22,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 15;
+            z-index: 5;
         }
         .controls p {
             margin: 0;
@@ -53,10 +53,8 @@
 
 <div class="controls">
     <label for="select">Switch camera</label>
-
-
     <select id="select">
-        <option></option>
+        <option>No camera available</option>
     </select>
 </div>
 
@@ -94,12 +92,15 @@
 </div>
 <script>
 
-
     var locked = true;
     document.getElementById('play-button').addEventListener("click", function(e){
         this.style.display = 'none';
+        // Update cameras to select:
+        navigator.mediaDevices.enumerateDevices().then(gotDevices);
+        // Hide overlay
         document.getElementById('overlay').style.display = 'none';
         locked = false;
+        // Init videos:
         document.querySelector("#welcomeMovie").play();
         document.querySelector("#welcomeMovie").pause();
     }, false);

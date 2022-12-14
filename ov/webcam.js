@@ -62,5 +62,3 @@ select.addEventListener('change', event => {
             console.error(error);
         });
 });
-
-navigator.mediaDevices.enumerateDevices().then(gotDevices);
