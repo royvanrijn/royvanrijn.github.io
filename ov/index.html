@@ -8,8 +8,7 @@
 
     <script src="aframe.js"></script>
     <script src="aframe-ar.js"></script>
-    <script src="aframe-extras.loaders.min.js"></script>
-
+    <script src="aframe-extras.loaders.js"></script>
 
     <style>
         .controls {
@@ -68,11 +67,11 @@
     </a-assets>
 
     <a-marker id="markerhandler" preset='custom' type="pattern" url="./pattern.patt">
-        <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0.2 0 0" width="2" height="1.132"></a-video>
+        <a-video vidhandler rotation="-90 0 0" src="#welcomeMovie" position="0.2 0 -1.6" width="2" height="1.132"></a-video>
 
-        <a-ring rotation="-90 0 0" position="0 0.5 0" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
+        <a-ring rotation="-90 0 0" position="0 0 -1.6" material="reflectivity: 0.9; shininess: 30;" color="#a5b4f2" radius-inner="1.8" radius-outer="2"></a-ring>
 
-        <a-entity position="0 0.5 0" animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
+        <a-entity position="0.3 0 -1.6" animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 10000">
             <a-image rotation="-90 0 0" position="2 0.2 0.65" src="#logo"></a-image>
         </a-entity>
 
@@ -90,6 +89,7 @@
 <div id='overlay'>
     <input  id="play-button" type="image" style="width: 100px; height: 100px;" src="play.png" />
 </div>
+
 <script>
 
     var locked = true;
