@@ -5,9 +5,111 @@
     <description>Java, algorithms, math, science and more!</description>
     <link>https://royvanrijn.com/</link>
     <atom:link href="https://royvanrijn.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 08 Jul 2022 10:56:31 +0200</pubDate>
-    <lastBuildDate>Fri, 08 Jul 2022 10:56:31 +0200</lastBuildDate>
+    <pubDate>Wed, 04 Jan 2023 23:35:44 +0100</pubDate>
+    <lastBuildDate>Wed, 04 Jan 2023 23:35:44 +0100</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Introduction to Java Notebooks</title>
+        <description>&lt;p&gt;&lt;strong&gt;Java Notebook&lt;/strong&gt; is a new and exciting way to explore the &lt;a href=&quot;https://www.java.org&quot;&gt;Java&lt;/a&gt; programming language. It works a lot like &lt;a href=&quot;https://jupyter.org/try-jupyter/retro/notebooks/?path=notebooks/Intro.ipynb&quot;&gt;Jupyter Notebooks&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Notebooks are a community standard for communicating and performing interactive computing. They are a document that blends computations, outputs, explanatory text, mathematics, images, and rich media representations of objects.&lt;/p&gt;
+
+&lt;p&gt;It allows you to interleave blocks of text (in &lt;a href=&quot;https://en.wikipedia.org/wiki/Markdown&quot;&gt;Markdown&lt;/a&gt;), editable &lt;em&gt;and&lt;/em&gt; executable &lt;strong&gt;Java&lt;/strong&gt; code blocks and output blocks.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Edit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello world!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;gt; Hello world!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As you can see, when we run the code block above, the output is immediately updated. It is similar to &lt;a href=&quot;https://dev.java/learn/jshell-tool/&quot;&gt;JShell&lt;/a&gt;, but in the browser.&lt;/p&gt;
+
+&lt;h2 id=&quot;maven-support&quot;&gt;Maven support&lt;/h2&gt;
+
+&lt;p&gt;Notebooks are an ideal tool to teach programming languages and to display and explore libraries and frameworks. Notebooks also support the import of external libraries using &lt;a href=&quot;https://maven.apache.org/&quot;&gt;Apache Maven&lt;/a&gt;. Here is an example using the &lt;code class=&quot;highlighter-rouge&quot;&gt;load&lt;/code&gt; command to import &lt;a href=&quot;https://commons.apache.org/&quot;&gt;Apache Commons&lt;/a&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Edit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commons&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;commons&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lang3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.commons.lang3.StringUtils&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;StringUtils&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;reverse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello world!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;gt; !dlrow olleH
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;data-processing-with-jandas&quot;&gt;Data processing with jandas&lt;/h2&gt;
+
+&lt;p&gt;It is also possible to directly import resources from internet and parse them to &lt;strong&gt;Java&lt;/strong&gt; objects and records using frameworks like &lt;code class=&quot;highlighter-rouge&quot;&gt;jandas&lt;/code&gt; (loosely based on &lt;a href=&quot;https://pandas.pydata.org/&quot;&gt;pandas&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;Here is an interactive example:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Edit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;jandas:jandas:&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.24&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.jandas.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;record&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Song&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rank&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;songName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;amountStreams&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;artist&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Date&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;releaseDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;songs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CsvReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;https://www.royvanrijn.com/examples/data/spotify_top_1000.csv&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Song&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Lady Gaga currently has &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;songs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;artist&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Lady Gaga&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; top 1000 hits.&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Ed Sheeran has &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;songs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;artist&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Ed Sheeran&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mapToLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;amountStreams&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; total streams&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bohemian Rhapsody was released: &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;songs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;songName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bohemian Rhapsody&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;releaseDate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findAny&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;gt; Lady Gaga currently has 6 top 1000 hits.
+&amp;gt; Ed Sheeran has 26513653 total streams.
+&amp;gt; Bohemian Rhapsody was released: Fri Oct 31 00:00:00 CET 1975
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;hosting-your-own-notebooks&quot;&gt;Hosting your own Notebooks&lt;/h2&gt;
+
+&lt;p&gt;It is very easy to host your own notebooks. Users can run notebooks locally (using &lt;a href=&quot;https://www.docker.com/&quot;&gt;Docker&lt;/a&gt;) or use one of the following free cloud services to run your &lt;strong&gt;Java Notebook&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.oracle.com/this_does_not_exist/&quot;&gt;Oracle Cloud Notebooks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://colab.research.google.com/&quot;&gt;Google Colab&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://azure.microsoft.com/java_notebooks_should_become_a_reality/&quot;&gt;Azure JBooks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.azul.com/java_notebooks_is_a_dream/&quot;&gt;Azul Cloudrunner&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;And many others..&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If &lt;strong&gt;you&lt;/strong&gt; build or maintain a framework or library, or if you have a website explaining Java programming: Please add these &lt;em&gt;interactive&lt;/em&gt; notebooks to your website. This makes it incredibly easy for new developers to get acquainted with your code.&lt;/p&gt;
+
+&lt;h2 id=&quot;wake-up&quot;&gt;Wake up!&lt;/h2&gt;
+
+&lt;p&gt;Sadly (as you might have noticed) the examples above do not work. It was all just a dream. There is no such thing as a (widely used) Java Notebook.&lt;/p&gt;
+
+&lt;p&gt;The reason I wrote this post is the famous &lt;a href=&quot;https://www.tiobe.com/tiobe-index/&quot;&gt;TIOBE Index&lt;/a&gt; of programming languages.&lt;/p&gt;
+
+&lt;p&gt;Today is the first day since &lt;strong&gt;2001&lt;/strong&gt; that &lt;strong&gt;Java &lt;em&gt;isn’t&lt;/em&gt; in the top 3&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;That is why we, as the Java community, should look at our competition. What did &lt;strong&gt;Python&lt;/strong&gt; do &lt;em&gt;right&lt;/em&gt;? Why is it topping the chart?&lt;/p&gt;
+
+&lt;p&gt;A major reason, I think, is the feedback and steep learning curve of Java. If you want to parse some data, would you rather download a Java Runtime, install an IDE, install Maven etc? Or would you rather open the browser, have documentation and tutorials inlined with running examples? This is &lt;strong&gt;SO&lt;/strong&gt; much easier.&lt;/p&gt;
+
+&lt;p&gt;My wish for &lt;strong&gt;2023&lt;/strong&gt;: Oracle, Microsoft, Google, Azul… &lt;em&gt;PLEASE make this a reality&lt;/em&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 07 Jul 2022 20:42:12 +0200</pubDate>
+        <link>https://royvanrijn.com/blog/2022/07/java-notebooks/</link>
+        <guid isPermaLink="true">https://royvanrijn.com/blog/2022/07/java-notebooks/</guid>
+        
+        <category>java</category>
+        
+        <category>notebooks</category>
+        
+        
+        <category>Programming</category>
+        
+      </item>
     
       <item>
         <title>Solving the daily calendar puzzle</title>
@@ -1072,60 +1174,6 @@ hitch, fifth, witch, aitch, bitch, fitch, gitch, mitch
         
         
         <category>Programming</category>
-        
-      </item>
-    
-      <item>
-        <title>OpenAI GPT-2 is amazing</title>
-        <description>&lt;p&gt;This week I’ve finally gotten around to research (play with) OpenAI’s groundbreaking language model &lt;a href=&quot;https://openai.com/blog/better-language-models/&quot;&gt;GPT-2&lt;/a&gt; using &lt;a href=&quot;https://talktotransformer.com/&quot;&gt;talktotransformer.com&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1 id=&quot;what-is-openai&quot;&gt;What is OpenAI?&lt;/h1&gt;
-
-&lt;p&gt;OpenAI is an AI research organization founded by Elon Musk in January 2016 to explore, develop, and deploy technology for the benefit of humanity. It’s headquartered in San Francisco, with headquarters in Mountain View, California.&lt;/p&gt;
-
-&lt;h1 id=&quot;and-gpt-2&quot;&gt;And GPT-2?&lt;/h1&gt;
-
-&lt;p&gt;OpenAI recently unveiled a language model called GPT-2 that, given some input text, predicts the coming sentences. GPT-2 also supports the idea of the  “Grammar of Reasoning” (GRR), in which the model attempts to extract sentences that would make the most intuitive sense, in terms of human understanding. For example, if you input “the dog ate the cat” and the model predicts “dogs eat cats”, the GRR system would make that sentence as the most probable result. The problem is that even though GRR is very good at answering the question, its predictions are still highly contingent. For example, it is still possible to be a cat-eating dog, and then someone else who doesn’t eat cats can still eat your dog, but the GRR system would not make such a mistake for the second sentence.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;GPT-2 uses an adaptive model to learn the most relevant concepts to solve complex problems. This is accomplished by using the most relevant words as words, rather than the least relevant words. The model is adaptive to the structure of the content being analyzed.&lt;/p&gt;
-
-&lt;h1 id=&quot;how-does-it-work&quot;&gt;How does it work?&lt;/h1&gt;
-
-&lt;p&gt;There are several components involved in GPT. GPT uses a deep learning based model to understand a large vocabulary.&lt;/p&gt;
-
-&lt;p&gt;The model consists of a neural network, which is composed of multiple layers. Each layer is a separate layer that processes a different input word. GPT uses two neural network layers for each of the following steps:&lt;/p&gt;
-
-&lt;p&gt;First, each layer learns to recognize a particular word. The layers for both input and target are trained together to improve the model’s performance over time.&lt;/p&gt;
-
-&lt;p&gt;Second, the neural networks are used to predict the target word for the current context. To do this, the first neural network is used to learn about the target word. The target is then used to select a second neural network layer, which is used to predict the word that is closest to the current context.&lt;/p&gt;
-
-&lt;h1 id=&quot;is-the-model-too-powerful&quot;&gt;Is the model too powerful?&lt;/h1&gt;
-
-&lt;p&gt;This is a good question to ask, but it should be taken with a grain of salt. In fact, the GPT-2 is actually quite limited in the way it learns the most relevant concepts. This is in part due to its learning model being a probabilistic algorithm that assumes a model of the world as a probabilistic system. This model is an attempt to describe all the possible states of the world, but the way it learns these states is by taking into account the best model for each state and comparing to that.&lt;/p&gt;
-
-&lt;h1 id=&quot;a-gpt-2-surprise&quot;&gt;A GPT-2 surprise&lt;/h1&gt;
-
-&lt;p&gt;&lt;strong&gt;Surprise!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;This entire blogpost above has been generated by OpenAI’s GPT-2. I’ve only given the first sentence and the four headers as input. After that I’ve let GPT-2 fill in the blanks (of course I’ve cherry-picked here). The quality is amazing and I’m pretty sure there are people that made it this far… and had no clue that what they’ve been reading was 100% generated by a machine.&lt;/p&gt;
-
-&lt;p&gt;Be sure to play around with it at &lt;a href=&quot;https://talktotransformer.com/&quot;&gt;talktotransformer.com&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Wed, 20 Nov 2019 15:42:11 +0100</pubDate>
-        <link>https://royvanrijn.com/blog/2019/11/openai-gpt-2/</link>
-        <guid isPermaLink="true">https://royvanrijn.com/blog/2019/11/openai-gpt-2/</guid>
-        
-        <category>gpt2</category>
-        
-        <category>openai</category>
-        
-        <category>machine learning</category>
-        
-        
-        <category>OpenAI</category>
         
       </item>
     
